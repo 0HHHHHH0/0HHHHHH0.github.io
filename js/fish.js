@@ -1,27 +1,3 @@
-// �ȴ� jQuery ���صİ�װ����
-(function() {
-    function initFish() {
-        if (typeof window.jQuery !== 'undefined') {
-            // ��� jQuery �Ѽ��أ�ʹ�� jQuery
-            $(function(){
-                RENDERER.init();
-            });
-        } else {
-            // ��� jQuery δ���أ�ʹ��ԭ�� JS
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', function() {
-                    RENDERER.init();
-                });
-            } else {
-                RENDERER.init();
-            }
-        }
-    }
-    
-    // ������ʼ��ʼ��
-    initFish();
-})();
-
 var RENDERER = {
 	POINT_INTERVAL : 5,
 	FISH_COUNT : 3,
