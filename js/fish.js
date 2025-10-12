@@ -329,6 +329,7 @@ FISH.prototype = {
 		this.controlStatus(context);
 	}
 };
-$(function(){
-	RENDERER.init();
+// ʹ��ԭ�� JavaScript ��� jQuery
+document.addEventListener('DOMContentLoaded', function() {
+    RENDERER.init();
 });
