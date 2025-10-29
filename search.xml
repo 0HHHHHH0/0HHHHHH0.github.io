@@ -288,169 +288,6 @@ p<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><s
       </categories>
   </entry>
   <entry>
-    <title>3.对基因进行注释，长牡蛎注释包的构建及KEGG和GO分析</title>
-    <url>/2025/08/02/25/</url>
-    <content><![CDATA[<blockquote>
-<p>前面我们发现了一些显著的SNP窗口位点，下面对显著的SNP位点进行提取。</p>
-</blockquote>
-<h1 id="1-提取SNP位点信息"><a href="#1-提取SNP位点信息" class="headerlink" title="1.提取SNP位点信息"></a>1.提取SNP位点信息</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 设置FST阈值（例如取WEIGHTED_FST &gt; 0.2）</span>
-awk '$5 &gt; 0.2' fst_binned.windowed.weir.fst &gt; high_fst_windows.txt
-
-<span class="token title important"><span class="token punctuation">##</span> 检查最高FST窗口</span>
-sort -k5,5nr high_fst_windows.txt | head
-
-
-<span class="token title important"><span class="token punctuation">##</span> 从高FST结果生成BED格式（用于后续注释）</span>
-awk '{print $1"\t"$2"\t"$3"\t"$5}' high_fst_windows.txt &gt; high_fst_regions.bed
-
-<span class="token title important"><span class="token punctuation">##</span> 合并相邻窗口（如距离 merged_high_fst.bed</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h1 id="2-对提取SNP位点注释"><a href="#2-对提取SNP位点注释" class="headerlink" title="2.对提取SNP位点注释"></a>2.对提取SNP位点注释</h1><p>然后提取与基因重叠的区域（需准备reference.gtf）</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 步骤1：过滤GFF3中的基因行（注意GFF3中gene的第三列为"gene"）</span>
-bedtools intersect -a merged_high_fst.bed -b ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff -wa -wb | \
-awk -F'\t' '$8 == "gene" {print $1,$2,$3,$12}' OFS='\t' | \
-awk -F'[;\t]' '{gsub(/ID=gene-/, "", $4); print $1,$2,$3,$4}' | sort | uniq &gt; fst_genes.txt
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h1 id="3-提取SNP位点所在基因的ID号"><a href="#3-提取SNP位点所在基因的ID号" class="headerlink" title="3.提取SNP位点所在基因的ID号"></a>3.提取SNP位点所在基因的ID号</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">awk -F'\t' '{
-  match($8, /ID=gene-([^;]+)/, id_arr);
-  match($8, /Name=([^;]+)/, name_arr);
-  if (id_arr[1] &amp;&amp; name_arr[1]) {
-    print $1, $2, $3, id_arr[1], name_arr[1];
-  }
-}' OFS='\t' fst_genes_annotated.bed &gt; fst_gene_ids_names.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-
-<p>下面为整理好的上述过程的脚本</p>
-<p>命名为<code># annotate_fst.sh</code> </p>
-<pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash">#!/bin/bash
-# 输入文件
-BED="merged_high_fst.bed"
-GFF="../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff"
-
-# 步骤1：提取基因（直接运行，若为空则需名称映射）
-bedtools intersect -a $BED -b $GFF -wa -wb | \
-awk -F'\t' '$8 == "gene" {print $1,$2,$3,$12}' OFS='\t' | \
-awk -F'[;\t]' '{gsub(/ID=gene-/, "", $4); print $1,$2,$3,$4}' | sort | uniq &gt; fst_genes.txt
-
-# 步骤2：检查结果
-echo "=== 前10行基因 ==="
-head fst_genes.txt
-echo "=== 行数统计 ==="
-wc -l fst_genes.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<h1 id="4-通过基因ID提取蛋白序列"><a href="#4-通过基因ID提取蛋白序列" class="headerlink" title="4.通过基因ID提取蛋白序列"></a>4.通过基因ID提取蛋白序列</h1><p>下面为根据基因ID提取转录本序列，然后进行注释（后面不用这个，直接构建注释包进行分析，感觉更好</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">grep -E "$(paste -sd'|' missing_loc.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "gene" | grep -E "$(paste -sd'|' missing_loc.txt)" | grep -o "gene_biotype=[^;]*" | sort | uniq -c
-
-
-grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "protein_id=" | \
-sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | sort | uniq &gt; protein_ids.txt
-
-
-seqkit grep -f protein_ids.txt ../GCF_902806645.1_cgigas_uk_roslin_v1_protein.faa &gt; proteins_extracted/fst_genes_proteins.faa
-
-grep "^&gt;" proteins_extracted/fst_genes_proteins.faa | wc -l
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>发现不能完全匹配所有LOC，查看哪些没匹配到</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span> 找所有LOC对应的protein_id</span>
-grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "protein_id=" | \
-sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | sort | uniq &gt; protein_ids_all.txt
-
-<span class="token title important"><span class="token punctuation">#</span> 检查protein_ids.txt是否包含所有</span>
-<span class="token blockquote punctuation">&gt;</span> comm -23 protein_ids_all.txt protein_ids.txt &gt; missing_proteins.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-<p>下面是上述命令整理好的查找脚本</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span>!/bin/bash</span>
-set -euo pipefail
-
-<span class="token title important"><span class="token punctuation">#</span> 1. 从fst_gene_ids_names.txt中提取LOC ID列表（假设第4列为LOC ID）</span>
-cut -f4 fst_gene_ids_names.txt | sort | uniq &gt; gene_loc_ids.txt
-
-<span class="token title important"><span class="token punctuation">#</span> 2. 从基因组注释GFF文件中筛选出这些LOC对应的protein_id</span>
-grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | \
-    grep "protein_id=" | \
-    sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | \
-    sort | uniq &gt; protein_ids.txt
-
-<span class="token title important"><span class="token punctuation">#</span> 3. 使用seqkit提取对应的蛋白序列到指定文件</span>
-seqkit grep -f protein_ids.txt ../GCF_902806645.1_cgigas_uk_roslin_v1_protein.faa &gt; proteins_extracted/fst_genes_proteins.faa
-
-<span class="token title important"><span class="token punctuation">#</span> 4. 统计提取到的蛋白数量，确认数量</span>
-grep "^&gt;" proteins_extracted/fst_genes_proteins.faa | wc -l<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<h1 id="5-对提取的蛋白进行注释"><a href="#5-对提取的蛋白进行注释" class="headerlink" title="5.对提取的蛋白进行注释"></a>5.对提取的蛋白进行注释</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">conda create -n eggnog3_env -c bioconda -c conda-forge eggnog-mapper
-conda activate eggnog3_env
-
-
-emapper.py -h
-
-tar -xvzf eggnog_mapper_data-5.0.2.tar.gz -C ./data<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">emapper.py -i proteins_extracted/fst_genes_proteins.faa \
-  --output fst_proteins_annotation \
-  --data_dir ./data \
-  -m diamond \
-  --cpu 12 \
-  --override<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<p>下面是R中的操作，主要进行KEGG和GO分析</p>
-<h1 id="1-对前面注释的基因进行聚类分析"><a href="#1-对前面注释的基因进行聚类分析" class="headerlink" title="1.对前面注释的基因进行聚类分析"></a>1.对前面注释的基因进行聚类分析</h1><p>详细内容见 <a href="http://192.168.1.101/usr/uploads/2025/08/706163015.ipynb">Fst_2.ipynb</a><br><img src="/images/25/2038951127.png" alt="mdvyq9m6.png"><br>结果如上，没有达到我的预期，操作也较麻烦。</p>
-<h1 id="2-构建非模式物种注释包org-Cgigas-eg-db"><a href="#2-构建非模式物种注释包org-Cgigas-eg-db" class="headerlink" title="2.构建非模式物种注释包org.Cgigas.eg.db"></a>2.构建非模式物种注释包org.Cgigas.eg.db</h1><p>详细内容见 <a href="http://192.168.1.101/usr/uploads/2025/08/3120321603.ipynb">Fst_3.ipynb</a> </p>
-<pre><code class="markdown">library(tidyverse)
-library(AnnotationForge)
-library(readxl)
-
-emapper %
-  dplyr::select(GID=query,Gene_Symbol=Preferred_name, 
-                GO=GOs,KO=KEGG_ko,Pathway =KEGG_Pathway, 
-                OG=eggNOG_OGs,Gene_Name =seed_ortholog)
-
-emapper$GID %   #这是只提取有GO注释信息的行，判断的标准时GO信息不是NA，这也就是为什么前面必须将“-”替换为NA，不替换就无法进行有效过滤。
-  mutate(EVIDENCE = 'gigas')     #硬生生加了1列EVIDENCE，全部赋值A,凑数的。
-dim(gene2go)    #查看数据维度。
-#[1] 1523399       3
-
-#提取GID与KO信息，这里只有2列信息
-gene2ko%
- separate_rows(KO, sep = ',', convert = F) %&gt;%
-  dplyr::filter(!is.na(KO))
-dim(gene2ko)
-#[1] 30530     2
-
-#提取GID与Pathway信息，这里只有2列信息
-gene2pathway%
-separate_rows(Pathway, sep = ',', convert = F) %&gt;%
-  dplyr::filter(!is.na(Pathway))
- dim(gene2pathway)
-#[1] 143056      2
-
-#提取GID与Gene_Symbol信息，Gene_Symbol是Preferred_name信息，这里只有2列信息
-gene2symbol%
-  dplyr::filter(!is.na(Gene_Symbol))
-dim(gene2symbol)
-#[1] 4561    2
-
-## 删除 GO ID 中的空格、制表符、换行符
-
-gene2go$GO
-</code></pre>
-]]></content>
-      <categories>
-        <category>重测序</category>
-      </categories>
-  </entry>
-  <entry>
     <title>4.提取重测序数据中黑白肌痕组中各SNP的位点信息及基因型频率</title>
     <url>/2025/08/03/32/</url>
     <content><![CDATA[<p>相关的sh文件内容如下：</p>
@@ -866,6 +703,169 @@ systemctl status frpc.service<span aria-hidden="true" class="line-numbers-rows">
       </categories>
   </entry>
   <entry>
+    <title>3.对基因进行注释，长牡蛎注释包的构建及KEGG和GO分析</title>
+    <url>/2025/08/02/25/</url>
+    <content><![CDATA[<blockquote>
+<p>前面我们发现了一些显著的SNP窗口位点，下面对显著的SNP位点进行提取。</p>
+</blockquote>
+<h1 id="1-提取SNP位点信息"><a href="#1-提取SNP位点信息" class="headerlink" title="1.提取SNP位点信息"></a>1.提取SNP位点信息</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 设置FST阈值（例如取WEIGHTED_FST &gt; 0.2）</span>
+awk '$5 &gt; 0.2' fst_binned.windowed.weir.fst &gt; high_fst_windows.txt
+
+<span class="token title important"><span class="token punctuation">##</span> 检查最高FST窗口</span>
+sort -k5,5nr high_fst_windows.txt | head
+
+
+<span class="token title important"><span class="token punctuation">##</span> 从高FST结果生成BED格式（用于后续注释）</span>
+awk '{print $1"\t"$2"\t"$3"\t"$5}' high_fst_windows.txt &gt; high_fst_regions.bed
+
+<span class="token title important"><span class="token punctuation">##</span> 合并相邻窗口（如距离 merged_high_fst.bed</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="2-对提取SNP位点注释"><a href="#2-对提取SNP位点注释" class="headerlink" title="2.对提取SNP位点注释"></a>2.对提取SNP位点注释</h1><p>然后提取与基因重叠的区域（需准备reference.gtf）</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 步骤1：过滤GFF3中的基因行（注意GFF3中gene的第三列为"gene"）</span>
+bedtools intersect -a merged_high_fst.bed -b ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff -wa -wb | \
+awk -F'\t' '$8 == "gene" {print $1,$2,$3,$12}' OFS='\t' | \
+awk -F'[;\t]' '{gsub(/ID=gene-/, "", $4); print $1,$2,$3,$4}' | sort | uniq &gt; fst_genes.txt
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="3-提取SNP位点所在基因的ID号"><a href="#3-提取SNP位点所在基因的ID号" class="headerlink" title="3.提取SNP位点所在基因的ID号"></a>3.提取SNP位点所在基因的ID号</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">awk -F'\t' '{
+  match($8, /ID=gene-([^;]+)/, id_arr);
+  match($8, /Name=([^;]+)/, name_arr);
+  if (id_arr[1] &amp;&amp; name_arr[1]) {
+    print $1, $2, $3, id_arr[1], name_arr[1];
+  }
+}' OFS='\t' fst_genes_annotated.bed &gt; fst_gene_ids_names.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+
+<p>下面为整理好的上述过程的脚本</p>
+<p>命名为<code># annotate_fst.sh</code> </p>
+<pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash">#!/bin/bash
+# 输入文件
+BED="merged_high_fst.bed"
+GFF="../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff"
+
+# 步骤1：提取基因（直接运行，若为空则需名称映射）
+bedtools intersect -a $BED -b $GFF -wa -wb | \
+awk -F'\t' '$8 == "gene" {print $1,$2,$3,$12}' OFS='\t' | \
+awk -F'[;\t]' '{gsub(/ID=gene-/, "", $4); print $1,$2,$3,$4}' | sort | uniq &gt; fst_genes.txt
+
+# 步骤2：检查结果
+echo "=== 前10行基因 ==="
+head fst_genes.txt
+echo "=== 行数统计 ==="
+wc -l fst_genes.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<h1 id="4-通过基因ID提取蛋白序列"><a href="#4-通过基因ID提取蛋白序列" class="headerlink" title="4.通过基因ID提取蛋白序列"></a>4.通过基因ID提取蛋白序列</h1><p>下面为根据基因ID提取转录本序列，然后进行注释（后面不用这个，直接构建注释包进行分析，感觉更好</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">grep -E "$(paste -sd'|' missing_loc.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "gene" | grep -E "$(paste -sd'|' missing_loc.txt)" | grep -o "gene_biotype=[^;]*" | sort | uniq -c
+
+
+grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "protein_id=" | \
+sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | sort | uniq &gt; protein_ids.txt
+
+
+seqkit grep -f protein_ids.txt ../GCF_902806645.1_cgigas_uk_roslin_v1_protein.faa &gt; proteins_extracted/fst_genes_proteins.faa
+
+grep "^&gt;" proteins_extracted/fst_genes_proteins.faa | wc -l
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>发现不能完全匹配所有LOC，查看哪些没匹配到</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span> 找所有LOC对应的protein_id</span>
+grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "protein_id=" | \
+sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | sort | uniq &gt; protein_ids_all.txt
+
+<span class="token title important"><span class="token punctuation">#</span> 检查protein_ids.txt是否包含所有</span>
+<span class="token blockquote punctuation">&gt;</span> comm -23 protein_ids_all.txt protein_ids.txt &gt; missing_proteins.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<p>下面是上述命令整理好的查找脚本</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span>!/bin/bash</span>
+set -euo pipefail
+
+<span class="token title important"><span class="token punctuation">#</span> 1. 从fst_gene_ids_names.txt中提取LOC ID列表（假设第4列为LOC ID）</span>
+cut -f4 fst_gene_ids_names.txt | sort | uniq &gt; gene_loc_ids.txt
+
+<span class="token title important"><span class="token punctuation">#</span> 2. 从基因组注释GFF文件中筛选出这些LOC对应的protein_id</span>
+grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | \
+    grep "protein_id=" | \
+    sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | \
+    sort | uniq &gt; protein_ids.txt
+
+<span class="token title important"><span class="token punctuation">#</span> 3. 使用seqkit提取对应的蛋白序列到指定文件</span>
+seqkit grep -f protein_ids.txt ../GCF_902806645.1_cgigas_uk_roslin_v1_protein.faa &gt; proteins_extracted/fst_genes_proteins.faa
+
+<span class="token title important"><span class="token punctuation">#</span> 4. 统计提取到的蛋白数量，确认数量</span>
+grep "^&gt;" proteins_extracted/fst_genes_proteins.faa | wc -l<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<h1 id="5-对提取的蛋白进行注释"><a href="#5-对提取的蛋白进行注释" class="headerlink" title="5.对提取的蛋白进行注释"></a>5.对提取的蛋白进行注释</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">conda create -n eggnog3_env -c bioconda -c conda-forge eggnog-mapper
+conda activate eggnog3_env
+
+
+emapper.py -h
+
+tar -xvzf eggnog_mapper_data-5.0.2.tar.gz -C ./data<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">emapper.py -i proteins_extracted/fst_genes_proteins.faa \
+  --output fst_proteins_annotation \
+  --data_dir ./data \
+  -m diamond \
+  --cpu 12 \
+  --override<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<p>下面是R中的操作，主要进行KEGG和GO分析</p>
+<h1 id="1-对前面注释的基因进行聚类分析"><a href="#1-对前面注释的基因进行聚类分析" class="headerlink" title="1.对前面注释的基因进行聚类分析"></a>1.对前面注释的基因进行聚类分析</h1><p>详细内容见 <a href="http://192.168.1.101/usr/uploads/2025/08/706163015.ipynb">Fst_2.ipynb</a><br><img src="/images/25/2038951127.png" alt="mdvyq9m6.png"><br>结果如上，没有达到我的预期，操作也较麻烦。</p>
+<h1 id="2-构建非模式物种注释包org-Cgigas-eg-db"><a href="#2-构建非模式物种注释包org-Cgigas-eg-db" class="headerlink" title="2.构建非模式物种注释包org.Cgigas.eg.db"></a>2.构建非模式物种注释包org.Cgigas.eg.db</h1><p>详细内容见 <a href="http://192.168.1.101/usr/uploads/2025/08/3120321603.ipynb">Fst_3.ipynb</a> </p>
+<pre><code class="markdown">library(tidyverse)
+library(AnnotationForge)
+library(readxl)
+
+emapper %
+  dplyr::select(GID=query,Gene_Symbol=Preferred_name, 
+                GO=GOs,KO=KEGG_ko,Pathway =KEGG_Pathway, 
+                OG=eggNOG_OGs,Gene_Name =seed_ortholog)
+
+emapper$GID %   #这是只提取有GO注释信息的行，判断的标准时GO信息不是NA，这也就是为什么前面必须将“-”替换为NA，不替换就无法进行有效过滤。
+  mutate(EVIDENCE = 'gigas')     #硬生生加了1列EVIDENCE，全部赋值A,凑数的。
+dim(gene2go)    #查看数据维度。
+#[1] 1523399       3
+
+#提取GID与KO信息，这里只有2列信息
+gene2ko%
+ separate_rows(KO, sep = ',', convert = F) %&gt;%
+  dplyr::filter(!is.na(KO))
+dim(gene2ko)
+#[1] 30530     2
+
+#提取GID与Pathway信息，这里只有2列信息
+gene2pathway%
+separate_rows(Pathway, sep = ',', convert = F) %&gt;%
+  dplyr::filter(!is.na(Pathway))
+ dim(gene2pathway)
+#[1] 143056      2
+
+#提取GID与Gene_Symbol信息，Gene_Symbol是Preferred_name信息，这里只有2列信息
+gene2symbol%
+  dplyr::filter(!is.na(Gene_Symbol))
+dim(gene2symbol)
+#[1] 4561    2
+
+## 删除 GO ID 中的空格、制表符、换行符
+
+gene2go$GO
+</code></pre>
+]]></content>
+      <categories>
+        <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
     <title>5.各样本SNP位点信息可视化</title>
     <url>/2025/08/03/40/</url>
     <content><![CDATA[<blockquote>
@@ -1066,42 +1066,6 @@ fig  # 在RStudio中查看
       </categories>
   </entry>
   <entry>
-    <title>内网穿透</title>
-    <url>/2024/11/21/5/</url>
-    <content><![CDATA[<p>前言<br>对于在本地搭建需求公网的服务，比如nas，游戏联机等。但是又没有公网，这种时候就需要用到内网穿透工具，通过端口转发实现公网访问。市面上的映射基本都是限制流量，要么就是带宽只有1m。</p>
-<p>经过我的不断寻找，终于是找到了一款不限制流量，且基础带宽高的内网穿透工具。以下是他的基本信息：</p>
-<p>免费带宽：国内8m，国外32m（这是我能找到的唯一一款国内国外单独计带宽的映射）<br>免费隧道：4条<br>流量：不限制<br>并发：不限制<br>除此之外访问地址并不会强制变化<br>官网链接</p>
-<blockquote>
-<p><a href="https://www.chmlfrp.cn/">https://www.chmlfrp.cn</a></p>
-</blockquote>
-<p>使用教程<br>这款映射是基于开源软件frp实现的端口映射功能，所以实际使用方法和frp的使用方法一致，复制它生成的配置文件然后运行即可。</p>
-<p>注册/登录<br>没有帐户的首先前往chmlfrp官网注册账户，登录进首页之后是这样的页面：</p>
-<p>创建隧道<br>随后通过菜单前往 “隧道管理 -&gt; 隧道列表” ，然后点击右上角的添加隧道按钮（我已经创建了一个隧道）</p>
-<p>然后选择符合你要求的节点（一般选择离你近，且节点负载较低的节点。节点负载可以在 “隧道管理 -&gt; 节点状态” 查看所有节点的具体负载）</p>
-<p>然后填写相应隧道信息，如果没有特殊需求，一般只需要填写端口类型及内网端口。</p>
-<p>随后点击确定即可成功创建隧道</p>
-<p>启动隧道<br>前往 “隧道管理 -&gt; 软件下载” 页面，下载对应你系统的软件。</p>
-<p>下载好后解压压缩包，一般来讲只需要这三个文件，其他文件可以删除，也可以选择保留。</p>
-<p>随后进入网站的 “隧道管理 -&gt; 配置文件” 页面，在此页面选择你创建隧道的节点，就可以获取到相应的配置文件。将获取的配置文件覆盖到文件夹的frpc.ini中：</p>
-<p>随后保存文件，然后在此文件夹创建一个 “启动.txt” 的文本档案，然后将.txt后缀改为.bat。（注意！此方法仅windows可用，且需要打开显示文件扩展名）</p>
-<p>右键 “启动.bat” ，点击编辑，输入以下代码：</p>
-<p> <code>&nbsp;./frpc -c frpc.ini</code> </p>
-<p>接下来是设置开机后台自启</p>
-<p>新建一个启动服务</p>
-<p>编辑该服务</p>
-<p>重新加载</p>
-<p>启动服务</p>
-<p>开始服务</p>
-<p>查看服务状态</p>
-<p>重启</p>
-<p>在弹出的cmd窗口中直接输入frpc即可启动</p>
-]]></content>
-      <categories>
-        <category>折腾</category>
-        <category>WIFI</category>
-      </categories>
-  </entry>
-  <entry>
     <title>Typecho快速修改文章图片和文件链接地址</title>
     <url>/2025/09/03/50/</url>
     <content><![CDATA[<p>说明<br>为了使我们的博客速度更快，图片等一些文件会采用外接的形式。但当跟换域名或CDN图片地址时，需要大批修正一切文章的援用图片链接和一些文件链接地址，手动修正又烦劳，这里就说一下通过 phpMyAdmin工具快速修正数据库文章图片，文件链接地址。</p>
@@ -1202,6 +1166,42 @@ SHOW GRANTS FOR <span class="token string">'phpmyadmin'</span>@<span class="toke
 <p>选中 <code>typecho_contents</code> ，然后点上面的搜索，选择查找和替换，输入之前的图片或者文件地址和之后的地址，字段选择 <code>text</code> ，确认后执行即可批量修改。</p>
 ]]></content>
       <categories>
+        <category>WIFI</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>内网穿透</title>
+    <url>/2024/11/21/5/</url>
+    <content><![CDATA[<p>前言<br>对于在本地搭建需求公网的服务，比如nas，游戏联机等。但是又没有公网，这种时候就需要用到内网穿透工具，通过端口转发实现公网访问。市面上的映射基本都是限制流量，要么就是带宽只有1m。</p>
+<p>经过我的不断寻找，终于是找到了一款不限制流量，且基础带宽高的内网穿透工具。以下是他的基本信息：</p>
+<p>免费带宽：国内8m，国外32m（这是我能找到的唯一一款国内国外单独计带宽的映射）<br>免费隧道：4条<br>流量：不限制<br>并发：不限制<br>除此之外访问地址并不会强制变化<br>官网链接</p>
+<blockquote>
+<p><a href="https://www.chmlfrp.cn/">https://www.chmlfrp.cn</a></p>
+</blockquote>
+<p>使用教程<br>这款映射是基于开源软件frp实现的端口映射功能，所以实际使用方法和frp的使用方法一致，复制它生成的配置文件然后运行即可。</p>
+<p>注册/登录<br>没有帐户的首先前往chmlfrp官网注册账户，登录进首页之后是这样的页面：</p>
+<p>创建隧道<br>随后通过菜单前往 “隧道管理 -&gt; 隧道列表” ，然后点击右上角的添加隧道按钮（我已经创建了一个隧道）</p>
+<p>然后选择符合你要求的节点（一般选择离你近，且节点负载较低的节点。节点负载可以在 “隧道管理 -&gt; 节点状态” 查看所有节点的具体负载）</p>
+<p>然后填写相应隧道信息，如果没有特殊需求，一般只需要填写端口类型及内网端口。</p>
+<p>随后点击确定即可成功创建隧道</p>
+<p>启动隧道<br>前往 “隧道管理 -&gt; 软件下载” 页面，下载对应你系统的软件。</p>
+<p>下载好后解压压缩包，一般来讲只需要这三个文件，其他文件可以删除，也可以选择保留。</p>
+<p>随后进入网站的 “隧道管理 -&gt; 配置文件” 页面，在此页面选择你创建隧道的节点，就可以获取到相应的配置文件。将获取的配置文件覆盖到文件夹的frpc.ini中：</p>
+<p>随后保存文件，然后在此文件夹创建一个 “启动.txt” 的文本档案，然后将.txt后缀改为.bat。（注意！此方法仅windows可用，且需要打开显示文件扩展名）</p>
+<p>右键 “启动.bat” ，点击编辑，输入以下代码：</p>
+<p> <code>&nbsp;./frpc -c frpc.ini</code> </p>
+<p>接下来是设置开机后台自启</p>
+<p>新建一个启动服务</p>
+<p>编辑该服务</p>
+<p>重新加载</p>
+<p>启动服务</p>
+<p>开始服务</p>
+<p>查看服务状态</p>
+<p>重启</p>
+<p>在弹出的cmd窗口中直接输入frpc即可启动</p>
+]]></content>
+      <categories>
+        <category>折腾</category>
         <category>WIFI</category>
       </categories>
   </entry>
@@ -1492,142 +1492,6 @@ perl retrieve_seq_from_fasta.pl --format refGene --seqfile Arabidopsis_thaliana.
       </categories>
   </entry>
   <entry>
-    <title>基因结构</title>
-    <url>/2025/09/17/55/</url>
-    <content><![CDATA[<h2 id="结构图"><a href="#结构图" class="headerlink" title="结构图"></a>结构图</h2><p>!!!</p>
-<pre><code>    flowchart TD
-    A["一个完整的真核生物基因（DNA模板链）"]
-    
-    subgraph A_Sub[基因结构]
-        direction LR
-        Promoter[启动子 Promoter]
-        Exon1[外显子1 Exon 1]
-        Intron[内含子 Intron]
-        Exon2[外显子2 Exon 2]
-        Terminator[终止子 Terminator]
-    end
-    
-    A --&gt; A_Sub
-    
-    subgraph Transcription[第一步：转录]
-        direction TB
-        B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
-    end
-    
-    A_Sub --转录--&gt; Transcription
-    
-    subgraph Splicing[第二步：加工（剪切与拼接）]
-        direction TB
-        C["切除内含子并将外显子连接起来"]
-    end
-    
-    Transcription --加工--&gt; Splicing
-    
-    subgraph Final_mRNA[第三步：成熟mRNA]
-        direction LR
-        D["5' 帽子"]
-        E["5' UTR"]
-        F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
-        G["3' UTR"]
-        H["多聚A尾巴"]
-    end
-    
-    Splicing --"拼接后形成"--&gt; Final_mRNA
-    
-    %% 定义关系
-    Exon1 --包含--&gt; UTR1[5' UTR部分]
-    Exon1 --包含--&gt; CDS_Part1[CDS部分]
-    Exon2 --包含--&gt; CDS_Part2[CDS部分]
-    Exon2 --包含--&gt; UTR2[3' UTR部分]
-    
-    UTR1 --最终成为--&gt; E
-    CDS_Part1 --最终成为--&gt; F
-    CDS_Part2 --最终成为--&gt; F
-    UTR2 --最终成为--&gt; G
-    
-    Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
-    F --&gt; I
-    
-    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
-    classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
-    classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
-    
-    class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
-    class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
-    class Transcription,Splicing process;
-</code></pre>
-<p>!!!</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-
-<p>下面是代码</p>
-<pre class="line-numbers language-mermaid" data-language="mermaid"><code class="language-mermaid"><span class="token keyword">flowchart</span> TD
-A<span class="token text string">["一个完整的真核生物基因（DNA模板链）"]</span>
-
-<span class="token keyword">subgraph</span> A_Sub<span class="token text string">[基因结构]</span>
-    <span class="token keyword">direction</span> LR
-    Promoter<span class="token text string">[启动子 Promoter]</span>
-    Exon1<span class="token text string">[外显子1 Exon 1]</span>
-    Intron<span class="token text string">[内含子 Intron]</span>
-    Exon2<span class="token text string">[外显子2 Exon 2]</span>
-    Terminator<span class="token text string">[终止子 Terminator]</span>
-<span class="token keyword">end</span>
-
-A <span class="token arrow operator">--&gt;</span> A_Sub
-
-<span class="token keyword">subgraph</span> Transcription<span class="token text string">[第一步：转录]</span>
-    <span class="token keyword">direction</span> TB
-    B<span class="token text string">["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]</span>
-<span class="token keyword">end</span>
-
-A_Sub <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">转录</span><span class="token arrow operator">--&gt;</span></span> Transcription
-
-<span class="token keyword">subgraph</span> Splicing<span class="token text string">[第二步：加工（剪切与拼接）]</span>
-    <span class="token keyword">direction</span> TB
-    C<span class="token text string">["切除内含子并将外显子连接起来"]</span>
-<span class="token keyword">end</span>
-
-Transcription <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">加工</span><span class="token arrow operator">--&gt;</span></span> Splicing
-
-<span class="token keyword">subgraph</span> Final_mRNA<span class="token text string">[第三步：成熟mRNA]</span>
-    <span class="token keyword">direction</span> LR
-    D<span class="token text string">["5' 帽子"]</span>
-    E<span class="token text string">["5' UTR"]</span>
-    F[<span class="token string">"CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"</span>]
-    G<span class="token text string">["3' UTR"]</span>
-    H<span class="token text string">["多聚A尾巴"]</span>
-<span class="token keyword">end</span>
-
-Splicing <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">"拼接后形成"</span><span class="token arrow operator">--&gt;</span></span> Final_mRNA
-
-<span class="token comment">%% 定义关系</span>
-Exon1 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">包含</span><span class="token arrow operator">--&gt;</span></span> UTR1<span class="token text string">[5' UTR部分]</span>
-Exon1 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">包含</span><span class="token arrow operator">--&gt;</span></span> CDS_Part1<span class="token text string">[CDS部分]</span>
-Exon2 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">包含</span><span class="token arrow operator">--&gt;</span></span> CDS_Part2<span class="token text string">[CDS部分]</span>
-Exon2 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">包含</span><span class="token arrow operator">--&gt;</span></span> UTR2<span class="token text string">[3' UTR部分]</span>
-
-UTR1 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">最终成为</span><span class="token arrow operator">--&gt;</span></span> E
-CDS_Part1 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">最终成为</span><span class="token arrow operator">--&gt;</span></span> F
-CDS_Part2 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">最终成为</span><span class="token arrow operator">--&gt;</span></span> F
-UTR2 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">最终成为</span><span class="token arrow operator">--&gt;</span></span> G
-
-Final_mRNA <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">"进入细胞质进行翻译（核糖体）"</span><span class="token arrow operator">--&gt;</span></span> I<span class="token text string">["合成的蛋白质"]</span>
-F <span class="token arrow operator">--&gt;</span> I
-
-<span class="token keyword">classDef</span> default <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#f9f9f9<span class="token punctuation">,</span><span class="token property">stroke</span><span class="token operator">:</span>#333<span class="token punctuation">,</span><span class="token property">stroke-width</span><span class="token operator">:</span>2px</span><span class="token punctuation">;</span>
-<span class="token keyword">classDef</span> coding <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#e6f7ff<span class="token punctuation">,</span><span class="token property">stroke</span><span class="token operator">:</span>#333<span class="token punctuation">,</span><span class="token property">stroke-width</span><span class="token operator">:</span>1px</span><span class="token punctuation">;</span>
-<span class="token keyword">classDef</span> noncoding <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#fff5e6<span class="token punctuation">,</span><span class="token property">stroke</span><span class="token operator">:</span>#333<span class="token punctuation">,</span><span class="token property">stroke-width</span><span class="token operator">:</span>1px</span><span class="token punctuation">;</span>
-<span class="token keyword">classDef</span> process <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#f0f8ff<span class="token punctuation">,</span><span class="token property">stroke</span><span class="token operator">:</span>#2266ff<span class="token punctuation">,</span><span class="token property">stroke-width</span><span class="token operator">:</span>2px</span><span class="token punctuation">;</span>
-
-<span class="token keyword">class</span> Exon1,Exon2,CDS_Part1,CDS_Part2,F coding<span class="token punctuation">;</span>
-<span class="token keyword">class</span> Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding<span class="token punctuation">;</span>
-<span class="token keyword">class</span> Transcription,Splicing process<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
-      <categories>
-        <category>重测序</category>
-      </categories>
-  </entry>
-  <entry>
     <title>410随身WiFi棒子Debian刷入青龙教程</title>
     <url>/2025/09/25/56/</url>
     <content><![CDATA[<p>备份教程<br>刷Debian前请先备份（非常重要！！！）</p>
@@ -1838,50 +1702,6 @@ tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
       </categories>
   </entry>
   <entry>
-    <title>记一次清空SMART修复群晖报故障的硬盘</title>
-    <url>/2024/12/08/9/</url>
-    <content><![CDATA[<p>事先说明，虽然这篇文章内容大量注水，但是文中涉及的操作有风险，想要照葫芦画瓢的童鞋，请谨慎对待，切记提前备份重要数据。小姐姐们不见了别找我，我这里可不生产小姐姐</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-
-<p>好，让我们进入正题，凡事都有个前因后果，先说说起因</p>
-<p>前几天，群晖里一块希捷的2T硬盘报告故障，查看一下SMART信息，发现是End_to_End计数达到阈值，于是把硬盘抽出来接到Windows下用HDTune再次确认，确实见红了 但是用SeaTools扫描，各种长短检测都能通过，希捷这又是什么操作</p>
-<p>HDTune忘记截图了，借用网上的一张图说明一下是哪一项见红HDTune忘记截图了，借用网上的一张图说明一下是哪一项见红<br><img src="/images/9/762531194.png" alt="m4f55w5m.png"><br>最后用MHDD扫描过后，发现硬盘并没有坏块，那么是什么原因导致的B8 End_to_End计数增加呢？各种说法都有，有说是硬盘上的缓存坏掉了，有说是SATA线接触不良导致，有说是缓存到磁盘的数据包校验出错，反正各种说法都有，具体硬盘SMART里如何判断这个值的，估计也只有硬盘厂家知道，所以就不要纠结了。但是就这样淘汰掉一块2T的硬盘？是不是太浪费了？记一次清空SMART修复群晖报故障的硬盘 </p>
-<p>垃圾佬没别的本事，就是爱折腾，于是先尝试了低格整块硬盘，插回群晖还是报故障，看来只能祭出本垃圾佬的终极大杀器USB转TTL神器和给神器属性加成的TTL杜邦线了，没错，就是下面这俩玩意，马粑粑家几块钱一个，随便挑随便选记一次清空SMART修复群晖报故障的硬盘 </p>
-<p>如果你的电脑是第一次插入USB转TTL神器，要先安装驱动，并像下图这样在属性里设置好端口的波特率为38400</p>
-<p>安装好驱动的USB转TTL安装好驱动的USB转TTL</p>
-<p>端口的设置，第一项要设置为 <strong>38400</strong> 端口的设置<br><img src="/images/9/413614975.png" alt="m4f59zrr.png"><br>第一项要设置为 38400</p>
-<p>硬盘上TTL口的接法硬盘上TTL口的接法<br><img src="/images/9/231601982.png" alt="m4f5akz6.png"></p>
-<p>USB转TTL的接法USB转TTL的接法<br><img src="http://hhhh.ywhywhywh.top/usr/uploads/2024/12/4065335586.png" alt="m4f5awqp.png"></p>
-<p>接好了之后，让我们先把USB转TTL插入电脑的USB口，打开你的putty，像下图这样设置，如果你的USB转TTL在电脑上识别出来是COM4或者COM5这样的，请按你自己的实际情况设置COM口，Speed设置为38400，然后点open</p>
-<p>putty设置putty设置</p>
-<p>这时你会看到一个黑麻麻的窗口，什么都没有记一次清空SMART修复群晖报故障的硬盘 别着急，这时我们再接上电源线，记住，只接电源线。</p>
-<p>不要接SATA数据线，不要接SATA数据线，不要接SATA数据线，重要的事情说三遍</p>
-<p>另外，接电源线最好是用电源上引出来的原生SATA电源线，尽量不要用4pin转SATA的电源转换线</p>
-<p>接上电源线后接上电源线后<br><img src="/images/9/2870995132.png" alt="m4f5bgip.png"></p>
-<p>当你接上硬盘电源线后再看Putty会发现有回显了，当停在(P)SATA Reset后，说明硬盘已经启动完成了，这是可以按Ctrl+z激活终端，这时就会进入到希捷硬盘的F3工厂模式</p>
-<p>按下Ctrl+z后进入F3工厂模式按下Ctrl+z后进入F3工厂模式<br><img src="/images/9/1842945658.png" alt="m4f5bqet.png"></p>
-<p>这时如果只是清零SMART那只要输入两个命令/1和N1就能搞定</p>
-<p>输入/1进入1模式<br><img src="/images/9/391565786.png" alt="m4f5c1cz.png"><br>输入/1进入1模式</p>
-<p>在/1模式下输入N1，看到回显Clear SMART is completed，这时硬盘的SMART值已经被清零了，这时你可以拔掉电源线和TTL线，关机把硬盘接回电源线和SATA线（其实你不关机也行，重新接回SATA线和电源线就行，我经常这样干</p>
-<p>这时在我们再用HDTune查看硬盘的SMART值会发现：马达启停次数，硬盘通电时间，马达旋转重试次数，点到点错误计数，接口CRC错误计数，等等等等的很多参数都已经变成0了</p>
-<p>这是我的硬盘清零后的效果这是我的硬盘清零后的效果</p>
-<p>看看我这个硬盘SMART清零后的效果，“启动/停止次数”因为之前清零SMART后拔插过一次电源线，所以这里计数是1</p>
-<p>当然，有一些参数比如：原始读取错误率，磁头飞行时间等这些没有清零，这些都写在SMART的G-list里，要完全清掉需要在F3工厂模式里进入2模式停掉马达电机，清除G表，然后重建SMART和硬盘索引区到硬盘固件内才行</p>
-<p>这硬盘有固件锁<br><img src="/images/9/1367509578.png" alt="m4f5ehrp.png"></p>
-<p>这硬盘有固件锁</p>
-<p>但是如果你像上图我这块硬盘一样，在进入2模式输入Z想停止电机，返回Diagnostic Port Locked的话，说明这块硬盘有固件锁。被锁了固件是无法清零G表的，这也是希捷为了限制一些返厂硬盘和一些奸商通过改写G表来充当新硬盘坑人做的限制。当然，道高一尺魔高一丈，如果你有PC3000的软件和红卡或者MRT的话，固件锁其实也是可以解开的，这时候你就真的可以为所欲为了</p>
-<p>好了，本次折腾到此记录完毕，剩下的自然是把硬盘继续插回群晖里，把小姐姐们请回来</p>
-<p>仅以此文说明硬盘的SMART是可以清零的，硬盘SMART里的G表也是可以清零的，整个SMART是完全可以清除然后重建成刚出厂的样子的，甚至SMART还是可以通过工厂模式改写成你想要的任何样子的，所以二手硬盘水很深很深，请各位谨慎选择</p>
-<p>最后，此文仅以记录过程为目的，请某些头脑比较发达的朋友不要想着用学会了，拿旧硬盘把SMART清零了去坑人，既然有办法清零那肯定是有办法验出来的</p>
-<p>最后的最后，如果你只是本着不想浪费的原则，想清掉SMART上的错误，让这块硬盘继续发挥余热，建议最好清零SMART后的硬盘不要存放重要数据，同时注意时常关注一下硬盘状态，毕竟一块硬盘如果SMART某项报错了，那硬盘肯定是有一些问题的，所以如果有一天你硬盘里的小姐姐们灰飞烟灭了，千万别怪我没有提醒</p>
-<p>哦，还有个温馨提醒，USB转TTL的神器最好是选择CH340G芯片的，别选RS232的，别问我为什么，都是泪</p>
-]]></content>
-      <categories>
-        <category>默认分类</category>
-      </categories>
-  </entry>
-  <entry>
     <title>Hexo + Butterfly 个人博客搭建</title>
     <url>/2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/</url>
     <content><![CDATA[<h1 id="Hexo-Butterfly-个人博客搭建"><a href="#Hexo-Butterfly-个人博客搭建" class="headerlink" title="Hexo + Butterfly 个人博客搭建"></a>Hexo + Butterfly 个人博客搭建</h1><p>在用了一周左右的时间搭建博客，沉浸于试效果、改 bug、试效果、改 bug……的循环后，我还是决定写一篇文章来记录一下，省得未来的自己再走一遍这痛苦的过程。</p>
@@ -2037,6 +1857,186 @@ ssh-keyscan <span class="token parameter variable">-t</span> ed25519 github.com 
 <li><a href="https://tangzhiyuan.top/">基于 Hexo 从零开始搭建个人博客（五） | 唐志远</a></li>
 </ul>
 <p><strong>原文链接</strong>：<a href="https://xbxyftx.top/2025/01/26/butterfly%E4%B8%BB%E9%A2%98%E7%BE%8E%E5%8C%96/index.html">https://xbxyftx.top/2025/01/26/butterfly%E4%B8%BB%E9%A2%98%E7%BE%8E%E5%8C%96/index.html</a>  </p>
+]]></content>
+      <categories>
+        <category>默认分类</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>基因结构</title>
+    <url>/2025/09/17/55/</url>
+    <content><![CDATA[<h2 id="结构图"><a href="#结构图" class="headerlink" title="结构图"></a>结构图</h2><p>!!!</p>
+<pre><code>    flowchart TD
+    A["一个完整的真核生物基因（DNA模板链）"]
+    
+    subgraph A_Sub[基因结构]
+        direction LR
+        Promoter[启动子 Promoter]
+        Exon1[外显子1 Exon 1]
+        Intron[内含子 Intron]
+        Exon2[外显子2 Exon 2]
+        Terminator[终止子 Terminator]
+    end
+    
+    A --&gt; A_Sub
+    
+    subgraph Transcription[第一步：转录]
+        direction TB
+        B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
+    end
+    
+    A_Sub --转录--&gt; Transcription
+    
+    subgraph Splicing[第二步：加工（剪切与拼接）]
+        direction TB
+        C["切除内含子并将外显子连接起来"]
+    end
+    
+    Transcription --加工--&gt; Splicing
+    
+    subgraph Final_mRNA[第三步：成熟mRNA]
+        direction LR
+        D["5' 帽子"]
+        E["5' UTR"]
+        F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
+        G["3' UTR"]
+        H["多聚A尾巴"]
+    end
+    
+    Splicing --"拼接后形成"--&gt; Final_mRNA
+    
+    %% 定义关系
+    Exon1 --包含--&gt; UTR1[5' UTR部分]
+    Exon1 --包含--&gt; CDS_Part1[CDS部分]
+    Exon2 --包含--&gt; CDS_Part2[CDS部分]
+    Exon2 --包含--&gt; UTR2[3' UTR部分]
+    
+    UTR1 --最终成为--&gt; E
+    CDS_Part1 --最终成为--&gt; F
+    CDS_Part2 --最终成为--&gt; F
+    UTR2 --最终成为--&gt; G
+    
+    Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
+    F --&gt; I
+    
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
+    classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
+    classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
+    
+    class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
+    class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
+    class Transcription,Splicing process;
+</code></pre>
+<p>!!!</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+
+<p>下面是代码</p>
+<pre class="line-numbers language-mermaid" data-language="mermaid"><code class="language-mermaid"><span class="token keyword">flowchart</span> TD
+A<span class="token text string">["一个完整的真核生物基因（DNA模板链）"]</span>
+
+<span class="token keyword">subgraph</span> A_Sub<span class="token text string">[基因结构]</span>
+    <span class="token keyword">direction</span> LR
+    Promoter<span class="token text string">[启动子 Promoter]</span>
+    Exon1<span class="token text string">[外显子1 Exon 1]</span>
+    Intron<span class="token text string">[内含子 Intron]</span>
+    Exon2<span class="token text string">[外显子2 Exon 2]</span>
+    Terminator<span class="token text string">[终止子 Terminator]</span>
+<span class="token keyword">end</span>
+
+A <span class="token arrow operator">--&gt;</span> A_Sub
+
+<span class="token keyword">subgraph</span> Transcription<span class="token text string">[第一步：转录]</span>
+    <span class="token keyword">direction</span> TB
+    B<span class="token text string">["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]</span>
+<span class="token keyword">end</span>
+
+A_Sub <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">转录</span><span class="token arrow operator">--&gt;</span></span> Transcription
+
+<span class="token keyword">subgraph</span> Splicing<span class="token text string">[第二步：加工（剪切与拼接）]</span>
+    <span class="token keyword">direction</span> TB
+    C<span class="token text string">["切除内含子并将外显子连接起来"]</span>
+<span class="token keyword">end</span>
+
+Transcription <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">加工</span><span class="token arrow operator">--&gt;</span></span> Splicing
+
+<span class="token keyword">subgraph</span> Final_mRNA<span class="token text string">[第三步：成熟mRNA]</span>
+    <span class="token keyword">direction</span> LR
+    D<span class="token text string">["5' 帽子"]</span>
+    E<span class="token text string">["5' UTR"]</span>
+    F[<span class="token string">"CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"</span>]
+    G<span class="token text string">["3' UTR"]</span>
+    H<span class="token text string">["多聚A尾巴"]</span>
+<span class="token keyword">end</span>
+
+Splicing <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">"拼接后形成"</span><span class="token arrow operator">--&gt;</span></span> Final_mRNA
+
+<span class="token comment">%% 定义关系</span>
+Exon1 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">包含</span><span class="token arrow operator">--&gt;</span></span> UTR1<span class="token text string">[5' UTR部分]</span>
+Exon1 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">包含</span><span class="token arrow operator">--&gt;</span></span> CDS_Part1<span class="token text string">[CDS部分]</span>
+Exon2 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">包含</span><span class="token arrow operator">--&gt;</span></span> CDS_Part2<span class="token text string">[CDS部分]</span>
+Exon2 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">包含</span><span class="token arrow operator">--&gt;</span></span> UTR2<span class="token text string">[3' UTR部分]</span>
+
+UTR1 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">最终成为</span><span class="token arrow operator">--&gt;</span></span> E
+CDS_Part1 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">最终成为</span><span class="token arrow operator">--&gt;</span></span> F
+CDS_Part2 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">最终成为</span><span class="token arrow operator">--&gt;</span></span> F
+UTR2 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">最终成为</span><span class="token arrow operator">--&gt;</span></span> G
+
+Final_mRNA <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">"进入细胞质进行翻译（核糖体）"</span><span class="token arrow operator">--&gt;</span></span> I<span class="token text string">["合成的蛋白质"]</span>
+F <span class="token arrow operator">--&gt;</span> I
+
+<span class="token keyword">classDef</span> default <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#f9f9f9<span class="token punctuation">,</span><span class="token property">stroke</span><span class="token operator">:</span>#333<span class="token punctuation">,</span><span class="token property">stroke-width</span><span class="token operator">:</span>2px</span><span class="token punctuation">;</span>
+<span class="token keyword">classDef</span> coding <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#e6f7ff<span class="token punctuation">,</span><span class="token property">stroke</span><span class="token operator">:</span>#333<span class="token punctuation">,</span><span class="token property">stroke-width</span><span class="token operator">:</span>1px</span><span class="token punctuation">;</span>
+<span class="token keyword">classDef</span> noncoding <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#fff5e6<span class="token punctuation">,</span><span class="token property">stroke</span><span class="token operator">:</span>#333<span class="token punctuation">,</span><span class="token property">stroke-width</span><span class="token operator">:</span>1px</span><span class="token punctuation">;</span>
+<span class="token keyword">classDef</span> process <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#f0f8ff<span class="token punctuation">,</span><span class="token property">stroke</span><span class="token operator">:</span>#2266ff<span class="token punctuation">,</span><span class="token property">stroke-width</span><span class="token operator">:</span>2px</span><span class="token punctuation">;</span>
+
+<span class="token keyword">class</span> Exon1,Exon2,CDS_Part1,CDS_Part2,F coding<span class="token punctuation">;</span>
+<span class="token keyword">class</span> Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding<span class="token punctuation">;</span>
+<span class="token keyword">class</span> Transcription,Splicing process<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
+      <categories>
+        <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>记一次清空SMART修复群晖报故障的硬盘</title>
+    <url>/2024/12/08/9/</url>
+    <content><![CDATA[<p>事先说明，虽然这篇文章内容大量注水，但是文中涉及的操作有风险，想要照葫芦画瓢的童鞋，请谨慎对待，切记提前备份重要数据。小姐姐们不见了别找我，我这里可不生产小姐姐</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+
+<p>好，让我们进入正题，凡事都有个前因后果，先说说起因</p>
+<p>前几天，群晖里一块希捷的2T硬盘报告故障，查看一下SMART信息，发现是End_to_End计数达到阈值，于是把硬盘抽出来接到Windows下用HDTune再次确认，确实见红了 但是用SeaTools扫描，各种长短检测都能通过，希捷这又是什么操作</p>
+<p>HDTune忘记截图了，借用网上的一张图说明一下是哪一项见红HDTune忘记截图了，借用网上的一张图说明一下是哪一项见红<br><img src="/images/9/762531194.png" alt="m4f55w5m.png"><br>最后用MHDD扫描过后，发现硬盘并没有坏块，那么是什么原因导致的B8 End_to_End计数增加呢？各种说法都有，有说是硬盘上的缓存坏掉了，有说是SATA线接触不良导致，有说是缓存到磁盘的数据包校验出错，反正各种说法都有，具体硬盘SMART里如何判断这个值的，估计也只有硬盘厂家知道，所以就不要纠结了。但是就这样淘汰掉一块2T的硬盘？是不是太浪费了？记一次清空SMART修复群晖报故障的硬盘 </p>
+<p>垃圾佬没别的本事，就是爱折腾，于是先尝试了低格整块硬盘，插回群晖还是报故障，看来只能祭出本垃圾佬的终极大杀器USB转TTL神器和给神器属性加成的TTL杜邦线了，没错，就是下面这俩玩意，马粑粑家几块钱一个，随便挑随便选记一次清空SMART修复群晖报故障的硬盘 </p>
+<p>如果你的电脑是第一次插入USB转TTL神器，要先安装驱动，并像下图这样在属性里设置好端口的波特率为38400</p>
+<p>安装好驱动的USB转TTL安装好驱动的USB转TTL</p>
+<p>端口的设置，第一项要设置为 <strong>38400</strong> 端口的设置<br><img src="/images/9/413614975.png" alt="m4f59zrr.png"><br>第一项要设置为 38400</p>
+<p>硬盘上TTL口的接法硬盘上TTL口的接法<br><img src="/images/9/231601982.png" alt="m4f5akz6.png"></p>
+<p>USB转TTL的接法USB转TTL的接法<br><img src="http://hhhh.ywhywhywh.top/usr/uploads/2024/12/4065335586.png" alt="m4f5awqp.png"></p>
+<p>接好了之后，让我们先把USB转TTL插入电脑的USB口，打开你的putty，像下图这样设置，如果你的USB转TTL在电脑上识别出来是COM4或者COM5这样的，请按你自己的实际情况设置COM口，Speed设置为38400，然后点open</p>
+<p>putty设置putty设置</p>
+<p>这时你会看到一个黑麻麻的窗口，什么都没有记一次清空SMART修复群晖报故障的硬盘 别着急，这时我们再接上电源线，记住，只接电源线。</p>
+<p>不要接SATA数据线，不要接SATA数据线，不要接SATA数据线，重要的事情说三遍</p>
+<p>另外，接电源线最好是用电源上引出来的原生SATA电源线，尽量不要用4pin转SATA的电源转换线</p>
+<p>接上电源线后接上电源线后<br><img src="/images/9/2870995132.png" alt="m4f5bgip.png"></p>
+<p>当你接上硬盘电源线后再看Putty会发现有回显了，当停在(P)SATA Reset后，说明硬盘已经启动完成了，这是可以按Ctrl+z激活终端，这时就会进入到希捷硬盘的F3工厂模式</p>
+<p>按下Ctrl+z后进入F3工厂模式按下Ctrl+z后进入F3工厂模式<br><img src="/images/9/1842945658.png" alt="m4f5bqet.png"></p>
+<p>这时如果只是清零SMART那只要输入两个命令/1和N1就能搞定</p>
+<p>输入/1进入1模式<br><img src="/images/9/391565786.png" alt="m4f5c1cz.png"><br>输入/1进入1模式</p>
+<p>在/1模式下输入N1，看到回显Clear SMART is completed，这时硬盘的SMART值已经被清零了，这时你可以拔掉电源线和TTL线，关机把硬盘接回电源线和SATA线（其实你不关机也行，重新接回SATA线和电源线就行，我经常这样干</p>
+<p>这时在我们再用HDTune查看硬盘的SMART值会发现：马达启停次数，硬盘通电时间，马达旋转重试次数，点到点错误计数，接口CRC错误计数，等等等等的很多参数都已经变成0了</p>
+<p>这是我的硬盘清零后的效果这是我的硬盘清零后的效果</p>
+<p>看看我这个硬盘SMART清零后的效果，“启动/停止次数”因为之前清零SMART后拔插过一次电源线，所以这里计数是1</p>
+<p>当然，有一些参数比如：原始读取错误率，磁头飞行时间等这些没有清零，这些都写在SMART的G-list里，要完全清掉需要在F3工厂模式里进入2模式停掉马达电机，清除G表，然后重建SMART和硬盘索引区到硬盘固件内才行</p>
+<p>这硬盘有固件锁<br><img src="/images/9/1367509578.png" alt="m4f5ehrp.png"></p>
+<p>这硬盘有固件锁</p>
+<p>但是如果你像上图我这块硬盘一样，在进入2模式输入Z想停止电机，返回Diagnostic Port Locked的话，说明这块硬盘有固件锁。被锁了固件是无法清零G表的，这也是希捷为了限制一些返厂硬盘和一些奸商通过改写G表来充当新硬盘坑人做的限制。当然，道高一尺魔高一丈，如果你有PC3000的软件和红卡或者MRT的话，固件锁其实也是可以解开的，这时候你就真的可以为所欲为了</p>
+<p>好了，本次折腾到此记录完毕，剩下的自然是把硬盘继续插回群晖里，把小姐姐们请回来</p>
+<p>仅以此文说明硬盘的SMART是可以清零的，硬盘SMART里的G表也是可以清零的，整个SMART是完全可以清除然后重建成刚出厂的样子的，甚至SMART还是可以通过工厂模式改写成你想要的任何样子的，所以二手硬盘水很深很深，请各位谨慎选择</p>
+<p>最后，此文仅以记录过程为目的，请某些头脑比较发达的朋友不要想着用学会了，拿旧硬盘把SMART清零了去坑人，既然有办法清零那肯定是有办法验出来的</p>
+<p>最后的最后，如果你只是本着不想浪费的原则，想清掉SMART上的错误，让这块硬盘继续发挥余热，建议最好清零SMART后的硬盘不要存放重要数据，同时注意时常关注一下硬盘状态，毕竟一块硬盘如果SMART某项报错了，那硬盘肯定是有一些问题的，所以如果有一天你硬盘里的小姐姐们灰飞烟灭了，千万别怪我没有提醒</p>
+<p>哦，还有个温馨提醒，USB转TTL的神器最好是选择CH340G芯片的，别选RS232的，别问我为什么，都是泪</p>
 ]]></content>
       <categories>
         <category>默认分类</category>
@@ -2887,6 +2887,1028 @@ EOF</span>
 
 <p>命名为<code>8.show_result.sh</code>，<code>chmod +x 8.show_result.sh</code>，<code>./8.show_result.sh</code> 运行命令。</p>
 <h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>通过遵循这些步骤，您已经成功地使用物种特异性的基因组和注释文件，在长牡蛎数据上训练了一个 OpenSpliceAI 模型。该模型现在可用于预测长牡蛎的剪接位点和分析遗传变异的影响，从而将 OpenSpliceAI 的实用性扩展到非人类基因组学领域。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Planck-Pi学习</title>
+    <url>/2025/10/26/planck-pi/</url>
+    <content><![CDATA[<h1 id="1-配置编译环境"><a href="#1-配置编译环境" class="headerlink" title="1. 配置编译环境"></a>1. 配置编译环境</h1><pre class="line-numbers language-none"><code class="language-none">1.1 编译过程中需要的依赖
+sudo apt update
+sudo apt install xz-utils nano wget unzip build-essential git bc swig libncurses5-dev libpython3-dev libssl-dev pkg-config zlib1g-dev libusb-dev libusb-1.0-0-dev python3-pip gawk bison flex -y
+sudo apt install python python-dev lib32ncurses5 lib32z1 vim dwarves -y<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="1-2-交叉编译工具链"><a href="#1-2-交叉编译工具链" class="headerlink" title="1.2 交叉编译工具链"></a>1.2 交叉编译工具链</h2><pre class="line-numbers language-none"><code class="language-none"># 下载
+wget http://releases.linaro.org/components/toolchain/binaries/7.2-2017.11/arm-linux-gnueabi/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi.tar.xz
+
+$ wget https://releases.linaro.org/components/toolchain/binaries/7.5-2019.12/arm-linux-gnueabi/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabi.tar.xz
+# 解压
+sudo mkdir /usr/local/arm
+sudo tar -vxf gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi.tar.xz -C /usr/local/arm
+# 配置
+sudo nano /etc/profile
+# 在末尾添加
+PATH=$PATH:/usr/local/arm/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi/bin
+# 使之生效
+source /etc/profile 
+# 验证
+arm-linux-gnueabi-gcc -v<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="1-3-TF卡分区"><a href="#1-3-TF卡分区" class="headerlink" title="1.3 TF卡分区"></a>1.3 TF卡分区</h2><pre class="line-numbers language-none"><code class="language-none"># 可以使用gparted进行分区
+sudo apt-get install gparted -y
+分3个分区
+
+volume	1M		FAT16
+boot	32M		EXT4
+rootfs	--		EXT4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="1-4-TF卡上传命令"><a href="#1-4-TF卡上传命令" class="headerlink" title="1.4 TF卡上传命令"></a>1.4 TF卡上传命令</h2><pre class="line-numbers language-none"><code class="language-none"># volume	1M
+sudo dd if=/home/hhhh/Downloads/Planck-Pi/Planck-Pi/buildroot/output/images/u-boot-sunxi-with-spl.bin of=/dev/sdc bs=1024 seek=8
+
+# boot	32M
+
+setenv bootcmd "load mmc 0:2 0x80008000 zImage; load mmc 0:2 0x80C00000 suniv-f1c100s-generic.dtb; bootz 0x80008000 - 0x80C00000"
+或
+setenv bootcmd "load mmc 0:2 0x80008000 zImage; load mmc 0:2 0x80C00000 suniv-f1c100s-licheepi-nano.dtb; bootz 0x80008000 - 0x80C00000"
+
+# 设置启动参数，使用第三分区
+setenv bootargs "console=tty0 console=ttyS0,115200 root=/dev/mmcblk0p3 rootwait rw"
+
+# 保存并启动
+saveenv
+boot<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-none"><code class="language-none"># kernel
+sudo cp /home/hhhh/Downloads/Planck-Pi/buildroot/linux/arch/arm/boot/dts/allwinner/suniv-f1c100s-licheepi-nano.dtb .
+
+sudo mv suniv-f1c100s-licheepi-nano.dtb suniv-f1c100s-generic.dtb
+
+sudo cp /home/hhhh/Downloads/Planck-Pi/buildroot/linux/arch/arm/boot/zImage .<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-none"><code class="language-none"># rootfs 复制rootfs文件到第三个分区
+sudo mount /dev/sdc3 /mnt
+sudo tar -xf rootfs.tar -C /mnt
+
+sudo umount /mnt
+
+sync<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h1 id="2-uboot，kernel和rootfs编译"><a href="#2-uboot，kernel和rootfs编译" class="headerlink" title="2.uboot，kernel和rootfs编译"></a>2.uboot，kernel和rootfs编译</h1><p>一部分来自<code> https://github.com/916BGAI/Planck-Pi</code>，包含uboot，kernel和rootfs</p>
+<pre class="line-numbers language-none"><code class="language-none">git clone -b linux_6.5.2 --single-branch https://github.com/916BGAI/Planck-Pi.git
+cd Planck-Pi/
+git submodule update --init --recursive<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>u-boot源码 （2）</p>
+<pre class="line-numbers language-none"><code class="language-none">git clone https://github.com/Lichee-Pi/u-boot.git -b nano-v2018.01
+cd u-boot
+//git branch -a
+//git checkout nano-v2018.01<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p><strong>Compile命令</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">cd u-boot
+make planck_pi_defconfig
+make menuconfig
+make -j65535
+cd linux
+make planck_pi_defconfig
+make menuconfig
+make -j65535
+cd Buildroot
+make planck_pi_defconfig
+make menuconfig
+make<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="1-u-boot"><a href="#1-u-boot" class="headerlink" title="1.u-boot"></a>1.u-boot</h2><p>为了方便后边编译在248行添加 目标构架是arm，交叉编译器是</p>
+<pre class="line-numbers language-none"><code class="language-none">vim Makefile
+
+ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>在uboot根目录进行编译配置为不带spi，来在根目录生成.config</p>
+<pre class="line-numbers language-none"><code class="language-none">make licheepi_nano_defconfig<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>图形化配置</p>
+<pre class="line-numbers language-none"><code class="language-none">make menuconfig
+#Enable boot arguments
+console=ttyS0,115200 panic=5 rootwait root=/dev/mmcblk0p2 earlyprintk rw
+#bootcmd value
+load mmc 0:1 0x80008000 zImage;load mmc 0:1 0x80c08000 suniv-f1c100s-licheepi-nano.dtb;bootz 0x80008000 - 0x80c08000;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>回到uboot根目录进行编译</p>
+<pre class="line-numbers language-none"><code class="language-none">make -j4<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>确定已经生成了u-boot-sunxi-with-spl.bin文件</p>
+<pre class="line-numbers language-none"><code class="language-none">sudo dd if=u-boot-sunxi-with-spl.bin of=/dev/sdb bs=1024 seek=8<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="2-linux-kernel"><a href="#2-linux-kernel" class="headerlink" title="2. linux kernel"></a>2. linux kernel</h2><p>事实上对于F1C100S/F1C200S，Linux官方源码已经对licheepi nano进行支持。所以我们完全可以通过licheepi nano的配置文件进行移植。</p>
+<h3 id="2-1-下载内核源码"><a href="#2-1-下载内核源码" class="headerlink" title="2.1. 下载内核源码#"></a>2.1. 下载内核源码<a href="https://www.cnblogs.com/twzy/p/15355842.html#1.1.-%E4%B8%8B%E8%BD%BD%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81">#</a></h3><p>进入Linux系统官网：<a href="https://www.kernel.org/">https://www.kernel.org/</a></p>
+<p>[<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20210930145110377-1315647665.png" alt="img"></p>
+<p>这里面列出的都是一些主要版本，如主线版本，上时间支持版本，个人推荐使用最新的长时间支持版本（5.10.69）。但是因为我这个项目是在参考一位大神的文档的基础上构建的，所以使用的是5.7.1版本，接下来就给一个选择其他版本的方式。选择任意一项点击 [browse]</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202109/483434-20210930145220044-1573759475.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20210930145220044-1573759475.png" alt="img"></a></p>
+<p>在新打开页面选择 【summary】点击【tag】中的【…】切换下载</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202109/483434-20210930145316299-265231365.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20210930145316299-265231365.png" alt="img"></a></p>
+<p> 如果想要直接下载5.7.1版本，请直接使用下面的连接</p>
+<p><a href="https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/linux-5.7.1.tar.gz">https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/linux-5.7.1.tar.gz</a></p>
+<p>下载后完成后，将代码复制到Ubuntu虚拟机并解压源码。</p>
+<h3 id="2-2-配置编译"><a href="#2-2-配置编译" class="headerlink" title="2.2.配置编译#"></a>2.2.配置编译<a href="https://www.cnblogs.com/twzy/p/15355842.html#1.2.%E9%85%8D%E7%BD%AE%E7%BC%96%E8%AF%91">#</a></h3><p>与上一篇中编译u-boot一样，我们也需要配置对Linux编译进行配置：</p>
+<ul>
+<li>指定架构类型</li>
+<li>指定交叉编译工具</li>
+<li>项目配置</li>
+</ul>
+<p>指定架构，就这个很好理解，就是指定CPU类型，就是配置为Arm就行，交叉编译工具即为上一篇已经安装好的编译工具。</p>
+<p>用VS打开Linux内核代码，找到<strong>Makefile</strong>文件：</p>
+<p>修改如下配置：</p>
+<pre class="line-numbers language-none"><code class="language-none">ARCH              ?= arm
+CROSS_COMPILE     ?=arm-linux-gnueabi-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>如果没找到ARCH 或 CROSS_COMPILE字段，自己手动添加也行，如下图所示：</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202109/483434-20210930151530833-1001068341.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20210930151530833-1001068341.png" alt="img"></a></p>
+<blockquote>
+<p> 事实上这两个字段可以不用指定，在进行make的时候加上对应的参数就行，这里为了避免麻烦，所以直接放到了makefile文件中</p>
+</blockquote>
+<p>接下来就是指定项目配置了，这个操作就是让Linux内核认F1C100S/F1C200S这颗soc。</p>
+<p>进入内核源码中的<strong>arch/arm/configs</strong>目录中，可以看到有很多开发板的配置文件，其中<strong>sunxi_defconfig</strong>是全志的配置文件，但是该配置文件非常不全，需要额外配置大量的选项，一般选项多大上千个，这里先使用licheepi_nano的配置文件。</p>
+<p><a href="https://files.cnblogs.com/files/twzy/linux-licheepi_nano_defconfig.zip"> https://files.cnblogs.com/files/twzy/linux-licheepi_nano_defconfig.zip</a></p>
+<p>下载该文件，解压出<strong>linux-licheepi_nano_defconfig</strong>，然后将其放到arch/arm/configs/目录下</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202109/483434-20210930154001937-799886630.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20210930154001937-799886630.png" alt="img"></a></p>
+<p> 然后通过终端进入Linux-5.7.1根目录，输入命令：</p>
+<pre class="line-numbers language-none"><code class="language-none">make menuconfig<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211005103913552-1730316057.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211005103913552-1730316057.png" alt="img"></a></p>
+<p> 进入图形配置界面，如图所示：</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211005104057991-2077580949.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211005104057991-2077580949.png" alt="img"></a></p>
+<p>该界面和u-boot配置一样，所以操作方式也是一样的，上下键移动选项，使用空格键进行选中或取消选择，同样通过空格键或回车键，进入子选项配置，通过Tab键选择保存和退出即可返回上级菜单或命令行界面，也可以直接双击Esc键返回上级目录。</p>
+<h3 id="3-3-配置TF卡设备树信息"><a href="#3-3-配置TF卡设备树信息" class="headerlink" title="3.3 配置TF卡设备树信息#"></a>3.3 配置TF卡设备树信息<a href="https://www.cnblogs.com/twzy/p/15355842.html#1.3-%E9%85%8D%E7%BD%AEtf%E5%8D%A1%E8%AE%BE%E5%A4%87%E6%A0%91%E4%BF%A1%E6%81%AF">#</a></h3><p>我们在完成内核配置后还需要配置TF卡的设备树配置，否则即便是能正常运行内核，在加载文件系统的时候还是会有问题，在这里配置很简单：</p>
+<p>在<strong>linux-5.7.1/arch/arm/boot/dts</strong> 目录下，分别修改<strong>suniv-f1c100s.dtsi</strong>、<strong>suniv-f1c100s-licheepi-nano.dts</strong> 两个文件（记住这两个文件、以后我们修改的地方多了^_^）</p>
+<p>修改<strong>suniv-f1c100s.dtsi</strong>文件</p>
+<p>首先添加头文件(如果有则忽略)</p>
+<pre class="line-numbers language-none"><code class="language-none">#include &lt;dt-bindings/clock/suniv-ccu-f1c100s.h&gt;
+#include &lt;dt-bindings/reset/suniv-ccu-f1c100s.h&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>在soc-&gt;pio 下添加如下代码</p>
+<pre class="line-numbers language-none"><code class="language-none">mmc0_pins: mmc0-pins {
+                pins = "PF0", "PF1", "PF2", "PF3", "PF4", "PF5";
+                function = "mmc0";
+            };<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>soc下添加如下代码</p>
+<pre class="line-numbers language-none"><code class="language-none">mmc0: mmc@1c0f000 {
+            compatible = "allwinner,suniv-f1c100s-mmc",
+                     "allwinner,sun7i-a20-mmc";
+            reg = &lt;0x01c0f000 0x1000&gt;;
+            clocks = &lt;&amp;ccu CLK_BUS_MMC0&gt;,
+                 &lt;&amp;ccu CLK_MMC0&gt;,
+                 &lt;&amp;ccu CLK_MMC0_OUTPUT&gt;,
+                 &lt;&amp;ccu CLK_MMC0_SAMPLE&gt;;
+            clock-names = "ahb",
+                          "mmc",
+                          "output",
+                          "sample";
+            resets = &lt;&amp;ccu RST_BUS_MMC0&gt;;
+            reset-names = "ahb";
+            interrupts = &lt;23&gt;;
+            pinctrl-names = "default";
+            pinctrl-0 = &lt;&amp;mmc0_pins&gt;;
+            status = "disabled";
+            #address-cells = &lt;1&gt;;
+            #size-cells = &lt;0&gt;;
+        };<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>如图，图中的配置可能与读者实际内容不一致，这是因为我改了很多东西，忽略即可，只需要关注红色框中的内容即可。</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009162310863-1685576565.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009162310863-1685576565.png" alt="img"></a></p>
+<p> 修改<strong>suniv-f1c100s-licheepi-nano.dts</strong>文件，在根节点添加如下代码</p>
+<pre class="line-numbers language-none"><code class="language-none">reg_vcc3v3: vcc3v3 {
+        compatible = "regulator-fixed";
+        regulator-name = "vcc3v3";
+        regulator-min-microvolt = &lt;3300000&gt;;
+        regulator-max-microvolt = &lt;3300000&gt;;
+    };<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>外部添加mmc0使能代码</p>
+<pre class="line-numbers language-none"><code class="language-none">&amp;mmc0 {
+        vmmc-supply = &lt;&amp;reg_vcc3v3&gt;;
+        bus-width = &lt;4&gt;;
+        broken-cd;
+        status = "okay";
+};<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>位置如下图</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202201/483434-20220114080223936-810553130.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20220114080223936-810553130.png" alt="img"></a></p>
+<p>接下来执行make命令开始编译内核和设备树相关的文件了</p>
+<pre class="line-numbers language-none"><code class="language-none">make<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>首次进行编译，通常会需要很长时间，编译完成后，就会在在<strong>arch/arm/boot</strong>目录下生成内核文件：<strong>zImage</strong>，在<strong>arch/arm/boot/dts</strong>目录下设备树文件：<strong>suniv-f1c100s-licheepi-nano.dtb</strong> 。</p>
+<p>在编译过程中，因为所配置Ubuntu系统的差异，可能会因缺少某些组件导致编译报错，不要慌，将对应的错误关键信息复制到搜索引擎后安装即可，一下是作者碰到的两个编译报错，如果有必要可以提前安装：</p>
+<p> <strong>linux-内核编译配置 lexer.lex.c错误</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">wu@ubuntu:~/linux-5.4.8$ make exynos_defconfig
+HOSTCC scripts/basic/fixdep
+HOSTCC scripts/kconfig/conf.o
+HOSTCC scripts/kconfig/confdata.o
+HOSTCC scripts/kconfig/expr.o
+LEX scripts/kconfig/lexer.lex.c
+/bin/sh: 1: flex: not found
+scripts/Makefile.host:9: recipe for target ‘scripts/kconfig/lexer.lex.c’ failed
+make[1]: * [scripts/kconfig/lexer.lex.c] Error 127
+Makefile:567: recipe for target ‘exynos_defconfig’ failed
+make: * [exynos_defconfig] Error 2 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>解决方法：</p>
+<pre class="line-numbers language-none"><code class="language-none">sudo apt-get install bison
+sudo apt-get install flex<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><strong>编译Linux内核时遇到：“error : openssl/bio.h :No such file or folder”</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">scripts/extract-cert.c:21:25: fatal error: openssl/bio.h: No such file or directory
+compilation terminated.
+scripts/Makefile.host:90: recipe for target 'scripts/extract-cert' failed
+make[1]: * [scripts/extract-cert] Error 1
+Makefile:556: recipe for target 'scripts' failed
+make: * [scripts] Error 2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>安装openssl：</p>
+<pre class="line-numbers language-none"><code class="language-none">sudo apt install libssl-dev<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<h3 id="3-4-内核复制与执行"><a href="#3-4-内核复制与执行" class="headerlink" title="3.4 内核复制与执行#"></a>3.4 内核复制与执行<a href="https://www.cnblogs.com/twzy/p/15355842.html#1.5-%E5%86%85%E6%A0%B8%E5%A4%8D%E5%88%B6%E4%B8%8E%E6%89%A7%E8%A1%8C">#</a></h3><p>那么，我们将刚才生成好的zImage和dtb文件复制到TF卡的BOOT分区中</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009082706512-1631849134.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009082706512-1631849134.png" alt="img"></a></p>
+<p>退出TF卡，插入开发板，上电，按重启，我们就可以看到u-boot启动完成后，自动进入了内核启动环节，但是启动后一会就报错了，因为挂载文件系统产生错误。</p>
+<pre class="line-numbers language-none"><code class="language-none">U-Boot SPL 2018.01-05679-g013ca457fd-dirty (Sep 28 2021 - 15:29:32)
+DRAM: 32 MiB
+Trying to boot from MMC1
+
+
+U-Boot 2018.01-05679-g013ca457fd-dirty (Sep 28 2021 - 15:29:32 +0800) Allwinner Technology
+
+CPU:   Allwinner F Series (SUNIV)
+Model: Snail Card
+DRAM:  32 MiB
+MMC:   SUNXI SD/MMC: 0
+*** Warning - bad CRC, using default environment
+
+In:    serial@1c25000
+Out:   serial@1c25000
+Err:   serial@1c25000
+Net:   No ethernet found.
+starting USB...
+No controllers found
+Hit any key to stop autoboot:  0 
+reading zImage
+4515448 bytes read in 231 ms (18.6 MiB/s)
+reading suniv-f1c100s-licheepi-nano.dtb
+6105 bytes read in 26 ms (228.5 KiB/s)
+## Flattened Device Tree blob at 80c00000
+   Booting using the fdt blob at 0x80c00000
+   Loading Device Tree to 816fb000, end 816ff7d8 ... OK
+
+Starting kernel ...
+
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Linux version 5.7.1 (twzy@ubuntu) (gcc version 7.2.1 20171011 (Linaro GCC 7.2-2017.11), GNU ld (Linaro_Binutils-2017.11) 2.28.2.20170706) #55 Tue Sep 28 21:04:24 CST 2021
+[    0.000000] CPU: ARM926EJ-S [41069265] revision 5 (ARMv5TEJ), cr=0005317f
+[    0.000000] CPU: VIVT data cache, VIVT instruction cache
+[    0.000000] OF: fdt: Machine model: LinuxCard by Kevin
+[    0.000000] Memory policy: Data cache writeback
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 8128
+[    0.000000] Kernel command line: console=tty0 console=ttyS0,115200 panic=5 rootwait root=/dev/mmcblk0p2  rw
+[    0.000000] Dentry cache hash table entries: 4096 (order: 2, 16384 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 2048 (order: 1, 8192 bytes, linear)
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[    0.000000] Memory: 21496K/32768K available (7168K kernel code, 403K rwdata, 1664K rodata, 1024K init, 246K bss, 11272K reserved, 0K cma-reserved, 0K highmem)
+[    0.000000] SLUB: HWalign=32, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+
+ …………………
+
+[    6.598874] Run /etc/init as init process
+[    6.603993] Run /bin/init as init process
+[    6.609078] Run /bin/sh as init process
+[    6.613763] Kernel panic - not syncing: No working init found.  Try passing init= option to kernel. See Linux Documentation/admin-guide/init.rst for guidance.
+[    6.629985] CPU: 0 PID: 1 Comm: swapper Not tainted 5.7.1 #55
+[    6.636727] Hardware name: Allwinner suniv Family
+[    6.642216] [&lt;c010d604&gt;] (unwind_backtrace) from [&lt;c010ab60&gt;] (show_stack+0x10/0x14)
+[    6.651031] [&lt;c010ab60&gt;] (show_stack) from [&lt;c01165a4&gt;] (panic+0xe8/0x2e4)
+[    6.658951] [&lt;c01165a4&gt;] (panic) from [&lt;c071d080&gt;] (kernel_init+0xd8/0x110)
+[    6.666960] [&lt;c071d080&gt;] (kernel_init) from [&lt;c0100140&gt;] (ret_from_fork+0x14/0x34)
+[    6.675547] Exception stack(0xc1835fb0 to 0xc1835ff8)
+[    6.681293] 5fa0:                                     00000000 00000000 00000000 00000000
+[    6.690714] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[    6.700102] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[    6.707633] Rebooting in 5 seconds..
+[   12.687513] Reboot failed -- System halted<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>内核移植就基本结束了，要想让小板真正的运行起来，还需要Linux的文件系统，那开始吧。</p>
+<h2 id="3-文件系统移植-buildroot"><a href="#3-文件系统移植-buildroot" class="headerlink" title="3.文件系统移植-buildroot"></a>3.<a href="https://www.cnblogs.com/twzy/p/15355842.html#2.%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%A7%BB%E6%A4%8D">文件系统移植</a>-buildroot</h2><p> 根文件系统(rootfs)是内核启动后挂载的第一个文件系统，如果没有根文件系统，内核将无法开启shell以及其他进程。</p>
+<blockquote>
+<p>实际上内核启动后会先挂载一个虚拟的文件系统，这个虚拟文件系统是在内存中运行的，其主要运行核心进程，虚拟文件系统挂载之后才挂载硬盘（TF卡或者emmc）上的根文件系统。</p>
+</blockquote>
+<p>制作文件系统也有很多方式，如通过busyBox、Buildroot等工具制作。</p>
+<p>本次使用Buildroot，制作过程相对简单，兼容性好，由于根文件系统制作比较简单。</p>
+<p>进入buildroot官网<a href="https://buildroot.org/downloads">https://buildroot.org/downloads</a></p>
+<p>这里选择buildroot2018.2.11版本，将下载好软件包传入Ubuntu系统中，然后解压并进入源码目录中，输入清理命令。主要用于初始化一些设置，命令如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">make clean<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>然后输入以下命令进入配置界面</p>
+<pre class="line-numbers language-none"><code class="language-none">make menuconfig<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>此时会终端进入图形配置界面，如图：</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009144509521-972063330.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009144509521-972063330.png" alt="img"></a></p>
+<h3 id="3-1-Target-options配置"><a href="#3-1-Target-options配置" class="headerlink" title="3.1 Target options配置#"></a><strong>3.1 Target options配置</strong><a href="https://www.cnblogs.com/twzy/p/15355842.html#2.1-target-options%E9%85%8D%E7%BD%AE">#</a></h3><p>先选择<strong>Target options</strong>选项，进行对应芯片soc相关的配置，如图：</p>
+<p> <a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009144541062-504084831.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009144541062-504084831.png" alt="img"></a></p>
+<p>配置如图所示，下面是对其的解释</p>
+<ul>
+<li>第一个选项为架构选择，这里选择ARM架构小端模式，</li>
+<li>第二个为输出的二进制文件格式，这里选择EFL格式，</li>
+<li>第三个为架构体系，这里选择arm926t，因为F1C200S/F1C100S的架构就是这个架构，</li>
+<li>第四个为矢量浮点处理器，这里不勾选，因为对于F1C200S/F1C100S而言，其内部没有浮点运算单元，只能进行软浮点运算，也就是模拟浮点预运算。</li>
+<li>第五个为应用程序二进制接口，这里选择EABI，原因是该格式支持软件浮点和硬件实现浮点功能混用。</li>
+<li>第六个为浮点运算规则，这里使用软件浮点</li>
+<li>第七个选择指令集，这里选择ARM指令集，因为thumb主要针对Cortex M系列而言的，对于运行操作系统的A系列以及ARM9和ARM11而言，使用的都是32位的ARM指令集。</li>
+</ul>
+<p>按【Tab键】选择**<save>**进行保存，按【Esc键】回到上一级配置界面。</save></p>
+<h3 id="3-2-Build-options配置"><a href="#3-2-Build-options配置" class="headerlink" title="3.2 Build options配置#"></a><strong>3.2 Build options配置</strong><a href="https://www.cnblogs.com/twzy/p/15355842.html#2.2-build-options%E9%85%8D%E7%BD%AE">#</a></h3><p>进入第二个<strong>Build options</strong>选项，配置如图</p>
+<p> <a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009150105319-120500590.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009150105319-120500590.png" alt="img"></a></p>
+<p>按T【ab键】选择**<save>**进行保存，按【Esc键】回到上一级配置界面。</save></p>
+<h3 id="3-3-Toolchain配置"><a href="#3-3-Toolchain配置" class="headerlink" title="3.3 Toolchain配置#"></a><strong>3.3 Toolchain配置</strong><a href="https://www.cnblogs.com/twzy/p/15355842.html#2.3-toolchain%E9%85%8D%E7%BD%AE">#</a></h3><p>进入第三个<strong>Toolchain</strong>选项，配置如图：</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009150540766-1755147867.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009150540766-1755147867.png" alt="img"></a></p>
+<p>这里我们选择一些C\C++相关的库，这样我们就可以在开发板上直接编译程序了，保存返回。</p>
+<h3 id="3-4-System-configuration配置-https-www-cnblogs-com-twzy-p-15355842-html-2-4-system-configuration配置"><a href="#3-4-System-configuration配置-https-www-cnblogs-com-twzy-p-15355842-html-2-4-system-configuration配置" class="headerlink" title="3.4 System configuration配置[#](https://www.cnblogs.com/twzy/p/15355842.html#2.4 system-configuration配置)"></a><strong>3.4 System configuration配置</strong>[#](<a href="https://www.cnblogs.com/twzy/p/15355842.html#2.4">https://www.cnblogs.com/twzy/p/15355842.html#2.4</a> system-configuration配置)</h3><p>对于<strong>System configuration</strong>选项，这里主要是配置一些系统登录时候显示的内容，配置如图</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009151624384-1186247221.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009151624384-1186247221.png" alt="img"></a></p>
+<p>这里主要配置了登录时候显示的内容和root账号登录密码，接下来保存配置并且退回到命令行界面。</p>
+<p>然后执行构建文件系统命令：</p>
+<pre class="line-numbers language-none"><code class="language-none">make<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>因为是首次编译，而且buildroot在制作文件系统的时候需要联网获取组件，所以会编译很久，那么“去和妲己玩耍吧”</p>
+<p>当你终于被别人坑的自闭的时候，文件系统大概也许可能已经编译完毕了。</p>
+<h3 id="3-5-文件系统移植与执行"><a href="#3-5-文件系统移植与执行" class="headerlink" title="3.5 文件系统移植与执行#"></a>3.5 文件系统移植与执行<a href="https://www.cnblogs.com/twzy/p/15355842.html#2.5-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%A7%BB%E6%A4%8D%E4%B8%8E%E6%89%A7%E8%A1%8C">#</a></h3><p>此时在源码的<strong>output/images</strong>目录下有一个rootfs.tar，这个文件就是最终生成的根文件系统镜像，现在只需要将该镜像解压到TF卡的第二分区即可。插入TF卡到电脑端，进入<strong>out/images</strong>目录，然后输入</p>
+<pre class="line-numbers language-none"><code class="language-none"># sudo tar -xvf rootfs.tar -C /media/&lt;你的用户名&gt;/rootfs/
+# 墨云的账号是twzy
+sudo tar -xvf rootfs.tar -C /media/twzy/rootfs/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>此时可以看到TF卡的rootfs分区中有文件系统了</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009172303012-746246639.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009172303012-746246639.png" alt="img"></a></p>
+<p>插入开发板，连接好串口，打开串口助手或者其他串口终端软件，可以看到根文件系统成功挂载，同时进入shell交互，用户名默认为root，密码：123456，进入root账号后</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009172655126-653041256.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009172655126-653041256.png" alt="img"></a></p>
+<p>那么恭喜，你已经拥有了自己的Linux发行版。</p>
+<p>至此我们完成了全部的系统移植任务，从下一篇开始我们将会升级我们的硬件设备和做一些更加有意义的东西，期待吗？</p>
+<h3 id="3-6-升级逼格-https-www-cnblogs-com-twzy-p-15355842-html-2-6-升级逼格"><a href="#3-6-升级逼格-https-www-cnblogs-com-twzy-p-15355842-html-2-6-升级逼格" class="headerlink" title="3.6 升级逼格[#](https://www.cnblogs.com/twzy/p/15355842.html#2.6 升级逼格)"></a>3.6 升级逼格[#](<a href="https://www.cnblogs.com/twzy/p/15355842.html#2.6">https://www.cnblogs.com/twzy/p/15355842.html#2.6</a> 升级逼格)</h3><p>我们发现登录进自制的Linux系统后，命令行前置无论怎样只显示一个**#**号，逼格略低呀，怎么处理呢？</p>
+<p>修改/etc/profile文件</p>
+<pre class="line-numbers language-none"><code class="language-none">vi /etc/profile<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>写入</p>
+<pre class="line-numbers language-none"><code class="language-none">export PS1='[\u@\h: \w\a\]$'<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009172755348-361576513.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009172755348-361576513.png" alt="img"></a></p>
+<p>重启小板，就可以看到与与常规Linux一样的操作体验了，只是root账号的时候还是显示 <strong>$</strong> 符号</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009173048942-1924983487.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009173048942-1924983487.png" alt="img"></a></p>
+<p>需要注意的是，在开发板运行过程中，如果想要重启，请先执行</p>
+<pre class="line-numbers language-none"><code class="language-none">poweroff<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>命令正常关闭系统后，在按重启按钮，否则有很大概率回造成文件系统损坏。</p>
+<h2 id="4-Debian文件系统制作-以及WIFI配置、交换分区配置"><a href="#4-Debian文件系统制作-以及WIFI配置、交换分区配置" class="headerlink" title="4. Debian文件系统制作,以及WIFI配置、交换分区配置"></a>4. <a href="https://www.cnblogs.com/twzy/p/15160824.html">Debian文件系统制作,以及WIFI配置、交换分区配置</a></h2><p>该片文章将完整记录一个Debian的最小文件系统的生成，以及自定义配置WIFI组件、网络组件和交换分区配置</p>
+<blockquote>
+<p>本文章参考：<br><a href="https://whycan.com/t_4236.html">https://whycan.com/t_4236.html</a><br><a href="http://www.leux.cn/doc/debootstrap.html%EF%BC%88%E8%AF%A5%E7%BD%91%E7%AB%99%E5%9C%A8%E5%A4%87%E6%A1%88%E4%B8%AD%EF%BC%8C%E5%8F%AF%E8%83%BD%E6%9A%82%E6%97%B6%E6%97%A0%E6%B3%95%E6%9F%A5%E7%9C%8B%E4%BA%86%EF%BC%89">http://www.leux.cn/doc/debootstrap.html（该网站在备案中，可能暂时无法查看了）</a><br>帖子整理完成。</p>
+</blockquote>
+<p>构建debian文件系统，作为记录，最小rootfs在180MB左右。</p>
+<h3 id="4-1-配置构建环境"><a href="#4-1-配置构建环境" class="headerlink" title="4.1 配置构建环境#"></a>4.1 配置构建环境<a href="https://www.cnblogs.com/twzy/p/15160824.html#1.1-%E9%85%8D%E7%BD%AE%E6%9E%84%E5%BB%BA%E7%8E%AF%E5%A2%83">#</a></h3><p>安装构建文件系统的工具，一个是用来chroot，一个是用来构建文件系统</p>
+<pre class="line-numbers language-none"><code class="language-none">sudo apt install qemu-user-static -y
+sudo apt install debootstrap -y
+mkdir rootfs<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>构建文件系统之前，你要知道你想要构建哪个版本的文件系统，我从 <a href="https://www.debian.org/mirror/list.zh-cn.html%E8%BF%99%E9%87%8C%EF%BC%8C">https://www.debian.org/mirror/list.zh-cn.html</a> 这里，选择了我访问速度快的源，并且该源有armel。</p>
+<p><code>armhf (支持硬件浮点)</code><br><code>armel (软浮点)</code></p>
+<p>我看华为源挺快的，就用这个了mirrors.huaweicloud.com，然后就是debian的版本，我尝试一下最新的，buster</p>
+<pre class="line-numbers language-none"><code class="language-none">sudo debootstrap --foreign --arch=armel --verbose \
+    trixie \
+    rootfs-debian13 \
+    http://mirrors.aliyun.com/debian/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>构建完成之后，需要chroot进去修改密码等配置</p>
+<pre class="line-numbers language-none"><code class="language-none">cd rootfs-debian13
+sudo mount --bind /dev dev/
+sudo mount --bind /sys sys/
+sudo mount --bind /proc proc/
+sudo mount --bind /dev/pts dev/pts/
+cd ..
+sudo cp /usr/bin/qemu-arm-static rootfs-debian13/usr/bin/
+sudo chmod +x rootfs-debian13/usr/bin/qemu-arm-static
+sudo LC_ALL=C LANGUAGE=C LANG=C chroot rootfs-debian13 /debootstrap/debootstrap --second-stage --verbose
+sudo LC_ALL=C LANGUAGE=C LANG=C chroot rootfs-debian13<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>最后一条命令chroot完成，<br>此时可以先apt-get等给你的文件系统安装你需要的软件包</p>
+<p>为了提高下载速度，我们首先修改源</p>
+<pre class="line-numbers language-none"><code class="language-none">vi /etc/apt/sources.list<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>改为(注意要换其他源用http方式可以访问的，要不然还得处理https的内容):</p>
+<pre class="line-numbers language-none"><code class="language-none">deb http://mirrors.huaweicloud.com/debian buster main<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>改完以后执行：</p>
+<pre class="line-numbers language-none"><code class="language-none">apt-get update<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>使源生效</p>
+<p>安装网络相关的库</p>
+<pre class="line-numbers language-none"><code class="language-none">apt-get install wpasupplicant #安装WIFI配置相关的组件
+apt-get install net-tools     #安装网络基础组件、如使用ifconfig等
+apt-get install udhcpc        #当wifi连接成功后，需要用这个组件去获取IP地址
+
+## 其他组件
+apt install gpiod i2c-tools lrzsz net-tools usbutils ssh wireless-tools sudo vim openssh-server htop pciutils usbutils acpid -y<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-2-配置账号"><a href="#4-2-配置账号" class="headerlink" title="4.2 配置账号#"></a>4.2 配置账号<a href="https://www.cnblogs.com/twzy/p/15160824.html#1.2-%E9%85%8D%E7%BD%AE%E8%B4%A6%E5%8F%B7">#</a></h3><p>修改root登录密码的方式如下</p>
+<pre class="line-numbers language-none"><code class="language-none">passwd root<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>添加用户</p>
+<pre class="line-numbers language-none"><code class="language-none">groupadd &lt;用户组&gt;
+useradd -m -g &lt;用户组&gt; -s /bin/bash &lt;用户名&gt;
+passwd &lt;用户名&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-3-新增账号sudo配置"><a href="#4-3-新增账号sudo配置" class="headerlink" title="4.3 新增账号sudo配置#"></a>4.3 新增账号sudo配置<a href="https://www.cnblogs.com/twzy/p/15160824.html#1.3-%E6%96%B0%E5%A2%9E%E8%B4%A6%E5%8F%B7sudo%E9%85%8D%E7%BD%AE">#</a></h3><p>对于出现</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;用户名&gt; is not in the sudoers file.  This incident will be reported.<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>切换到超级用户：</p>
+<pre class="line-numbers language-none"><code class="language-none">$ su<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>打开<code>/etc/sudoers</code>文件：</p>
+<pre class="line-numbers language-none"><code class="language-none"># vi /etc/sudoers<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>修改文件内容<br><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211018174205921-1211442453.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211018174205921-1211442453.png" alt="img"></a></p>
+<p>保存退出</p>
+<p>修改主机名，否则将会以当前编译的系统的主机名进行设置(如：笔者为Ubuntu，相当的尴尬)</p>
+<pre class="line-numbers language-none"><code class="language-none">HOSTNAME=&lt;你的主机名&gt;
+echo $HOSTNAME &gt; /etc/hostname
+echo $HOSTNAME &gt; /proc/sys/kernel/hostname
+sed -i '/localhost/s/$/\t'"$HOSTNAME"'/g' /etc/hosts
+
+
+
+# 设置主机名
+HOSTNAME=NanoLinux
+echo $HOSTNAME &gt; /etc/hostname
+echo $HOSTNAME &gt; /proc/sys/kernel/hostname
+
+# 更新hosts文件
+sed -i '/127.0.0.1\s*localhost/s/$/\t'"$HOSTNAME"'/g' /etc/hosts
+sed -i '/::1\s*localhost/s/$/\t'"$HOSTNAME"'/g' /etc/hosts
+
+# 或者更安全的方法，直接编辑hosts文件
+cat &gt; /etc/hosts &lt;&lt; 'EOF'
+127.0.0.1   localhost NanoLinux
+::1         localhost NanoLinux ip6-localhost ip6-loopback
+
+# 如果需要，可以添加其他网络配置
+# 192.168.1.100  NanoLinux
+EOF<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-4-配置时区"><a href="#4-4-配置时区" class="headerlink" title="4.4 配置时区#"></a>4.4 配置时区<a href="https://www.cnblogs.com/twzy/p/15160824.html#1.4-%E9%85%8D%E7%BD%AE%E6%97%B6%E5%8C%BA">#</a></h3><p>修改系统默认时区</p>
+<pre class="line-numbers language-none"><code class="language-none">cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="4-5-配置SSH"><a href="#4-5-配置SSH" class="headerlink" title="4.5 配置SSH#"></a>4.5 配置SSH<a href="https://www.cnblogs.com/twzy/p/15160824.html#1.5-%E9%85%8D%E7%BD%AEssh">#</a></h3><p>如果要使用SSH服务，并且允许SSH客户端以root方式登录需要进行一下设置。</p>
+<pre class="line-numbers language-none"><code class="language-none">nano /etc/ssh/sshd_config<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>添加</p>
+<pre class="line-numbers language-none"><code class="language-none">PermitRootLogin yes<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="4-6-其他配置"><a href="#4-6-其他配置" class="headerlink" title="4.6 其他配置"></a>4.6 其他配置</h3><h4 id="4-6-1-增加开机自启脚本"><a href="#4-6-1-增加开机自启脚本" class="headerlink" title="4.6.1 增加开机自启脚本"></a>4.6.1 增加开机自启脚本</h4><p>文件系统中的<code>/etc/init.d</code>负责linux的服务的开启和关闭等，为了能使系统开机自动运行一些脚本和命令，这里介绍如何新添加一个自启动项。</p>
+<p>首先我们创建一个文件<code>/etc/init.d/runOnBoot</code>，内容如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">#!/bin/sh /etc/init.d/runOnBoot
+### BEGIN INIT INFO
+# Provides: runOnBoot Required-Start: $local_fs $syslog $network
+# Required-Stop: $local_fs $syslog $network Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6 Short-Description: runOnBoot startup Description:
+# runOnBoot auto startup 1.0
+### END INIT INFO
+
+#------------------------------------------------------------------------------
+swapon /opt/images/swap
+
+mkdir /sys/kernel/config/usb_gadget/gg
+cd /sys/kernel/config/usb_gadget/gg
+echo "0x0502" &gt; idVendor
+echo "0x3235" &gt; idProduct
+mkdir functions/rndis.rn0
+mkdir configs/c1.1
+ln -s functions/rndis.rn0 configs/c1.1/
+echo "musb-hdrc.1.auto" &gt; UDC
+ifconfig usb0 192.168.137.2
+ifconfig usb0 up
+route add default gw 192.168.137.1
+
+
+# Demo to run a script ↓
+# script_path=/home/start.sh
+# if [ ! -r ${script_path} ]; then
+#     echo ${script_path} not existing;
+# fi
+# . ${myStart_spaddr}
+
+#------------------------------------------------------------------------------<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>给文件添加可执行权限：</p>
+<pre class="line-numbers language-none"><code class="language-none">chmod +x /etc/init.d/runOnBoot<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>最后要添加软链接：</p>
+<pre class="line-numbers language-none"><code class="language-none">ln -s /etc/init.d/runOnBoot /etc/rc2.d/S99runOnBoot<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<blockquote>
+<p><code>/etc/rc.d/rc0.d/</code>～<code>/etc/rc.d/rc6.d/</code>文件夹的含义不同，S开头代表是开启时处理的脚本，按照后面紧跟的数字进行按顺序启动，S99则是最后进行启动。</p>
+</blockquote>
+<p>重启即可看到命令和脚本自动执行了。</p>
+<h4 id="4-6-2-解决root-fs分区开机后被挂载为Read-Only的问题"><a href="#4-6-2-解决root-fs分区开机后被挂载为Read-Only的问题" class="headerlink" title="4.6.2 解决root-fs分区开机后被挂载为Read-Only的问题"></a>4.6.2 解决root-fs分区开机后被挂载为<em>Read-Only</em>的问题</h4><p>新配置的文件系统需要添加fstab进行对应分区的自动挂载，修改<code>/etc/fstab</code>文件：</p>
+<pre class="line-numbers language-none"><code class="language-none"># &lt;file system&gt;	&lt;mount pt&gt;	&lt;type&gt;	&lt;options&gt;	&lt;dump&gt;	&lt;pass&gt;
+/dev/root	/		ext2	rw,noauto	0	1
+proc		/proc		proc	defaults	0	0
+devpts		/dev/pts	devpts	defaults,gid=5,mode=620,ptmxmode=0666	0	0
+tmpfs		/dev/shm	tmpfs	mode=0777	0	0
+tmpfs		/tmp		tmpfs	mode=1777	0	0
+tmpfs		/run		tmpfs	mode=0755,nosuid,nodev	0	0
+sysfs		/sys		sysfs	defaults	0	0
+/opt/images/swap swap swap defaults 0 0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="4-6-3-添加USB-OTG-Gadget-RNDIS功能"><a href="#4-6-3-添加USB-OTG-Gadget-RNDIS功能" class="headerlink" title="4.6.3 添加USB-OTG &amp; Gadget-RNDIS功能"></a>4.6.3 添加USB-OTG &amp; Gadget-RNDIS功能</h4><blockquote>
+<p><strong>参考资料：</strong></p>
+<ul>
+<li><a href="https://whycan.com/t_6242.html">全志平台上通过configfs(libcomposite)配置RNDIS Gadget(u_ether)及Windows下的驱动</a></li>
+<li><a href="https://linux-sunxi.org/USB_Gadget/Ethernet#Mainline_kernel_.28via_configfs.29">USB Gadget/Ethernet - linux-sunxi.org</a></li>
+<li><a href="https://www.lotlab.org/2018/07/29/record-of-using-licheepi-part-2-using-linux-gadget/">LicheePi入坑记录2——使用 Linux Gadget 复合设备共享网络与虚拟串口 – LotLab</a></li>
+</ul>
+</blockquote>
+<p><strong>USB Gadget</strong>（小饰品），就是指所开发的电子设备以USB-device的模式通过USB连接到主机，比如手机用USB线插入PC后，手机就是USB Gadget。</p>
+<p>在本开发板中，可以利用USB Gadget把USB模拟成虚拟网卡、虚拟串口、MTP设备等等非常方便，下面介绍具体的配置方法。</p>
+<p><strong>RNDIS功能开发方法：</strong></p>
+<p>首先需要在内核中开启了相关选项：</p>
+<pre class="line-numbers language-none"><code class="language-none">Device Drivers  ---&gt;
+       [*] USB support  ---&gt;
+       &lt;M&gt; Inventra Highspeed Dual Role Controller (TI, ADI, AW, ...)
+               MUSB Mode Selection (Dual Role mode)  ---&gt;
+               *** Platform Glue Layer ***
+           &lt;M&gt; Allwinner (sunxi)
+               *** MUSB DMA mode ***
+           [*] Disable DMA (always use PIO)
+       USB Physical Layer drivers  ---&gt;
+           &lt;M&gt; NOP USB Transceiver Driver
+       &lt;M&gt;   USB Gadget Support  ---&gt;
+           &lt;M&gt;   USB Gadget functions configurable through configfs
+           [*]     RNDIS<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>然后在文件系统中添加一些配置文件：</p>
+<pre class="line-numbers language-none"><code class="language-none">cd /sys/kernel/config/usb_gadget
+mkdir gg
+cd gg/
+echo "0x0502" &gt; idVendor
+echo "0x3235" &gt; idProduct
+mkdir functions/rndis.rn0
+mkdir configs/c1.1
+ln -s functions/rndis.rn0 configs/c1.1/
+echo "musb-hdrc.1.auto" &gt; UDC<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>启用usb0网卡并设置一个ip地址：</p>
+<pre class="line-numbers language-none"><code class="language-none">ifconfig usb0 192.168.137.2
+ifconfig usb0 up<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<blockquote>
+<p>这里使用137网段的原因是希望后面通过Windows的网络共享功能让板卡通过USB连上互联网，而Windows的共享网段固定是<code>192.168.137.1</code> 。</p>
+</blockquote>
+<p>在Windows端安装驱动，手动选择网络适配器，然后添加下面的驱动：</p>
+<p><a href="https://camo.githubusercontent.com/aeed230791de077ccfffea18231ebb213b8635108d9a4d3649da6b283a0887de/68747470733a2f2f70656e677a68696875692d6d61726b646f776e2e6f73732d636e2d7368616e676861692e616c6979756e63732e636f6d2f696d672f32303232303430333139323231302e706e67"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/68747470733a2f2f70656e677a68696875692d6d61726b646f776e2e6f73732d636e2d7368616e676861692e616c6979756e63732e636f6d2f696d672f32303232303430333139323231302e706e67" alt="image-20220403192210458"></a></p>
+<p>之后会在网络适配器中发现新的网卡设备，配置固定ip如下：</p>
+<p><a href="https://camo.githubusercontent.com/68baa5622b7bdde7696220bfd3728bf1acbefba8db09b10820fb4003aa080cc4/68747470733a2f2f70656e677a68696875692d6d61726b646f776e2e6f73732d636e2d7368616e676861692e616c6979756e63732e636f6d2f696d672f32303232303430333139323333352e706e67"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/68747470733a2f2f70656e677a68696875692d6d61726b646f776e2e6f73732d636e2d7368616e676861692e616c6979756e63732e636f6d2f696d672f32303232303430333139323333352e706e67" alt="image-20220403192335548"></a></p>
+<p>此时通过ping命令应该可以相互ping通了，但是在板卡上可能还是无法连接互联网，需要配置一下默认网关和DNS服务器：</p>
+<pre class="line-numbers language-none"><code class="language-none">route add default gw 192.168.137.1
+#但是这样重启以后就不能用了，需要添加到自启脚本中<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>DNS记录在<code>/etc/resolv.conf</code>这个文件里，可以按<code>resolv.conf</code>文件的格式修改DNS。</p>
+<pre class="line-numbers language-none"><code class="language-none">nano /etc/resolv.conf
+
+修改为：
+nameserver 8.8.8.8<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>如果可以ping通<a href="http://www.baidu.com就说明配置完成了./">www.baidu.com就说明配置完成了。</a></p>
+<h4 id="4-6-4-启用swap"><a href="#4-6-4-启用swap" class="headerlink" title="4.6.4 启用swap"></a>4.6.4 启用swap</h4><p>芯片的SiP内存只有64MB，大部分情况下都不够用，所以需要开启swap使用内存卡的一部分空间来作为交换内存。</p>
+<p>通过free -m来查看下内存使用状况：</p>
+<pre class="line-numbers language-none"><code class="language-none"># free -m
+              total        used        free      shared  buff/cache   available
+Mem:             54          15           6           0          31          34
+Swap:             0           0           0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>创建一个自定义的目录<code>/opt/images/</code>：</p>
+<pre class="line-numbers language-none"><code class="language-none">mkdir /opt/images/
+rm -rf /opt/images/swap<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>创建一个需要内存大小的文件，如512M：</p>
+<pre class="line-numbers language-none"><code class="language-none"># dd if=/dev/zero of=/opt/images/swap bs=1024 count=512000
+2048000+0 records in
+2048000+0 records out
+2097152000 bytes (2.1 GB, 2.0 GiB) copied, 30.3635 s, 69.1 MB/s<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>把创建的文件变成SWAP分区并启用：</p>
+<pre class="line-numbers language-none"><code class="language-none">mkswap /opt/images/swap
+swapon /opt/images/swap<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><code>free -m</code>看看SWAP是否生效，ok的话设置开机自动挂载swap：</p>
+<pre class="line-numbers language-none"><code class="language-none">nano /etc/fstab
+
+添加一行：
+/opt/images/swap swap swap defaults 0 0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>进入文件系统并添加压缩包打包相关文件：</p>
+<pre class="line-numbers language-none"><code class="language-none">cd rootfs-debian
+tar cvf ../rootfs-debian.tar . <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>生成的<code>rootfs-debian.tar</code>任意解压到SD卡的文件系统分区即可。</p>
+<p>或者直接插上SD卡拷贝所有文件（需要在VMware宿主机打开终端操作），在挂载的SD卡root-fs磁盘打开终端，输入：</p>
+<pre class="line-numbers language-none"><code class="language-none">sudo cp -Rf path/to/rootfs-debian/* ./<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>然后插上板卡即可启动。</p>
+<p>后续配置，在超级用户权限下执行如下两个命令：</p>
+<pre class="line-numbers language-none"><code class="language-none">chown root:root /usr/bin/sudo
+chmod 4755 /usr/bin/sudo
+
+nano /etc/hosts 
+在localhost后面添加一个自己的用户名如pi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-7-rootfs打包"><a href="#4-7-rootfs打包" class="headerlink" title="4.7 rootfs打包#"></a>4.7 rootfs打包<a href="https://www.cnblogs.com/twzy/p/15160824.html#1.6-rootfs%E6%89%93%E5%8C%85">#</a></h3><p>当所有的内容制作完成，就可以清理缓存，打包之后就可以替换你的文件系统了</p>
+<pre class="line-numbers language-none"><code class="language-none">apt clean #删除安装包 
+exit  #退出chroot
+rm rootfs-debian13/usr/bin/qemu-arm-static<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>卸载刚在挂载的文件夹。</p>
+<pre class="line-numbers language-none"><code class="language-none">cd rootfs-debian13
+sudo umount   dev/pts/
+sudo umount   dev/
+sudo umount   sys/
+sudo umount   proc/
+sudo umount   dev/pts/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>打包文件。</p>
+<pre class="line-numbers language-none"><code class="language-none"># cd rootfs-debian13  #进到文件系统目录,如果已经在该文件夹下，可以忽略
+tar cvf ../rootfs-debian13.tar .    #要注意那个.  代表当前目录<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>生成的rootfs-debian13.tar任意解压到文件系统即可</p>
+<h3 id="4-8-使用wpa-supplicant连接wifi"><a href="#4-8-使用wpa-supplicant连接wifi" class="headerlink" title="4.8. 使用wpa_supplicant连接wifi#"></a>4.8. 使用wpa_supplicant连接wifi<a href="https://www.cnblogs.com/twzy/p/15160824.html#2-%E4%BD%BF%E7%94%A8wpa-supplicant%E8%BF%9E%E6%8E%A5wifi">#</a></h3><p>创建配置文件</p>
+<pre class="line-numbers language-none"><code class="language-none">vi /etc/wpa_supplicant.conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>输入内容：</p>
+<pre class="line-numbers language-none"><code class="language-none">network={
+  ssid="我的热点"
+  psk="我的密码"
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>然后执行命令</p>
+<pre class="line-numbers language-none"><code class="language-none">wpa_supplicant -B -d -i wlan0 -c /etc/wpa_supplicant.conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p> 示例如下</p>
+<pre class="line-numbers language-none"><code class="language-none">root@dika-pc:~# wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant.conf
+Successfully initialized wpa_supplicant
+rfkill: Cannot open RFKILL control device
+root@dika-pc:~# [  444.817608] wlan0: authenticate with e4:67:1e:02:33:c0
+[  444.843208] wlan0: send auth to e4:67:1e:02:33:c0 (try 1/3)
+[  444.900867] wlan0: authenticated
+[  444.935561] wlan0: associate with e4:67:1e:02:33:c0 (try 1/3)
+[  444.986874] wlan0: RX AssocResp from e4:67:1e:02:33:c0 (capab=0x411 status=0 aid=4)
+[  445.033483] wlan0: associated
+[  446.047125] IPv6: ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
+^C<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>执行dhcp命名，获取IP地址</p>
+<pre class="line-numbers language-none"><code class="language-none">root@dika-pc:~# udhcpc -i wlan0
+udhcpc: started, v1.30.1
+udhcpc: sending discover
+udhcpc: sending select for 172.16.1.106
+udhcpc: lease of 172.16.1.106 obtained, lease time 43200
+root@dika-pc:~# ping www.dika.ren
+PING www.dika.ren (149.129.80.46) 56(84) bytes of data.
+64 bytes from 149.129.80.46: icmp_seq=3 ttl=45 time=217 ms
+64 bytes from 149.129.80.46: icmp_seq=4 ttl=45 time=417 ms
+64 bytes from 149.129.80.46: icmp_seq=5 ttl=45 time=102 ms
+64 bytes from 149.129.80.46: icmp_seq=6 ttl=45 time=108 ms
+^C
+--- www.dika.ren ping statistics ---
+6 packets transmitted, 4 received, 33.3333% packet loss, time 346ms
+rtt min/avg/max/mdev = 102.009/211.020/417.367/127.586 ms<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-9-增加swap分区"><a href="#4-9-增加swap分区" class="headerlink" title="4.9 增加swap分区#"></a>4.9 增加swap分区<a href="https://www.cnblogs.com/twzy/p/15160824.html#3-%E5%A2%9E%E5%8A%A0swap%E5%88%86%E5%8C%BA">#</a></h3><p>在使用一些软件的过程中，会遇到系统崩溃，尤其是使用 apt-get install 的时候，所以需要加入swap分区，可以简单理解为虚拟内存。</p>
+<p>使用</p>
+<pre class="line-numbers language-none"><code class="language-none">free<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>查看当前swap大小，<br>使用如下命令创建你想要添加swap分区的大小</p>
+<pre class="line-numbers language-none"><code class="language-none">dd if=/dev/zero of=/swap1 bs=1M count=512  #改成你要设置的SWAP大小，512就是512MB<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>设置swap分区文件</p>
+<pre class="line-numbers language-none"><code class="language-none">mkswap /swap1<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>激活swap分区</p>
+<pre class="line-numbers language-none"><code class="language-none">swapon /swap1<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>此时使用free命令就能看到创建好的swap分区，但这只是临时性的， 重启会失效，需要配置一下，下次开机时候要开swap</p>
+<pre class="line-numbers language-none"><code class="language-none">vi /etc/fstab<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>操作，在最后一行添加 </p>
+<pre class="line-numbers language-none"><code class="language-none">/swap1 swap swap defaults 0 0<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h2 id="5-planck-pi操作"><a href="#5-planck-pi操作" class="headerlink" title="5. planck-pi操作"></a>5. planck-pi操作</h2><p>通过串口连接pc进行操作</p>
+<h3 id="5-1-修改主机名"><a href="#5-1-修改主机名" class="headerlink" title="5.1 修改主机名"></a>5.1 修改主机名</h3><pre class="line-numbers language-none"><code class="language-none">HOSTNAME=lycraftpi			#lycraftpi可以换成别的名字
+echo $HOSTNAME &gt; /etc/hostname
+echo $HOSTNAME &gt; /proc/sys/kernel/hostname
+sed -i '/localhost/s/$/\t'"$HOSTNAME"'/g' /etc/hosts
+# 查看Debian版本号
+cat /etc/os-release<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="5-2-配置永久静态ip"><a href="#5-2-配置永久静态ip" class="headerlink" title="5.2 配置永久静态ip"></a>5.2 配置永久静态ip</h3><pre class="line-numbers language-none"><code class="language-none">vim /etc/network/interfaces
+
+# 添加以下内容
+allow-hotplug usb0
+auto usb0
+iface usb0 inet static
+address 192.168.2.100
+netmask 255.255.255.0
+gateway 192.168.2.1
+
+# 启用网卡
+ifup usb0
+
+# 开机自启
+vim /etc/init.d/rcS
+
+# 添加以下内容
+ifup lo
+ifup usb0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>配置DNS</p>
+<pre class="line-numbers language-none"><code class="language-none">vim /etc/resolv.conf
+# 在nameserver下添加
+nameserver 223.5.5.5		#阿里的DNS<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h2 id="6-PC上的操作"><a href="#6-PC上的操作" class="headerlink" title="6. PC上的操作"></a>6. PC上的操作</h2><h3 id="6-1-linux虚拟机ssh连接pi"><a href="#6-1-linux虚拟机ssh连接pi" class="headerlink" title="6.1 linux虚拟机ssh连接pi"></a>6.1 linux虚拟机ssh连接pi</h3><pre class="line-numbers language-none"><code class="language-none">sudo vim /etc/network/interfaces
+
+# 添加以下内容
+allow-hotplug ens35u1
+auto ens35u1
+iface ens35u1 inet static
+address 192.168.2.1
+netmask 255.255.255.0
+
+# 重启下
+
+# 输入以下指令后planckpi就可以上网了
+echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward &gt; /dev/null
+sudo iptables -P FORWARD ACCEPT
+sudo iptables -A POSTROUTING -t nat -j MASQUERADE -s 192.168.2.0/24<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>接下来通过ssh连接到planckpi玩耍吧</p>
+<pre class="line-numbers language-none"><code class="language-none">ssh root@192.168.2.100
+
+ping www.baidu.com<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h3 id="6-2-Windows下ssh连接pi"><a href="#6-2-Windows下ssh连接pi" class="headerlink" title="6.2 Windows下ssh连接pi"></a>6.2 Windows下ssh连接pi</h3><p>~待填坑</p>
+<h1 id="3-简化命令"><a href="#3-简化命令" class="headerlink" title="3. 简化命令"></a>3. 简化命令</h1><pre class="line-numbers language-none"><code class="language-none">sudo docker pull ubuntu:latest
+sudo docker run -it --name F1C200s_env --network host \
+-p 8022:22 \
+-v /tmp/F1C200s_env/workspace:/workspace \
+--privileged \
+ubuntu:latest
+
+sed -i 's@//.*archive.ubuntu.com@//mirrors.aliyun.com@g' /etc/apt/sources.list
+sed -i 's@//.*security.ubuntu.com@//mirrors.aliyun.com@g' /etc/apt/sources.list
+
+apt update
+apt install sudo wget git unzip -y
+apt install libncurses-dev gcc gcc-arm-linux-gnueabi make bison flex bc libssl-dev python3 python3-setuptools python3-dev swig bzip2 file g++ cpio rsync -y
+
+workspace_path=/workspace
+cd ~/
+
+export ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<h2 id="3-1-uboot"><a href="#3-1-uboot" class="headerlink" title="3.1.uboot"></a>3.1.uboot</h2><pre class="line-numbers language-none"><code class="language-none">git clone --depth=1 https://github.com/u-boot/u-boot.git
+cd u-boot
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- licheepi_nano_defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- menuconfig
+#load mmc 0:1 0x80008000 zImage;load mmc 0:1 0x80c08000 suniv-f1c100s-licheepi-nano.dtb;bootz 0x80008000 - 0x80c08000;
+#console=ttyS0,115200 panic=5 rootwait root=/dev/mmcblk0p2 earlyprintk rw
+make -j $(nproc)
+cp u-boot-sunxi-with-spl.bin  ${workspace_path}/
+sudo dd if=/tmp/F1C200s_env/workspace/u-boot-sunxi-with-spl.bin of=/dev/sdb bs=1024 seek=8<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="3-2-linux"><a href="#3-2-linux" class="headerlink" title="3.2.linux"></a>3.2.linux</h2><pre class="line-numbers language-none"><code class="language-none">git clone --depth=1 https://mirrors.tuna.tsinghua.edu.cn/git/linux.git
+
+wget https://files.cnblogs.com/files/twzy/linux-licheepi_nano_defconfig.zip
+unzip linux-licheepi_nano_defconfig.zip
+cp linux-licheepi_nano_defconfig linux/arch/arm/configs/
+cd linux 
+
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- linux-licheepi_nano_defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- menuconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- -j $(nproc)
+
+cp arch/arm/boot/zImage ${workspace_path}/
+cp arch/arm/boot/dts/allwinner/suniv-f1c100s-licheepi-nano.dtb ${workspace_path}/
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="3-3-1-busybox"><a href="#3-3-1-busybox" class="headerlink" title="3.3.1 busybox"></a>3.3.1 busybox</h2><pre class="line-numbers language-none"><code class="language-none">git clone --depth=1 git://busybox.net/busybox.git
+cd busybox
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- menuconfig
+
+#Settings ----&gt;
+	Build Options      [*]Build static binary(no shared libs)
+	
+	
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- -j $(nproc)
+make install
+cd _install
+
+mkdir etc dev mnt tmp sys proc root
+
+cat &gt;etc/fstab &lt;&lt;EOF
+proc        /proc           proc        defaults        0        0
+tmpfs       /tmp            tmpfs       defaults        0        0
+sysfs       /sys            sysfs       defaults        0        0
+EOF
+
+mkdir -p etc/init.d/
+
+cat &gt;etc/init.d/rcS &lt;&lt;EOF
+echo -e "Welcome to nanoLinux"
+/bin/mount -a
+echo -e "Remounting the root filesystem"
+mount  -o  remount,rw  /
+mkdir -p /dev/pts
+mount -t devpts devpts /dev/pts
+echo /sbin/mdev &gt; /proc/sys/kernel/hotplug
+mdev -s
+EOF
+chmod 755 etc/init.d/rcS 
+
+cat &gt;etc/inittab &lt;&lt;EOF
+::sysinit:/etc/init.d/rcS
+::respawn:-/bin/sh
+::askfirst:-/bin/sh
+::ctrlaltdel:/bin/umount -a -r
+EOF
+chmod 755 etc/inittab
+
+mknod dev/console c 5 1
+mknod dev/null c 1 3
+mknod dev/tty1 c 4 1 
+
+dd if=/dev/zero of=root/swap bs=1M count=512
+mkswap root/swap
+swapon root/swap
+
+echo "/root/swap swap swap defaults 0 0" &gt;&gt; etc/fstab
+
+
+cd /home/hhhh/Downloads/Planck-Pi/buildroot/linux
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- modules_install INSTALL_MOD_PATH=${workspace_path}/
+
+tar -czvf rootfs.tar.gz *
+mv rootfs.tar.gz ${workspace_path}/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="3-3-2-buildroot"><a href="#3-3-2-buildroot" class="headerlink" title="3.3.2 buildroot"></a>3.3.2 buildroot</h2><pre class="line-numbers language-none"><code class="language-none">git clone --depth=1 https://github.com/buildroot/buildroot.git
+cd buildroot
+cat &gt;configs/nano_linux_defconfig &lt;&lt;EOF
+BR2_arm=y
+BR2_PACKAGE_GLIBC_UTILS=y
+BR2_TOOLCHAIN_BUILDROOT_CXX=y
+BR2_PACKAGE_HOST_GDB=y
+BR2_CCACHE=y
+BR2_ENABLE_LTO=y
+BR2_TARGET_GENERIC_HOSTNAME="nanoLinux"
+BR2_TARGET_GENERIC_ISSUE="Welcome to Buildroot for the NanoLinux"
+BR2_TARGET_GENERIC_GETTY_PORT="ttyS0"
+BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
+BR2_SYSTEM_ENABLE_NLS=y
+BR2_TARGET_TZ_INFO=y
+BR2_PACKAGE_BZIP2=y
+BR2_PACKAGE_ZIP=y
+BR2_PACKAGE_LIBGPIOD=y
+BR2_PACKAGE_LIBGPIOD_TOOLS=y
+BR2_PACKAGE_LIBEVENT=y
+BR2_PACKAGE_LRZSZ=y
+BR2_PACKAGE_OPENSSH=y
+BR2_PACKAGE_RSYNC=y
+BR2_PACKAGE_SUDO=y
+BR2_PACKAGE_NANO=y
+EOF
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- nano_linux_defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- -j $(nproc)
+cp output/images/rootfs.tar ${workspace_path}/
+
+
+modprobe sunxi
+modprobe configfs
+modprobe libcomposite
+modprobe u_ether
+modprobe usb_f_rndis
+mount -t configfs none /sys/kernel/config/
+
+cd /sys/kernel/config/usb_gadget
+mkdir g1
+cd g1
+echo "0x1d6b" &gt; idVendor
+echo "0x0104" &gt; idProduct
+mkdir functions/rndis.rn0
+mkdir configs/c1.1
+ln -s functions/rndis.rn0 configs/c1.1/
+echo "musb-hdrc.1.auto" &gt; UDC
+
+ifconfig usb0 up
+ifconfig usb0 192.168.137.2 netmask 255.255.255.0
+route add default gw 192.168.137.1
+mkdir /uboot
+mount /dev/mmcblk0p1 /uboot
+
+#include &lt;dt-bindings/gpio/gpio.h&gt;
+#include &lt;dt-bindings/leds/common.h&gt;
+leds {
+    compatible = "gpio-leds";
+
+    led-0 {
+        function = LED_FUNCTION_STATUS;
+        color = &lt;LED_COLOR_ID_GREEN&gt;;
+        gpios = &lt;&amp;pio 4 6 GPIO_ACTIVE_LOW&gt;; /* PE6 */
+        linux,default-trigger = "heartbeat";
+    };
+
+};<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="3-4-Debian"><a href="#3-4-Debian" class="headerlink" title="3.4 Debian"></a>3.4 Debian</h2><pre class="line-numbers language-none"><code class="language-none">apt update
+apt install debootstrap qemu-user-static 
+mkdir rootfs
+
+debootstrap --foreign --verbose --arch=armel bookworm rootfs http://mirrors.huaweicloud.com/debian/
+cd rootfs
+mount --bind /dev dev/
+mount --bind /sys sys/
+mount --bind /proc proc/
+mount --bind /dev/pts dev/pts/
+cd ..
+cp /usr/bin/qemu-arm-static rootfs/usr/bin/
+chmod +x rootfs/usr/bin/qemu-arm-static
+LC_ALL=C LANGUAGE=C LANG=C chroot rootfs /debootstrap/debootstrap --second-stage --verbose
+LC_ALL=C LANGUAGE=C LANG=C chroot rootfs
+
+apt install gpiod i2c-tools lrzsz<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="4-点个灯吧"><a href="#4-点个灯吧" class="headerlink" title="4. 点个灯吧#"></a>4. 点个灯吧<a href="https://www.cnblogs.com/twzy/p/15355842.html#3.-%E7%82%B9%E4%B8%AA%E7%81%AF%E5%90%A7">#</a></h1><p>还记得我们在第一篇中提到过的我们自制小开发板的唯一的那个外设——LED灯吗？</p>
+<p>那我们就利用Linux提供的GPIO系统通过shell命令进行点灯实验吧。</p>
+<p>我们首先需要回到文件系统制作菜单</p>
+<pre class="line-numbers language-none"><code class="language-none">Device Drivers -&gt; 
+        GPIO Support -&gt;
+                /sys/class/gpio/… (sysfs interface)。<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>按如下方式进行配置，然后编译完rootfs，重新写入小板</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009173731029-1575334130.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009173731029-1575334130.png" alt="img"></a></p>
+<p> <a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009163731073-1479927383.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009163731073-1479927383.png" alt="img"></a></p>
+<p>通过硬件可知LED灯连接的是<strong>PE6</strong>接口，低电平亮灯</p>
+<p>这里我们先要了解一下GPIO编号和值的计算方式</p>
+<blockquote>
+<p>引脚编号 = 控制引脚的寄存器基数 + 控制引脚寄存器位数<br>批注：<br>引脚编号是gpiochipxxx下的base + 第几个GPIO，也就是base加偏移，偏移的是位数。<br>例如gpiochip34 下的第1个GPIO那么编号就是34 + 1 = 35</p>
+</blockquote>
+<p>对于F1C200S/F1C100S这里：A=0、B=1、C=2D=3、E=4 ……、32是固定值、6就是偏移量</p>
+<p>举个栗子（如果使想用 PE6，那么引脚编号就可能等于 4 x 32 + 6 = 134。</p>
+<p>这是一些参考命令</p>
+<pre class="line-numbers language-none"><code class="language-none"># 1、导出
+echo 134 &gt; /sys/class/gpio/export
+# 2、设置方向
+echo out &gt; /sys/class/gpio/gpio134/direction
+# 3、查看方向
+cat /sys/class/gpio/gpio134/direction
+# 4、设置输出（对于LED 设置1 为高电平即LED灯灭，设置0 为低电平，LED灯亮）
+echo 1 &gt; /sys/class/gpio/gpio134/value
+# 5、查看输出值
+cat /sys/class/gpio/gpio134/value
+# 6、取消导出
+echo 134 &gt; /sys/class/gpio/unexport<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>输入如下命令：</p>
+<pre class="line-numbers language-none"><code class="language-none">echo 134 &gt; /sys/class/gpio/export
+echo out &gt; /sys/class/gpio/gpio134/direction # 灯亮 （默认设置为高电平）
+echo 0 &gt; /sys/class/gpio/gpio134/value        # 灯灭 
+echo 1 &gt; /sys/class/gpio/gpio134/value        # 灯亮
+
+echo 134 &gt; /sys/class/gpio/unexport<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>效果如下：</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009173632837-1965450968.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009173632837-1965450968.png" alt="img"></a></p>
+<p> 我们这里借助Linux内建的GPIO子系统进行了电灯实验，但是真正Linux灵魂点灯是要通过驱动方式来实现的，但是谁让我是小白呢，以后再说吧。</p>
+<h1 id="5-OLED屏"><a href="#5-OLED屏" class="headerlink" title="5. OLED屏"></a>5. OLED屏</h1><pre><code>i2cset -y 0 0x3c 0x00 0xae
+i2cset -y 0 0x3c 0x00 0x00
+i2cset -y 0 0x3c 0x00 0x10
+i2cset -y 0 0x3c 0x00 0x20
+i2cset -y 0 0x3c 0x00 0x81
+i2cset -y 0 0x3c 0x00 0x6f
+i2cset -y 0 0x3c 0x00 0xa0
+i2cset -y 0 0x3c 0x00 0xc0
+i2cset -y 0 0x3c 0x00 0xa4
+i2cset -y 0 0x3c 0x00 0xa6
+i2cset -y 0 0x3c 0x00 0xd5
+i2cset -y 0 0x3c 0x00 0x91
+i2cset -y 0 0x3c 0x00 0xd9
+i2cset -y 0 0x3c 0x00 0x22
+i2cset -y 0 0x3c 0x00 0xdb
+i2cset -y 0 0x3c 0x00 0x3f
+i2cset -y 0 0x3c 0x00 0xa8
+i2cset -y 0 0x3c 0x00 0x4f
+i2cset -y 0 0x3c 0x00 0xd3
+i2cset -y 0 0x3c 0x00 0x68
+i2cset -y 0 0x3c 0x00 0xdc
+i2cset -y 0 0x3c 0x00 0x00
+i2cset -y 0 0x3c 0x00 0xad
+i2cset -y 0 0x3c 0x00 0x8a
+i2cset -y 0 0x3c 0x00 0xaf
+i2cset -y 0 0x3c 0x00 0xaf
+</code></pre>
+<p>​    OLED_WR_Byte(0xAE,OLED_CMD); /<em>display off</em>/<br>​    OLED_WR_Byte(0x00,OLED_CMD); /<em>set lower column address</em>/<br>​    OLED_WR_Byte(0x10,OLED_CMD); /<em>set higher column address</em>/<br>​    OLED_WR_Byte(0x20,OLED_CMD); /* Set Memory addressing mode (0x20/0x21) */<br>​    OLED_WR_Byte(0x81,OLED_CMD); /<em>contract control</em>/<br>​    OLED_WR_Byte(0x6f,OLED_CMD); /<em>b0</em>/<br>​    OLED_WR_Byte(0xA0,OLED_CMD); /<em>set segment remap</em>/<br>​    OLED_WR_Byte(0xC0,OLED_CMD); /<em>Com scan direction</em>/<br>​    OLED_WR_Byte(0xA4,OLED_CMD); /<em>Disable Entire Display On (0xA4/0xA5)</em>/<br>​    OLED_WR_Byte(0xA6,OLED_CMD); /<em>normal / reverse</em>/<br>​    OLED_WR_Byte(0xD5,OLED_CMD); /<em>set osc division</em>/<br>​    OLED_WR_Byte(0x91,OLED_CMD);<br>​    OLED_WR_Byte(0xD9,OLED_CMD); /<em>set pre-charge period</em>/<br>​    OLED_WR_Byte(0x22,OLED_CMD);<br>​    OLED_WR_Byte(0xdb,OLED_CMD); /<em>set vcomh</em>/<br>​    OLED_WR_Byte(0x3f,OLED_CMD);<br>​    OLED_WR_Byte(0xA8,OLED_CMD); /<em>multiplex ratio</em>/<br>​    OLED_WR_Byte(0x4F,OLED_CMD); /<em>duty = 1/80</em>/<br>​    OLED_WR_Byte(0xD3,OLED_CMD); /<em>set display offset</em>/<br>​    OLED_WR_Byte(0x68,OLED_CMD); /<em>18</em>/<br>​    OLED_WR_Byte(0xdc,OLED_CMD); /<em>Set Display Start Line</em>/<br>​    OLED_WR_Byte(0x00,OLED_CMD);<br>​    OLED_WR_Byte(0xad,OLED_CMD); /<em>set charge pump enable</em>/<br>​    OLED_WR_Byte(0x8a,OLED_CMD); /*Set DC-DC enable (a=0:disable; a=1:enable) */<br>​    OLED_WR_Byte(0xAF,OLED_CMD); /<em>display ON</em>/ </p>
 ]]></content>
       <categories>
         <category>Linux</category>
