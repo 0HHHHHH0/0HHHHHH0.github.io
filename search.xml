@@ -1,6 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>1.NPC内网穿透——Linux</title>
+    <url>/2025/07/24/18/</url>
+    <content><![CDATA[<blockquote>
+<p>历时半个月，浅浅学习了一下重测序数据的分析流程，为防止遗忘，特写此后几篇文章，以便后续回忆参考。</p>
+</blockquote>
+<blockquote>
+<p>要进行重测序数据分析，首要的是搞一台服务器，恰好课题组有一台服务器，但问题是只能在内网访问，遂采用NPC进行内网穿透，实现异地访问使用。</p>
+</blockquote>
+<p>用到的软件<br><a href="https://kmxo.lanzoub.com/iF7O730413eb">linux-npc.zip - 蓝奏云</a><br><a href="https://d-jy.net/docs/nps/?lang=zh#/use">使用教程</a><br>共两个步骤<br>1.下载npc客户端后修改 npc.conf文件<br>模板参考<br>修改前</p>
+<pre class="line-numbers language-none"><code class="language-none">[common]
+server_addr=填写服务器IP地址:8024
+conn_type=tcp
+vkey=唯一验证密钥
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>示例如下：<br>修改前</p>
+<p><img src="/images/18/953241429.png" alt="mdqu8nxa.png"></p>
+<p>修改后</p>
+<p><img src="/images/18/1669145814.png" alt="mdqu91bc.png"></p>
+<p>2.在文件目录中执行以下命令需要修改ip和密钥<br>（不要修改服务端口和删除空格）</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+
+<h1 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h1><ol>
+<li>无配置文件模式（推荐）<br>详细命令行参数</li>
+</ol>
+<p>📌 适用于</p>
+<p>快速连接 NPS 服务器<br>所有配置均在 Web 管理端完成<br>客户端仅需运行一条命令<br>📌 普通连接（TCP 模式）</p>
+<p> <code>./npc -server=ip:8024 -vkey=web界面中显示的密钥 -type=tcp</code> </p>
+<p>📌 TLS 加密连接（安全模式）</p>
+<p> <code>./npc -server=ip:8025 -vkey=web界面中显示的密钥 -type=tls</code> </p>
+<p>📌 连接多个服务端</p>
+<p> <code>./npc install -server=xx:12,yy:34 -vkey=xx,yy -type=tcp,tls</code> </p>
+<p>📌 说明：</p>
+<p>默认端口 8024 为非 TLS 端口，用于普通 TCP 连接<br>如果 -type=tls，必须使用 8025 作为 TLS 端口，否则连接失败</p>
+<ol start="2">
+<li>注册到系统服务（开机启动 &amp; 守护进程）<br>📌 适用于</li>
+</ol>
+<p>保证 NPC 在服务器重启后自动运行<br>无需手动启动，后台运行<br>Linux/macOS</p>
+<pre class="line-numbers language-none"><code class="language-none"># 普通连接（TCP）
+sudo ./npc install -server=ip:8024 -vkey=xxx -type=tcp -log=off
+# TLS 加密连接（安全模式）
+sudo ./npc install -server=ip:8025 -vkey=xxx -type=tls -log=off
+# 连接多个服务端
+sudo ./npc install -server=xx:12,yy:34 -vkey=xx,yy -type=tcp,tls -log=off
+
+# 启动服务
+sudo npc start
+# 停止服务
+sudo npc stop
+# 卸载（修改参数时需要先卸载再重新注册）
+ sudo npc uninstall <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<p>后面就是开放相应的端口，实现远程访问。</p>
+]]></content>
+      <categories>
+        <category>默认分类</category>
+      </categories>
+  </entry>
+  <entry>
     <title>3.对基因进行注释，长牡蛎注释包的构建及KEGG和GO分析</title>
     <url>/2025/08/02/25/</url>
     <content><![CDATA[<blockquote>
@@ -919,401 +980,6 @@ SHOW GRANTS FOR <span class="token string">'phpmyadmin'</span>@<span class="toke
       </categories>
   </entry>
   <entry>
-    <title>1.NPC内网穿透——Linux</title>
-    <url>/2025/07/24/18/</url>
-    <content><![CDATA[<blockquote>
-<p>历时半个月，浅浅学习了一下重测序数据的分析流程，为防止遗忘，特写此后几篇文章，以便后续回忆参考。</p>
-</blockquote>
-<blockquote>
-<p>要进行重测序数据分析，首要的是搞一台服务器，恰好课题组有一台服务器，但问题是只能在内网访问，遂采用NPC进行内网穿透，实现异地访问使用。</p>
-</blockquote>
-<p>用到的软件<br><a href="https://kmxo.lanzoub.com/iF7O730413eb">linux-npc.zip - 蓝奏云</a><br><a href="https://d-jy.net/docs/nps/?lang=zh#/use">使用教程</a><br>共两个步骤<br>1.下载npc客户端后修改 npc.conf文件<br>模板参考<br>修改前</p>
-<pre class="line-numbers language-none"><code class="language-none">[common]
-server_addr=填写服务器IP地址:8024
-conn_type=tcp
-vkey=唯一验证密钥
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p>示例如下：<br>修改前</p>
-<p><img src="/images/18/953241429.png" alt="mdqu8nxa.png"></p>
-<p>修改后</p>
-<p><img src="/images/18/1669145814.png" alt="mdqu91bc.png"></p>
-<p>2.在文件目录中执行以下命令需要修改ip和密钥<br>（不要修改服务端口和删除空格）</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-
-<h1 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h1><ol>
-<li>无配置文件模式（推荐）<br>详细命令行参数</li>
-</ol>
-<p>📌 适用于</p>
-<p>快速连接 NPS 服务器<br>所有配置均在 Web 管理端完成<br>客户端仅需运行一条命令<br>📌 普通连接（TCP 模式）</p>
-<p> <code>./npc -server=ip:8024 -vkey=web界面中显示的密钥 -type=tcp</code> </p>
-<p>📌 TLS 加密连接（安全模式）</p>
-<p> <code>./npc -server=ip:8025 -vkey=web界面中显示的密钥 -type=tls</code> </p>
-<p>📌 连接多个服务端</p>
-<p> <code>./npc install -server=xx:12,yy:34 -vkey=xx,yy -type=tcp,tls</code> </p>
-<p>📌 说明：</p>
-<p>默认端口 8024 为非 TLS 端口，用于普通 TCP 连接<br>如果 -type=tls，必须使用 8025 作为 TLS 端口，否则连接失败</p>
-<ol start="2">
-<li>注册到系统服务（开机启动 &amp; 守护进程）<br>📌 适用于</li>
-</ol>
-<p>保证 NPC 在服务器重启后自动运行<br>无需手动启动，后台运行<br>Linux/macOS</p>
-<pre class="line-numbers language-none"><code class="language-none"># 普通连接（TCP）
-sudo ./npc install -server=ip:8024 -vkey=xxx -type=tcp -log=off
-# TLS 加密连接（安全模式）
-sudo ./npc install -server=ip:8025 -vkey=xxx -type=tls -log=off
-# 连接多个服务端
-sudo ./npc install -server=xx:12,yy:34 -vkey=xx,yy -type=tcp,tls -log=off
-
-# 启动服务
-sudo npc start
-# 停止服务
-sudo npc stop
-# 卸载（修改参数时需要先卸载再重新注册）
- sudo npc uninstall <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<p>后面就是开放相应的端口，实现远程访问。</p>
-]]></content>
-      <categories>
-        <category>默认分类</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>410随身WiFi棒子Debian刷入青龙教程</title>
-    <url>/2025/09/25/56/</url>
-    <content><![CDATA[<p>备份教程<br>刷Debian前请先备份（非常重要！！！）</p>
-<p>弄成砖了是可以刷回来的，大佬可忽略</p>
-<p>备份教程：	<a href="https://xiao54.com/linux/32.html">https://xiao54.com/linux/32.html</a><br>视频教程：	<a href="https://www.bilibili.com/blackboard/webplayer/mbplayer.html?aid=326276265&amp;bvid=BV1iw411J7BG&amp;cid=1406661980&amp;p=1">https://www.bilibili.com/blackboard/webplayer/mbplayer.html?aid=326276265&amp;bvid=BV1iw411J7BG&amp;cid=1406661980&amp;p=1</a><br>下载链接：	<a href="https://www.123pan.com/s/354uVv-z7YU3.html">https://www.123pan.com/s/354uVv-z7YU3.html</a><br>先进入fastboot模式，输入指令</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">adb reboot bootloader<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>410随身WiFi棒子Debian刷入青龙教程<br>SSH账号密码<br>解压要刷的Debian系统，然后点击一件刷入</p>
-<p>cmd登录地址:ssh <a href="mailto:root@10.42.0.1">root@10.42.0.1</a> 密码:1313144</p>
-<p>SSH软件:IP:10.42.0.1 用户名:root 密码:1313144</p>
-<p>热点:4G-wifi 密码:12345678</p>
-<p>更新驱动<br>更新驱动视频教程：<a href="https://player.bilibili.com/">https://player.bilibili.com/</a></p>
-<p>更新驱动前注意事项：需要安装vivo9008drivers.exe软件，如安装过请忽略</p>
-<p>1、在【Android Device】下查看有没有【Android Composite ADB Interface】这个驱动，如果不是，右键【更新驱动程序】-【浏览我的计算机以查找驱动程序软件】-【让我从计算机上的可用驱动程序列表中选取(L)】，选择【Android Composite ADB Interface或者USB Composite Device】-【下一步】</p>
-<p>2、插入棒子会显示一个未知设备或者RNDIS，不确定是那个就先拔掉棒子，然后重新插入</p>
-<p>3、下拉找到【网络适配器】-厂商下拉选择【Microsoft】型号下拉选择【基于远程 NDIS 的Internet 共享设备】-【下一步】-即可完成安装驱动</p>
-<p>网络编辑<br>1、现在就用键盘上的方向键编辑，鼠标就不能用了</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">nmtui<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>2、把热点删除，因为他现在不支持WiFi和热点一起开启，所以要把热点删除连接WiFi给debian系统通网才能继续操作</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">true &gt; /etc/apt/sources.list.d/mobian.list<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>3、更新软件包</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">sudo apt-get update<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>4、更新curl wget</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">apt install curl wget<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>5、安装docker系统</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">apt install docker.io<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>6、docker设置随服务启动而自启动</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">systemctl enable docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>7、启动docker</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">systemctl start docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>给docker设置加速代理<br>1、创建文件夹</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">sudo mkdir -p /etc/docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>2、填入加速代理</p>
-<p>如不能使用则代理失效了，请更换代理，更换里面的链接即可。</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">sudo tee /etc/docker/daemon.json  /sys/kernel/debug/usb/ci_hdrc.0/role
-安装1panel代码
-```html
-curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh &amp;&amp; bash quick_start.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>近期商家为了成本emmmc质量都不太行下面这个指令查看寿命</p>
-<p>查看棒子颗粒寿命<br>查看内存寿命如果显示是0x01寿命就很好，如果显示0+09等越来越远的寿命也就离挂不远了：</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">cat /sys/class/mmc_host/mmc0/mmc0\:0001/life_time<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="/images/56/477017655.png" alt="mfzbzmj7.png"></p>
-<p>410随身WiFi棒子Debian刷入青龙教程<br>关灯方法一<br>1、先安装dialog</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">apt install dialog<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>2、然后执行一键命令</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">curl -L gitee.com/ojf6ii/led-control-script/raw/master/led2.sh -o /bin/ledctl &amp;&amp; chmod 755 /bin/ledctl<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>3、下载完成后输入指令即可打开界面</p>
-<p>ledctl<br>关灯方法二<br>1、打开文件夹</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">vi /etc/rc.local<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>2、粘贴以下代码保存设置开机自启关闭led，重启即可生效</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">echo none &gt; /sys/class/leds/red\:os/trigger
-echo none &gt; /sys/class/leds/blue\:wifi/trigger
-echo none &gt; /sys/class/leds/green\:internet/trigger<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>]]></content>
-      <categories>
-        <category>WIFI</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>openipc goke7205v200</title>
-    <url>/2024/12/03/7/</url>
-    <content><![CDATA[<h1 id="保存原始固件"><a href="#保存原始固件" class="headerlink" title="保存原始固件"></a>保存原始固件</h1><hr>
-<h2 id="备份您的原始固件，请不要跳过这个步骤！"><a href="#备份您的原始固件，请不要跳过这个步骤！" class="headerlink" title="备份您的原始固件，请不要跳过这个步骤！"></a>备份您的原始固件，请不要跳过这个步骤！</h2><p>OpenIPC U-Boot 会覆盖原始的加密分区，因此无法恢复为出厂固件，除非您拥有此特定摄像机的完整闪存备份！要创建完整的固件备份，请启动 TFTP 服务器并在引导加载程序 shell 中执行这些命令。</p>
-<blockquote>
-<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python"> # Enter commands line by line! Do not copy and paste multiple lines at once!
-setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105
-mw.b 0x42000000 0xff 0x1000000
-sf probe 0; sf read 0x42000000 0x0 0x1000000
-tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
-# if there is no tftpput but tftp then run this instead
- tftp 0x42000000 backup-gk7205v200-nor16m.bin 0x1000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</blockquote>
-<p>有关详细信息，请参阅项目 wiki 中的安装说明。</p>
-<h1 id="烧录完整的-OpenIPC-固件"><a href="#烧录完整的-OpenIPC-固件" class="headerlink" title="烧录完整的 OpenIPC 固件"></a>烧录完整的 OpenIPC 固件</h1><h2 id="下载-OpenIPC-固件-Ultimate"><a href="#下载-OpenIPC-固件-Ultimate" class="headerlink" title="下载 OpenIPC 固件 (Ultimate)"></a>下载 OpenIPC 固件 (Ultimate)</h2><p>for Goke GK7205V200 with 16MB NOR flash</p>
-<p>完整的固件由引导加载程序、内核和根文件系统组成，也适用于使用编程器烧写闪存芯片。 请注意，完整固件不包含预设环境。你还需要添加自己的MAC地址、IP地址等设置。</p>
-<blockquote>
-<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105<br>mw.b 0x42000000 0xff 0x1000000<br>tftpboot 0x42000000 openipc-gk7205v200-ultimate-16mb.bin</p>
-<h1 id="if-there-is-no-tftpboot-but-tftp-then-run-this-instead"><a href="#if-there-is-no-tftpboot-but-tftp-then-run-this-instead" class="headerlink" title="if there is no tftpboot but tftp then run this instead"></a>if there is no tftpboot but tftp then run this instead</h1><p>tftp 0x42000000 openipc-gk7205v200-ultimate-16mb.bin<br>sf probe 0; sf lock 0;<br>sf erase 0x0 0x1000000; sf write 0x42000000 0x0 0x1000000<br>reset</p>
-</blockquote>
-<p>摄像机将自动重启并使用全新的引导加载程序启动。</p>
-<p>注意准备中断并进入引导程序的命令行。 在引导加载程序的命令行中，根据您的闪存大小和类型重新映射 ROM 分区。</p>
-<blockquote>
-<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>run setnor16m</p>
-</blockquote>
-<h1 id="恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。"><a href="#恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。" class="headerlink" title="恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。"></a>恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。</h1><p>在端口 85 ( <a href="http://192.168.15.169:85/">http://192.168.15.169:85/</a> ) 上打开摄像机的 Web 界面并使用登录root和密码12345登录。登录后将要求您设置自己的安全密码。通过以下方式访问摄像机ssh 或 UART 使用与上述相同的登录名和密码。</p>
-<hr>
-<p>打开web界面后，更新固件，更新完后调整majestic、sensor与设备型号对应。</p>
-<h1 id="majestic"><a href="#majestic" class="headerlink" title="majestic"></a>majestic</h1><p>openipc未开源部分。</p>
-]]></content>
-      <categories>
-        <category>折腾</category>
-      </categories>
-      <tags>
-        <tag>openipc</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>2.重测序数据分析——初步整理</title>
-    <url>/2025/07/31/19/</url>
-    <content><![CDATA[<blockquote>
-<p>布置好服务器后就是对重测序数据进行分析了。<br>首先，看一下我手里的数据，其实已经有公司处理好的数据了，在此，我并未对重测序下机原始数据进行分析，而是使用的公司初步过滤的 Filter.snp.vcf.gz和.tbi文件。</p>
-</blockquote>
-<p>前期在写重测序相关的专利，看别人专利时，发现重测序可进行Fst计算分析，绘制的图类似GWAS的曼哈顿图，遂想模仿绘制，便有了下面的一系列相关内容。</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<h1 id="一、FST和GWAS："><a href="#一、FST和GWAS：" class="headerlink" title="一、FST和GWAS："></a>一、FST和GWAS：</h1><p>首先，先介绍一下FST和GWAS，二者都是遗传学中常用的分析方法，但它们的目的和分析方式不一样。</p>
-<ul>
-<li>FST（Fixation Index）是用来衡量不同群体之间的遗传差异。如果两个群体在某些基因上有很大的差异，FST 值就会很高，说明这两个群体在基因组上有很大分化。</li>
-<li>GWAS（全基因组关联研究）是用来找出基因和特定性状之间的关系。简单来说，它帮助我们发现哪些基因变异可能会影响某个性状（比如身高、疾病或壳色）。</li>
-</ul>
-<h2 id="以黑白壳长牡蛎为例"><a href="#以黑白壳长牡蛎为例" class="headerlink" title="以黑白壳长牡蛎为例"></a>以黑白壳长牡蛎为例</h2><p>假设我们研究的是黑壳和白壳长牡蛎，这两种牡蛎的壳色差异显著，我们分别进行 FST和 GWAS 分析，使用 黑壳牡蛎 和 白壳牡蛎 作为群体标签。<br>FST 分析：我们将所有牡蛎按壳色分成两个群体，分别是 黑壳牡蛎 和 白壳牡蛎。通过计算 FST 值，我们能发现这两个群体之间在基因组中哪些区域的差异最大。如果某个基因区域的 FST 值很高，说明这个区域可能与这两个群体的遗传差异有关。<br>GWAS 分析：这里我们把牡蛎的壳色作为 表型，看看基因组中的哪些变异（SNP）与壳色相关。我们仍然用 黑壳牡蛎 和 白壳牡蛎 作为两组样本，进行统计分析，找出哪些基因变异可能影响壳色。<br>FST 和 GWAS 的区别<br>FST 分析 主要是比较两个群体（黑壳和白壳牡蛎）在基因组上的差异，找出遗传分化最大的区域。FST 是群体层面的分析，不直接与表型（如壳色）相关。<br>GWAS 分析 关注的是表型与基因型之间的关联，目的是找出影响牡蛎壳色的具体基因变异。在这个过程中，壳色作为表型，与基因变异建立直接关系。</p>
-<p>虽然 黑壳牡蛎 和 白壳牡蛎 都可以作为群体标签（FST）或表型分组（GWAS），但它们的分析目的不同：<br>FST 是用来研究群体之间的遗传分化，揭示哪些基因区域可能在两种牡蛎群体之间有显著差异。<br>GWAS 则是通过关联分析找出哪些基因变异直接影响牡蛎的壳色。<br>这两种方法可以互相补充，共同揭示基因和表型之间复杂的关系。</p>
-<h2 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h2><p>虽然 <strong>FST</strong> 和 <strong>GWAS</strong> 都涉及基因组和表型之间的关系，但它们的目的和侧重点其实是有区别的。虽然在 <strong>黑壳牡蛎</strong> 和 <strong>白壳牡蛎</strong> 的例子中，确实它们的分析结果看起来有些相似，但 <strong>FST</strong> 和 <strong>GWAS</strong> 的核心概念还是有本质区别的。</p>
-<p>我们来逐一比较一下两者的侧重点，看看为什么它们的目的不同，即使在分析黑白壳差异时，结果可能会有交集。</p>
-<h3 id="🧬-FST-和-GWAS-的核心区别"><a href="#🧬-FST-和-GWAS-的核心区别" class="headerlink" title="🧬 FST 和 GWAS 的核心区别"></a>🧬 <strong>FST 和 GWAS 的核心区别</strong></h3><ol>
-<li><p><strong>FST 分析</strong>：<br>FST 用来衡量<strong>不同群体之间的遗传分化</strong>。它通过比较群体间的基因频率差异，找出哪些区域在群体之间分化最显著。重点是研究群体 <strong>A</strong> 和 <strong>B</strong>（比如黑壳和白壳牡蛎）是否有不同的遗传背景，尤其是群体间的遗传结构。</p>
-<ul>
-<li><strong>目标</strong>：找出群体间在基因组上最显著的分化区域。</li>
-<li><strong>侧重点</strong>：群体差异、基因变异的分布，通常不直接关注与某个特定表型（如壳色）的关联。</li>
-</ul>
-<p>举个例子：</p>
-<ul>
-<li><strong>黑壳和白壳牡蛎</strong>之间，可能会发现某些基因区域的 <strong>FST 值很高</strong>，说明这些区域在两个群体之间的遗传差异很大，但这并不意味着这些基因变异一定会影响壳色。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<ol start="2">
-<li><p><strong>GWAS 分析</strong>：<br>GWAS 的目的是研究基因型和<strong>特定表型</strong>之间的关联，它是通过统计分析来找出与表型（比如牡蛎壳色）相关的遗传变异。在 <strong>GWAS</strong> 中，重点是找出哪些特定的 <strong>基因变异</strong> 直接影响了我们关注的 <strong>表型</strong>（比如壳色的白色或黑色）。</p>
-<ul>
-<li><strong>目标</strong>：找出与表型（如壳色）相关的基因变异。</li>
-<li><strong>侧重点</strong>：基因与表型（壳色）之间的直接关系。</li>
-</ul>
-<p>举个例子：</p>
-<ul>
-<li>在 <strong>GWAS 分析</strong> 中，我们的目标是找出哪些 <strong>SNP</strong> 直接与壳色（黑色或白色）相关。如果某个基因区域的 <strong>SNP</strong> 在黑壳牡蛎和白壳牡蛎之间有显著差异，那么我们会认为这个变异可能与壳色性状相关。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="🧩-区别的关键点："><a href="#🧩-区别的关键点：" class="headerlink" title="🧩 区别的关键点："></a>🧩 <strong>区别的关键点</strong>：</h3><table>
-<thead>
-<tr>
-<th>项目</th>
-<th>FST</th>
-<th>GWAS</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>目标</strong></td>
-<td>研究群体间的遗传分化，找出群体间差异最大的基因区域</td>
-<td>找出与特定表型（如壳色）相关的基因变异</td>
-</tr>
-<tr>
-<td><strong>关注点</strong></td>
-<td>群体的遗传结构差异</td>
-<td>基因与表型的直接关联</td>
-</tr>
-<tr>
-<td><strong>分析方式</strong></td>
-<td>比较不同群体的基因频率差异，计算 <strong>FST 值</strong></td>
-<td>将基因型数据与表型数据结合，进行 <strong>关联分析</strong></td>
-</tr>
-<tr>
-<td><strong>最终结果</strong></td>
-<td>找出遗传分化较大的区域</td>
-<td>找到影响表型的基因变异（SNP）</td>
-</tr>
-</tbody></table>
-<h3 id="🌿-简单总结："><a href="#🌿-简单总结：" class="headerlink" title="🌿 简单总结："></a>🌿 <strong>简单总结：</strong></h3><ul>
-<li><p><strong>FST</strong> 分析关注的是群体之间<strong>遗传结构</strong>的差异，它告诉你 <strong>哪些基因区域</strong> 在不同群体（黑壳和白壳牡蛎）之间分化最大，<strong>但并不直接关注这些区域是否与表型（壳色）相关</strong>。</p>
-</li>
-<li><p><strong>GWAS</strong> 直接关注的是基因和表型之间的关联，它告诉你 <strong>哪些特定的基因变异</strong> 与壳色变化有直接关系，<strong>并且是针对表型的分析</strong>。</p>
-</li>
-</ul>
-<h3 id="🔄-为什么这两者有重叠但不完全相同："><a href="#🔄-为什么这两者有重叠但不完全相同：" class="headerlink" title="🔄 为什么这两者有重叠但不完全相同："></a>🔄 <strong>为什么这两者有重叠但不完全相同：</strong></h3><ul>
-<li>如果你在 <strong>FST 分析</strong> 中发现某个区域的 <strong>FST 值很高</strong>，这表明该区域可能在群体间存在显著差异。</li>
-<li>然后，如果你再做 <strong>GWAS</strong> 分析，发现这个区域的变异确实与 <strong>壳色</strong> 相关，那么就可以确定这个基因区域<strong>可能影响壳色</strong>，而且它是群体分化的热点。</li>
-</ul>
-<p>因此，<strong>FST</strong> 主要是用来筛选出潜在的遗传分化区域，而 <strong>GWAS</strong> 是用来验证这些区域与表型的关联。</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<p>下面我们进行相关的FST分析</p>
-<h1 id="二、FST计算"><a href="#二、FST计算" class="headerlink" title="二、FST计算"></a>二、FST计算</h1><p>最头疼的一步，布置环境，安装分析所用的软件包。<br>plink1.9和plink2.0均未成功分析，遂使用vcftools进行处理。</p>
-<p>文件为 Filter.snp.vcf.gz，如果需要解压就使用下面方法</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">gunzip  Filter.snp.vcf.gz<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>vcftools使用mamba构建新环境</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">conda install -n base -c conda-forge mamba  # 安装mamba
-mamba create -n vcftools_env -c bioconda vcftools<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">vcftools --vcf Filter.snp.vcf \
-         --weir-fst-pop BM.txt \
-         --weir-fst-pop WM.txt \
-         --out BM_vs_WM_fst<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p>得出BM_vs_WM_fst.weir.fst文件</p>
-<p>然后在R中进行绘图。</p>
-<pre class="line-numbers language-R" data-language="R"><code class="language-R">library(ggplot2)
-fst %
-  summarise(center = (min(pos_cum) + max(pos_cum)) / 2)
-
-# 设置显著阈值线（例如 top 1%）
-fst_threshold %  # 调整抽样比例(1-5%)
-  ungroup()
-
-# 2. 直接使用plot_ly() + scattergl模式（最佳性能）
-p %
-layout(
-  xaxis = list(
-    title = "Chromosome",
-    tickvals = axis_df$center,
-    ticktext = axis_df$CHROM
-  ),
-  yaxis = list(title = "FST"),
-  hoverlabel = list(bgcolor = "white")
-) %&gt;%
-config(
-  displayModeBar = TRUE,
-  scrollZoom = TRUE
-)
-
-p<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="/images/19/3703765276.png" alt="mdvvhepw.png"><br>结果文件200多M，太大了，浏览器卡的几乎无法正常浏览，遂放弃。</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<blockquote>
-<p>下面尝试过滤后再分析</p>
-</blockquote>
-<p>画图结果显示SNP位点过多，需要再次处理</p>
-<p>文件其实已经是公司过滤过的数据了，数据量较大，再过滤一次。</p>
-<h2 id="1-使用-vcftools-或-bcftools-进行-SNP-过滤"><a href="#1-使用-vcftools-或-bcftools-进行-SNP-过滤" class="headerlink" title="1. 使用 vcftools 或 bcftools 进行 SNP 过滤"></a>1. 使用 vcftools 或 bcftools 进行 SNP 过滤</h2><pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash"># 基本质量过滤
- vcftools --vcf  Filter.snp.vcf \
-         --minQ 30 \
-         --min-meanDP 10 \
-         --max-meanDP 100 \
-         --min-alleles 2 \
-         --max-alleles 2 \
-         --maf 0.05 \
-         --max-missing 0.9 \
-         --recode \
-         --out filtered<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h2 id="2-使用-PLINK-进行FST计算"><a href="#2-使用-PLINK-进行FST计算" class="headerlink" title="2. 使用 PLINK 进行FST计算"></a>2. 使用 PLINK 进行FST计算</h2><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span> 转换为 PLINK 格式</span>
-plink --vcf filtered.recode.vcf --make-bed --out filtered_plink
-
-<span class="token title important"><span class="token punctuation">##</span> 计算群体间 FST</span>
-plink --bfile filtered_plink \
-      --fst \
-      --within pop_info_fixed.tsv \
-      --out fst_results \
-      --allow-extra-chr<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="3-筛选显著-FST-位点"><a href="#3-筛选显著-FST-位点" class="headerlink" title="3.筛选显著 FST 位点"></a>3.筛选显著 FST 位点</h2><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 提取 FST &gt; 0.05 的位点（阈值根据研究设定）</span>
- awk '$5 &gt; 0.05 {print $2}' fst_results.fst &gt; high_fst_snps.txt 
-
-<span class="token title important"><span class="token punctuation">##</span> 统计高 FST 位点数量</span>
- wc -l high_fst_snps.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="4-可视化-FST-分布（R-代码）"><a href="#4-可视化-FST-分布（R-代码）" class="headerlink" title="4.可视化 FST 分布（R 代码）"></a>4.可视化 FST 分布（R 代码）</h2><pre class="line-numbers language-R" data-language="R"><code class="language-R">library(ggplot2)
-
-# 读取结果
-fst %
-  # 布局设置
-  layout(
-    legend = list(
-      font = list(size = 10),  # 统一增大所有图例项字体
-      itemclick = TRUE        # 可选：禁用图例项点击隐藏
-    ),
-    title = list(
-      text = "Genome-wide FST Manhattan Plot",
-      x = 0.05, y = 0.98
-    ),
-    xaxis = list(
-      title = "Genomic Position (Mb)",
-      showgrid = FALSE,
-      tickvals = plot_data %&gt;% 
-        group_by(CHROM) %&gt;% 
-        summarise(center = median(POS/1e6)) %&gt;% 
-        pull(center),
-        ticktext = main_chroms,
-      # ticktext = str_remove(main_chroms, "NC_")
-        tickangle = -45,  # ← 关键参数：标签倾斜45度（负号表示逆时针）
-        tickfont = list(size = 8),  # 可选：调整标签字体大小
-        ticklen = 5,  # 刻度线长度
-        tickwidth = 1,  # 刻度线粗细
-        showgrid = FALSE
-    ),
-    yaxis = list(
-      title = "Weighted FST",
-      range = c(0, max(plot_data$WEIGHTED_FST) * 1.1)
-    ),
-    hoverlabel = list(
-      bgcolor = "white",
-      font = list(size = 10)
-    ),
-    legend = list(
-      orientation = "h",
-      x = 0.5, y = 1.1,
-      bgcolor = "rgba(255,255,255,0.8)")
-    ,
-    margin = list(t = 80)  # 顶部留白
-  ) %&gt;%
-  # 交互功能
-  highlight(
-    "plotly_selected",
-    opacityDim = 0.2,
-    selected = attrs_selected(
-      marker = list(size = 15, color = "black"),
-      textfont = list(weight = "bold"))
-  )
-
-# 5. 输出结果 --------------------------------------------------------------
-# 显示图表
-p<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="/images/19/1902442139.png" alt="mdvwczfp.png"></p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<p>可以看到有些窗口FST值较高，我想筛选SNP进行验证，如何继续做呢？</p>
-]]></content>
-      <categories>
-        <category>多组学</category>
-        <category>重测序</category>
-      </categories>
-  </entry>
-  <entry>
     <title>ANNOVAR | 变异注释</title>
     <url>/2025/09/16/53/</url>
     <content><![CDATA[<h2 id="一、简介"><a href="#一、简介" class="headerlink" title="一、简介"></a>一、简介</h2><p>会得到一系列变异数据，这些变异数据只是告诉我们在基因组的某个位置发生了一段序列的改变，至于这个改变会不会影响生物学功能，我们并不清楚。而注释就是将基因组的序列变异数据转化为我们更关心的生物学功能变化的信息。</p>
@@ -1736,6 +1402,114 @@ F <span class="token arrow operator">--&gt;</span> I
       </categories>
   </entry>
   <entry>
+    <title>410随身WiFi棒子Debian刷入青龙教程</title>
+    <url>/2025/09/25/56/</url>
+    <content><![CDATA[<p>备份教程<br>刷Debian前请先备份（非常重要！！！）</p>
+<p>弄成砖了是可以刷回来的，大佬可忽略</p>
+<p>备份教程：	<a href="https://xiao54.com/linux/32.html">https://xiao54.com/linux/32.html</a><br>视频教程：	<a href="https://www.bilibili.com/blackboard/webplayer/mbplayer.html?aid=326276265&amp;bvid=BV1iw411J7BG&amp;cid=1406661980&amp;p=1">https://www.bilibili.com/blackboard/webplayer/mbplayer.html?aid=326276265&amp;bvid=BV1iw411J7BG&amp;cid=1406661980&amp;p=1</a><br>下载链接：	<a href="https://www.123pan.com/s/354uVv-z7YU3.html">https://www.123pan.com/s/354uVv-z7YU3.html</a><br>先进入fastboot模式，输入指令</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">adb reboot bootloader<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>410随身WiFi棒子Debian刷入青龙教程<br>SSH账号密码<br>解压要刷的Debian系统，然后点击一件刷入</p>
+<p>cmd登录地址:ssh <a href="mailto:root@10.42.0.1">root@10.42.0.1</a> 密码:1313144</p>
+<p>SSH软件:IP:10.42.0.1 用户名:root 密码:1313144</p>
+<p>热点:4G-wifi 密码:12345678</p>
+<p>更新驱动<br>更新驱动视频教程：<a href="https://player.bilibili.com/">https://player.bilibili.com/</a></p>
+<p>更新驱动前注意事项：需要安装vivo9008drivers.exe软件，如安装过请忽略</p>
+<p>1、在【Android Device】下查看有没有【Android Composite ADB Interface】这个驱动，如果不是，右键【更新驱动程序】-【浏览我的计算机以查找驱动程序软件】-【让我从计算机上的可用驱动程序列表中选取(L)】，选择【Android Composite ADB Interface或者USB Composite Device】-【下一步】</p>
+<p>2、插入棒子会显示一个未知设备或者RNDIS，不确定是那个就先拔掉棒子，然后重新插入</p>
+<p>3、下拉找到【网络适配器】-厂商下拉选择【Microsoft】型号下拉选择【基于远程 NDIS 的Internet 共享设备】-【下一步】-即可完成安装驱动</p>
+<p>网络编辑<br>1、现在就用键盘上的方向键编辑，鼠标就不能用了</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">nmtui<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>2、把热点删除，因为他现在不支持WiFi和热点一起开启，所以要把热点删除连接WiFi给debian系统通网才能继续操作</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">true &gt; /etc/apt/sources.list.d/mobian.list<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>3、更新软件包</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">sudo apt-get update<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>4、更新curl wget</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">apt install curl wget<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>5、安装docker系统</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">apt install docker.io<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>6、docker设置随服务启动而自启动</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">systemctl enable docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>7、启动docker</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">systemctl start docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>给docker设置加速代理<br>1、创建文件夹</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">sudo mkdir -p /etc/docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>2、填入加速代理</p>
+<p>如不能使用则代理失效了，请更换代理，更换里面的链接即可。</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">sudo tee /etc/docker/daemon.json  /sys/kernel/debug/usb/ci_hdrc.0/role
+安装1panel代码
+```html
+curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh &amp;&amp; bash quick_start.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>近期商家为了成本emmmc质量都不太行下面这个指令查看寿命</p>
+<p>查看棒子颗粒寿命<br>查看内存寿命如果显示是0x01寿命就很好，如果显示0+09等越来越远的寿命也就离挂不远了：</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">cat /sys/class/mmc_host/mmc0/mmc0\:0001/life_time<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="/images/56/477017655.png" alt="mfzbzmj7.png"></p>
+<p>410随身WiFi棒子Debian刷入青龙教程<br>关灯方法一<br>1、先安装dialog</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">apt install dialog<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>2、然后执行一键命令</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">curl -L gitee.com/ojf6ii/led-control-script/raw/master/led2.sh -o /bin/ledctl &amp;&amp; chmod 755 /bin/ledctl<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>3、下载完成后输入指令即可打开界面</p>
+<p>ledctl<br>关灯方法二<br>1、打开文件夹</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">vi /etc/rc.local<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>2、粘贴以下代码保存设置开机自启关闭led，重启即可生效</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">echo none &gt; /sys/class/leds/red\:os/trigger
+echo none &gt; /sys/class/leds/blue\:wifi/trigger
+echo none &gt; /sys/class/leds/green\:internet/trigger<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>]]></content>
+      <categories>
+        <category>WIFI</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>openipc goke7205v200</title>
+    <url>/2024/12/03/7/</url>
+    <content><![CDATA[<h1 id="保存原始固件"><a href="#保存原始固件" class="headerlink" title="保存原始固件"></a>保存原始固件</h1><hr>
+<h2 id="备份您的原始固件，请不要跳过这个步骤！"><a href="#备份您的原始固件，请不要跳过这个步骤！" class="headerlink" title="备份您的原始固件，请不要跳过这个步骤！"></a>备份您的原始固件，请不要跳过这个步骤！</h2><p>OpenIPC U-Boot 会覆盖原始的加密分区，因此无法恢复为出厂固件，除非您拥有此特定摄像机的完整闪存备份！要创建完整的固件备份，请启动 TFTP 服务器并在引导加载程序 shell 中执行这些命令。</p>
+<blockquote>
+<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python"> # Enter commands line by line! Do not copy and paste multiple lines at once!
+setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105
+mw.b 0x42000000 0xff 0x1000000
+sf probe 0; sf read 0x42000000 0x0 0x1000000
+tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
+# if there is no tftpput but tftp then run this instead
+ tftp 0x42000000 backup-gk7205v200-nor16m.bin 0x1000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<p>有关详细信息，请参阅项目 wiki 中的安装说明。</p>
+<h1 id="烧录完整的-OpenIPC-固件"><a href="#烧录完整的-OpenIPC-固件" class="headerlink" title="烧录完整的 OpenIPC 固件"></a>烧录完整的 OpenIPC 固件</h1><h2 id="下载-OpenIPC-固件-Ultimate"><a href="#下载-OpenIPC-固件-Ultimate" class="headerlink" title="下载 OpenIPC 固件 (Ultimate)"></a>下载 OpenIPC 固件 (Ultimate)</h2><p>for Goke GK7205V200 with 16MB NOR flash</p>
+<p>完整的固件由引导加载程序、内核和根文件系统组成，也适用于使用编程器烧写闪存芯片。 请注意，完整固件不包含预设环境。你还需要添加自己的MAC地址、IP地址等设置。</p>
+<blockquote>
+<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105<br>mw.b 0x42000000 0xff 0x1000000<br>tftpboot 0x42000000 openipc-gk7205v200-ultimate-16mb.bin</p>
+<h1 id="if-there-is-no-tftpboot-but-tftp-then-run-this-instead"><a href="#if-there-is-no-tftpboot-but-tftp-then-run-this-instead" class="headerlink" title="if there is no tftpboot but tftp then run this instead"></a>if there is no tftpboot but tftp then run this instead</h1><p>tftp 0x42000000 openipc-gk7205v200-ultimate-16mb.bin<br>sf probe 0; sf lock 0;<br>sf erase 0x0 0x1000000; sf write 0x42000000 0x0 0x1000000<br>reset</p>
+</blockquote>
+<p>摄像机将自动重启并使用全新的引导加载程序启动。</p>
+<p>注意准备中断并进入引导程序的命令行。 在引导加载程序的命令行中，根据您的闪存大小和类型重新映射 ROM 分区。</p>
+<blockquote>
+<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>run setnor16m</p>
+</blockquote>
+<h1 id="恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。"><a href="#恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。" class="headerlink" title="恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。"></a>恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。</h1><p>在端口 85 ( <a href="http://192.168.15.169:85/">http://192.168.15.169:85/</a> ) 上打开摄像机的 Web 界面并使用登录root和密码12345登录。登录后将要求您设置自己的安全密码。通过以下方式访问摄像机ssh 或 UART 使用与上述相同的登录名和密码。</p>
+<hr>
+<p>打开web界面后，更新固件，更新完后调整majestic、sensor与设备型号对应。</p>
+<h1 id="majestic"><a href="#majestic" class="headerlink" title="majestic"></a>majestic</h1><p>openipc未开源部分。</p>
+]]></content>
+      <categories>
+        <category>折腾</category>
+      </categories>
+      <tags>
+        <tag>openipc</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>GPT 学术优化</title>
     <url>/2024/12/06/8/</url>
     <content><![CDATA[<h1 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h1><p>安装方法I：直接运行 (Windows, Linux or MacOS)<br>下载项目</p>
@@ -1879,195 +1653,6 @@ F <span class="token arrow operator">--&gt;</span> I
 ]]></content>
       <categories>
         <category>默认分类</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>Hexo + Butterfly 个人博客搭建</title>
-    <url>/2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/</url>
-    <content><![CDATA[<h1 id="Hexo-Butterfly-个人博客搭建"><a href="#Hexo-Butterfly-个人博客搭建" class="headerlink" title="Hexo + Butterfly 个人博客搭建"></a>Hexo + Butterfly 个人博客搭建</h1><p>在用了一周左右的时间搭建博客，沉浸于试效果、改 bug、试效果、改 bug……的循环后，我还是决定写一篇文章来记录一下，省得未来的自己再走一遍这痛苦的过程。</p>
-<hr>
-<h2 id="一、Hexo-静态网页生成"><a href="#一、Hexo-静态网页生成" class="headerlink" title="一、Hexo 静态网页生成"></a>一、Hexo 静态网页生成</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="cmd"></p>
-<h3 id="1-Node-js-安装"><a href="#1-Node-js-安装" class="headerlink" title="1. Node.js 安装!"></a>1. Node.js 安装!</h3><p>首先我们需要下载 Node.js<br>👉 <a href="https://nodejs.org/">Node.js — 在任何地方运行 JavaScript</a></p>
-<p>安装好之后我们可以输入以下指令，如果都能正常输出版本号则安装成功。</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">node</span> <span class="token parameter variable">-v</span>
-<span class="token function">npm</span> <span class="token parameter variable">-v</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<hr>
-<h3 id="2-Git-安装"><a href="#2-Git-安装" class="headerlink" title="2. Git 安装"></a>2. Git 安装</h3><p>Git 可是个好东西，程序员必备。<br>官网在这里：<a href="https://git-scm.com/downloads">Git - Downloading Package</a></p>
-<p>验证是否安装成功：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> <span class="token parameter variable">--version</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>正常显示版本即可。</p>
-<hr>
-<h3 id="3-Hexo-安装"><a href="#3-Hexo-安装" class="headerlink" title="3. Hexo 安装"></a>3. Hexo 安装</h3><p>在自己心仪的文件夹下（如 <code>E:/hexo</code>），鼠标右击选择 <strong>Git Bash Here</strong>，依次执行以下命令：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> hexo-cli <span class="token parameter variable">-g</span>
-<span class="token function">npm</span> <span class="token function">install</span> hexo <span class="token parameter variable">--save</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>如果已经安装过 hexo 或不确定装没装过也没关系，装过的执行完会显示 <em>update</em>。</p>
-<p>查看版本：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">hexo <span class="token parameter variable">-v</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>正常显示版本号说明安装成功。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251009212637204.png" alt="image-20251009212637204"></p>
-<hr>
-<h2 id="二、Hexo-初始化"><a href="#二、Hexo-初始化" class="headerlink" title="二、Hexo 初始化"></a>二、Hexo 初始化</h2><p>首先确保你要存放 Hexo 博客的文件夹下是空的。<br>随后在该文件夹右键选择 <strong>Git Bash Here</strong>，执行：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">hexo init<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>执行完毕后就能看到 Hexo 框架的文件结构。</p>
-<p>生成一个初始页面测试：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">hexo g <span class="token operator">&amp;&amp;</span> hexo s<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>在页面启动后，按住 <strong>Ctrl</strong> 点击终端中显示的<br><code>http://localhost:4000/</code>  即可自动跳转至浏览器预览。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251009212745176.png" alt="image-20251009212745176"></p>
-<p>当你看到 Hexo 从地平线升起时，你就成功创建了一个本地静态博客网页。</p>
-<hr>
-<h2 id="三、部署到-GitHub"><a href="#三、部署到-GitHub" class="headerlink" title="三、部署到 GitHub"></a>三、部署到 GitHub</h2><h3 id="1-创建仓库"><a href="#1-创建仓库" class="headerlink" title="1. 创建仓库"></a>1. 创建仓库</h3><p>在 GitHub 创建一个公共仓库，命名为：</p>
-<pre class="line-numbers language-none"><code class="language-none">username.github.io<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h3 id="2-配置账户并生成-SSH-密钥"><a href="#2-配置账户并生成-SSH-密钥" class="headerlink" title="2. 配置账户并生成 SSH 密钥"></a>2. 配置账户并生成 SSH 密钥</h3><p>在 Git Bash 中输入以下指令：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> config <span class="token parameter variable">--global</span> user.name <span class="token string">"XXXX"</span>                       <span class="token comment"># 配置个人信息-username</span>
-<span class="token function">git</span> config <span class="token parameter variable">--global</span> user.email <span class="token string">"XXXXXXXXX@XXX.com"</span>         <span class="token comment"># 配置个人信息-useremail</span>
-ssh-keygen <span class="token parameter variable">-t</span> rsa <span class="token parameter variable">-C</span> <span class="token string">"XXXXXXXXX@XXX.com"</span>	               <span class="token comment"># 生成密钥</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<p>生成过程中直接回车直到完成即可。<br>默认路径为：</p>
-<pre class="line-numbers language-none"><code class="language-none">C:\Users\用户名\.ssh\id_rsa.pub<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>打开 GitHub 设置 → 添加 SSH 密钥 → 将文件内容粘贴进去。</p>
-<hr>
-<h3 id="3-添加密钥到本地-Git"><a href="#3-添加密钥到本地-Git" class="headerlink" title="3. 添加密钥到本地 Git"></a>3. 添加密钥到本地 Git</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">eval</span> <span class="token string">"<span class="token variable"><span class="token variable">$(</span>ssh-agent <span class="token parameter variable">-s</span><span class="token variable">)</span></span>"</span>
-ssh-add ~/.ssh/id_rsa<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>测试连接：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ssh</span> <span class="token parameter variable">-T</span> git@github.com<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>若得到以下回复则说明连接成功。</p>
-<pre class="line-numbers language-text" data-language="text"><code class="language-text">Hi username! You've successfully authenticated...<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<hr>
-<h3 id="4-确保使用正确的密钥"><a href="#4-确保使用正确的密钥" class="headerlink" title="4. 确保使用正确的密钥"></a>4. 确保使用正确的密钥</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> config <span class="token parameter variable">--global</span> core.sshCommand <span class="token string">"ssh -i ~/.ssh/id_rsa"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>若出现以下错误：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">The authenticity of <span class="token function">host</span> <span class="token string">'github.com (20.205.243.166)'</span> can't be established.
-Host key verification failed.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>说明 SSH 客户端未信任 GitHub 的主机密钥。执行以下命令修复：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">touch</span> ~/.ssh/known_hosts
-<span class="token function">chmod</span> <span class="token number">644</span> ~/.ssh/known_hosts
-ssh-keyscan <span class="token parameter variable">-t</span> ed25519 github.com <span class="token operator">&gt;&gt;</span> ~/.ssh/known_hosts<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<p>再次执行 <code>ssh -T git@github.com</code> 即可。</p>
-<hr>
-<h3 id="5-修改-Hexo-配置文件"><a href="#5-修改-Hexo-配置文件" class="headerlink" title="5. 修改 Hexo 配置文件"></a>5. 修改 Hexo 配置文件</h3><p>打开站点配置文件 <code>_config.yml</code>，修改 <code>deploy</code> 部分如下：</p>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># Deployment</span>
-<span class="token comment">## Docs: https://hexo.io/docs/deployment.html</span>
-<span class="token key atrule">deploy</span><span class="token punctuation">:</span>
-  <span class="token key atrule">type</span><span class="token punctuation">:</span> git
-  <span class="token key atrule">repo</span><span class="token punctuation">:</span> git@github.com<span class="token punctuation">:</span>XXXXX/XXXXX.github.io.git
-  <span class="token key atrule">branch</span><span class="token punctuation">:</span> main<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>然后执行 Hexo 三连：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">hexo cl <span class="token operator">&amp;&amp;</span> hexo g <span class="token operator">&amp;&amp;</span> hexo d<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>此时即可通过：</p>
-<pre class="line-numbers language-none"><code class="language-none">https://username.github.io<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>访问你的博客啦！</p>
-<hr>
-<h2 id="四、安装-Butterfly-主题"><a href="#四、安装-Butterfly-主题" class="headerlink" title="四、安装 Butterfly 主题"></a>四、安装 Butterfly 主题</h2><h3 id="1-下载主题文件"><a href="#1-下载主题文件" class="headerlink" title="1. 下载主题文件"></a>1. 下载主题文件</h3><p>在 Git 中执行以下命令安装 Butterfly 主题：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/jerryc127/hexo-theme-butterfly.git themes/butterfly<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>如果没有修改代码的需求，也可以使用 npm 安装：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> i hexo-theme-butterfly<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<hr>
-<h3 id="2-安装渲染器"><a href="#2-安装渲染器" class="headerlink" title="2. 安装渲染器"></a>2. 安装渲染器</h3><p>Butterfly 主题依赖 <code>pug</code> 和 <code>stylus</code> 渲染器，否则启动后访问会报错。</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> hexo-renderer-pug hexo-renderer-stylus <span class="token parameter variable">--save</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<hr>
-<h3 id="3-启用主题"><a href="#3-启用主题" class="headerlink" title="3. 启用主题"></a>3. 启用主题</h3><p>在站点配置文件 <code>_config.yml</code> 中找到 <code>theme</code> 字段，修改为：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">theme: butterfly<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>然后再次 Hexo 三连：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">hexo cl <span class="token operator">&amp;&amp;</span> hexo g <span class="token operator">&amp;&amp;</span> hexo s<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>就完成了主题替换！</p>
-<hr>
-<h2 id="五、Butterfly-主题美化"><a href="#五、Butterfly-主题美化" class="headerlink" title="五、Butterfly 主题美化"></a>五、Butterfly 主题美化</h2><h3 id="1-网站资料修改"><a href="#1-网站资料修改" class="headerlink" title="1. 网站资料修改"></a>1. 网站资料修改</h3><p>修改网站标题、副标题、邮箱等个人信息，编辑 <code>_config.yml</code> 中对应字段。</p>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>title</td>
-<td>网站标题</td>
-</tr>
-<tr>
-<td>subtitle</td>
-<td>描述</td>
-</tr>
-<tr>
-<td>description</td>
-<td>网站描述</td>
-</tr>
-<tr>
-<td>keywords</td>
-<td>网站关键词，支持多个</td>
-</tr>
-<tr>
-<td>author</td>
-<td>作者名</td>
-</tr>
-<tr>
-<td>language</td>
-<td>网站语言（常用 zh-Hans 或 zh-CN）</td>
-</tr>
-<tr>
-<td>timezone</td>
-<td>时区（如 Asia/Shanghai）</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="2-背景图片"><a href="#2-背景图片" class="headerlink" title="2. 背景图片"></a>2. 背景图片</h3><p>修改 <code>_config.yml</code> 中的 <code>background</code> 字段即可。</p>
-<hr>
-<h3 id="3-更多美化参考"><a href="#3-更多美化参考" class="headerlink" title="3. 更多美化参考"></a>3. 更多美化参考</h3><ul>
-<li><a href="https://blog.csdn.net/">【Hexo系列】【7】Butterfly主题使用及美化 - CSDN 博客</a></li>
-<li><a href="https://tangzhiyuan.top/">基于 Hexo 从零开始搭建个人博客（五） | 唐志远</a></li>
-</ul>
-<p><strong>原文链接</strong>：<a href="https://xbxyftx.top/2025/01/26/butterfly%E4%B8%BB%E9%A2%98%E7%BE%8E%E5%8C%96/index.html">https://xbxyftx.top/2025/01/26/butterfly%E4%B8%BB%E9%A2%98%E7%BE%8E%E5%8C%96/index.html</a>  </p>
-]]></content>
-      <categories>
-        <category>默认分类</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>LD-Block 连锁不平衡分析</title>
-    <url>/2025/10/31/wen-jian-chu-li-yu-shu-ju-shai-xuan-liu-cheng/</url>
-    <content><![CDATA[<h1 id="文件处理与数据筛选流程"><a href="#文件处理与数据筛选流程" class="headerlink" title="文件处理与数据筛选流程"></a>文件处理与数据筛选流程</h1><h2 id="流程概述"><a href="#流程概述" class="headerlink" title="流程概述"></a>流程概述</h2><p>从两个基因组数据文件中筛选共有基因位点，生成TSV格式结果。</p>
-<h2 id="处理步骤"><a href="#处理步骤" class="headerlink" title="处理步骤"></a>处理步骤</h2><h3 id="1-文件格式标准化"><a href="#1-文件格式标准化" class="headerlink" title="1. 文件格式标准化"></a>1. 文件格式标准化</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">dos2unix color_GWAS.anno.xls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><strong>作用：</strong> Windows转Unix换行符</p>
-<h3 id="2-CSV转TSV格式"><a href="#2-CSV转TSV格式" class="headerlink" title="2. CSV转TSV格式"></a>2. CSV转TSV格式</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sed</span> <span class="token string">'1s/^\xEF\xBB\xBF//'</span> 红标0.7与黄标与GWAS共有.csv <span class="token operator">|</span> <span class="token function">tr</span> <span class="token string">','</span> <span class="token string">'\t'</span> <span class="token operator">&gt;</span> 红标0.7与黄标与GWAS共有.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><strong>作用：</strong> 去除BOM头，逗号转制表符</p>
-<h3 id="3-数据筛选"><a href="#3-数据筛选" class="headerlink" title="3. 数据筛选"></a>3. 数据筛选</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'BEGIN {OFS="\t"} 
-     NR==FNR {if(FNR&gt;1) start_values[$2] = 1; next} 
-     FNR==1 {print; next} 
-     $2 in start_values'</span> color_GWAS.anno.xls 红标0.7与黄标与GWAS共有.tsv <span class="token operator">&gt;</span> filtered_three2one.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p><strong>逻辑：</strong></p>
-<ul>
-<li>读取第一个文件的<code>第二列</code>作为筛选依据</li>
-<li><code>保留</code>第二个文件中<code>匹配</code>的数据行</li>
-<li><code>输出</code>制表符分隔的结果</li>
-</ul>
-<h2 id="文件说明"><a href="#文件说明" class="headerlink" title="文件说明"></a>文件说明</h2><ul>
-<li><strong>输入：</strong> color_GWAS.anno.xls, 红标0.7与黄标与GWAS共有.csv</li>
-<li><strong>输出：</strong> filtered_three2one.tsv（共有位点数据）</li>
-</ul>
-<h2 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h2><p>数据整合筛选、多源数据筛选、文件格式标准化。</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
       </categories>
   </entry>
   <entry>
@@ -3517,6 +3102,34 @@ perl table_annovar.pl input.avinput Cgigasdb/ <span class="token punctuation">\<
     <span class="token parameter variable">-csvout</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h2 id=""><a href="#" class="headerlink" title=""></a></h2><p>本流程提供了从原始SNP数据到功能注释的完整解决方案，特别针对长牡蛎等非模式生物。通过构建自定义数据库，可以有效地对物种特异性变异进行功能注释，为后续的群体遗传学和功能基因组学研究奠定基础。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>LD-Block 连锁不平衡分析</title>
+    <url>/2025/10/31/wen-jian-chu-li-yu-shu-ju-shai-xuan-liu-cheng/</url>
+    <content><![CDATA[<h1 id="文件处理与数据筛选流程"><a href="#文件处理与数据筛选流程" class="headerlink" title="文件处理与数据筛选流程"></a>文件处理与数据筛选流程</h1><h2 id="流程概述"><a href="#流程概述" class="headerlink" title="流程概述"></a>流程概述</h2><p>从两个基因组数据文件中筛选共有基因位点，生成TSV格式结果。</p>
+<h2 id="处理步骤"><a href="#处理步骤" class="headerlink" title="处理步骤"></a>处理步骤</h2><h3 id="1-文件格式标准化"><a href="#1-文件格式标准化" class="headerlink" title="1. 文件格式标准化"></a>1. 文件格式标准化</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">dos2unix color_GWAS.anno.xls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>作用：</strong> Windows转Unix换行符</p>
+<h3 id="2-CSV转TSV格式"><a href="#2-CSV转TSV格式" class="headerlink" title="2. CSV转TSV格式"></a>2. CSV转TSV格式</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sed</span> <span class="token string">'1s/^\xEF\xBB\xBF//'</span> 红标0.7与黄标与GWAS共有.csv <span class="token operator">|</span> <span class="token function">tr</span> <span class="token string">','</span> <span class="token string">'\t'</span> <span class="token operator">&gt;</span> 红标0.7与黄标与GWAS共有.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>作用：</strong> 去除BOM头，逗号转制表符</p>
+<h3 id="3-数据筛选"><a href="#3-数据筛选" class="headerlink" title="3. 数据筛选"></a>3. 数据筛选</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'BEGIN {OFS="\t"} 
+     NR==FNR {if(FNR&gt;1) start_values[$2] = 1; next} 
+     FNR==1 {print; next} 
+     $2 in start_values'</span> color_GWAS.anno.xls 红标0.7与黄标与GWAS共有.tsv <span class="token operator">&gt;</span> filtered_three2one.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>逻辑：</strong></p>
+<ul>
+<li>读取第一个文件的<code>第二列</code>作为筛选依据</li>
+<li><code>保留</code>第二个文件中<code>匹配</code>的数据行</li>
+<li><code>输出</code>制表符分隔的结果</li>
+</ul>
+<h2 id="文件说明"><a href="#文件说明" class="headerlink" title="文件说明"></a>文件说明</h2><ul>
+<li><strong>输入：</strong> color_GWAS.anno.xls, 红标0.7与黄标与GWAS共有.csv</li>
+<li><strong>输出：</strong> filtered_three2one.tsv（共有位点数据）</li>
+</ul>
+<h2 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h2><p>数据整合筛选、多源数据筛选、文件格式标准化。</p>
 ]]></content>
       <categories>
         <category>Linux</category>
@@ -5367,6 +4980,394 @@ gvcf/chr2/BM_S_1.g.vcf.gz<span aria-hidden="true" class="line-numbers-rows"><spa
 ]]></content>
       <categories>
         <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>2.重测序数据分析——初步整理</title>
+    <url>/2025/07/31/19/</url>
+    <content><![CDATA[<blockquote>
+<p>布置好服务器后就是对重测序数据进行分析了。<br>首先，看一下我手里的数据，其实已经有公司处理好的数据了，在此，我并未对重测序下机原始数据进行分析，而是使用的公司初步过滤的 Filter.snp.vcf.gz和.tbi文件。</p>
+</blockquote>
+<p>前期在写重测序相关的专利，看别人专利时，发现重测序可进行Fst计算分析，绘制的图类似GWAS的曼哈顿图，遂想模仿绘制，便有了下面的一系列相关内容。</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<h1 id="一、FST和GWAS："><a href="#一、FST和GWAS：" class="headerlink" title="一、FST和GWAS："></a>一、FST和GWAS：</h1><p>首先，先介绍一下FST和GWAS，二者都是遗传学中常用的分析方法，但它们的目的和分析方式不一样。</p>
+<ul>
+<li>FST（Fixation Index）是用来衡量不同群体之间的遗传差异。如果两个群体在某些基因上有很大的差异，FST 值就会很高，说明这两个群体在基因组上有很大分化。</li>
+<li>GWAS（全基因组关联研究）是用来找出基因和特定性状之间的关系。简单来说，它帮助我们发现哪些基因变异可能会影响某个性状（比如身高、疾病或壳色）。</li>
+</ul>
+<h2 id="以黑白壳长牡蛎为例"><a href="#以黑白壳长牡蛎为例" class="headerlink" title="以黑白壳长牡蛎为例"></a>以黑白壳长牡蛎为例</h2><p>假设我们研究的是黑壳和白壳长牡蛎，这两种牡蛎的壳色差异显著，我们分别进行 FST和 GWAS 分析，使用 黑壳牡蛎 和 白壳牡蛎 作为群体标签。<br>FST 分析：我们将所有牡蛎按壳色分成两个群体，分别是 黑壳牡蛎 和 白壳牡蛎。通过计算 FST 值，我们能发现这两个群体之间在基因组中哪些区域的差异最大。如果某个基因区域的 FST 值很高，说明这个区域可能与这两个群体的遗传差异有关。<br>GWAS 分析：这里我们把牡蛎的壳色作为 表型，看看基因组中的哪些变异（SNP）与壳色相关。我们仍然用 黑壳牡蛎 和 白壳牡蛎 作为两组样本，进行统计分析，找出哪些基因变异可能影响壳色。<br>FST 和 GWAS 的区别<br>FST 分析 主要是比较两个群体（黑壳和白壳牡蛎）在基因组上的差异，找出遗传分化最大的区域。FST 是群体层面的分析，不直接与表型（如壳色）相关。<br>GWAS 分析 关注的是表型与基因型之间的关联，目的是找出影响牡蛎壳色的具体基因变异。在这个过程中，壳色作为表型，与基因变异建立直接关系。</p>
+<p>虽然 黑壳牡蛎 和 白壳牡蛎 都可以作为群体标签（FST）或表型分组（GWAS），但它们的分析目的不同：<br>FST 是用来研究群体之间的遗传分化，揭示哪些基因区域可能在两种牡蛎群体之间有显著差异。<br>GWAS 则是通过关联分析找出哪些基因变异直接影响牡蛎的壳色。<br>这两种方法可以互相补充，共同揭示基因和表型之间复杂的关系。</p>
+<h2 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h2><p>虽然 <strong>FST</strong> 和 <strong>GWAS</strong> 都涉及基因组和表型之间的关系，但它们的目的和侧重点其实是有区别的。虽然在 <strong>黑壳牡蛎</strong> 和 <strong>白壳牡蛎</strong> 的例子中，确实它们的分析结果看起来有些相似，但 <strong>FST</strong> 和 <strong>GWAS</strong> 的核心概念还是有本质区别的。</p>
+<p>我们来逐一比较一下两者的侧重点，看看为什么它们的目的不同，即使在分析黑白壳差异时，结果可能会有交集。</p>
+<h3 id="🧬-FST-和-GWAS-的核心区别"><a href="#🧬-FST-和-GWAS-的核心区别" class="headerlink" title="🧬 FST 和 GWAS 的核心区别"></a>🧬 <strong>FST 和 GWAS 的核心区别</strong></h3><ol>
+<li><p><strong>FST 分析</strong>：<br>FST 用来衡量<strong>不同群体之间的遗传分化</strong>。它通过比较群体间的基因频率差异，找出哪些区域在群体之间分化最显著。重点是研究群体 <strong>A</strong> 和 <strong>B</strong>（比如黑壳和白壳牡蛎）是否有不同的遗传背景，尤其是群体间的遗传结构。</p>
+<ul>
+<li><strong>目标</strong>：找出群体间在基因组上最显著的分化区域。</li>
+<li><strong>侧重点</strong>：群体差异、基因变异的分布，通常不直接关注与某个特定表型（如壳色）的关联。</li>
+</ul>
+<p>举个例子：</p>
+<ul>
+<li><strong>黑壳和白壳牡蛎</strong>之间，可能会发现某些基因区域的 <strong>FST 值很高</strong>，说明这些区域在两个群体之间的遗传差异很大，但这并不意味着这些基因变异一定会影响壳色。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<ol start="2">
+<li><p><strong>GWAS 分析</strong>：<br>GWAS 的目的是研究基因型和<strong>特定表型</strong>之间的关联，它是通过统计分析来找出与表型（比如牡蛎壳色）相关的遗传变异。在 <strong>GWAS</strong> 中，重点是找出哪些特定的 <strong>基因变异</strong> 直接影响了我们关注的 <strong>表型</strong>（比如壳色的白色或黑色）。</p>
+<ul>
+<li><strong>目标</strong>：找出与表型（如壳色）相关的基因变异。</li>
+<li><strong>侧重点</strong>：基因与表型（壳色）之间的直接关系。</li>
+</ul>
+<p>举个例子：</p>
+<ul>
+<li>在 <strong>GWAS 分析</strong> 中，我们的目标是找出哪些 <strong>SNP</strong> 直接与壳色（黑色或白色）相关。如果某个基因区域的 <strong>SNP</strong> 在黑壳牡蛎和白壳牡蛎之间有显著差异，那么我们会认为这个变异可能与壳色性状相关。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="🧩-区别的关键点："><a href="#🧩-区别的关键点：" class="headerlink" title="🧩 区别的关键点："></a>🧩 <strong>区别的关键点</strong>：</h3><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>FST</th>
+<th>GWAS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>目标</strong></td>
+<td>研究群体间的遗传分化，找出群体间差异最大的基因区域</td>
+<td>找出与特定表型（如壳色）相关的基因变异</td>
+</tr>
+<tr>
+<td><strong>关注点</strong></td>
+<td>群体的遗传结构差异</td>
+<td>基因与表型的直接关联</td>
+</tr>
+<tr>
+<td><strong>分析方式</strong></td>
+<td>比较不同群体的基因频率差异，计算 <strong>FST 值</strong></td>
+<td>将基因型数据与表型数据结合，进行 <strong>关联分析</strong></td>
+</tr>
+<tr>
+<td><strong>最终结果</strong></td>
+<td>找出遗传分化较大的区域</td>
+<td>找到影响表型的基因变异（SNP）</td>
+</tr>
+</tbody></table>
+<h3 id="🌿-简单总结："><a href="#🌿-简单总结：" class="headerlink" title="🌿 简单总结："></a>🌿 <strong>简单总结：</strong></h3><ul>
+<li><p><strong>FST</strong> 分析关注的是群体之间<strong>遗传结构</strong>的差异，它告诉你 <strong>哪些基因区域</strong> 在不同群体（黑壳和白壳牡蛎）之间分化最大，<strong>但并不直接关注这些区域是否与表型（壳色）相关</strong>。</p>
+</li>
+<li><p><strong>GWAS</strong> 直接关注的是基因和表型之间的关联，它告诉你 <strong>哪些特定的基因变异</strong> 与壳色变化有直接关系，<strong>并且是针对表型的分析</strong>。</p>
+</li>
+</ul>
+<h3 id="🔄-为什么这两者有重叠但不完全相同："><a href="#🔄-为什么这两者有重叠但不完全相同：" class="headerlink" title="🔄 为什么这两者有重叠但不完全相同："></a>🔄 <strong>为什么这两者有重叠但不完全相同：</strong></h3><ul>
+<li>如果你在 <strong>FST 分析</strong> 中发现某个区域的 <strong>FST 值很高</strong>，这表明该区域可能在群体间存在显著差异。</li>
+<li>然后，如果你再做 <strong>GWAS</strong> 分析，发现这个区域的变异确实与 <strong>壳色</strong> 相关，那么就可以确定这个基因区域<strong>可能影响壳色</strong>，而且它是群体分化的热点。</li>
+</ul>
+<p>因此，<strong>FST</strong> 主要是用来筛选出潜在的遗传分化区域，而 <strong>GWAS</strong> 是用来验证这些区域与表型的关联。</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<p>下面我们进行相关的FST分析</p>
+<h1 id="二、FST计算"><a href="#二、FST计算" class="headerlink" title="二、FST计算"></a>二、FST计算</h1><p>最头疼的一步，布置环境，安装分析所用的软件包。<br>plink1.9和plink2.0均未成功分析，遂使用vcftools进行处理。</p>
+<p>文件为 Filter.snp.vcf.gz，如果需要解压就使用下面方法</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">gunzip  Filter.snp.vcf.gz<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>vcftools使用mamba构建新环境</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">conda install -n base -c conda-forge mamba  # 安装mamba
+mamba create -n vcftools_env -c bioconda vcftools<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">vcftools --vcf Filter.snp.vcf \
+         --weir-fst-pop BM.txt \
+         --weir-fst-pop WM.txt \
+         --out BM_vs_WM_fst<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>得出BM_vs_WM_fst.weir.fst文件</p>
+<p>然后在R中进行绘图。</p>
+<pre class="line-numbers language-R" data-language="R"><code class="language-R">library(ggplot2)
+fst %
+  summarise(center = (min(pos_cum) + max(pos_cum)) / 2)
+
+# 设置显著阈值线（例如 top 1%）
+fst_threshold %  # 调整抽样比例(1-5%)
+  ungroup()
+
+# 2. 直接使用plot_ly() + scattergl模式（最佳性能）
+p %
+layout(
+  xaxis = list(
+    title = "Chromosome",
+    tickvals = axis_df$center,
+    ticktext = axis_df$CHROM
+  ),
+  yaxis = list(title = "FST"),
+  hoverlabel = list(bgcolor = "white")
+) %&gt;%
+config(
+  displayModeBar = TRUE,
+  scrollZoom = TRUE
+)
+
+p<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="/images/19/3703765276.png" alt="mdvvhepw.png"><br>结果文件200多M，太大了，浏览器卡的几乎无法正常浏览，遂放弃。</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<blockquote>
+<p>下面尝试过滤后再分析</p>
+</blockquote>
+<p>画图结果显示SNP位点过多，需要再次处理</p>
+<p>文件其实已经是公司过滤过的数据了，数据量较大，再过滤一次。</p>
+<h2 id="1-使用-vcftools-或-bcftools-进行-SNP-过滤"><a href="#1-使用-vcftools-或-bcftools-进行-SNP-过滤" class="headerlink" title="1. 使用 vcftools 或 bcftools 进行 SNP 过滤"></a>1. 使用 vcftools 或 bcftools 进行 SNP 过滤</h2><pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash"># 基本质量过滤
+ vcftools --vcf  Filter.snp.vcf \
+         --minQ 30 \
+         --min-meanDP 10 \
+         --max-meanDP 100 \
+         --min-alleles 2 \
+         --max-alleles 2 \
+         --maf 0.05 \
+         --max-missing 0.9 \
+         --recode \
+         --out filtered<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="2-使用-PLINK-进行FST计算"><a href="#2-使用-PLINK-进行FST计算" class="headerlink" title="2. 使用 PLINK 进行FST计算"></a>2. 使用 PLINK 进行FST计算</h2><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span> 转换为 PLINK 格式</span>
+plink --vcf filtered.recode.vcf --make-bed --out filtered_plink
+
+<span class="token title important"><span class="token punctuation">##</span> 计算群体间 FST</span>
+plink --bfile filtered_plink \
+      --fst \
+      --within pop_info_fixed.tsv \
+      --out fst_results \
+      --allow-extra-chr<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="3-筛选显著-FST-位点"><a href="#3-筛选显著-FST-位点" class="headerlink" title="3.筛选显著 FST 位点"></a>3.筛选显著 FST 位点</h2><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 提取 FST &gt; 0.05 的位点（阈值根据研究设定）</span>
+ awk '$5 &gt; 0.05 {print $2}' fst_results.fst &gt; high_fst_snps.txt 
+
+<span class="token title important"><span class="token punctuation">##</span> 统计高 FST 位点数量</span>
+ wc -l high_fst_snps.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="4-可视化-FST-分布（R-代码）"><a href="#4-可视化-FST-分布（R-代码）" class="headerlink" title="4.可视化 FST 分布（R 代码）"></a>4.可视化 FST 分布（R 代码）</h2><pre class="line-numbers language-R" data-language="R"><code class="language-R">library(ggplot2)
+
+# 读取结果
+fst %
+  # 布局设置
+  layout(
+    legend = list(
+      font = list(size = 10),  # 统一增大所有图例项字体
+      itemclick = TRUE        # 可选：禁用图例项点击隐藏
+    ),
+    title = list(
+      text = "Genome-wide FST Manhattan Plot",
+      x = 0.05, y = 0.98
+    ),
+    xaxis = list(
+      title = "Genomic Position (Mb)",
+      showgrid = FALSE,
+      tickvals = plot_data %&gt;% 
+        group_by(CHROM) %&gt;% 
+        summarise(center = median(POS/1e6)) %&gt;% 
+        pull(center),
+        ticktext = main_chroms,
+      # ticktext = str_remove(main_chroms, "NC_")
+        tickangle = -45,  # ← 关键参数：标签倾斜45度（负号表示逆时针）
+        tickfont = list(size = 8),  # 可选：调整标签字体大小
+        ticklen = 5,  # 刻度线长度
+        tickwidth = 1,  # 刻度线粗细
+        showgrid = FALSE
+    ),
+    yaxis = list(
+      title = "Weighted FST",
+      range = c(0, max(plot_data$WEIGHTED_FST) * 1.1)
+    ),
+    hoverlabel = list(
+      bgcolor = "white",
+      font = list(size = 10)
+    ),
+    legend = list(
+      orientation = "h",
+      x = 0.5, y = 1.1,
+      bgcolor = "rgba(255,255,255,0.8)")
+    ,
+    margin = list(t = 80)  # 顶部留白
+  ) %&gt;%
+  # 交互功能
+  highlight(
+    "plotly_selected",
+    opacityDim = 0.2,
+    selected = attrs_selected(
+      marker = list(size = 15, color = "black"),
+      textfont = list(weight = "bold"))
+  )
+
+# 5. 输出结果 --------------------------------------------------------------
+# 显示图表
+p<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/images/19/1902442139.png" alt="mdvwczfp.png"></p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<p>可以看到有些窗口FST值较高，我想筛选SNP进行验证，如何继续做呢？</p>
+]]></content>
+      <categories>
+        <category>多组学</category>
+        <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Hexo + Butterfly 个人博客搭建</title>
+    <url>/2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/</url>
+    <content><![CDATA[<h1 id="Hexo-Butterfly-个人博客搭建"><a href="#Hexo-Butterfly-个人博客搭建" class="headerlink" title="Hexo + Butterfly 个人博客搭建"></a>Hexo + Butterfly 个人博客搭建</h1><p>在用了一周左右的时间搭建博客，沉浸于试效果、改 bug、试效果、改 bug……的循环后，我还是决定写一篇文章来记录一下，省得未来的自己再走一遍这痛苦的过程。</p>
+<hr>
+<h2 id="一、Hexo-静态网页生成"><a href="#一、Hexo-静态网页生成" class="headerlink" title="一、Hexo 静态网页生成"></a>一、Hexo 静态网页生成</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="cmd"></p>
+<h3 id="1-Node-js-安装"><a href="#1-Node-js-安装" class="headerlink" title="1. Node.js 安装!"></a>1. Node.js 安装!</h3><p>首先我们需要下载 Node.js<br>👉 <a href="https://nodejs.org/">Node.js — 在任何地方运行 JavaScript</a></p>
+<p>安装好之后我们可以输入以下指令，如果都能正常输出版本号则安装成功。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">node</span> <span class="token parameter variable">-v</span>
+<span class="token function">npm</span> <span class="token parameter variable">-v</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<hr>
+<h3 id="2-Git-安装"><a href="#2-Git-安装" class="headerlink" title="2. Git 安装"></a>2. Git 安装</h3><p>Git 可是个好东西，程序员必备。<br>官网在这里：<a href="https://git-scm.com/downloads">Git - Downloading Package</a></p>
+<p>验证是否安装成功：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> <span class="token parameter variable">--version</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>正常显示版本即可。</p>
+<hr>
+<h3 id="3-Hexo-安装"><a href="#3-Hexo-安装" class="headerlink" title="3. Hexo 安装"></a>3. Hexo 安装</h3><p>在自己心仪的文件夹下（如 <code>E:/hexo</code>），鼠标右击选择 <strong>Git Bash Here</strong>，依次执行以下命令：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> hexo-cli <span class="token parameter variable">-g</span>
+<span class="token function">npm</span> <span class="token function">install</span> hexo <span class="token parameter variable">--save</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>如果已经安装过 hexo 或不确定装没装过也没关系，装过的执行完会显示 <em>update</em>。</p>
+<p>查看版本：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">hexo <span class="token parameter variable">-v</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>正常显示版本号说明安装成功。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251009212637204.png" alt="image-20251009212637204"></p>
+<hr>
+<h2 id="二、Hexo-初始化"><a href="#二、Hexo-初始化" class="headerlink" title="二、Hexo 初始化"></a>二、Hexo 初始化</h2><p>首先确保你要存放 Hexo 博客的文件夹下是空的。<br>随后在该文件夹右键选择 <strong>Git Bash Here</strong>，执行：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">hexo init<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>执行完毕后就能看到 Hexo 框架的文件结构。</p>
+<p>生成一个初始页面测试：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">hexo g <span class="token operator">&amp;&amp;</span> hexo s<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>在页面启动后，按住 <strong>Ctrl</strong> 点击终端中显示的<br><code>http://localhost:4000/</code>  即可自动跳转至浏览器预览。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251009212745176.png" alt="image-20251009212745176"></p>
+<p>当你看到 Hexo 从地平线升起时，你就成功创建了一个本地静态博客网页。</p>
+<hr>
+<h2 id="三、部署到-GitHub"><a href="#三、部署到-GitHub" class="headerlink" title="三、部署到 GitHub"></a>三、部署到 GitHub</h2><h3 id="1-创建仓库"><a href="#1-创建仓库" class="headerlink" title="1. 创建仓库"></a>1. 创建仓库</h3><p>在 GitHub 创建一个公共仓库，命名为：</p>
+<pre class="line-numbers language-none"><code class="language-none">username.github.io<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="2-配置账户并生成-SSH-密钥"><a href="#2-配置账户并生成-SSH-密钥" class="headerlink" title="2. 配置账户并生成 SSH 密钥"></a>2. 配置账户并生成 SSH 密钥</h3><p>在 Git Bash 中输入以下指令：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> config <span class="token parameter variable">--global</span> user.name <span class="token string">"XXXX"</span>                       <span class="token comment"># 配置个人信息-username</span>
+<span class="token function">git</span> config <span class="token parameter variable">--global</span> user.email <span class="token string">"XXXXXXXXX@XXX.com"</span>         <span class="token comment"># 配置个人信息-useremail</span>
+ssh-keygen <span class="token parameter variable">-t</span> rsa <span class="token parameter variable">-C</span> <span class="token string">"XXXXXXXXX@XXX.com"</span>	               <span class="token comment"># 生成密钥</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>生成过程中直接回车直到完成即可。<br>默认路径为：</p>
+<pre class="line-numbers language-none"><code class="language-none">C:\Users\用户名\.ssh\id_rsa.pub<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>打开 GitHub 设置 → 添加 SSH 密钥 → 将文件内容粘贴进去。</p>
+<hr>
+<h3 id="3-添加密钥到本地-Git"><a href="#3-添加密钥到本地-Git" class="headerlink" title="3. 添加密钥到本地 Git"></a>3. 添加密钥到本地 Git</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">eval</span> <span class="token string">"<span class="token variable"><span class="token variable">$(</span>ssh-agent <span class="token parameter variable">-s</span><span class="token variable">)</span></span>"</span>
+ssh-add ~/.ssh/id_rsa<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>测试连接：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ssh</span> <span class="token parameter variable">-T</span> git@github.com<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>若得到以下回复则说明连接成功。</p>
+<pre class="line-numbers language-text" data-language="text"><code class="language-text">Hi username! You've successfully authenticated...<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<hr>
+<h3 id="4-确保使用正确的密钥"><a href="#4-确保使用正确的密钥" class="headerlink" title="4. 确保使用正确的密钥"></a>4. 确保使用正确的密钥</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> config <span class="token parameter variable">--global</span> core.sshCommand <span class="token string">"ssh -i ~/.ssh/id_rsa"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>若出现以下错误：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">The authenticity of <span class="token function">host</span> <span class="token string">'github.com (20.205.243.166)'</span> can't be established.
+Host key verification failed.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>说明 SSH 客户端未信任 GitHub 的主机密钥。执行以下命令修复：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">touch</span> ~/.ssh/known_hosts
+<span class="token function">chmod</span> <span class="token number">644</span> ~/.ssh/known_hosts
+ssh-keyscan <span class="token parameter variable">-t</span> ed25519 github.com <span class="token operator">&gt;&gt;</span> ~/.ssh/known_hosts<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>再次执行 <code>ssh -T git@github.com</code> 即可。</p>
+<hr>
+<h3 id="5-修改-Hexo-配置文件"><a href="#5-修改-Hexo-配置文件" class="headerlink" title="5. 修改 Hexo 配置文件"></a>5. 修改 Hexo 配置文件</h3><p>打开站点配置文件 <code>_config.yml</code>，修改 <code>deploy</code> 部分如下：</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># Deployment</span>
+<span class="token comment">## Docs: https://hexo.io/docs/deployment.html</span>
+<span class="token key atrule">deploy</span><span class="token punctuation">:</span>
+  <span class="token key atrule">type</span><span class="token punctuation">:</span> git
+  <span class="token key atrule">repo</span><span class="token punctuation">:</span> git@github.com<span class="token punctuation">:</span>XXXXX/XXXXX.github.io.git
+  <span class="token key atrule">branch</span><span class="token punctuation">:</span> main<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>然后执行 Hexo 三连：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">hexo cl <span class="token operator">&amp;&amp;</span> hexo g <span class="token operator">&amp;&amp;</span> hexo d<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>此时即可通过：</p>
+<pre class="line-numbers language-none"><code class="language-none">https://username.github.io<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>访问你的博客啦！</p>
+<hr>
+<h2 id="四、安装-Butterfly-主题"><a href="#四、安装-Butterfly-主题" class="headerlink" title="四、安装 Butterfly 主题"></a>四、安装 Butterfly 主题</h2><h3 id="1-下载主题文件"><a href="#1-下载主题文件" class="headerlink" title="1. 下载主题文件"></a>1. 下载主题文件</h3><p>在 Git 中执行以下命令安装 Butterfly 主题：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/jerryc127/hexo-theme-butterfly.git themes/butterfly<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>如果没有修改代码的需求，也可以使用 npm 安装：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> i hexo-theme-butterfly<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<hr>
+<h3 id="2-安装渲染器"><a href="#2-安装渲染器" class="headerlink" title="2. 安装渲染器"></a>2. 安装渲染器</h3><p>Butterfly 主题依赖 <code>pug</code> 和 <code>stylus</code> 渲染器，否则启动后访问会报错。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> hexo-renderer-pug hexo-renderer-stylus <span class="token parameter variable">--save</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<hr>
+<h3 id="3-启用主题"><a href="#3-启用主题" class="headerlink" title="3. 启用主题"></a>3. 启用主题</h3><p>在站点配置文件 <code>_config.yml</code> 中找到 <code>theme</code> 字段，修改为：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">theme: butterfly<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>然后再次 Hexo 三连：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">hexo cl <span class="token operator">&amp;&amp;</span> hexo g <span class="token operator">&amp;&amp;</span> hexo s<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>就完成了主题替换！</p>
+<hr>
+<h2 id="五、Butterfly-主题美化"><a href="#五、Butterfly-主题美化" class="headerlink" title="五、Butterfly 主题美化"></a>五、Butterfly 主题美化</h2><h3 id="1-网站资料修改"><a href="#1-网站资料修改" class="headerlink" title="1. 网站资料修改"></a>1. 网站资料修改</h3><p>修改网站标题、副标题、邮箱等个人信息，编辑 <code>_config.yml</code> 中对应字段。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>title</td>
+<td>网站标题</td>
+</tr>
+<tr>
+<td>subtitle</td>
+<td>描述</td>
+</tr>
+<tr>
+<td>description</td>
+<td>网站描述</td>
+</tr>
+<tr>
+<td>keywords</td>
+<td>网站关键词，支持多个</td>
+</tr>
+<tr>
+<td>author</td>
+<td>作者名</td>
+</tr>
+<tr>
+<td>language</td>
+<td>网站语言（常用 zh-Hans 或 zh-CN）</td>
+</tr>
+<tr>
+<td>timezone</td>
+<td>时区（如 Asia/Shanghai）</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="2-背景图片"><a href="#2-背景图片" class="headerlink" title="2. 背景图片"></a>2. 背景图片</h3><p>修改 <code>_config.yml</code> 中的 <code>background</code> 字段即可。</p>
+<hr>
+<h3 id="3-更多美化参考"><a href="#3-更多美化参考" class="headerlink" title="3. 更多美化参考"></a>3. 更多美化参考</h3><ul>
+<li><a href="https://blog.csdn.net/">【Hexo系列】【7】Butterfly主题使用及美化 - CSDN 博客</a></li>
+<li><a href="https://tangzhiyuan.top/">基于 Hexo 从零开始搭建个人博客（五） | 唐志远</a></li>
+</ul>
+<p><strong>原文链接</strong>：<a href="https://xbxyftx.top/2025/01/26/butterfly%E4%B8%BB%E9%A2%98%E7%BE%8E%E5%8C%96/index.html">https://xbxyftx.top/2025/01/26/butterfly%E4%B8%BB%E9%A2%98%E7%BE%8E%E5%8C%96/index.html</a>  </p>
+]]></content>
+      <categories>
+        <category>默认分类</category>
       </categories>
   </entry>
 </search>
