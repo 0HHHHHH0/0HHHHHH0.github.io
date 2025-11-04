@@ -1,294 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>1.NPC内网穿透——Linux</title>
-    <url>/2025/07/24/18/</url>
-    <content><![CDATA[<blockquote>
-<p>历时半个月，浅浅学习了一下重测序数据的分析流程，为防止遗忘，特写此后几篇文章，以便后续回忆参考。</p>
-</blockquote>
-<blockquote>
-<p>要进行重测序数据分析，首要的是搞一台服务器，恰好课题组有一台服务器，但问题是只能在内网访问，遂采用NPC进行内网穿透，实现异地访问使用。</p>
-</blockquote>
-<p>用到的软件<br><a href="https://kmxo.lanzoub.com/iF7O730413eb">linux-npc.zip - 蓝奏云</a><br><a href="https://d-jy.net/docs/nps/?lang=zh#/use">使用教程</a><br>共两个步骤<br>1.下载npc客户端后修改 npc.conf文件<br>模板参考<br>修改前</p>
-<pre class="line-numbers language-none"><code class="language-none">[common]
-server_addr=填写服务器IP地址:8024
-conn_type=tcp
-vkey=唯一验证密钥
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p>示例如下：<br>修改前</p>
-<p><img src="/images/18/953241429.png" alt="mdqu8nxa.png"></p>
-<p>修改后</p>
-<p><img src="/images/18/1669145814.png" alt="mdqu91bc.png"></p>
-<p>2.在文件目录中执行以下命令需要修改ip和密钥<br>（不要修改服务端口和删除空格）</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-
-<h1 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h1><ol>
-<li>无配置文件模式（推荐）<br>详细命令行参数</li>
-</ol>
-<p>📌 适用于</p>
-<p>快速连接 NPS 服务器<br>所有配置均在 Web 管理端完成<br>客户端仅需运行一条命令<br>📌 普通连接（TCP 模式）</p>
-<p> <code>./npc -server=ip:8024 -vkey=web界面中显示的密钥 -type=tcp</code> </p>
-<p>📌 TLS 加密连接（安全模式）</p>
-<p> <code>./npc -server=ip:8025 -vkey=web界面中显示的密钥 -type=tls</code> </p>
-<p>📌 连接多个服务端</p>
-<p> <code>./npc install -server=xx:12,yy:34 -vkey=xx,yy -type=tcp,tls</code> </p>
-<p>📌 说明：</p>
-<p>默认端口 8024 为非 TLS 端口，用于普通 TCP 连接<br>如果 -type=tls，必须使用 8025 作为 TLS 端口，否则连接失败</p>
-<ol start="2">
-<li>注册到系统服务（开机启动 &amp; 守护进程）<br>📌 适用于</li>
-</ol>
-<p>保证 NPC 在服务器重启后自动运行<br>无需手动启动，后台运行<br>Linux/macOS</p>
-<pre class="line-numbers language-none"><code class="language-none"># 普通连接（TCP）
-sudo ./npc install -server=ip:8024 -vkey=xxx -type=tcp -log=off
-# TLS 加密连接（安全模式）
-sudo ./npc install -server=ip:8025 -vkey=xxx -type=tls -log=off
-# 连接多个服务端
-sudo ./npc install -server=xx:12,yy:34 -vkey=xx,yy -type=tcp,tls -log=off
-
-# 启动服务
-sudo npc start
-# 停止服务
-sudo npc stop
-# 卸载（修改参数时需要先卸载再重新注册）
- sudo npc uninstall <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<p>后面就是开放相应的端口，实现远程访问。</p>
-]]></content>
-      <categories>
-        <category>默认分类</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>2.重测序数据分析——初步整理</title>
-    <url>/2025/07/31/19/</url>
-    <content><![CDATA[<blockquote>
-<p>布置好服务器后就是对重测序数据进行分析了。<br>首先，看一下我手里的数据，其实已经有公司处理好的数据了，在此，我并未对重测序下机原始数据进行分析，而是使用的公司初步过滤的 Filter.snp.vcf.gz和.tbi文件。</p>
-</blockquote>
-<p>前期在写重测序相关的专利，看别人专利时，发现重测序可进行Fst计算分析，绘制的图类似GWAS的曼哈顿图，遂想模仿绘制，便有了下面的一系列相关内容。</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<h1 id="一、FST和GWAS："><a href="#一、FST和GWAS：" class="headerlink" title="一、FST和GWAS："></a>一、FST和GWAS：</h1><p>首先，先介绍一下FST和GWAS，二者都是遗传学中常用的分析方法，但它们的目的和分析方式不一样。</p>
-<ul>
-<li>FST（Fixation Index）是用来衡量不同群体之间的遗传差异。如果两个群体在某些基因上有很大的差异，FST 值就会很高，说明这两个群体在基因组上有很大分化。</li>
-<li>GWAS（全基因组关联研究）是用来找出基因和特定性状之间的关系。简单来说，它帮助我们发现哪些基因变异可能会影响某个性状（比如身高、疾病或壳色）。</li>
-</ul>
-<h2 id="以黑白壳长牡蛎为例"><a href="#以黑白壳长牡蛎为例" class="headerlink" title="以黑白壳长牡蛎为例"></a>以黑白壳长牡蛎为例</h2><p>假设我们研究的是黑壳和白壳长牡蛎，这两种牡蛎的壳色差异显著，我们分别进行 FST和 GWAS 分析，使用 黑壳牡蛎 和 白壳牡蛎 作为群体标签。<br>FST 分析：我们将所有牡蛎按壳色分成两个群体，分别是 黑壳牡蛎 和 白壳牡蛎。通过计算 FST 值，我们能发现这两个群体之间在基因组中哪些区域的差异最大。如果某个基因区域的 FST 值很高，说明这个区域可能与这两个群体的遗传差异有关。<br>GWAS 分析：这里我们把牡蛎的壳色作为 表型，看看基因组中的哪些变异（SNP）与壳色相关。我们仍然用 黑壳牡蛎 和 白壳牡蛎 作为两组样本，进行统计分析，找出哪些基因变异可能影响壳色。<br>FST 和 GWAS 的区别<br>FST 分析 主要是比较两个群体（黑壳和白壳牡蛎）在基因组上的差异，找出遗传分化最大的区域。FST 是群体层面的分析，不直接与表型（如壳色）相关。<br>GWAS 分析 关注的是表型与基因型之间的关联，目的是找出影响牡蛎壳色的具体基因变异。在这个过程中，壳色作为表型，与基因变异建立直接关系。</p>
-<p>虽然 黑壳牡蛎 和 白壳牡蛎 都可以作为群体标签（FST）或表型分组（GWAS），但它们的分析目的不同：<br>FST 是用来研究群体之间的遗传分化，揭示哪些基因区域可能在两种牡蛎群体之间有显著差异。<br>GWAS 则是通过关联分析找出哪些基因变异直接影响牡蛎的壳色。<br>这两种方法可以互相补充，共同揭示基因和表型之间复杂的关系。</p>
-<h2 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h2><p>虽然 <strong>FST</strong> 和 <strong>GWAS</strong> 都涉及基因组和表型之间的关系，但它们的目的和侧重点其实是有区别的。虽然在 <strong>黑壳牡蛎</strong> 和 <strong>白壳牡蛎</strong> 的例子中，确实它们的分析结果看起来有些相似，但 <strong>FST</strong> 和 <strong>GWAS</strong> 的核心概念还是有本质区别的。</p>
-<p>我们来逐一比较一下两者的侧重点，看看为什么它们的目的不同，即使在分析黑白壳差异时，结果可能会有交集。</p>
-<h3 id="🧬-FST-和-GWAS-的核心区别"><a href="#🧬-FST-和-GWAS-的核心区别" class="headerlink" title="🧬 FST 和 GWAS 的核心区别"></a>🧬 <strong>FST 和 GWAS 的核心区别</strong></h3><ol>
-<li><p><strong>FST 分析</strong>：<br>FST 用来衡量<strong>不同群体之间的遗传分化</strong>。它通过比较群体间的基因频率差异，找出哪些区域在群体之间分化最显著。重点是研究群体 <strong>A</strong> 和 <strong>B</strong>（比如黑壳和白壳牡蛎）是否有不同的遗传背景，尤其是群体间的遗传结构。</p>
-<ul>
-<li><strong>目标</strong>：找出群体间在基因组上最显著的分化区域。</li>
-<li><strong>侧重点</strong>：群体差异、基因变异的分布，通常不直接关注与某个特定表型（如壳色）的关联。</li>
-</ul>
-<p>举个例子：</p>
-<ul>
-<li><strong>黑壳和白壳牡蛎</strong>之间，可能会发现某些基因区域的 <strong>FST 值很高</strong>，说明这些区域在两个群体之间的遗传差异很大，但这并不意味着这些基因变异一定会影响壳色。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<ol start="2">
-<li><p><strong>GWAS 分析</strong>：<br>GWAS 的目的是研究基因型和<strong>特定表型</strong>之间的关联，它是通过统计分析来找出与表型（比如牡蛎壳色）相关的遗传变异。在 <strong>GWAS</strong> 中，重点是找出哪些特定的 <strong>基因变异</strong> 直接影响了我们关注的 <strong>表型</strong>（比如壳色的白色或黑色）。</p>
-<ul>
-<li><strong>目标</strong>：找出与表型（如壳色）相关的基因变异。</li>
-<li><strong>侧重点</strong>：基因与表型（壳色）之间的直接关系。</li>
-</ul>
-<p>举个例子：</p>
-<ul>
-<li>在 <strong>GWAS 分析</strong> 中，我们的目标是找出哪些 <strong>SNP</strong> 直接与壳色（黑色或白色）相关。如果某个基因区域的 <strong>SNP</strong> 在黑壳牡蛎和白壳牡蛎之间有显著差异，那么我们会认为这个变异可能与壳色性状相关。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="🧩-区别的关键点："><a href="#🧩-区别的关键点：" class="headerlink" title="🧩 区别的关键点："></a>🧩 <strong>区别的关键点</strong>：</h3><table>
-<thead>
-<tr>
-<th>项目</th>
-<th>FST</th>
-<th>GWAS</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>目标</strong></td>
-<td>研究群体间的遗传分化，找出群体间差异最大的基因区域</td>
-<td>找出与特定表型（如壳色）相关的基因变异</td>
-</tr>
-<tr>
-<td><strong>关注点</strong></td>
-<td>群体的遗传结构差异</td>
-<td>基因与表型的直接关联</td>
-</tr>
-<tr>
-<td><strong>分析方式</strong></td>
-<td>比较不同群体的基因频率差异，计算 <strong>FST 值</strong></td>
-<td>将基因型数据与表型数据结合，进行 <strong>关联分析</strong></td>
-</tr>
-<tr>
-<td><strong>最终结果</strong></td>
-<td>找出遗传分化较大的区域</td>
-<td>找到影响表型的基因变异（SNP）</td>
-</tr>
-</tbody></table>
-<h3 id="🌿-简单总结："><a href="#🌿-简单总结：" class="headerlink" title="🌿 简单总结："></a>🌿 <strong>简单总结：</strong></h3><ul>
-<li><p><strong>FST</strong> 分析关注的是群体之间<strong>遗传结构</strong>的差异，它告诉你 <strong>哪些基因区域</strong> 在不同群体（黑壳和白壳牡蛎）之间分化最大，<strong>但并不直接关注这些区域是否与表型（壳色）相关</strong>。</p>
-</li>
-<li><p><strong>GWAS</strong> 直接关注的是基因和表型之间的关联，它告诉你 <strong>哪些特定的基因变异</strong> 与壳色变化有直接关系，<strong>并且是针对表型的分析</strong>。</p>
-</li>
-</ul>
-<h3 id="🔄-为什么这两者有重叠但不完全相同："><a href="#🔄-为什么这两者有重叠但不完全相同：" class="headerlink" title="🔄 为什么这两者有重叠但不完全相同："></a>🔄 <strong>为什么这两者有重叠但不完全相同：</strong></h3><ul>
-<li>如果你在 <strong>FST 分析</strong> 中发现某个区域的 <strong>FST 值很高</strong>，这表明该区域可能在群体间存在显著差异。</li>
-<li>然后，如果你再做 <strong>GWAS</strong> 分析，发现这个区域的变异确实与 <strong>壳色</strong> 相关，那么就可以确定这个基因区域<strong>可能影响壳色</strong>，而且它是群体分化的热点。</li>
-</ul>
-<p>因此，<strong>FST</strong> 主要是用来筛选出潜在的遗传分化区域，而 <strong>GWAS</strong> 是用来验证这些区域与表型的关联。</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<p>下面我们进行相关的FST分析</p>
-<h1 id="二、FST计算"><a href="#二、FST计算" class="headerlink" title="二、FST计算"></a>二、FST计算</h1><p>最头疼的一步，布置环境，安装分析所用的软件包。<br>plink1.9和plink2.0均未成功分析，遂使用vcftools进行处理。</p>
-<p>文件为 Filter.snp.vcf.gz，如果需要解压就使用下面方法</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">gunzip  Filter.snp.vcf.gz<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>vcftools使用mamba构建新环境</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">conda install -n base -c conda-forge mamba  # 安装mamba
-mamba create -n vcftools_env -c bioconda vcftools<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">vcftools --vcf Filter.snp.vcf \
-         --weir-fst-pop BM.txt \
-         --weir-fst-pop WM.txt \
-         --out BM_vs_WM_fst<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p>得出BM_vs_WM_fst.weir.fst文件</p>
-<p>然后在R中进行绘图。</p>
-<pre class="line-numbers language-R" data-language="R"><code class="language-R">library(ggplot2)
-fst %
-  summarise(center = (min(pos_cum) + max(pos_cum)) / 2)
-
-# 设置显著阈值线（例如 top 1%）
-fst_threshold %  # 调整抽样比例(1-5%)
-  ungroup()
-
-# 2. 直接使用plot_ly() + scattergl模式（最佳性能）
-p %
-layout(
-  xaxis = list(
-    title = "Chromosome",
-    tickvals = axis_df$center,
-    ticktext = axis_df$CHROM
-  ),
-  yaxis = list(title = "FST"),
-  hoverlabel = list(bgcolor = "white")
-) %&gt;%
-config(
-  displayModeBar = TRUE,
-  scrollZoom = TRUE
-)
-
-p<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="/images/19/3703765276.png" alt="mdvvhepw.png"><br>结果文件200多M，太大了，浏览器卡的几乎无法正常浏览，遂放弃。</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<blockquote>
-<p>下面尝试过滤后再分析</p>
-</blockquote>
-<p>画图结果显示SNP位点过多，需要再次处理</p>
-<p>文件其实已经是公司过滤过的数据了，数据量较大，再过滤一次。</p>
-<h2 id="1-使用-vcftools-或-bcftools-进行-SNP-过滤"><a href="#1-使用-vcftools-或-bcftools-进行-SNP-过滤" class="headerlink" title="1. 使用 vcftools 或 bcftools 进行 SNP 过滤"></a>1. 使用 vcftools 或 bcftools 进行 SNP 过滤</h2><pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash"># 基本质量过滤
- vcftools --vcf  Filter.snp.vcf \
-         --minQ 30 \
-         --min-meanDP 10 \
-         --max-meanDP 100 \
-         --min-alleles 2 \
-         --max-alleles 2 \
-         --maf 0.05 \
-         --max-missing 0.9 \
-         --recode \
-         --out filtered<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h2 id="2-使用-PLINK-进行FST计算"><a href="#2-使用-PLINK-进行FST计算" class="headerlink" title="2. 使用 PLINK 进行FST计算"></a>2. 使用 PLINK 进行FST计算</h2><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span> 转换为 PLINK 格式</span>
-plink --vcf filtered.recode.vcf --make-bed --out filtered_plink
-
-<span class="token title important"><span class="token punctuation">##</span> 计算群体间 FST</span>
-plink --bfile filtered_plink \
-      --fst \
-      --within pop_info_fixed.tsv \
-      --out fst_results \
-      --allow-extra-chr<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="3-筛选显著-FST-位点"><a href="#3-筛选显著-FST-位点" class="headerlink" title="3.筛选显著 FST 位点"></a>3.筛选显著 FST 位点</h2><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 提取 FST &gt; 0.05 的位点（阈值根据研究设定）</span>
- awk '$5 &gt; 0.05 {print $2}' fst_results.fst &gt; high_fst_snps.txt 
-
-<span class="token title important"><span class="token punctuation">##</span> 统计高 FST 位点数量</span>
- wc -l high_fst_snps.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h2 id="4-可视化-FST-分布（R-代码）"><a href="#4-可视化-FST-分布（R-代码）" class="headerlink" title="4.可视化 FST 分布（R 代码）"></a>4.可视化 FST 分布（R 代码）</h2><pre class="line-numbers language-R" data-language="R"><code class="language-R">library(ggplot2)
-
-# 读取结果
-fst %
-  # 布局设置
-  layout(
-    legend = list(
-      font = list(size = 10),  # 统一增大所有图例项字体
-      itemclick = TRUE        # 可选：禁用图例项点击隐藏
-    ),
-    title = list(
-      text = "Genome-wide FST Manhattan Plot",
-      x = 0.05, y = 0.98
-    ),
-    xaxis = list(
-      title = "Genomic Position (Mb)",
-      showgrid = FALSE,
-      tickvals = plot_data %&gt;% 
-        group_by(CHROM) %&gt;% 
-        summarise(center = median(POS/1e6)) %&gt;% 
-        pull(center),
-        ticktext = main_chroms,
-      # ticktext = str_remove(main_chroms, "NC_")
-        tickangle = -45,  # ← 关键参数：标签倾斜45度（负号表示逆时针）
-        tickfont = list(size = 8),  # 可选：调整标签字体大小
-        ticklen = 5,  # 刻度线长度
-        tickwidth = 1,  # 刻度线粗细
-        showgrid = FALSE
-    ),
-    yaxis = list(
-      title = "Weighted FST",
-      range = c(0, max(plot_data$WEIGHTED_FST) * 1.1)
-    ),
-    hoverlabel = list(
-      bgcolor = "white",
-      font = list(size = 10)
-    ),
-    legend = list(
-      orientation = "h",
-      x = 0.5, y = 1.1,
-      bgcolor = "rgba(255,255,255,0.8)")
-    ,
-    margin = list(t = 80)  # 顶部留白
-  ) %&gt;%
-  # 交互功能
-  highlight(
-    "plotly_selected",
-    opacityDim = 0.2,
-    selected = attrs_selected(
-      marker = list(size = 15, color = "black"),
-      textfont = list(weight = "bold"))
-  )
-
-# 5. 输出结果 --------------------------------------------------------------
-# 显示图表
-p<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="/images/19/1902442139.png" alt="mdvwczfp.png"></p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<p>可以看到有些窗口FST值较高，我想筛选SNP进行验证，如何继续做呢？</p>
-]]></content>
-      <categories>
-        <category>多组学</category>
-        <category>重测序</category>
-      </categories>
-  </entry>
-  <entry>
     <title>3.对基因进行注释，长牡蛎注释包的构建及KEGG和GO分析</title>
     <url>/2025/08/02/25/</url>
     <content><![CDATA[<blockquote>
@@ -447,182 +159,6 @@ dim(gene2symbol)
 gene2go$GO
 </code></pre>
 ]]></content>
-      <categories>
-        <category>重测序</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>4.提取重测序数据中黑白肌痕组中各SNP的位点信息及基因型频率</title>
-    <url>/2025/08/03/32/</url>
-    <content><![CDATA[<p>相关的sh文件内容如下：</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span>!/bin/bash</span>
-<span class="token title important"><span class="token punctuation">#</span> 用法：./extract_chromosome_snps_no_split.sh   </span>
-
-set -euo pipefail
-
-<span class="token title important"><span class="token punctuation">#</span> 彩色日志函数，蓝色时间，绿色成功，红色错误，黄色警告</span>
-log() {
-  local msg="$1"
-  local color="${2:-34}"  # 默认蓝色
-  echo -e "\033[1;${color}m[$(date '+%Y-%m-%d %H:%M:%S')]\033[0m $msg"
-}
-
-<span class="token title important"><span class="token punctuation">#</span> 参数检查</span>
-if [ $# -lt 3 ]; then
-  echo "Usage: $0   "
-  echo "Example: ./extract_chromosome_snps_no_split.sh NC_047567.1 input.vcf.gz results"
-  exit 1
-fi
-
-CHROM=$1
-VCF=$2
-PREFIX=$3
-GFF="../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff"
-
-<span class="token title important"><span class="token punctuation">#</span> 检查工具</span>
-command -v bcftools &gt;/dev/null || { log "ERROR: bcftools not found" 31; exit 1; }
-command -v bedtools &gt;/dev/null || { log "ERROR: bedtools not found" 31; exit 1; }
-command -v awk &gt;/dev/null || { log "ERROR: awk not found" 31; exit 1; }
-
-<span class="token title important"><span class="token punctuation">##########################</span></span>
-<span class="token title important"><span class="token punctuation">#</span> STEP 1: 提取基因坐标</span>
-<span class="token title important"><span class="token punctuation">##########################</span></span>
-log "STEP 1/5: Extracting gene coordinates for $CHROM..."
-
-GENE_BED="${PREFIX}_genes.bed"
-if [ -s "$GENE_BED" ]; then
-  lines=$(wc -l &lt; "$GENE_BED")
-  log "Found existing gene BED file ($GENE_BED, $lines lines), skipping extraction..." 33
-else
-  matched_gene_lines=$(grep -w "$CHROM" "$GFF" | awk -F'\t' '$3=="gene"')
-  if [ -z "$matched_gene_lines" ]; then
-    log "CRITICAL ERROR: No 'gene' lines found for chromosome '$CHROM'" 31
-    log "Possible reasons:" 31
-    log "1. Chromosome name不匹配 (如缺少'chr'前缀)" 31
-    log "2. GFF中没有gene类型注释" 31
-    log "Debug信息:" 31
-    log "-&gt; Chromosome 检查: $(grep -m1 "$CHROM" "$GFF" || echo '未找到')" 31
-    log "-&gt; 染色体中所有 feature 类型:" 31
-    grep -w "$CHROM" "$GFF" | awk -F'\t' '{print $3}' | sort | uniq -c
-    exit 1
-  fi
-
-  grep -w "$CHROM" "$GFF" | \
-    awk -F'\t' '$3=="gene"' | \
-    awk -F'\t' '{
-      split($9, a, ";");
-      gene_id="";
-      for (i in a) {
-        if (a[i] <span class="token strike"><span class="token punctuation">~</span><span class="token content"> /^gene=/) {
-          gsub(/^gene=/, "", a[i]); gene_id=a[i];
-        } else if (a[i] </span><span class="token punctuation">~</span></span> /^ID=gene-/) {
-          gsub(/^ID=gene-/, "", a[i]); gene_id=a[i];
-        }
-      }
-      print $1, $4, $5, gene_id
-    }' OFS='\t' &gt; "$GENE_BED"
-
-  gene_count=$(wc -l &lt; "$GENE_BED")
-  if [ "$gene_count" -eq 0 ]; then
-    log "ERROR: Gene extraction failed! No gene records written." 31
-    exit 1
-  fi
-  log "Successfully extracted $gene_count genes to $GENE_BED" 32
-fi
-
-<span class="token title important"><span class="token punctuation">##########################</span></span>
-<span class="token title important"><span class="token punctuation">#</span> STEP 2: 提取染色体SNP</span>
-<span class="token title important"><span class="token punctuation">##########################</span></span>
-log "STEP 2/5: Extracting SNPs for $CHROM..."
-
-SNP_VCF="${PREFIX}_snps.vcf.gz"
-if [ -s "$SNP_VCF" ]; then
-  variants=$(bcftools view "$SNP_VCF" | grep -v '^#' | wc -l)
-  log "Found existing SNP file ($SNP_VCF) with $variants variants, skipping extraction..." 33
-else
-  bcftools view -r "$CHROM" "$VCF" -Oz -o "$SNP_VCF"
-  bcftools index "$SNP_VCF"
-  variants=$(bcftools view "$SNP_VCF" | grep -v '^#' | wc -l)
-  log "SNPs extracted to $SNP_VCF (Total variants: $variants)" 32
-fi
-
-<span class="token title important"><span class="token punctuation">##########################</span></span>
-<span class="token title important"><span class="token punctuation">#</span> STEP 3: 转换VCF格式为TSV</span>
-<span class="token title important"><span class="token punctuation">##########################</span></span>
-log "STEP 3/5: Converting VCF to table..."
-
-SNP_TSV="${PREFIX}_snps.tsv"
-if [ -s "$SNP_TSV" ]; then
-  lines=$(wc -l &lt; "$SNP_TSV")
-  log "Found existing SNP table ($SNP_TSV) with $lines lines, skipping conversion..." 33
-else
-  bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%QUAL[\t%GT:%AD]\n' "$SNP_VCF" &gt; "${SNP_TSV}.tmp"
-
-  <span class="token title important"><span class="token punctuation">#</span> 添加表头（样本名）</span>
-  echo -e "chromosome\tposition\tref\talt\tqual\t"$(bcftools query -l "$SNP_VCF" | tr '\n' '\t' | sed 's/\t$//') &gt; header.tsv
-  cat header.tsv "${SNP_TSV}.tmp" &gt; "$SNP_TSV"
-  rm header.tsv "${SNP_TSV}.tmp"
-
-  lines=$(wc -l &lt; "$SNP_TSV")
-  log "VCF converted to $SNP_TSV (Total lines: $lines)" 32
-fi
-
-<span class="token title important"><span class="token punctuation">##########################</span></span>
-<span class="token title important"><span class="token punctuation">#</span> STEP 4: SNP注释</span>
-<span class="token title important"><span class="token punctuation">##########################</span></span>
-log "STEP 4/5: Annotating SNPs with genes (single pass)..."
-
-ANNOTATED="${PREFIX}_annotated.tsv"
-if [ -s "$ANNOTATED" ]; then
-  lines=$(wc -l &lt; "$ANNOTATED")
-  log "Found existing annotated SNPs file ($ANNOTATED) with $lines lines, skipping annotation..." 33
-else
-  SNPS_BED=$(mktemp)
-  INTERSECT_OUT=$(mktemp)
-
-  <span class="token title important"><span class="token punctuation">#</span> 转换TSV到BED格式（0-based）</span>
-  awk -F'\t' 'BEGIN{OFS="\t"} NR&gt;1 {print $1,$2-1,$2,$0}' "$SNP_TSV" &gt; "$SNPS_BED"
-
-  log "Running bedtools intersect..." 33
-  bedtools intersect -a "$SNPS_BED" -b "$GENE_BED" -wa -wb &gt; "$INTERSECT_OUT"
-
-  <span class="token title important"><span class="token punctuation">#</span> 提取最终结果，保留原始字段并加gene列</span>
-  awk -F'\t' 'BEGIN{OFS="\t"} {
-    nf = NF;
-    for(i=4; i 0) ? bm_counts["00"]/bm_total<span class="token italic"><span class="token punctuation">*</span><span class="token content">100 : 0;
-    bm_het_pct = (bm_total &gt; 0) ? bm_counts["01"]/bm_total</span><span class="token punctuation">*</span></span>100 : 0;
-    bm_alt_pct = (bm_total &gt; 0) ? bm_counts["11"]/bm_total<span class="token italic"><span class="token punctuation">*</span><span class="token content">100 : 0;
-    bm_other_pct = (bm_total &gt; 0) ? bm_counts["other"]/bm_total</span><span class="token punctuation">*</span></span>100 : 0;
-    
-<span class="token code keyword">    wm_ref_pct = (wm_total &gt; 0) ? wm_counts["00"]/wm_total*100 : 0;
-    wm_het_pct = (wm_total &gt; 0) ? wm_counts["01"]/wm_total*100 : 0;
-    wm_alt_pct = (wm_total &gt; 0) ? wm_counts["11"]/wm_total*100 : 0;
-    wm_other_pct = (wm_total &gt; 0) ? wm_counts["other"]/wm_total*100 : 0;</span>
-    
-<span class="token code keyword">    # 输出结果（现在总和应为100%）
-    print $1, $2, $3, $4, $5,
-          sprintf("%.3f", bm_ref_pct), sprintf("%.3f", bm_het_pct), sprintf("%.3f", bm_alt_pct), sprintf("%.3f", bm_other_pct), bm_total,
-          sprintf("%.3f", wm_ref_pct), sprintf("%.3f", wm_het_pct), sprintf("%.3f", wm_alt_pct), sprintf("%.3f", wm_other_pct), wm_total;</span>
-  }' "$SNP_TSV" &gt; "$FREQ_OUT"
-  
-  lines=$(wc -l &lt; "$FREQ_OUT")
-  log "Genotype frequency table written to $FREQ_OUT ($((lines-1)) variant lines)" 32
-fi
-
-log "SUCCESS! Final results:" 32
-log "- Gene coordinates: ${GENE_BED}" 32
-log "- SNP VCF: ${PREFIX}_snps.vcf.gz" 32
-log "- Annotated SNPs: ${PREFIX}_annotated.tsv ($(wc -l &lt; ${PREFIX}_annotated.tsv) lines)" 32
-log "- Genotype frequencies: ${PREFIX}_genotype_freq.tsv ($(wc -l &lt; ${PREFIX}_genotype_freq.tsv) lines)" 32<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-<p>相关的指令如下</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">dos2unix xxxxxx.sh
-
-rm -f NC_047567.1_results_*
-
-./extract_chromosome_snps.sh NC_047567.1 Filter.snp.vcf.gz NC_047567.1_results 8
-./extract_chromosome_snps_2.0.sh NC_047567.1 Filter.snp.vcf.gz NC_047567.1_results<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
       <categories>
         <category>重测序</category>
       </categories>
@@ -867,66 +403,64 @@ systemctl status frpc.service<span aria-hidden="true" class="line-numbers-rows">
       </categories>
   </entry>
   <entry>
-    <title>5.各样本SNP位点信息可视化</title>
-    <url>/2025/08/03/40/</url>
+    <title>1.NPC内网穿透——Linux</title>
+    <url>/2025/07/24/18/</url>
     <content><![CDATA[<blockquote>
-<p>前面我们对各样本的SNP位点信息进行了提取，现在我们要进行SNP位点的筛选，相对快捷的办法就是可视化，下面我们进行分析</p>
+<p>历时半个月，浅浅学习了一下重测序数据的分析流程，为防止遗忘，特写此后几篇文章，以便后续回忆参考。</p>
 </blockquote>
-<p>需要用到的R包</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">library(tidyverse)
-library(vcfR)
-library(data.table)
-library(ggplot2)
-library(dplyr)
-library(tidyr)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>下面以单个基因为例进行分析</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span> 先读取数据（不自动解析列名）</span>
-snp_data %
-  as.matrix()
+<blockquote>
+<p>要进行重测序数据分析，首要的是搞一台服务器，恰好课题组有一台服务器，但问题是只能在内网访问，遂采用NPC进行内网穿透，实现异地访问使用。</p>
+</blockquote>
+<p>用到的软件<br><a href="https://kmxo.lanzoub.com/iF7O730413eb">linux-npc.zip - 蓝奏云</a><br><a href="https://d-jy.net/docs/nps/?lang=zh#/use">使用教程</a><br>共两个步骤<br>1.下载npc客户端后修改 npc.conf文件<br>模板参考<br>修改前</p>
+<pre class="line-numbers language-none"><code class="language-none">[common]
+server_addr=填写服务器IP地址:8024
+conn_type=tcp
+vkey=唯一验证密钥
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>示例如下：<br>修改前</p>
+<p><img src="/images/18/953241429.png" alt="mdqu8nxa.png"></p>
+<p>修改后</p>
+<p><img src="/images/18/1669145814.png" alt="mdqu91bc.png"></p>
+<p>2.在文件目录中执行以下命令需要修改ip和密钥<br>（不要修改服务端口和删除空格）</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
 
-<span class="token title important"><span class="token punctuation">#</span> 5. 可视化设置 ------------------------------------------------</span>
-<span class="token title important"><span class="token punctuation">#</span> 颜色映射</span>
-gt_colors %
-  layout(
-    title = list(text = "SNP Genotype Heatmap", y = 0.98),
-    xaxis = list(
-      title = "Genomic Position",
-      rangeslider = list(visible = TRUE),  # 横向滚动条
-      type = "category",  # 防止数值排序
-      tickangle = 45
-    ),
-    yaxis = list(
-      title = list(text = "Sample", standoff = 30),
-      tickfont = list(size = 10),
-      automargin = TRUE,  # 自动调整边距
-      tickmode = "array",
-      tickvals = seq_len(nrow(heatmap_matrix)),
-      ticktext = rownames(heatmap_matrix)
-    ),
-    margin = list(
-      l = left_margin,  # 动态左边距
-      r = 50,
-      b = 100,
-      t = 100
-    )
-  )
 
-<span class="token title important"><span class="token punctuation">#</span> 7. 输出结果 --------------------------------------------------</span>
-<span class="token title important"><span class="token punctuation">#</span> 在RStudio中直接查看</span>
-print(fig)
+<h1 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h1><ol>
+<li>无配置文件模式（推荐）<br>详细命令行参数</li>
+</ol>
+<p>📌 适用于</p>
+<p>快速连接 NPS 服务器<br>所有配置均在 Web 管理端完成<br>客户端仅需运行一条命令<br>📌 普通连接（TCP 模式）</p>
+<p> <code>./npc -server=ip:8024 -vkey=web界面中显示的密钥 -type=tcp</code> </p>
+<p>📌 TLS 加密连接（安全模式）</p>
+<p> <code>./npc -server=ip:8025 -vkey=web界面中显示的密钥 -type=tls</code> </p>
+<p>📌 连接多个服务端</p>
+<p> <code>./npc install -server=xx:12,yy:34 -vkey=xx,yy -type=tcp,tls</code> </p>
+<p>📌 说明：</p>
+<p>默认端口 8024 为非 TLS 端口，用于普通 TCP 连接<br>如果 -type=tls，必须使用 8025 作为 TLS 端口，否则连接失败</p>
+<ol start="2">
+<li>注册到系统服务（开机启动 &amp; 守护进程）<br>📌 适用于</li>
+</ol>
+<p>保证 NPC 在服务器重启后自动运行<br>无需手动启动，后台运行<br>Linux/macOS</p>
+<pre class="line-numbers language-none"><code class="language-none"># 普通连接（TCP）
+sudo ./npc install -server=ip:8024 -vkey=xxx -type=tcp -log=off
+# TLS 加密连接（安全模式）
+sudo ./npc install -server=ip:8025 -vkey=xxx -type=tls -log=off
+# 连接多个服务端
+sudo ./npc install -server=xx:12,yy:34 -vkey=xx,yy -type=tcp,tls -log=off
 
-<span class="token title important"><span class="token punctuation">#</span> 保存为HTML文件</span>
-htmlwidgets::saveWidget(
-  widget = fig,
-  file = "snp_heatmap_complete.html",
-  title = "Interactive SNP Heatmap",
-  selfcontained = TRUE,
-  libdir = "lib"
-)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>输出结果如下<br><img src="/images/40/2532418108.png" alt="mdvqrk99.png"></p>
+# 启动服务
+sudo npc start
+# 停止服务
+sudo npc stop
+# 卸载（修改参数时需要先卸载再重新注册）
+ sudo npc uninstall <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<p>后面就是开放相应的端口，实现远程访问。</p>
 ]]></content>
       <categories>
-        <category>重测序</category>
+        <category>默认分类</category>
       </categories>
   </entry>
   <entry>
@@ -1204,6 +738,472 @@ SHOW GRANTS FOR <span class="token string">'phpmyadmin'</span>@<span class="toke
 ]]></content>
       <categories>
         <category>WIFI</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>2.重测序数据分析——初步整理</title>
+    <url>/2025/07/31/19/</url>
+    <content><![CDATA[<blockquote>
+<p>布置好服务器后就是对重测序数据进行分析了。<br>首先，看一下我手里的数据，其实已经有公司处理好的数据了，在此，我并未对重测序下机原始数据进行分析，而是使用的公司初步过滤的 Filter.snp.vcf.gz和.tbi文件。</p>
+</blockquote>
+<p>前期在写重测序相关的专利，看别人专利时，发现重测序可进行Fst计算分析，绘制的图类似GWAS的曼哈顿图，遂想模仿绘制，便有了下面的一系列相关内容。</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<h1 id="一、FST和GWAS："><a href="#一、FST和GWAS：" class="headerlink" title="一、FST和GWAS："></a>一、FST和GWAS：</h1><p>首先，先介绍一下FST和GWAS，二者都是遗传学中常用的分析方法，但它们的目的和分析方式不一样。</p>
+<ul>
+<li>FST（Fixation Index）是用来衡量不同群体之间的遗传差异。如果两个群体在某些基因上有很大的差异，FST 值就会很高，说明这两个群体在基因组上有很大分化。</li>
+<li>GWAS（全基因组关联研究）是用来找出基因和特定性状之间的关系。简单来说，它帮助我们发现哪些基因变异可能会影响某个性状（比如身高、疾病或壳色）。</li>
+</ul>
+<h2 id="以黑白壳长牡蛎为例"><a href="#以黑白壳长牡蛎为例" class="headerlink" title="以黑白壳长牡蛎为例"></a>以黑白壳长牡蛎为例</h2><p>假设我们研究的是黑壳和白壳长牡蛎，这两种牡蛎的壳色差异显著，我们分别进行 FST和 GWAS 分析，使用 黑壳牡蛎 和 白壳牡蛎 作为群体标签。<br>FST 分析：我们将所有牡蛎按壳色分成两个群体，分别是 黑壳牡蛎 和 白壳牡蛎。通过计算 FST 值，我们能发现这两个群体之间在基因组中哪些区域的差异最大。如果某个基因区域的 FST 值很高，说明这个区域可能与这两个群体的遗传差异有关。<br>GWAS 分析：这里我们把牡蛎的壳色作为 表型，看看基因组中的哪些变异（SNP）与壳色相关。我们仍然用 黑壳牡蛎 和 白壳牡蛎 作为两组样本，进行统计分析，找出哪些基因变异可能影响壳色。<br>FST 和 GWAS 的区别<br>FST 分析 主要是比较两个群体（黑壳和白壳牡蛎）在基因组上的差异，找出遗传分化最大的区域。FST 是群体层面的分析，不直接与表型（如壳色）相关。<br>GWAS 分析 关注的是表型与基因型之间的关联，目的是找出影响牡蛎壳色的具体基因变异。在这个过程中，壳色作为表型，与基因变异建立直接关系。</p>
+<p>虽然 黑壳牡蛎 和 白壳牡蛎 都可以作为群体标签（FST）或表型分组（GWAS），但它们的分析目的不同：<br>FST 是用来研究群体之间的遗传分化，揭示哪些基因区域可能在两种牡蛎群体之间有显著差异。<br>GWAS 则是通过关联分析找出哪些基因变异直接影响牡蛎的壳色。<br>这两种方法可以互相补充，共同揭示基因和表型之间复杂的关系。</p>
+<h2 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h2><p>虽然 <strong>FST</strong> 和 <strong>GWAS</strong> 都涉及基因组和表型之间的关系，但它们的目的和侧重点其实是有区别的。虽然在 <strong>黑壳牡蛎</strong> 和 <strong>白壳牡蛎</strong> 的例子中，确实它们的分析结果看起来有些相似，但 <strong>FST</strong> 和 <strong>GWAS</strong> 的核心概念还是有本质区别的。</p>
+<p>我们来逐一比较一下两者的侧重点，看看为什么它们的目的不同，即使在分析黑白壳差异时，结果可能会有交集。</p>
+<h3 id="🧬-FST-和-GWAS-的核心区别"><a href="#🧬-FST-和-GWAS-的核心区别" class="headerlink" title="🧬 FST 和 GWAS 的核心区别"></a>🧬 <strong>FST 和 GWAS 的核心区别</strong></h3><ol>
+<li><p><strong>FST 分析</strong>：<br>FST 用来衡量<strong>不同群体之间的遗传分化</strong>。它通过比较群体间的基因频率差异，找出哪些区域在群体之间分化最显著。重点是研究群体 <strong>A</strong> 和 <strong>B</strong>（比如黑壳和白壳牡蛎）是否有不同的遗传背景，尤其是群体间的遗传结构。</p>
+<ul>
+<li><strong>目标</strong>：找出群体间在基因组上最显著的分化区域。</li>
+<li><strong>侧重点</strong>：群体差异、基因变异的分布，通常不直接关注与某个特定表型（如壳色）的关联。</li>
+</ul>
+<p>举个例子：</p>
+<ul>
+<li><strong>黑壳和白壳牡蛎</strong>之间，可能会发现某些基因区域的 <strong>FST 值很高</strong>，说明这些区域在两个群体之间的遗传差异很大，但这并不意味着这些基因变异一定会影响壳色。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<ol start="2">
+<li><p><strong>GWAS 分析</strong>：<br>GWAS 的目的是研究基因型和<strong>特定表型</strong>之间的关联，它是通过统计分析来找出与表型（比如牡蛎壳色）相关的遗传变异。在 <strong>GWAS</strong> 中，重点是找出哪些特定的 <strong>基因变异</strong> 直接影响了我们关注的 <strong>表型</strong>（比如壳色的白色或黑色）。</p>
+<ul>
+<li><strong>目标</strong>：找出与表型（如壳色）相关的基因变异。</li>
+<li><strong>侧重点</strong>：基因与表型（壳色）之间的直接关系。</li>
+</ul>
+<p>举个例子：</p>
+<ul>
+<li>在 <strong>GWAS 分析</strong> 中，我们的目标是找出哪些 <strong>SNP</strong> 直接与壳色（黑色或白色）相关。如果某个基因区域的 <strong>SNP</strong> 在黑壳牡蛎和白壳牡蛎之间有显著差异，那么我们会认为这个变异可能与壳色性状相关。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="🧩-区别的关键点："><a href="#🧩-区别的关键点：" class="headerlink" title="🧩 区别的关键点："></a>🧩 <strong>区别的关键点</strong>：</h3><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>FST</th>
+<th>GWAS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>目标</strong></td>
+<td>研究群体间的遗传分化，找出群体间差异最大的基因区域</td>
+<td>找出与特定表型（如壳色）相关的基因变异</td>
+</tr>
+<tr>
+<td><strong>关注点</strong></td>
+<td>群体的遗传结构差异</td>
+<td>基因与表型的直接关联</td>
+</tr>
+<tr>
+<td><strong>分析方式</strong></td>
+<td>比较不同群体的基因频率差异，计算 <strong>FST 值</strong></td>
+<td>将基因型数据与表型数据结合，进行 <strong>关联分析</strong></td>
+</tr>
+<tr>
+<td><strong>最终结果</strong></td>
+<td>找出遗传分化较大的区域</td>
+<td>找到影响表型的基因变异（SNP）</td>
+</tr>
+</tbody></table>
+<h3 id="🌿-简单总结："><a href="#🌿-简单总结：" class="headerlink" title="🌿 简单总结："></a>🌿 <strong>简单总结：</strong></h3><ul>
+<li><p><strong>FST</strong> 分析关注的是群体之间<strong>遗传结构</strong>的差异，它告诉你 <strong>哪些基因区域</strong> 在不同群体（黑壳和白壳牡蛎）之间分化最大，<strong>但并不直接关注这些区域是否与表型（壳色）相关</strong>。</p>
+</li>
+<li><p><strong>GWAS</strong> 直接关注的是基因和表型之间的关联，它告诉你 <strong>哪些特定的基因变异</strong> 与壳色变化有直接关系，<strong>并且是针对表型的分析</strong>。</p>
+</li>
+</ul>
+<h3 id="🔄-为什么这两者有重叠但不完全相同："><a href="#🔄-为什么这两者有重叠但不完全相同：" class="headerlink" title="🔄 为什么这两者有重叠但不完全相同："></a>🔄 <strong>为什么这两者有重叠但不完全相同：</strong></h3><ul>
+<li>如果你在 <strong>FST 分析</strong> 中发现某个区域的 <strong>FST 值很高</strong>，这表明该区域可能在群体间存在显著差异。</li>
+<li>然后，如果你再做 <strong>GWAS</strong> 分析，发现这个区域的变异确实与 <strong>壳色</strong> 相关，那么就可以确定这个基因区域<strong>可能影响壳色</strong>，而且它是群体分化的热点。</li>
+</ul>
+<p>因此，<strong>FST</strong> 主要是用来筛选出潜在的遗传分化区域，而 <strong>GWAS</strong> 是用来验证这些区域与表型的关联。</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<p>下面我们进行相关的FST分析</p>
+<h1 id="二、FST计算"><a href="#二、FST计算" class="headerlink" title="二、FST计算"></a>二、FST计算</h1><p>最头疼的一步，布置环境，安装分析所用的软件包。<br>plink1.9和plink2.0均未成功分析，遂使用vcftools进行处理。</p>
+<p>文件为 Filter.snp.vcf.gz，如果需要解压就使用下面方法</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">gunzip  Filter.snp.vcf.gz<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>vcftools使用mamba构建新环境</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">conda install -n base -c conda-forge mamba  # 安装mamba
+mamba create -n vcftools_env -c bioconda vcftools<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">vcftools --vcf Filter.snp.vcf \
+         --weir-fst-pop BM.txt \
+         --weir-fst-pop WM.txt \
+         --out BM_vs_WM_fst<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>得出BM_vs_WM_fst.weir.fst文件</p>
+<p>然后在R中进行绘图。</p>
+<pre class="line-numbers language-R" data-language="R"><code class="language-R">library(ggplot2)
+fst %
+  summarise(center = (min(pos_cum) + max(pos_cum)) / 2)
+
+# 设置显著阈值线（例如 top 1%）
+fst_threshold %  # 调整抽样比例(1-5%)
+  ungroup()
+
+# 2. 直接使用plot_ly() + scattergl模式（最佳性能）
+p %
+layout(
+  xaxis = list(
+    title = "Chromosome",
+    tickvals = axis_df$center,
+    ticktext = axis_df$CHROM
+  ),
+  yaxis = list(title = "FST"),
+  hoverlabel = list(bgcolor = "white")
+) %&gt;%
+config(
+  displayModeBar = TRUE,
+  scrollZoom = TRUE
+)
+
+p<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="/images/19/3703765276.png" alt="mdvvhepw.png"><br>结果文件200多M，太大了，浏览器卡的几乎无法正常浏览，遂放弃。</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<blockquote>
+<p>下面尝试过滤后再分析</p>
+</blockquote>
+<p>画图结果显示SNP位点过多，需要再次处理</p>
+<p>文件其实已经是公司过滤过的数据了，数据量较大，再过滤一次。</p>
+<h2 id="1-使用-vcftools-或-bcftools-进行-SNP-过滤"><a href="#1-使用-vcftools-或-bcftools-进行-SNP-过滤" class="headerlink" title="1. 使用 vcftools 或 bcftools 进行 SNP 过滤"></a>1. 使用 vcftools 或 bcftools 进行 SNP 过滤</h2><pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash"># 基本质量过滤
+ vcftools --vcf  Filter.snp.vcf \
+         --minQ 30 \
+         --min-meanDP 10 \
+         --max-meanDP 100 \
+         --min-alleles 2 \
+         --max-alleles 2 \
+         --maf 0.05 \
+         --max-missing 0.9 \
+         --recode \
+         --out filtered<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="2-使用-PLINK-进行FST计算"><a href="#2-使用-PLINK-进行FST计算" class="headerlink" title="2. 使用 PLINK 进行FST计算"></a>2. 使用 PLINK 进行FST计算</h2><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span> 转换为 PLINK 格式</span>
+plink --vcf filtered.recode.vcf --make-bed --out filtered_plink
+
+<span class="token title important"><span class="token punctuation">##</span> 计算群体间 FST</span>
+plink --bfile filtered_plink \
+      --fst \
+      --within pop_info_fixed.tsv \
+      --out fst_results \
+      --allow-extra-chr<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="3-筛选显著-FST-位点"><a href="#3-筛选显著-FST-位点" class="headerlink" title="3.筛选显著 FST 位点"></a>3.筛选显著 FST 位点</h2><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 提取 FST &gt; 0.05 的位点（阈值根据研究设定）</span>
+ awk '$5 &gt; 0.05 {print $2}' fst_results.fst &gt; high_fst_snps.txt 
+
+<span class="token title important"><span class="token punctuation">##</span> 统计高 FST 位点数量</span>
+ wc -l high_fst_snps.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="4-可视化-FST-分布（R-代码）"><a href="#4-可视化-FST-分布（R-代码）" class="headerlink" title="4.可视化 FST 分布（R 代码）"></a>4.可视化 FST 分布（R 代码）</h2><pre class="line-numbers language-R" data-language="R"><code class="language-R">library(ggplot2)
+
+# 读取结果
+fst %
+  # 布局设置
+  layout(
+    legend = list(
+      font = list(size = 10),  # 统一增大所有图例项字体
+      itemclick = TRUE        # 可选：禁用图例项点击隐藏
+    ),
+    title = list(
+      text = "Genome-wide FST Manhattan Plot",
+      x = 0.05, y = 0.98
+    ),
+    xaxis = list(
+      title = "Genomic Position (Mb)",
+      showgrid = FALSE,
+      tickvals = plot_data %&gt;% 
+        group_by(CHROM) %&gt;% 
+        summarise(center = median(POS/1e6)) %&gt;% 
+        pull(center),
+        ticktext = main_chroms,
+      # ticktext = str_remove(main_chroms, "NC_")
+        tickangle = -45,  # ← 关键参数：标签倾斜45度（负号表示逆时针）
+        tickfont = list(size = 8),  # 可选：调整标签字体大小
+        ticklen = 5,  # 刻度线长度
+        tickwidth = 1,  # 刻度线粗细
+        showgrid = FALSE
+    ),
+    yaxis = list(
+      title = "Weighted FST",
+      range = c(0, max(plot_data$WEIGHTED_FST) * 1.1)
+    ),
+    hoverlabel = list(
+      bgcolor = "white",
+      font = list(size = 10)
+    ),
+    legend = list(
+      orientation = "h",
+      x = 0.5, y = 1.1,
+      bgcolor = "rgba(255,255,255,0.8)")
+    ,
+    margin = list(t = 80)  # 顶部留白
+  ) %&gt;%
+  # 交互功能
+  highlight(
+    "plotly_selected",
+    opacityDim = 0.2,
+    selected = attrs_selected(
+      marker = list(size = 15, color = "black"),
+      textfont = list(weight = "bold"))
+  )
+
+# 5. 输出结果 --------------------------------------------------------------
+# 显示图表
+p<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/images/19/1902442139.png" alt="mdvwczfp.png"></p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<p>可以看到有些窗口FST值较高，我想筛选SNP进行验证，如何继续做呢？</p>
+]]></content>
+      <categories>
+        <category>多组学</category>
+        <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>4.提取重测序数据中黑白肌痕组中各SNP的位点信息及基因型频率</title>
+    <url>/2025/08/03/32/</url>
+    <content><![CDATA[<p>相关的sh文件内容如下：</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span>!/bin/bash</span>
+<span class="token title important"><span class="token punctuation">#</span> 用法：./extract_chromosome_snps_no_split.sh   </span>
+
+set -euo pipefail
+
+<span class="token title important"><span class="token punctuation">#</span> 彩色日志函数，蓝色时间，绿色成功，红色错误，黄色警告</span>
+log() {
+  local msg="$1"
+  local color="${2:-34}"  # 默认蓝色
+  echo -e "\033[1;${color}m[$(date '+%Y-%m-%d %H:%M:%S')]\033[0m $msg"
+}
+
+<span class="token title important"><span class="token punctuation">#</span> 参数检查</span>
+if [ $# -lt 3 ]; then
+  echo "Usage: $0   "
+  echo "Example: ./extract_chromosome_snps_no_split.sh NC_047567.1 input.vcf.gz results"
+  exit 1
+fi
+
+CHROM=$1
+VCF=$2
+PREFIX=$3
+GFF="../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff"
+
+<span class="token title important"><span class="token punctuation">#</span> 检查工具</span>
+command -v bcftools &gt;/dev/null || { log "ERROR: bcftools not found" 31; exit 1; }
+command -v bedtools &gt;/dev/null || { log "ERROR: bedtools not found" 31; exit 1; }
+command -v awk &gt;/dev/null || { log "ERROR: awk not found" 31; exit 1; }
+
+<span class="token title important"><span class="token punctuation">##########################</span></span>
+<span class="token title important"><span class="token punctuation">#</span> STEP 1: 提取基因坐标</span>
+<span class="token title important"><span class="token punctuation">##########################</span></span>
+log "STEP 1/5: Extracting gene coordinates for $CHROM..."
+
+GENE_BED="${PREFIX}_genes.bed"
+if [ -s "$GENE_BED" ]; then
+  lines=$(wc -l &lt; "$GENE_BED")
+  log "Found existing gene BED file ($GENE_BED, $lines lines), skipping extraction..." 33
+else
+  matched_gene_lines=$(grep -w "$CHROM" "$GFF" | awk -F'\t' '$3=="gene"')
+  if [ -z "$matched_gene_lines" ]; then
+    log "CRITICAL ERROR: No 'gene' lines found for chromosome '$CHROM'" 31
+    log "Possible reasons:" 31
+    log "1. Chromosome name不匹配 (如缺少'chr'前缀)" 31
+    log "2. GFF中没有gene类型注释" 31
+    log "Debug信息:" 31
+    log "-&gt; Chromosome 检查: $(grep -m1 "$CHROM" "$GFF" || echo '未找到')" 31
+    log "-&gt; 染色体中所有 feature 类型:" 31
+    grep -w "$CHROM" "$GFF" | awk -F'\t' '{print $3}' | sort | uniq -c
+    exit 1
+  fi
+
+  grep -w "$CHROM" "$GFF" | \
+    awk -F'\t' '$3=="gene"' | \
+    awk -F'\t' '{
+      split($9, a, ";");
+      gene_id="";
+      for (i in a) {
+        if (a[i] <span class="token strike"><span class="token punctuation">~</span><span class="token content"> /^gene=/) {
+          gsub(/^gene=/, "", a[i]); gene_id=a[i];
+        } else if (a[i] </span><span class="token punctuation">~</span></span> /^ID=gene-/) {
+          gsub(/^ID=gene-/, "", a[i]); gene_id=a[i];
+        }
+      }
+      print $1, $4, $5, gene_id
+    }' OFS='\t' &gt; "$GENE_BED"
+
+  gene_count=$(wc -l &lt; "$GENE_BED")
+  if [ "$gene_count" -eq 0 ]; then
+    log "ERROR: Gene extraction failed! No gene records written." 31
+    exit 1
+  fi
+  log "Successfully extracted $gene_count genes to $GENE_BED" 32
+fi
+
+<span class="token title important"><span class="token punctuation">##########################</span></span>
+<span class="token title important"><span class="token punctuation">#</span> STEP 2: 提取染色体SNP</span>
+<span class="token title important"><span class="token punctuation">##########################</span></span>
+log "STEP 2/5: Extracting SNPs for $CHROM..."
+
+SNP_VCF="${PREFIX}_snps.vcf.gz"
+if [ -s "$SNP_VCF" ]; then
+  variants=$(bcftools view "$SNP_VCF" | grep -v '^#' | wc -l)
+  log "Found existing SNP file ($SNP_VCF) with $variants variants, skipping extraction..." 33
+else
+  bcftools view -r "$CHROM" "$VCF" -Oz -o "$SNP_VCF"
+  bcftools index "$SNP_VCF"
+  variants=$(bcftools view "$SNP_VCF" | grep -v '^#' | wc -l)
+  log "SNPs extracted to $SNP_VCF (Total variants: $variants)" 32
+fi
+
+<span class="token title important"><span class="token punctuation">##########################</span></span>
+<span class="token title important"><span class="token punctuation">#</span> STEP 3: 转换VCF格式为TSV</span>
+<span class="token title important"><span class="token punctuation">##########################</span></span>
+log "STEP 3/5: Converting VCF to table..."
+
+SNP_TSV="${PREFIX}_snps.tsv"
+if [ -s "$SNP_TSV" ]; then
+  lines=$(wc -l &lt; "$SNP_TSV")
+  log "Found existing SNP table ($SNP_TSV) with $lines lines, skipping conversion..." 33
+else
+  bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%QUAL[\t%GT:%AD]\n' "$SNP_VCF" &gt; "${SNP_TSV}.tmp"
+
+  <span class="token title important"><span class="token punctuation">#</span> 添加表头（样本名）</span>
+  echo -e "chromosome\tposition\tref\talt\tqual\t"$(bcftools query -l "$SNP_VCF" | tr '\n' '\t' | sed 's/\t$//') &gt; header.tsv
+  cat header.tsv "${SNP_TSV}.tmp" &gt; "$SNP_TSV"
+  rm header.tsv "${SNP_TSV}.tmp"
+
+  lines=$(wc -l &lt; "$SNP_TSV")
+  log "VCF converted to $SNP_TSV (Total lines: $lines)" 32
+fi
+
+<span class="token title important"><span class="token punctuation">##########################</span></span>
+<span class="token title important"><span class="token punctuation">#</span> STEP 4: SNP注释</span>
+<span class="token title important"><span class="token punctuation">##########################</span></span>
+log "STEP 4/5: Annotating SNPs with genes (single pass)..."
+
+ANNOTATED="${PREFIX}_annotated.tsv"
+if [ -s "$ANNOTATED" ]; then
+  lines=$(wc -l &lt; "$ANNOTATED")
+  log "Found existing annotated SNPs file ($ANNOTATED) with $lines lines, skipping annotation..." 33
+else
+  SNPS_BED=$(mktemp)
+  INTERSECT_OUT=$(mktemp)
+
+  <span class="token title important"><span class="token punctuation">#</span> 转换TSV到BED格式（0-based）</span>
+  awk -F'\t' 'BEGIN{OFS="\t"} NR&gt;1 {print $1,$2-1,$2,$0}' "$SNP_TSV" &gt; "$SNPS_BED"
+
+  log "Running bedtools intersect..." 33
+  bedtools intersect -a "$SNPS_BED" -b "$GENE_BED" -wa -wb &gt; "$INTERSECT_OUT"
+
+  <span class="token title important"><span class="token punctuation">#</span> 提取最终结果，保留原始字段并加gene列</span>
+  awk -F'\t' 'BEGIN{OFS="\t"} {
+    nf = NF;
+    for(i=4; i 0) ? bm_counts["00"]/bm_total<span class="token italic"><span class="token punctuation">*</span><span class="token content">100 : 0;
+    bm_het_pct = (bm_total &gt; 0) ? bm_counts["01"]/bm_total</span><span class="token punctuation">*</span></span>100 : 0;
+    bm_alt_pct = (bm_total &gt; 0) ? bm_counts["11"]/bm_total<span class="token italic"><span class="token punctuation">*</span><span class="token content">100 : 0;
+    bm_other_pct = (bm_total &gt; 0) ? bm_counts["other"]/bm_total</span><span class="token punctuation">*</span></span>100 : 0;
+    
+<span class="token code keyword">    wm_ref_pct = (wm_total &gt; 0) ? wm_counts["00"]/wm_total*100 : 0;
+    wm_het_pct = (wm_total &gt; 0) ? wm_counts["01"]/wm_total*100 : 0;
+    wm_alt_pct = (wm_total &gt; 0) ? wm_counts["11"]/wm_total*100 : 0;
+    wm_other_pct = (wm_total &gt; 0) ? wm_counts["other"]/wm_total*100 : 0;</span>
+    
+<span class="token code keyword">    # 输出结果（现在总和应为100%）
+    print $1, $2, $3, $4, $5,
+          sprintf("%.3f", bm_ref_pct), sprintf("%.3f", bm_het_pct), sprintf("%.3f", bm_alt_pct), sprintf("%.3f", bm_other_pct), bm_total,
+          sprintf("%.3f", wm_ref_pct), sprintf("%.3f", wm_het_pct), sprintf("%.3f", wm_alt_pct), sprintf("%.3f", wm_other_pct), wm_total;</span>
+  }' "$SNP_TSV" &gt; "$FREQ_OUT"
+  
+  lines=$(wc -l &lt; "$FREQ_OUT")
+  log "Genotype frequency table written to $FREQ_OUT ($((lines-1)) variant lines)" 32
+fi
+
+log "SUCCESS! Final results:" 32
+log "- Gene coordinates: ${GENE_BED}" 32
+log "- SNP VCF: ${PREFIX}_snps.vcf.gz" 32
+log "- Annotated SNPs: ${PREFIX}_annotated.tsv ($(wc -l &lt; ${PREFIX}_annotated.tsv) lines)" 32
+log "- Genotype frequencies: ${PREFIX}_genotype_freq.tsv ($(wc -l &lt; ${PREFIX}_genotype_freq.tsv) lines)" 32<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<p>相关的指令如下</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">dos2unix xxxxxx.sh
+
+rm -f NC_047567.1_results_*
+
+./extract_chromosome_snps.sh NC_047567.1 Filter.snp.vcf.gz NC_047567.1_results 8
+./extract_chromosome_snps_2.0.sh NC_047567.1 Filter.snp.vcf.gz NC_047567.1_results<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
+      <categories>
+        <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>5.各样本SNP位点信息可视化</title>
+    <url>/2025/08/03/40/</url>
+    <content><![CDATA[<blockquote>
+<p>前面我们对各样本的SNP位点信息进行了提取，现在我们要进行SNP位点的筛选，相对快捷的办法就是可视化，下面我们进行分析</p>
+</blockquote>
+<p>需要用到的R包</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">library(tidyverse)
+library(vcfR)
+library(data.table)
+library(ggplot2)
+library(dplyr)
+library(tidyr)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>下面以单个基因为例进行分析</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span> 先读取数据（不自动解析列名）</span>
+snp_data %
+  as.matrix()
+
+<span class="token title important"><span class="token punctuation">#</span> 5. 可视化设置 ------------------------------------------------</span>
+<span class="token title important"><span class="token punctuation">#</span> 颜色映射</span>
+gt_colors %
+  layout(
+    title = list(text = "SNP Genotype Heatmap", y = 0.98),
+    xaxis = list(
+      title = "Genomic Position",
+      rangeslider = list(visible = TRUE),  # 横向滚动条
+      type = "category",  # 防止数值排序
+      tickangle = 45
+    ),
+    yaxis = list(
+      title = list(text = "Sample", standoff = 30),
+      tickfont = list(size = 10),
+      automargin = TRUE,  # 自动调整边距
+      tickmode = "array",
+      tickvals = seq_len(nrow(heatmap_matrix)),
+      ticktext = rownames(heatmap_matrix)
+    ),
+    margin = list(
+      l = left_margin,  # 动态左边距
+      r = 50,
+      b = 100,
+      t = 100
+    )
+  )
+
+<span class="token title important"><span class="token punctuation">#</span> 7. 输出结果 --------------------------------------------------</span>
+<span class="token title important"><span class="token punctuation">#</span> 在RStudio中直接查看</span>
+print(fig)
+
+<span class="token title important"><span class="token punctuation">#</span> 保存为HTML文件</span>
+htmlwidgets::saveWidget(
+  widget = fig,
+  file = "snp_heatmap_complete.html",
+  title = "Interactive SNP Heatmap",
+  selfcontained = TRUE,
+  libdir = "lib"
+)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>输出结果如下<br><img src="/images/40/2532418108.png" alt="mdvqrk99.png"></p>
+]]></content>
+      <categories>
+        <category>重测序</category>
       </categories>
   </entry>
   <entry>
@@ -1629,6 +1629,44 @@ F <span class="token arrow operator">--&gt;</span> I
       </categories>
   </entry>
   <entry>
+    <title>openipc goke7205v200</title>
+    <url>/2024/12/03/7/</url>
+    <content><![CDATA[<h1 id="保存原始固件"><a href="#保存原始固件" class="headerlink" title="保存原始固件"></a>保存原始固件</h1><hr>
+<h2 id="备份您的原始固件，请不要跳过这个步骤！"><a href="#备份您的原始固件，请不要跳过这个步骤！" class="headerlink" title="备份您的原始固件，请不要跳过这个步骤！"></a>备份您的原始固件，请不要跳过这个步骤！</h2><p>OpenIPC U-Boot 会覆盖原始的加密分区，因此无法恢复为出厂固件，除非您拥有此特定摄像机的完整闪存备份！要创建完整的固件备份，请启动 TFTP 服务器并在引导加载程序 shell 中执行这些命令。</p>
+<blockquote>
+<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python"> # Enter commands line by line! Do not copy and paste multiple lines at once!
+setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105
+mw.b 0x42000000 0xff 0x1000000
+sf probe 0; sf read 0x42000000 0x0 0x1000000
+tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
+# if there is no tftpput but tftp then run this instead
+ tftp 0x42000000 backup-gk7205v200-nor16m.bin 0x1000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<p>有关详细信息，请参阅项目 wiki 中的安装说明。</p>
+<h1 id="烧录完整的-OpenIPC-固件"><a href="#烧录完整的-OpenIPC-固件" class="headerlink" title="烧录完整的 OpenIPC 固件"></a>烧录完整的 OpenIPC 固件</h1><h2 id="下载-OpenIPC-固件-Ultimate"><a href="#下载-OpenIPC-固件-Ultimate" class="headerlink" title="下载 OpenIPC 固件 (Ultimate)"></a>下载 OpenIPC 固件 (Ultimate)</h2><p>for Goke GK7205V200 with 16MB NOR flash</p>
+<p>完整的固件由引导加载程序、内核和根文件系统组成，也适用于使用编程器烧写闪存芯片。 请注意，完整固件不包含预设环境。你还需要添加自己的MAC地址、IP地址等设置。</p>
+<blockquote>
+<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105<br>mw.b 0x42000000 0xff 0x1000000<br>tftpboot 0x42000000 openipc-gk7205v200-ultimate-16mb.bin</p>
+<h1 id="if-there-is-no-tftpboot-but-tftp-then-run-this-instead"><a href="#if-there-is-no-tftpboot-but-tftp-then-run-this-instead" class="headerlink" title="if there is no tftpboot but tftp then run this instead"></a>if there is no tftpboot but tftp then run this instead</h1><p>tftp 0x42000000 openipc-gk7205v200-ultimate-16mb.bin<br>sf probe 0; sf lock 0;<br>sf erase 0x0 0x1000000; sf write 0x42000000 0x0 0x1000000<br>reset</p>
+</blockquote>
+<p>摄像机将自动重启并使用全新的引导加载程序启动。</p>
+<p>注意准备中断并进入引导程序的命令行。 在引导加载程序的命令行中，根据您的闪存大小和类型重新映射 ROM 分区。</p>
+<blockquote>
+<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>run setnor16m</p>
+</blockquote>
+<h1 id="恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。"><a href="#恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。" class="headerlink" title="恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。"></a>恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。</h1><p>在端口 85 ( <a href="http://192.168.15.169:85/">http://192.168.15.169:85/</a> ) 上打开摄像机的 Web 界面并使用登录root和密码12345登录。登录后将要求您设置自己的安全密码。通过以下方式访问摄像机ssh 或 UART 使用与上述相同的登录名和密码。</p>
+<hr>
+<p>打开web界面后，更新固件，更新完后调整majestic、sensor与设备型号对应。</p>
+<h1 id="majestic"><a href="#majestic" class="headerlink" title="majestic"></a>majestic</h1><p>openipc未开源部分。</p>
+]]></content>
+      <categories>
+        <category>折腾</category>
+      </categories>
+      <tags>
+        <tag>openipc</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>410随身WiFi棒子Debian刷入青龙教程</title>
     <url>/2025/09/25/56/</url>
     <content><![CDATA[<p>备份教程<br>刷Debian前请先备份（非常重要！！！）</p>
@@ -1697,44 +1735,6 @@ echo none &gt; /sys/class/leds/green\:internet/trigger<span aria-hidden="true" c
       <categories>
         <category>WIFI</category>
       </categories>
-  </entry>
-  <entry>
-    <title>openipc goke7205v200</title>
-    <url>/2024/12/03/7/</url>
-    <content><![CDATA[<h1 id="保存原始固件"><a href="#保存原始固件" class="headerlink" title="保存原始固件"></a>保存原始固件</h1><hr>
-<h2 id="备份您的原始固件，请不要跳过这个步骤！"><a href="#备份您的原始固件，请不要跳过这个步骤！" class="headerlink" title="备份您的原始固件，请不要跳过这个步骤！"></a>备份您的原始固件，请不要跳过这个步骤！</h2><p>OpenIPC U-Boot 会覆盖原始的加密分区，因此无法恢复为出厂固件，除非您拥有此特定摄像机的完整闪存备份！要创建完整的固件备份，请启动 TFTP 服务器并在引导加载程序 shell 中执行这些命令。</p>
-<blockquote>
-<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python"> # Enter commands line by line! Do not copy and paste multiple lines at once!
-setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105
-mw.b 0x42000000 0xff 0x1000000
-sf probe 0; sf read 0x42000000 0x0 0x1000000
-tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
-# if there is no tftpput but tftp then run this instead
- tftp 0x42000000 backup-gk7205v200-nor16m.bin 0x1000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</blockquote>
-<p>有关详细信息，请参阅项目 wiki 中的安装说明。</p>
-<h1 id="烧录完整的-OpenIPC-固件"><a href="#烧录完整的-OpenIPC-固件" class="headerlink" title="烧录完整的 OpenIPC 固件"></a>烧录完整的 OpenIPC 固件</h1><h2 id="下载-OpenIPC-固件-Ultimate"><a href="#下载-OpenIPC-固件-Ultimate" class="headerlink" title="下载 OpenIPC 固件 (Ultimate)"></a>下载 OpenIPC 固件 (Ultimate)</h2><p>for Goke GK7205V200 with 16MB NOR flash</p>
-<p>完整的固件由引导加载程序、内核和根文件系统组成，也适用于使用编程器烧写闪存芯片。 请注意，完整固件不包含预设环境。你还需要添加自己的MAC地址、IP地址等设置。</p>
-<blockquote>
-<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105<br>mw.b 0x42000000 0xff 0x1000000<br>tftpboot 0x42000000 openipc-gk7205v200-ultimate-16mb.bin</p>
-<h1 id="if-there-is-no-tftpboot-but-tftp-then-run-this-instead"><a href="#if-there-is-no-tftpboot-but-tftp-then-run-this-instead" class="headerlink" title="if there is no tftpboot but tftp then run this instead"></a>if there is no tftpboot but tftp then run this instead</h1><p>tftp 0x42000000 openipc-gk7205v200-ultimate-16mb.bin<br>sf probe 0; sf lock 0;<br>sf erase 0x0 0x1000000; sf write 0x42000000 0x0 0x1000000<br>reset</p>
-</blockquote>
-<p>摄像机将自动重启并使用全新的引导加载程序启动。</p>
-<p>注意准备中断并进入引导程序的命令行。 在引导加载程序的命令行中，根据您的闪存大小和类型重新映射 ROM 分区。</p>
-<blockquote>
-<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>run setnor16m</p>
-</blockquote>
-<h1 id="恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。"><a href="#恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。" class="headerlink" title="恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。"></a>恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。</h1><p>在端口 85 ( <a href="http://192.168.15.169:85/">http://192.168.15.169:85/</a> ) 上打开摄像机的 Web 界面并使用登录root和密码12345登录。登录后将要求您设置自己的安全密码。通过以下方式访问摄像机ssh 或 UART 使用与上述相同的登录名和密码。</p>
-<hr>
-<p>打开web界面后，更新固件，更新完后调整majestic、sensor与设备型号对应。</p>
-<h1 id="majestic"><a href="#majestic" class="headerlink" title="majestic"></a>majestic</h1><p>openipc未开源部分。</p>
-]]></content>
-      <categories>
-        <category>折腾</category>
-      </categories>
-      <tags>
-        <tag>openipc</tag>
-      </tags>
   </entry>
   <entry>
     <title>GPT 学术优化</title>
@@ -1880,6 +1880,304 @@ tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
 ]]></content>
       <categories>
         <category>默认分类</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</title>
+    <url>/2025/11/03/pymol/</url>
+    <content><![CDATA[<h1 id="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"><a href="#【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片" class="headerlink" title="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"></a>【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</h1><blockquote>
+<p>转载自：<code>https://blog.csdn.net/qq_37126941/article/details/115793062</code>。</p>
+<p>本文将以D715-2441抑制剂与PB2蛋白复合物为例，手把手教你用PyMOL制作专业的结合模式图</p>
+</blockquote>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文将带大家使用免费开源的PyMOL软件绘制D715-2441蛋白与与<a href="https://link.zhihu.com/?target=https://www.rcsb.org/structure/4CB4">PB2cap配体分子</a>的结合模式图。</p>
+<p>我们先来看一张成品图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5bb95a5e415241b5719ec50baf888d67.jpeg" alt="在这里插入图片描述"></p>
+<h2 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h2><p>流感病毒PB2蛋白是重要的药物靶点，D715-2441是一个新型抗流感病毒化合物。通过分子对接分析，我们发现以下关键相互作用：</p>
+<p>1、化合物D715-2441的<code>芳环</code>夹在氨基酸残基<code>H357</code>和<code>F404</code>之间并形成<code>π-π</code>堆积作用，还与<code>F404</code>形成疏水作用；</p>
+<p>2、化合物苯环上的<code>羟基</code>与E361的<code>羧基</code>和K376的<code>N+原子</code>形成氢键作用，另一个<code>羟基</code>与F404的<code>O原子</code>形成氢键作用；</p>
+<p>3、化合物吡喃酮环酯基与K339的<code>N+原子</code>和H357的<code>咪唑基</code>形成盐桥作用。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><blockquote>
+<p>PyMOL作图通常是对特定对象进行展示形式、颜色、字体等方面的修饰。PyMOL的精髓在于命令行与鼠标的配合使用，本文高度依赖命令行，请做好心理准备。大多数命令格式较为一致，请注意总结归纳。</p>
+</blockquote>
+<h3 id="1-下载蛋白结构"><a href="#1-下载蛋白结构" class="headerlink" title="1. 下载蛋白结构"></a>1. 下载蛋白结构</h3><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 在PyMOL中直接下载PDB结构</span>
+fetch 4cb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h3 id="2-获取配体结构"><a href="#2-获取配体结构" class="headerlink" title="2. 获取配体结构"></a>2. 获取配体结构</h3><p>由于D715-2441不在PDB中，我们需要自行准备：</p>
+<p><strong>方法一：在线SMILES转换</strong></p>
+<p>​	1.使用<strong>PubChem</strong>: <a href="https://pubchem.ncbi.nlm.nih.gov/">https://pubchem.ncbi.nlm.nih.gov/</a></p>
+<p>​	2.绘制完后，SIMLES：<code>C1=CC=CC3=C1C2=C(C=C(C=C2O[H])O[H])OC3=O</code></p>
+<p>​	3.访问：<strong><a href="https://cactus.nci.nih.gov/translate/">https://cactus.nci.nih.gov/translate/</a></strong></p>
+<p>​	4.在输入框粘贴：<code>C1=CC=CC3=C1C2=C(C=C(C=C2O[H])O[H])OC3=O</code></p>
+<p>​	5.选择格式：<strong>Protein Data Bank (pdb)</strong></p>
+<p>​	6.点击 <strong>Translate</strong></p>
+<p>​	7.下载文件并在PyMOL中加载</p>
+<p><strong>方法二：手动构建</strong><br>在PyMOL中使用Builder工具逐步绘制分子结构</p>
+<h2 id="基础操作流程"><a href="#基础操作流程" class="headerlink" title="基础操作流程"></a>基础操作流程</h2><h3 id="1-初始设置"><a href="#1-初始设置" class="headerlink" title="1. 初始设置"></a>1. 初始设置</h3><p>打开<code>PyMOL</code>软件，导入刚才下载的复合物PDB文件（rli-D715-2441-1.pdb）。</p>
+<p>注意：有两种方法导入文件，一种是鼠标点击菜单栏File -&gt; Open…，另一种是通过命令行。在这里，我们采用命令来操作，因为这样可以同时把工作目录设置好，方便后续保存文件。</p>
+<p>假设我们的工作目录为<code>D:\demo</code>。注意：路径中不要有中文和空格，这是导致很多计算类软件（尤其是免费软件）出现问题的原因。</p>
+<pre class="line-numbers language-none"><code class="language-none"># 设置工作目录
+cd E:\下载\Pymol\test
+
+# 基本显示设置
+hide everything
+show cartoon, 4cb4
+show sticks, resn MGT  # 参考配体
+color gray, 4cb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>在PyMOL上界面或下界面的命令输入框输入以下命令（PyMOL&gt;表示这是PyMOL的命令），每行输入完毕后按【Enter】键：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/a777cf49858f76eec599ecfd8f881301.jpeg" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/fa8eaf9a056c73c583d30921f453ab60.png" alt="在这里插入图片描述"></p>
+<h3 id="2-设置操作对象"><a href="#2-设置操作对象" class="headerlink" title="2 设置操作对象"></a>2 设置操作对象</h3><p><strong>结合模式图</strong>通常涉及到<code>受体</code>（蛋白）与<code>配体</code>（小分子化合物）两部分（有的还可能涉及<code>水分子</code>、<code>金属离子</code>、<code>辅酶</code>等等），需为之分别设置对象，以便后续操作。<strong>设置配体对象</strong>：按照下图顺序，将配体设置为<code>lig</code>对象。<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/2568e1b24aca318f02d497b946f2635b.png" alt="在这里插入图片描述"></p>
+<p><strong>设置关键残基对象</strong>: 关键残基包括：A链的K339、H357、E361、K376和F404。由于该蛋白只有一条链，在使用命令选择残基时，可以不用指定链名。按照下图顺序，将关键残基设置为res对象。</p>
+<p><code>select res, resi 339+357+361+376+404</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/3a9fd3f025f59f1e691f72009f398653.png" alt="在这里插入图片描述"></p>
+<h3 id="3-显示样式优化"><a href="#3-显示样式优化" class="headerlink" title="3. 显示样式优化"></a>3. 显示样式优化</h3><p>在PyMOL中输入以下命令：</p>
+<pre class="line-numbers language-none"><code class="language-none"># 基本显示设置
+hide everything
+show sticks, lig | res
+hide sticks, h.
+zoom lig | res
+# 颜色设置
+color wheat, lig &amp; name C*
+# 标签设置
+set label_size, 30
+set label_font_id, 9<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/8eec91dbd5bb84f2cc2a553f8aaca60c.jpeg" alt="在这里插入图片描述"><br>然后，进行鼠标操作：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/3f3c38acd7270f0ad5a310dbfa8b8189.png" alt="在这里插入图片描述"></p>
+<h4 id="绘制相互作用力"><a href="#绘制相互作用力" class="headerlink" title="绘制相互作用力"></a>绘制相互作用力</h4><p>前面说过，命令行和鼠标的配合是很重要的。这里再简单讲讲鼠标的几个操作用法：</p>
+<p>​	A） 拖动鼠标左键：按住右键，任意方向拖动鼠标，使视图转动；</p>
+<p>​	B） 上下拖动鼠标右键：按住右键，上下拖动鼠标，使视图缩放；</p>
+<p>​	C） 拖动鼠标中间滚轮：按住滚轮，任意方向拖动鼠标，使视图移动；</p>
+<p>​	D）滚动鼠标中间滚轮：拉进或拉远镜头，使近处原子逐渐显示或隐藏。</p>
+<p>我们参照平台给出的结合模式图（本文第二张图），通过下面的键鼠操作来绘制相互作用力。</p>
+<h6 id="·-绘制π-π堆积与盐桥作用"><a href="#·-绘制π-π堆积与盐桥作用" class="headerlink" title="· 绘制π-π堆积与盐桥作用"></a>· 绘制π-π堆积与盐桥作用</h6><p>首先，确保鼠标模式（Mouse Mode）为Viewing状态，选择（Selecting）模式为<code>Atoms</code>状态（位置在PyMOL右下方）。然后，按照下面步骤操作：</p>
+<p>新建文件<code>center_of_mass.py</code>，<code>run /PATH/TO/center_of_mass.py</code></p>
+<pre class="line-numbers language-none"><code class="language-none">from pymol import cmd
+from chempy import cpv
+
+def center_of_mass(selection, state=1, object=None, color=None, quiet=1):
+    """
+    Calculate the center of mass (COM) for a selection and optionally create a pseudo-atom at that position.
+    
+    Parameters:
+    selection (str): atom selection
+    state (int): object state (default=1)
+    object (str): name of pseudo-atom to create (default=None)
+    color (str): color for the pseudo-atom (default=None)
+    quiet (int): suppress output (default=1)
+    """
+    quiet = int(quiet)
+    
+    # Get the coordinates and masses
+    model = cmd.get_model(selection, state)
+    if not model.atom:
+        print("Error: No atoms selected")
+        return
+    
+    # Calculate center of mass
+    total_mass = 0.0
+    com = [0.0, 0.0, 0.0]
+    
+    for atom in model.atom:
+        mass = atom.get_mass()
+        total_mass += mass
+        com[0] += atom.coord[0] * mass
+        com[1] += atom.coord[1] * mass
+        com[2] += atom.coord[2] * mass
+    
+    if total_mass == 0:
+        print("Error: Total mass is zero")
+        return
+    
+    com[0] /= total_mass
+    com[1] /= total_mass
+    com[2] /= total_mass
+    
+    if not quiet:
+        print("Center of Mass: %.3f, %.3f, %.3f" % (com[0], com[1], com[2]))
+    
+    # Create pseudo-atom if requested
+    if object:
+        if color:
+            cmd.pseudoatom(object, pos=com, color=color)
+        else:
+            cmd.pseudoatom(object, pos=com)
+        
+        # 自动设置显示属性
+        cmd.set("sphere_scale", 0.3, object)
+        cmd.show("spheres", object)
+        
+        if not quiet:
+            print("Created pseudo-atom '%s' at COM" % object)
+    
+    return com
+
+# Add the command to PyMOL
+cmd.extend("com", center_of_mass)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-none"><code class="language-none"># 导入必要插件
+run /PATH/TO/center_of_mass.py
+# 创建小球的命令序列
+com sele, object=p1
+com sele, object=p2  
+com sele, object=p3
+com sele, object=p4
+com sele, object=p5
+com sele, object=p6
+com sele, object=p7<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/4c73e3f7a2e524d6d72641c589585b53.jpeg" alt="在这里插入图片描述">然后，点击PyMOL菜单栏的Wizard -&gt; Measurement，然后根据示意图点击刚才创建的小球，两两一组，便画出虚线（相应地，生成对象measure01~05）。<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cdcb8f03c0f348271b32051bd021c1cd.png" alt="在这里插入图片描述"></p>
+<h6 id="·-绘制其他作用力"><a href="#·-绘制其他作用力" class="headerlink" title="· 绘制其他作用力"></a>· 绘制其他作用力</h6><p>采用相同的办法，把<code>氢键</code>和<code>疏水作用</code>也画出来。由于这些作用力的两端刚好落在原子上，因此，不用绘制小球。<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/6da4239d1e6785671f043216731b13b4.png" alt="在这里插入图片描述"></p>
+<h3 id="图像美化与输出"><a href="#图像美化与输出" class="headerlink" title="图像美化与输出"></a>图像美化与输出</h3><p>为方便调整，也为图片规格符合要求（通常，出版社要求全版图片宽度≤2000像素，半版图片宽度≤1000像素，分辨率≥300 dpi)，我们将PyMOL界面放大或靠边最大化，并将上半部分的对话框往上拉到最小，让视图最大。然后放大、摆动视图至合适的角度，使尽可能清晰地看到各关键细节。</p>
+<p>基本的创建工作已经完成，接下来进行细致的修饰。</p>
+<p><strong>🎯 隐藏和显示控制</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 居中显示</span>
+zoom ligand <span class="token keyword">or</span> key_residues
+
+<span class="token comment"># 小球显示控制</span>
+hide everything<span class="token punctuation">,</span> p<span class="token operator">*</span>
+show spheres<span class="token punctuation">,</span> p<span class="token operator">*</span>
+
+<span class="token comment"># 标签显示控制</span>
+hide labels<span class="token punctuation">,</span> measure<span class="token operator">*</span>
+show labels<span class="token punctuation">,</span> measure06
+show labels<span class="token punctuation">,</span> measure07  
+show labels<span class="token punctuation">,</span> measure08<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>🎨 虚线样式设置</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 虚线外观调整</span>
+<span class="token builtin">set</span> dash_length<span class="token punctuation">,</span> <span class="token number">0.3</span>
+<span class="token builtin">set</span> dash_radius<span class="token punctuation">,</span> <span class="token number">0.08</span>
+<span class="token builtin">set</span> dash_gap<span class="token punctuation">,</span> <span class="token number">0.3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>🌈 虚线颜色设置</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 相互作用颜色编码</span>
+color magenta<span class="token punctuation">,</span> measure04    <span class="token comment"># 盐桥</span>
+color magenta<span class="token punctuation">,</span> measure05    <span class="token comment"># 盐桥  </span>
+color green<span class="token punctuation">,</span> measure06      <span class="token comment"># 氢键</span>
+color green<span class="token punctuation">,</span> measure07      <span class="token comment"># 氢键</span>
+color green<span class="token punctuation">,</span> measure08      <span class="token comment"># 氢键</span>
+color gray70<span class="token punctuation">,</span> measure09     <span class="token comment"># 疏水作用</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>🖼️ 背景和蛋白显示</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 背景设置</span>
+bg_color white
+
+<span class="token comment"># 蛋白结构显示</span>
+show cartoon
+color smudge<span class="token punctuation">,</span> lig <span class="token keyword">and</span> name C<span class="token operator">*</span>
+<span class="token builtin">set</span> cartoon_transparency<span class="token punctuation">,</span> <span class="token number">0.3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/243fc636fd2a30ce86bd04121d969461.jpeg" alt="在这里插入图片描述"></p>
+<p>我们还可按下图步骤微调cartoon样式：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/9988aba7cb104fd00f608bd0f601c6e3.png" alt="在这里插入图片描述"><br>还可移动label的位置（设置Mouse Mode为Editing模式后，按住Ctrl键，用鼠标左键或右键拖动label；必要时，可先将cartoo隐藏起来，等调整好label后，再显示出来），让视图更清晰。经过上述一系列操作，得到下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f1c0110ffc04461492536e39811d4eba.png" alt="在这里插入图片描述"></p>
+<p>✅ 一、目标效果</p>
+<ul>
+<li>整体蛋白以 <strong>cartoon 灰色显示</strong>（作为背景板）</li>
+<li>配体（<code>lig</code>）与特定残基（<code>res</code>）<strong>前置显示、保持高亮颜色</strong></li>
+<li>cartoon 不遮挡配体和关键残基</li>
+<li>其余部分颜色偏淡，突出关键信息</li>
+</ul>
+<hr>
+<p>✅ 二、实现命令步骤（PyMOL 命令行版）</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 1. 全局设置
+bg_color white
+set cartoon_transparency, 0.6      # 半透明背景板感觉更好
+set depth_cue, 0                   # 去掉景深影响
+
+# 2. 设置蛋白主链为灰色 cartoon
+show cartoon, all
+color grey80, all
+
+# 3. 高亮配体与特定残基
+show sticks, (lig or res)
+util.cbag (lig or res)             # 让配体/残基彩色显示（carbon by atom type）
+
+# 4. 把配体、残基显示在最前层（不被遮挡）
+# set cartoon_side_chain_helper, on
+set transparency_mode, 2           # 优化透明度混合效果
+set ray_opaque_background, off
+
+# 5. 可以单独调整颜色
+# color red, lig
+# color yellow, res
+
+color yellow, measure01
+color yellow, measure02
+color yellow, measure03
+color green, measure04
+color green, measure05
+color green, measure06
+color gray70, measure07
+
+color yellow, p1
+color yellow, p2
+color yellow, p3
+color yellow, p4
+color purple, p6
+color purple, p7
+
+# 6. 重新绘制（Ray tracing 渲染可选）
+ray 1200,900<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<hr>
+<p>✅ 三、可选优化效果</p>
+<p>如果你发现 <strong>cartoon 仍挡住配体/残基</strong>，可进一步操作：</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 让 cartoon 更透明
+set cartoon_transparency, 0.7
+
+# 或者单独隐藏关键区域的 cartoon
+hide cartoon, (byres (lig around 3))  # 隐藏配体周围3Å范围的cartoon<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<blockquote>
+<p>这样配体周围的 cartoon 会消失，配体完全露出；蛋白其他部分仍然是灰色背景板。</p>
+</blockquote>
+<hr>
+<p>✅ 四、额外技巧</p>
+<p>你还可以使用分层渲染的方式，例如：</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 生成两层视图（适合高质量图）
+disable all
+enable protein
+color grey80, protein
+set cartoon_transparency, 0.7
+enable lig, res
+show sticks, lig or res<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>再用：</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol">ray 2000,1500
+png output.png, dpi=300<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>7 生成图片<br>上面的图已经可以发表文章了，但为了更好看，还需要进行一步：光线追踪（Ray tracing)。</p>
+<p>继续使用命令：</p>
+<p>💾 保存工作文件</p>
+<pre class="line-numbers language-none"><code class="language-none">save focus.pse
+save overview.pse<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>📷 图像保存命令</p>
+<pre class="line-numbers language-none"><code class="language-none"># 保存标签图像
+png label.png
+# 保存焦点图像（高分辨率）
+png focus.png, 16.93cm, 16.93cm, dpi=300
+# 保存概览图像（高分辨率）
+png overview.png, 16.93cm, 16.93cm, dpi=300<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>🎨 显示调整命令</p>
+<pre class="line-numbers language-none"><code class="language-none"># 标签控制
+hide labels
+# 视图调整
+zoom
+# 透明度设置
+set cartoon_transparency, 0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>✨ 渲染命令</p>
+<pre class="line-numbers language-none"><code class="language-none"># 光线追踪渲染
+ray<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5a2bf78817d4276796571a66229be702.jpeg" alt="在这里插入图片描述"><br>至此，我们拿到3张图片：focus.png、label.png和overview.png。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/label.png" alt="label"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/overview.png" alt="overview"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/focus.png" alt="focus"></p>
+]]></content>
+      <categories>
+        <category>PyMOL</category>
       </categories>
   </entry>
   <entry>
@@ -2699,6 +2997,274 @@ GFF_FILE="/path/to/your/genome.gff"  # 改为你实际的GFF文件路径
 ]]></content>
       <categories>
         <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>从可视化到设计：深入理解蛋白-配体相互作用的分子世界</title>
+    <url>/2025/11/03/dan-bai-pei-ti-xiang-hu-zuo-yong/</url>
+    <content><![CDATA[<h2 id="从可视化到设计：深入理解蛋白-配体相互作用的分子世界"><a href="#从可视化到设计：深入理解蛋白-配体相互作用的分子世界" class="headerlink" title="从可视化到设计：深入理解蛋白-配体相互作用的分子世界"></a><strong>从可视化到设计：深入理解蛋白-配体相互作用的分子世界</strong></h2><blockquote>
+<p>当你用PyMOL绘制出第一张漂亮的蛋白-配体相互作用图后，是否曾思考：这静态图片背后，隐藏着怎样动态的分子世界？本文将带你从简单的看图，走向深刻的理解。</p>
+</blockquote>
+<h3 id="第一章：基石篇-我们必须厘清的核心概念"><a href="#第一章：基石篇-我们必须厘清的核心概念" class="headerlink" title="第一章：基石篇 - 我们必须厘清的核心概念"></a><strong>第一章：基石篇 - 我们必须厘清的核心概念</strong></h3><p>在深入探索之前，我们必须建立正确的世界观。几个基本概念构成了我们理解这一切的基石。</p>
+<h4 id="1-1-受体与配体：锁与钥匙的现代诠释"><a href="#1-1-受体与配体：锁与钥匙的现代诠释" class="headerlink" title="1.1 受体与配体：锁与钥匙的现代诠释"></a><strong>1.1 受体与配体：锁与钥匙的现代诠释</strong></h4><ul>
+<li><p><strong>受体</strong>：通常是蛋白质大分子，它是结合的“平台”或“锁”。</p>
+<ul>
+<li><em>在我们的项目中</em>：流感病毒的<strong>PB2蛋白</strong>就是受体。</li>
+<li><em>在PyMOL中</em>：通常是那个庞大的、显示为<code>cartoon</code>或<code>surface</code>的对象。</li>
+</ul>
+</li>
+<li><p><strong>配体</strong>：通常是小分子化合物，它是结合的“客体”或“钥匙”。  </p>
+<ul>
+<li><em>在我们的项目中</em>：<strong>D715-2441化合物</strong>就是配体。</li>
+<li><em>在PyMOL中</em>：通常是那些用<code>sticks</code>显示的、相对较小的分子。</li>
+</ul>
+</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 在PyMOL中的实际体现</span>
+create receptor<span class="token punctuation">,</span> 4cb4 <span class="token keyword">and</span> polymer  <span class="token comment"># 定义受体</span>
+create ligand<span class="token punctuation">,</span> d715_2441           <span class="token comment"># 定义配体</span>
+show cartoon<span class="token punctuation">,</span> receptor             <span class="token comment"># 受体显示为卡通图</span>
+show sticks<span class="token punctuation">,</span> ligand                <span class="token comment"># 配体显示为棒状图</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>简单比喻</strong>：🔒 <strong>锁=受体</strong>， 🔑 <strong>钥匙=配体</strong>， 🎯 <strong>锁眼=结合口袋</strong></p>
+<h4 id="1-2-PyMOL的真实身份：分子的“Photoshop”"><a href="#1-2-PyMOL的真实身份：分子的“Photoshop”" class="headerlink" title="1.2 PyMOL的真实身份：分子的“Photoshop”"></a><strong>1.2 PyMOL的真实身份：分子的“Photoshop”</strong></h4><p>这是最关键的认识：<strong>PyMOL是一个顶级的可视化与分析工具，而不是预测工具</strong>。</p>
+<p><strong>PyMOL能做什么</strong>：</p>
+<ul>
+<li>✅ <strong>可视化</strong>：将三维结构变成我们能理解的图像</li>
+<li>✅ <strong>测量</strong>：测量原子间的距离、角度、二面角</li>
+<li>✅ <strong>分析</strong>：分析相互作用的几何关系</li>
+<li>✅ <strong>渲染</strong>：生成发表质量的图片和动画</li>
+</ul>
+<p><strong>PyMOL不能做什么</strong>：</p>
+<ul>
+<li>❌ <strong>预测</strong>配体如何与蛋白结合</li>
+<li>❌ <strong>模拟</strong>分子在结合过程中的运动</li>
+<li>❌ <strong>计算</strong>结合强度（自由能）</li>
+</ul>
+<p><strong>记住</strong>：PyMOL让你<strong>观察和理解</strong>已有的结构，但不能<strong>预测</strong>新的情况。</p>
+<h3 id="第二章：机理篇-分子相互作用的动态本质"><a href="#第二章：机理篇-分子相互作用的动态本质" class="headerlink" title="第二章：机理篇 - 分子相互作用的动态本质"></a><strong>第二章：机理篇 - 分子相互作用的动态本质</strong></h3><p>当我们看到文献中“H357咪唑环旋转”、“K376侧链伸展”这样的描述时，这些结论是如何得出的？</p>
+<h4 id="2-1-什么在变化？如何变化？"><a href="#2-1-什么在变化？如何变化？" class="headerlink" title="2.1 什么在变化？如何变化？"></a><strong>2.1 什么在变化？如何变化？</strong></h4><p>在结合过程中，蛋白和配体都不是僵硬的积木，而是动态调整的舞伴：</p>
+<p><strong>配体的变化</strong>：</p>
+<ul>
+<li><strong>构象变化</strong>：化学键旋转，分子呈现不同的三维形状</li>
+<li><strong>官能团取向</strong>：羟基、羧基等极性基团调整方向以形成最佳氢键</li>
+<li><strong>电荷分布</strong>：电子云重新分布以适应蛋白的静电环境</li>
+</ul>
+<p><strong>蛋白的变化</strong>：</p>
+<ul>
+<li><strong>侧链重排</strong>：氨基酸侧链旋转到有利位置<ul>
+<li><em>示例</em>：H357的咪唑环旋转以形成π-π堆积</li>
+<li><em>示例</em>：F404的苯环调整角度与配体芳环平行</li>
+</ul>
+</li>
+<li><strong>主链微调</strong>：蛋白质骨架发生微小移动</li>
+<li><strong>结合口袋形状变化</strong>：整个口袋可能“收缩”或“扩张”</li>
+</ul>
+<h4 id="2-2-为什么会发生这些变化？"><a href="#2-2-为什么会发生这些变化？" class="headerlink" title="2.2 为什么会发生这些变化？"></a><strong>2.2 为什么会发生这些变化？</strong></h4><p>这些变化不是随意的，而是由基本的物理化学原理驱动：</p>
+<ol>
+<li><strong>能量优化原则</strong>：系统总是趋向于能量最低的状态</li>
+<li><strong>空间互补性</strong>：避免原子碰撞，寻求最大接触面积</li>
+<li><strong>电子互补性</strong>：正负电荷区域相互吸引</li>
+<li><strong>疏水效应</strong>：疏水区域聚集，排出水分子</li>
+</ol>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 在PyMOL中验证这些变化的证据</span>
+distance pi_pi_dist<span class="token punctuation">,</span> his357<span class="token operator">//</span>CE1<span class="token punctuation">,</span> ligand<span class="token operator">//</span>C4    <span class="token comment"># 测量π-π堆积距离（应为3.4-3.8Å）</span>
+angle stacking_angle<span class="token punctuation">,</span> his357<span class="token operator">//</span>CG<span class="token operator">-</span>CD2<span class="token punctuation">,</span> ligand<span class="token operator">//</span>C1<span class="token operator">-</span>C4  <span class="token comment"># 测量芳环平面夹角（应&lt;30°）</span>
+distance h_bond<span class="token punctuation">,</span> k376<span class="token operator">//</span>NZ<span class="token punctuation">,</span> ligand<span class="token operator">//</span>O1          <span class="token comment"># 测量氢键距离（应为2.6-3.2Å）</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="第三章：工具篇-揭开预测软件的神秘面纱"><a href="#第三章：工具篇-揭开预测软件的神秘面纱" class="headerlink" title="第三章：工具篇 - 揭开预测软件的神秘面纱"></a><strong>第三章：工具篇 - 揭开预测软件的神秘面纱</strong></h3><p>既然PyMOL不能预测，那么“H357咪唑环旋转”这样的结论从何而来？</p>
+<h4 id="3-1-分子对接软件：预测结合模式的“预言家”"><a href="#3-1-分子对接软件：预测结合模式的“预言家”" class="headerlink" title="3.1 分子对接软件：预测结合模式的“预言家”"></a><strong>3.1 分子对接软件：预测结合模式的“预言家”</strong></h4><p><strong>代表性工具</strong>：</p>
+<ul>
+<li><strong>AutoDock Vina</strong>：免费、快速、易用</li>
+<li><strong>DOCK6</strong>：学术免费、精度高（我们文献中使用）</li>
+<li><strong>Schrödinger Glide</strong>：商业软件、工业标准</li>
+</ul>
+<p><strong>工作原理</strong>：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 简化的对接流程</span>
+<span class="token number">1</span>. 准备蛋白结构 → protein.pdbqt
+<span class="token number">2</span>. 准备配体结构 → ligand.pdbqt  
+<span class="token number">3</span>. 定义结合口袋 → config.txt
+<span class="token number">4</span>. 运行对接计算 → vina <span class="token parameter variable">--receptor</span> protein.pdbqt <span class="token parameter variable">--ligand</span> ligand.pdbqt
+<span class="token number">5</span>. 获得预测结果 → out.pdbqt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>预测过程</strong>：</p>
+<ol>
+<li><strong>构象搜索</strong>：系统旋转配体的可旋转键</li>
+<li><strong>位置采样</strong>：在口袋中尝试数百万个位置和朝向</li>
+<li><strong>打分评估</strong>：用打分函数评估每个构象的结合能力</li>
+<li><strong>结果排序</strong>：输出能量最优的结合模式</li>
+</ol>
+<h4 id="3-2-分子动力学软件：验证稳定性的“时间机器”"><a href="#3-2-分子动力学软件：验证稳定性的“时间机器”" class="headerlink" title="3.2 分子动力学软件：验证稳定性的“时间机器”"></a><strong>3.2 分子动力学软件：验证稳定性的“时间机器”</strong></h4><p><strong>代表性工具</strong>：</p>
+<ul>
+<li><strong>GROMACS</strong>：免费、高性能、社区强大</li>
+<li><strong>AMBER</strong>：学术界常用、力场精度高</li>
+<li><strong>NAMD</strong>：擅长大体系模拟</li>
+</ul>
+<p><strong>工作原理</strong>：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 分子动力学模拟流程</span>
+gmx pdb2gmx <span class="token parameter variable">-f</span> complex.pdb <span class="token parameter variable">-o</span> processed.gro    <span class="token comment"># 结构准备</span>
+gmx mdrun <span class="token parameter variable">-s</span> simulation.tpr <span class="token parameter variable">-deffnm</span> md_results <span class="token comment"># 运行模拟</span>
+gmx energy <span class="token parameter variable">-f</span> md_results.edr <span class="token parameter variable">-o</span> energy.xvg     <span class="token comment"># 能量分析</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>能告诉我们什么</strong>：</p>
+<ul>
+<li>预测的结合模式在生理条件下是否稳定？</li>
+<li>蛋白-配体复合物如何随时间波动？</li>
+<li>相互作用的持续时间是多少？</li>
+</ul>
+<h2 id="第四章：AI-PyMOL：智能化的分子可视化新工作流"><a href="#第四章：AI-PyMOL：智能化的分子可视化新工作流" class="headerlink" title="第四章：AI + PyMOL：智能化的分子可视化新工作流"></a><strong>第四章：AI + PyMOL：智能化的分子可视化新工作流</strong></h2><h3 id="4-1-传统流程-vs-AI增强流程"><a href="#4-1-传统流程-vs-AI增强流程" class="headerlink" title="4.1 传统流程 vs AI增强流程"></a><strong>4.1 传统流程 vs AI增强流程</strong></h3><p><strong>传统PyMOL工作流</strong>：</p>
+<p>text</p>
+<pre class="line-numbers language-none"><code class="language-none">准备结构 → 手动分析 → 绘制相互作用 → 美化出图
+（耗时：数小时至数天，依赖个人经验）<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+
+
+<p><strong>AI增强的PyMOL工作流</strong>：</p>
+<p>text</p>
+<pre class="line-numbers language-none"><code class="language-none">AI预测结构 → AI分析相互作用 → PyMOL验证美化 → 智能出图
+（耗时：分钟级，结果更准确）<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+
+
+<h3 id="4-2-具体应用场景"><a href="#4-2-具体应用场景" class="headerlink" title="4.2 具体应用场景"></a><strong>4.2 具体应用场景</strong></h3><h4 id="1-当没有晶体结构时：用AI预测"><a href="#1-当没有晶体结构时：用AI预测" class="headerlink" title="1. 当没有晶体结构时：用AI预测"></a><strong>1. 当没有晶体结构时：用AI预测</strong></h4><p>python</p>
+<pre class="line-numbers language-none"><code class="language-none"># 传统：无法处理
+# AI方案：使用AlphaFold2预测结构
+# 然后在PyMOL中直接使用预测结果
+load alphafold_predicted_structure.pdb
+show cartoon
+color blue<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h4 id="2-当不知道关键残基时：AI自动识别"><a href="#2-当不知道关键残基时：AI自动识别" class="headerlink" title="2. 当不知道关键残基时：AI自动识别"></a><strong>2. 当不知道关键残基时：AI自动识别</strong></h4><p>python</p>
+<pre class="line-numbers language-none"><code class="language-none"># 传统：手动查看、猜测哪些残基重要
+# AI方案：运行结合位点预测算法
+# PyMOL中直接显示AI识别的重要残基
+create important_residues, resi 157+204+338+357
+show sticks, important_residues
+color red, important_residues<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h4 id="3-当配体结合模式未知时：AI快速对接"><a href="#3-当配体结合模式未知时：AI快速对接" class="headerlink" title="3. 当配体结合模式未知时：AI快速对接"></a><strong>3. 当配体结合模式未知时：AI快速对接</strong></h4><p>python</p>
+<pre class="line-numbers language-none"><code class="language-none"># 传统：手动对接或依赖服务器
+# AI方案：使用DiffDock或EquiBind秒级预测
+load ai_docked_pose.pdb  # AI预测的结合模式
+show sticks, organic
+color green, organic<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h3 id="4-3-实际工作流程示例"><a href="#4-3-实际工作流程示例" class="headerlink" title="4.3 实际工作流程示例"></a><strong>4.3 实际工作流程示例</strong></h3><p><strong>场景：分析D715-2441与PB2蛋白的相互作用</strong></p>
+<p>python</p>
+<pre class="line-numbers language-none"><code class="language-none"># 第一步：AI预测（在外部完成）
+# 使用AlphaFold2预测PB2结构（如果需要）
+# 使用DiffDock预测D715-2441结合模式
+
+# 第二步：PyMOL中加载AI结果
+load pb2_alphafold.pdb
+load d715_dockresult.pdb
+
+# 第三步：AI辅助的分析
+create key_sites, resi 339+357+361+404  # AI识别的重要残基
+show sticks, key_sites
+show sticks, d715_dockresult
+
+# 第四步：传统PyMOL美化
+color gray, pb2_alphafold
+color marine, key_sites  
+color orange, d715_dockresult
+bg_color white<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h3 id="4-4-可用的AI工具推荐"><a href="#4-4-可用的AI工具推荐" class="headerlink" title="4.4 可用的AI工具推荐"></a><strong>4.4 可用的AI工具推荐</strong></h3><table>
+<thead>
+<tr>
+<th align="left">工具类型</th>
+<th align="left">推荐工具</th>
+<th align="left">与PyMOL配合方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">结构预测</td>
+<td align="left">AlphaFold2, RoseTTAFold</td>
+<td align="left">预测后导入PyMOL查看</td>
+</tr>
+<tr>
+<td align="left">分子对接</td>
+<td align="left">DiffDock, EquiBind</td>
+<td align="left">快速得到结合模式后导入</td>
+</tr>
+<tr>
+<td align="left">结合位点</td>
+<td align="left">DeepSite, P2Rank</td>
+<td align="left">识别重要残基，在PyMOL中标记</td>
+</tr>
+<tr>
+<td align="left">相互作用</td>
+<td align="left">各种AI分析工具</td>
+<td align="left">生成相互作用列表，在PyMOL中绘制</td>
+</tr>
+</tbody></table>
+<h3 id="4-5-优势总结"><a href="#4-5-优势总结" class="headerlink" title="4.5 优势总结"></a><strong>4.5 优势总结</strong></h3><ol>
+<li><strong>速度极快</strong>：从小时级到分钟级</li>
+<li><strong>准确性高</strong>：AI在很多任务上超越传统方法</li>
+<li><strong>自动化强</strong>：减少手动操作和主观判断</li>
+<li><strong>结果可靠</strong>：基于大数据训练，避免个人经验偏差</li>
+</ol>
+<h3 id="4-6-注意事项"><a href="#4-6-注意事项" class="headerlink" title="4.6 注意事项"></a><strong>4.6 注意事项</strong></h3><ul>
+<li><strong>AI不是万能</strong>：仍需用PyMOL人工验证合理性</li>
+<li><strong>数据质量</strong>：垃圾进，垃圾出</li>
+<li><strong>理解原理</strong>：不要盲目相信AI结果</li>
+<li><strong>结合使用</strong>：AI提供候选，人工最终确认</li>
+</ul>
+<p><strong>核心思想</strong>：让AI做它擅长的预测和筛选，让PyMOL做它擅长的可视化和验证，两者结合，效率倍增。</p>
+<h3 id="第五章：整合篇-现代科研的真实工作流"><a href="#第五章：整合篇-现代科研的真实工作流" class="headerlink" title="第五章：整合篇 - 现代科研的真实工作流"></a><strong>第五章：整合篇 - 现代科研的真实工作流</strong></h3><p>了解了各个工具后，让我们看看它们如何在现代科研中协同工作。</p>
+<h4 id="5-1-传统科研工作流"><a href="#5-1-传统科研工作流" class="headerlink" title="5.1 传统科研工作流"></a><strong>5.1 传统科研工作流</strong></h4><pre class="line-numbers language-none"><code class="language-none">蛋白准备 → 分子对接 → 动力学验证 → PyMOL分析 → 实验验证<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="5-2-AI增强工作流"><a href="#5-2-AI增强工作流" class="headerlink" title="5.2 AI增强工作流"></a><strong>5.2 AI增强工作流</strong></h4><pre class="line-numbers language-none"><code class="language-none">AI结构预测 → AI快速对接 → 传统方法验证 → AI结果分析 → 实验验证<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="5-3-在PyMOL中的完整实践"><a href="#5-3-在PyMOL中的完整实践" class="headerlink" title="5.3 在PyMOL中的完整实践"></a><strong>5.3 在PyMOL中的完整实践</strong></h4><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 阶段1：准备工作</span>
+fetch 4cb4                          <span class="token comment"># 获取蛋白结构</span>
+load d715_2441_ai_docked<span class="token punctuation">.</span>pdb        <span class="token comment"># 加载AI预测的结合模式</span>
+
+<span class="token comment"># 阶段2：基础分析</span>
+create receptor<span class="token punctuation">,</span> 4cb4
+create ligand<span class="token punctuation">,</span> d715_2441
+show cartoon<span class="token punctuation">,</span> receptor
+show sticks<span class="token punctuation">,</span> ligand
+show sticks<span class="token punctuation">,</span> resi <span class="token number">357</span><span class="token operator">+</span><span class="token number">361</span><span class="token operator">+</span><span class="token number">376</span><span class="token operator">+</span><span class="token number">404</span>   <span class="token comment"># 显示关键残基</span>
+
+<span class="token comment"># 阶段3：相互作用分析</span>
+distance h_bond1<span class="token punctuation">,</span> <span class="token punctuation">(</span>resi <span class="token number">361</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>ligand<span class="token punctuation">)</span>  <span class="token comment"># 氢键</span>
+distance pi_pi<span class="token punctuation">,</span> <span class="token punctuation">(</span>resi <span class="token number">357</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>ligand<span class="token punctuation">)</span>    <span class="token comment"># π-π堆积</span>
+<span class="token builtin">set</span> dash_radius<span class="token punctuation">,</span> <span class="token number">0.08</span>                  <span class="token comment"># 美化虚线</span>
+
+<span class="token comment"># 阶段4：结果呈现</span>
+bg_color white
+<span class="token builtin">set</span> cartoon_transparency<span class="token punctuation">,</span> <span class="token number">0.3</span>
+ray <span class="token number">2000</span><span class="token punctuation">,</span> <span class="token number">2000</span>
+png publication_figure<span class="token punctuation">.</span>png<span class="token punctuation">,</span> dpi<span class="token operator">=</span><span class="token number">300</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="总结与展望"><a href="#总结与展望" class="headerlink" title="总结与展望"></a><strong>总结与展望</strong></h3><p>通过这次从概念到实践的探索，我们应该认识到：</p>
+<ol>
+<li><strong>明确工具边界</strong>：PyMOL是卓越的可视化工具，但不是预测工具</li>
+<li><strong>理解动态本质</strong>：蛋白-配体结合是动态调整的过程</li>
+<li><strong>善用计算生态</strong>：根据不同需求选择合适的计算工具</li>
+<li><strong>拥抱技术革命</strong>：AI正在重塑药物发现的每一个环节</li>
+</ol>
+<p><strong>未来的研究方向</strong>：</p>
+<ul>
+<li>AI预测与物理模型的深度融合</li>
+<li>自动化、一体化的药物发现平台</li>
+<li>多尺度建模从量子到细胞水平的贯通</li>
+</ul>
+<p>当我们下次再看到一张漂亮的蛋白-配体相互作用图时，我们看到的不再只是一张静态图片，而是一个动态分子世界的精彩瞬间，以及背后一整套强大的计算生物学方法学支撑。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+        <category>PyMOL</category>
       </categories>
   </entry>
   <entry>
@@ -3749,304 +4315,6 @@ OLED_WR_Byte(0xAF,OLED_CMD); /*display ON*/
       </categories>
   </entry>
   <entry>
-    <title>【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</title>
-    <url>/2025/11/03/pymol/</url>
-    <content><![CDATA[<h1 id="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"><a href="#【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片" class="headerlink" title="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"></a>【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</h1><blockquote>
-<p>转载自：<code>https://blog.csdn.net/qq_37126941/article/details/115793062</code>。</p>
-<p>本文将以D715-2441抑制剂与PB2蛋白复合物为例，手把手教你用PyMOL制作专业的结合模式图</p>
-</blockquote>
-<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文将带大家使用免费开源的PyMOL软件绘制D715-2441蛋白与与<a href="https://link.zhihu.com/?target=https://www.rcsb.org/structure/4CB4">PB2cap配体分子</a>的结合模式图。</p>
-<p>我们先来看一张成品图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5bb95a5e415241b5719ec50baf888d67.jpeg" alt="在这里插入图片描述"></p>
-<h2 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h2><p>流感病毒PB2蛋白是重要的药物靶点，D715-2441是一个新型抗流感病毒化合物。通过分子对接分析，我们发现以下关键相互作用：</p>
-<p>1、化合物D715-2441的<code>芳环</code>夹在氨基酸残基<code>H357</code>和<code>F404</code>之间并形成<code>π-π</code>堆积作用，还与<code>F404</code>形成疏水作用；</p>
-<p>2、化合物苯环上的<code>羟基</code>与E361的<code>羧基</code>和K376的<code>N+原子</code>形成氢键作用，另一个<code>羟基</code>与F404的<code>O原子</code>形成氢键作用；</p>
-<p>3、化合物吡喃酮环酯基与K339的<code>N+原子</code>和H357的<code>咪唑基</code>形成盐桥作用。</p>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><blockquote>
-<p>PyMOL作图通常是对特定对象进行展示形式、颜色、字体等方面的修饰。PyMOL的精髓在于命令行与鼠标的配合使用，本文高度依赖命令行，请做好心理准备。大多数命令格式较为一致，请注意总结归纳。</p>
-</blockquote>
-<h3 id="1-下载蛋白结构"><a href="#1-下载蛋白结构" class="headerlink" title="1. 下载蛋白结构"></a>1. 下载蛋白结构</h3><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 在PyMOL中直接下载PDB结构</span>
-fetch 4cb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<h3 id="2-获取配体结构"><a href="#2-获取配体结构" class="headerlink" title="2. 获取配体结构"></a>2. 获取配体结构</h3><p>由于D715-2441不在PDB中，我们需要自行准备：</p>
-<p><strong>方法一：在线SMILES转换</strong></p>
-<p>​	1.使用<strong>PubChem</strong>: <a href="https://pubchem.ncbi.nlm.nih.gov/">https://pubchem.ncbi.nlm.nih.gov/</a></p>
-<p>​	2.绘制完后，SIMLES：<code>C1=CC=CC3=C1C2=C(C=C(C=C2O[H])O[H])OC3=O</code></p>
-<p>​	3.访问：<strong><a href="https://cactus.nci.nih.gov/translate/">https://cactus.nci.nih.gov/translate/</a></strong></p>
-<p>​	4.在输入框粘贴：<code>C1=CC=CC3=C1C2=C(C=C(C=C2O[H])O[H])OC3=O</code></p>
-<p>​	5.选择格式：<strong>Protein Data Bank (pdb)</strong></p>
-<p>​	6.点击 <strong>Translate</strong></p>
-<p>​	7.下载文件并在PyMOL中加载</p>
-<p><strong>方法二：手动构建</strong><br>在PyMOL中使用Builder工具逐步绘制分子结构</p>
-<h2 id="基础操作流程"><a href="#基础操作流程" class="headerlink" title="基础操作流程"></a>基础操作流程</h2><h3 id="1-初始设置"><a href="#1-初始设置" class="headerlink" title="1. 初始设置"></a>1. 初始设置</h3><p>打开<code>PyMOL</code>软件，导入刚才下载的复合物PDB文件（rli-D715-2441-1.pdb）。</p>
-<p>注意：有两种方法导入文件，一种是鼠标点击菜单栏File -&gt; Open…，另一种是通过命令行。在这里，我们采用命令来操作，因为这样可以同时把工作目录设置好，方便后续保存文件。</p>
-<p>假设我们的工作目录为<code>D:\demo</code>。注意：路径中不要有中文和空格，这是导致很多计算类软件（尤其是免费软件）出现问题的原因。</p>
-<pre class="line-numbers language-none"><code class="language-none"># 设置工作目录
-cd E:\下载\Pymol\test
-
-# 基本显示设置
-hide everything
-show cartoon, 4cb4
-show sticks, resn MGT  # 参考配体
-color gray, 4cb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>在PyMOL上界面或下界面的命令输入框输入以下命令（PyMOL&gt;表示这是PyMOL的命令），每行输入完毕后按【Enter】键：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/a777cf49858f76eec599ecfd8f881301.jpeg" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/fa8eaf9a056c73c583d30921f453ab60.png" alt="在这里插入图片描述"></p>
-<h3 id="2-设置操作对象"><a href="#2-设置操作对象" class="headerlink" title="2 设置操作对象"></a>2 设置操作对象</h3><p><strong>结合模式图</strong>通常涉及到<code>受体</code>（蛋白）与<code>配体</code>（小分子化合物）两部分（有的还可能涉及<code>水分子</code>、<code>金属离子</code>、<code>辅酶</code>等等），需为之分别设置对象，以便后续操作。<strong>设置配体对象</strong>：按照下图顺序，将配体设置为<code>lig</code>对象。<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/2568e1b24aca318f02d497b946f2635b.png" alt="在这里插入图片描述"></p>
-<p><strong>设置关键残基对象</strong>: 关键残基包括：A链的K339、H357、E361、K376和F404。由于该蛋白只有一条链，在使用命令选择残基时，可以不用指定链名。按照下图顺序，将关键残基设置为res对象。</p>
-<p><code>select res, resi 339+357+361+376+404</code></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/3a9fd3f025f59f1e691f72009f398653.png" alt="在这里插入图片描述"></p>
-<h3 id="3-显示样式优化"><a href="#3-显示样式优化" class="headerlink" title="3. 显示样式优化"></a>3. 显示样式优化</h3><p>在PyMOL中输入以下命令：</p>
-<pre class="line-numbers language-none"><code class="language-none"># 基本显示设置
-hide everything
-show sticks, lig | res
-hide sticks, h.
-zoom lig | res
-# 颜色设置
-color wheat, lig &amp; name C*
-# 标签设置
-set label_size, 30
-set label_font_id, 9<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/8eec91dbd5bb84f2cc2a553f8aaca60c.jpeg" alt="在这里插入图片描述"><br>然后，进行鼠标操作：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/3f3c38acd7270f0ad5a310dbfa8b8189.png" alt="在这里插入图片描述"></p>
-<h4 id="绘制相互作用力"><a href="#绘制相互作用力" class="headerlink" title="绘制相互作用力"></a>绘制相互作用力</h4><p>前面说过，命令行和鼠标的配合是很重要的。这里再简单讲讲鼠标的几个操作用法：</p>
-<p>​	A） 拖动鼠标左键：按住右键，任意方向拖动鼠标，使视图转动；</p>
-<p>​	B） 上下拖动鼠标右键：按住右键，上下拖动鼠标，使视图缩放；</p>
-<p>​	C） 拖动鼠标中间滚轮：按住滚轮，任意方向拖动鼠标，使视图移动；</p>
-<p>​	D）滚动鼠标中间滚轮：拉进或拉远镜头，使近处原子逐渐显示或隐藏。</p>
-<p>我们参照平台给出的结合模式图（本文第二张图），通过下面的键鼠操作来绘制相互作用力。</p>
-<h6 id="·-绘制π-π堆积与盐桥作用"><a href="#·-绘制π-π堆积与盐桥作用" class="headerlink" title="· 绘制π-π堆积与盐桥作用"></a>· 绘制π-π堆积与盐桥作用</h6><p>首先，确保鼠标模式（Mouse Mode）为Viewing状态，选择（Selecting）模式为<code>Atoms</code>状态（位置在PyMOL右下方）。然后，按照下面步骤操作：</p>
-<p>新建文件<code>center_of_mass.py</code>，<code>run /PATH/TO/center_of_mass.py</code></p>
-<pre class="line-numbers language-none"><code class="language-none">from pymol import cmd
-from chempy import cpv
-
-def center_of_mass(selection, state=1, object=None, color=None, quiet=1):
-    """
-    Calculate the center of mass (COM) for a selection and optionally create a pseudo-atom at that position.
-    
-    Parameters:
-    selection (str): atom selection
-    state (int): object state (default=1)
-    object (str): name of pseudo-atom to create (default=None)
-    color (str): color for the pseudo-atom (default=None)
-    quiet (int): suppress output (default=1)
-    """
-    quiet = int(quiet)
-    
-    # Get the coordinates and masses
-    model = cmd.get_model(selection, state)
-    if not model.atom:
-        print("Error: No atoms selected")
-        return
-    
-    # Calculate center of mass
-    total_mass = 0.0
-    com = [0.0, 0.0, 0.0]
-    
-    for atom in model.atom:
-        mass = atom.get_mass()
-        total_mass += mass
-        com[0] += atom.coord[0] * mass
-        com[1] += atom.coord[1] * mass
-        com[2] += atom.coord[2] * mass
-    
-    if total_mass == 0:
-        print("Error: Total mass is zero")
-        return
-    
-    com[0] /= total_mass
-    com[1] /= total_mass
-    com[2] /= total_mass
-    
-    if not quiet:
-        print("Center of Mass: %.3f, %.3f, %.3f" % (com[0], com[1], com[2]))
-    
-    # Create pseudo-atom if requested
-    if object:
-        if color:
-            cmd.pseudoatom(object, pos=com, color=color)
-        else:
-            cmd.pseudoatom(object, pos=com)
-        
-        # 自动设置显示属性
-        cmd.set("sphere_scale", 0.3, object)
-        cmd.show("spheres", object)
-        
-        if not quiet:
-            print("Created pseudo-atom '%s' at COM" % object)
-    
-    return com
-
-# Add the command to PyMOL
-cmd.extend("com", center_of_mass)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<pre class="line-numbers language-none"><code class="language-none"># 导入必要插件
-run /PATH/TO/center_of_mass.py
-# 创建小球的命令序列
-com sele, object=p1
-com sele, object=p2  
-com sele, object=p3
-com sele, object=p4
-com sele, object=p5
-com sele, object=p6
-com sele, object=p7<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/4c73e3f7a2e524d6d72641c589585b53.jpeg" alt="在这里插入图片描述">然后，点击PyMOL菜单栏的Wizard -&gt; Measurement，然后根据示意图点击刚才创建的小球，两两一组，便画出虚线（相应地，生成对象measure01~05）。<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cdcb8f03c0f348271b32051bd021c1cd.png" alt="在这里插入图片描述"></p>
-<h6 id="·-绘制其他作用力"><a href="#·-绘制其他作用力" class="headerlink" title="· 绘制其他作用力"></a>· 绘制其他作用力</h6><p>采用相同的办法，把<code>氢键</code>和<code>疏水作用</code>也画出来。由于这些作用力的两端刚好落在原子上，因此，不用绘制小球。<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/6da4239d1e6785671f043216731b13b4.png" alt="在这里插入图片描述"></p>
-<h3 id="图像美化与输出"><a href="#图像美化与输出" class="headerlink" title="图像美化与输出"></a>图像美化与输出</h3><p>为方便调整，也为图片规格符合要求（通常，出版社要求全版图片宽度≤2000像素，半版图片宽度≤1000像素，分辨率≥300 dpi)，我们将PyMOL界面放大或靠边最大化，并将上半部分的对话框往上拉到最小，让视图最大。然后放大、摆动视图至合适的角度，使尽可能清晰地看到各关键细节。</p>
-<p>基本的创建工作已经完成，接下来进行细致的修饰。</p>
-<p><strong>🎯 隐藏和显示控制</strong></p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 居中显示</span>
-zoom ligand <span class="token keyword">or</span> key_residues
-
-<span class="token comment"># 小球显示控制</span>
-hide everything<span class="token punctuation">,</span> p<span class="token operator">*</span>
-show spheres<span class="token punctuation">,</span> p<span class="token operator">*</span>
-
-<span class="token comment"># 标签显示控制</span>
-hide labels<span class="token punctuation">,</span> measure<span class="token operator">*</span>
-show labels<span class="token punctuation">,</span> measure06
-show labels<span class="token punctuation">,</span> measure07  
-show labels<span class="token punctuation">,</span> measure08<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>🎨 虚线样式设置</strong></p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 虚线外观调整</span>
-<span class="token builtin">set</span> dash_length<span class="token punctuation">,</span> <span class="token number">0.3</span>
-<span class="token builtin">set</span> dash_radius<span class="token punctuation">,</span> <span class="token number">0.08</span>
-<span class="token builtin">set</span> dash_gap<span class="token punctuation">,</span> <span class="token number">0.3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>🌈 虚线颜色设置</strong></p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 相互作用颜色编码</span>
-color magenta<span class="token punctuation">,</span> measure04    <span class="token comment"># 盐桥</span>
-color magenta<span class="token punctuation">,</span> measure05    <span class="token comment"># 盐桥  </span>
-color green<span class="token punctuation">,</span> measure06      <span class="token comment"># 氢键</span>
-color green<span class="token punctuation">,</span> measure07      <span class="token comment"># 氢键</span>
-color green<span class="token punctuation">,</span> measure08      <span class="token comment"># 氢键</span>
-color gray70<span class="token punctuation">,</span> measure09     <span class="token comment"># 疏水作用</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>🖼️ 背景和蛋白显示</strong></p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 背景设置</span>
-bg_color white
-
-<span class="token comment"># 蛋白结构显示</span>
-show cartoon
-color smudge<span class="token punctuation">,</span> lig <span class="token keyword">and</span> name C<span class="token operator">*</span>
-<span class="token builtin">set</span> cartoon_transparency<span class="token punctuation">,</span> <span class="token number">0.3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/243fc636fd2a30ce86bd04121d969461.jpeg" alt="在这里插入图片描述"></p>
-<p>我们还可按下图步骤微调cartoon样式：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/9988aba7cb104fd00f608bd0f601c6e3.png" alt="在这里插入图片描述"><br>还可移动label的位置（设置Mouse Mode为Editing模式后，按住Ctrl键，用鼠标左键或右键拖动label；必要时，可先将cartoo隐藏起来，等调整好label后，再显示出来），让视图更清晰。经过上述一系列操作，得到下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f1c0110ffc04461492536e39811d4eba.png" alt="在这里插入图片描述"></p>
-<p>✅ 一、目标效果</p>
-<ul>
-<li>整体蛋白以 <strong>cartoon 灰色显示</strong>（作为背景板）</li>
-<li>配体（<code>lig</code>）与特定残基（<code>res</code>）<strong>前置显示、保持高亮颜色</strong></li>
-<li>cartoon 不遮挡配体和关键残基</li>
-<li>其余部分颜色偏淡，突出关键信息</li>
-</ul>
-<hr>
-<p>✅ 二、实现命令步骤（PyMOL 命令行版）</p>
-<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 1. 全局设置
-bg_color white
-set cartoon_transparency, 0.6      # 半透明背景板感觉更好
-set depth_cue, 0                   # 去掉景深影响
-
-# 2. 设置蛋白主链为灰色 cartoon
-show cartoon, all
-color grey80, all
-
-# 3. 高亮配体与特定残基
-show sticks, (lig or res)
-util.cbag (lig or res)             # 让配体/残基彩色显示（carbon by atom type）
-
-# 4. 把配体、残基显示在最前层（不被遮挡）
-# set cartoon_side_chain_helper, on
-set transparency_mode, 2           # 优化透明度混合效果
-set ray_opaque_background, off
-
-# 5. 可以单独调整颜色
-# color red, lig
-# color yellow, res
-
-color yellow, measure01
-color yellow, measure02
-color yellow, measure03
-color green, measure04
-color green, measure05
-color green, measure06
-color gray70, measure07
-
-color yellow, p1
-color yellow, p2
-color yellow, p3
-color yellow, p4
-color purple, p6
-color purple, p7
-
-# 6. 重新绘制（Ray tracing 渲染可选）
-ray 1200,900<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<hr>
-<p>✅ 三、可选优化效果</p>
-<p>如果你发现 <strong>cartoon 仍挡住配体/残基</strong>，可进一步操作：</p>
-<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 让 cartoon 更透明
-set cartoon_transparency, 0.7
-
-# 或者单独隐藏关键区域的 cartoon
-hide cartoon, (byres (lig around 3))  # 隐藏配体周围3Å范围的cartoon<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<blockquote>
-<p>这样配体周围的 cartoon 会消失，配体完全露出；蛋白其他部分仍然是灰色背景板。</p>
-</blockquote>
-<hr>
-<p>✅ 四、额外技巧</p>
-<p>你还可以使用分层渲染的方式，例如：</p>
-<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 生成两层视图（适合高质量图）
-disable all
-enable protein
-color grey80, protein
-set cartoon_transparency, 0.7
-enable lig, res
-show sticks, lig or res<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>再用：</p>
-<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol">ray 2000,1500
-png output.png, dpi=300<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>7 生成图片<br>上面的图已经可以发表文章了，但为了更好看，还需要进行一步：光线追踪（Ray tracing)。</p>
-<p>继续使用命令：</p>
-<p>💾 保存工作文件</p>
-<pre class="line-numbers language-none"><code class="language-none">save focus.pse
-save overview.pse<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>📷 图像保存命令</p>
-<pre class="line-numbers language-none"><code class="language-none"># 保存标签图像
-png label.png
-# 保存焦点图像（高分辨率）
-png focus.png, 16.93cm, 16.93cm, dpi=300
-# 保存概览图像（高分辨率）
-png overview.png, 16.93cm, 16.93cm, dpi=300<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>🎨 显示调整命令</p>
-<pre class="line-numbers language-none"><code class="language-none"># 标签控制
-hide labels
-# 视图调整
-zoom
-# 透明度设置
-set cartoon_transparency, 0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>✨ 渲染命令</p>
-<pre class="line-numbers language-none"><code class="language-none"># 光线追踪渲染
-ray<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5a2bf78817d4276796571a66229be702.jpeg" alt="在这里插入图片描述"><br>至此，我们拿到3张图片：focus.png、label.png和overview.png。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/label.png" alt="label"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/overview.png" alt="overview"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/focus.png" alt="focus"></p>
-]]></content>
-      <categories>
-        <category>PyMOL</category>
-      </categories>
-  </entry>
-  <entry>
     <title>使用ANNOVAR进行长牡蛎SNP注释完整流程</title>
     <url>/2025/10/31/shi-yong-annovar-jin-xing-chang-mu-li-crassostrea-gigas-snp-zhu-shi-wan-zheng-liu-cheng/</url>
     <content><![CDATA[<h1 id="使用ANNOVAR进行长牡蛎-Crassostrea-gigas-SNP注释完整流程"><a href="#使用ANNOVAR进行长牡蛎-Crassostrea-gigas-SNP注释完整流程" class="headerlink" title="使用ANNOVAR进行长牡蛎(Crassostrea gigas)SNP注释完整流程"></a>使用ANNOVAR进行长牡蛎(<em>Crassostrea gigas</em>)SNP注释完整流程</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本文介绍如何使用ANNOVAR对长牡蛎(<em>Crassostrea gigas</em>)的SNP变异数据进行功能注释。流程包括参考基因组数据库构建、变异数据格式转换、功能注释和结果整合。</p>
@@ -4203,301 +4471,6 @@ perl table_annovar.pl input.avinput Cgigasdb/ <span class="token punctuation">\<
 ]]></content>
       <categories>
         <category>Linux</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>从可视化到设计：深入理解蛋白-配体相互作用的分子世界</title>
-    <url>/2025/11/03/dan-bai-pei-ti-xiang-hu-zuo-yong/</url>
-    <content><![CDATA[<h2 id="从可视化到设计：深入理解蛋白-配体相互作用的分子世界"><a href="#从可视化到设计：深入理解蛋白-配体相互作用的分子世界" class="headerlink" title="从可视化到设计：深入理解蛋白-配体相互作用的分子世界"></a><strong>从可视化到设计：深入理解蛋白-配体相互作用的分子世界</strong></h2><blockquote>
-<p>当你用PyMOL绘制出第一张漂亮的蛋白-配体相互作用图后，是否曾思考：这静态图片背后，隐藏着怎样动态的分子世界？本文将带你从简单的看图，走向深刻的理解。</p>
-</blockquote>
-<h3 id="第一章：基石篇-我们必须厘清的核心概念"><a href="#第一章：基石篇-我们必须厘清的核心概念" class="headerlink" title="第一章：基石篇 - 我们必须厘清的核心概念"></a><strong>第一章：基石篇 - 我们必须厘清的核心概念</strong></h3><p>在深入探索之前，我们必须建立正确的世界观。几个基本概念构成了我们理解这一切的基石。</p>
-<h4 id="1-1-受体与配体：锁与钥匙的现代诠释"><a href="#1-1-受体与配体：锁与钥匙的现代诠释" class="headerlink" title="1.1 受体与配体：锁与钥匙的现代诠释"></a><strong>1.1 受体与配体：锁与钥匙的现代诠释</strong></h4><ul>
-<li><p><strong>受体</strong>：通常是蛋白质大分子，它是结合的“平台”或“锁”。</p>
-<ul>
-<li><em>在我们的项目中</em>：流感病毒的<strong>PB2蛋白</strong>就是受体。</li>
-<li><em>在PyMOL中</em>：通常是那个庞大的、显示为<code>cartoon</code>或<code>surface</code>的对象。</li>
-</ul>
-</li>
-<li><p><strong>配体</strong>：通常是小分子化合物，它是结合的“客体”或“钥匙”。  </p>
-<ul>
-<li><em>在我们的项目中</em>：<strong>D715-2441化合物</strong>就是配体。</li>
-<li><em>在PyMOL中</em>：通常是那些用<code>sticks</code>显示的、相对较小的分子。</li>
-</ul>
-</li>
-</ul>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 在PyMOL中的实际体现</span>
-create receptor<span class="token punctuation">,</span> 4cb4 <span class="token keyword">and</span> polymer  <span class="token comment"># 定义受体</span>
-create ligand<span class="token punctuation">,</span> d715_2441           <span class="token comment"># 定义配体</span>
-show cartoon<span class="token punctuation">,</span> receptor             <span class="token comment"># 受体显示为卡通图</span>
-show sticks<span class="token punctuation">,</span> ligand                <span class="token comment"># 配体显示为棒状图</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>简单比喻</strong>：🔒 <strong>锁=受体</strong>， 🔑 <strong>钥匙=配体</strong>， 🎯 <strong>锁眼=结合口袋</strong></p>
-<h4 id="1-2-PyMOL的真实身份：分子的“Photoshop”"><a href="#1-2-PyMOL的真实身份：分子的“Photoshop”" class="headerlink" title="1.2 PyMOL的真实身份：分子的“Photoshop”"></a><strong>1.2 PyMOL的真实身份：分子的“Photoshop”</strong></h4><p>这是最关键的认识：<strong>PyMOL是一个顶级的可视化与分析工具，而不是预测工具</strong>。</p>
-<p><strong>PyMOL能做什么</strong>：</p>
-<ul>
-<li>✅ <strong>可视化</strong>：将三维结构变成我们能理解的图像</li>
-<li>✅ <strong>测量</strong>：测量原子间的距离、角度、二面角</li>
-<li>✅ <strong>分析</strong>：分析相互作用的几何关系</li>
-<li>✅ <strong>渲染</strong>：生成发表质量的图片和动画</li>
-</ul>
-<p><strong>PyMOL不能做什么</strong>：</p>
-<ul>
-<li>❌ <strong>预测</strong>配体如何与蛋白结合</li>
-<li>❌ <strong>模拟</strong>分子在结合过程中的运动</li>
-<li>❌ <strong>计算</strong>结合强度（自由能）</li>
-</ul>
-<p><strong>记住</strong>：PyMOL让你<strong>观察和理解</strong>已有的结构，但不能<strong>预测</strong>新的情况。</p>
-<h3 id="第二章：机理篇-分子相互作用的动态本质"><a href="#第二章：机理篇-分子相互作用的动态本质" class="headerlink" title="第二章：机理篇 - 分子相互作用的动态本质"></a><strong>第二章：机理篇 - 分子相互作用的动态本质</strong></h3><p>当我们看到文献中“H357咪唑环旋转”、“K376侧链伸展”这样的描述时，这些结论是如何得出的？</p>
-<h4 id="2-1-什么在变化？如何变化？"><a href="#2-1-什么在变化？如何变化？" class="headerlink" title="2.1 什么在变化？如何变化？"></a><strong>2.1 什么在变化？如何变化？</strong></h4><p>在结合过程中，蛋白和配体都不是僵硬的积木，而是动态调整的舞伴：</p>
-<p><strong>配体的变化</strong>：</p>
-<ul>
-<li><strong>构象变化</strong>：化学键旋转，分子呈现不同的三维形状</li>
-<li><strong>官能团取向</strong>：羟基、羧基等极性基团调整方向以形成最佳氢键</li>
-<li><strong>电荷分布</strong>：电子云重新分布以适应蛋白的静电环境</li>
-</ul>
-<p><strong>蛋白的变化</strong>：</p>
-<ul>
-<li><strong>侧链重排</strong>：氨基酸侧链旋转到有利位置<ul>
-<li><em>示例</em>：H357的咪唑环旋转以形成π-π堆积</li>
-<li><em>示例</em>：F404的苯环调整角度与配体芳环平行</li>
-</ul>
-</li>
-<li><strong>主链微调</strong>：蛋白质骨架发生微小移动</li>
-<li><strong>结合口袋形状变化</strong>：整个口袋可能“收缩”或“扩张”</li>
-</ul>
-<h4 id="2-2-为什么会发生这些变化？"><a href="#2-2-为什么会发生这些变化？" class="headerlink" title="2.2 为什么会发生这些变化？"></a><strong>2.2 为什么会发生这些变化？</strong></h4><p>这些变化不是随意的，而是由基本的物理化学原理驱动：</p>
-<ol>
-<li><strong>能量优化原则</strong>：系统总是趋向于能量最低的状态</li>
-<li><strong>空间互补性</strong>：避免原子碰撞，寻求最大接触面积</li>
-<li><strong>电子互补性</strong>：正负电荷区域相互吸引</li>
-<li><strong>疏水效应</strong>：疏水区域聚集，排出水分子</li>
-</ol>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 在PyMOL中验证这些变化的证据</span>
-distance pi_pi_dist<span class="token punctuation">,</span> his357<span class="token operator">//</span>CE1<span class="token punctuation">,</span> ligand<span class="token operator">//</span>C4    <span class="token comment"># 测量π-π堆积距离（应为3.4-3.8Å）</span>
-angle stacking_angle<span class="token punctuation">,</span> his357<span class="token operator">//</span>CG<span class="token operator">-</span>CD2<span class="token punctuation">,</span> ligand<span class="token operator">//</span>C1<span class="token operator">-</span>C4  <span class="token comment"># 测量芳环平面夹角（应&lt;30°）</span>
-distance h_bond<span class="token punctuation">,</span> k376<span class="token operator">//</span>NZ<span class="token punctuation">,</span> ligand<span class="token operator">//</span>O1          <span class="token comment"># 测量氢键距离（应为2.6-3.2Å）</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="第三章：工具篇-揭开预测软件的神秘面纱"><a href="#第三章：工具篇-揭开预测软件的神秘面纱" class="headerlink" title="第三章：工具篇 - 揭开预测软件的神秘面纱"></a><strong>第三章：工具篇 - 揭开预测软件的神秘面纱</strong></h3><p>既然PyMOL不能预测，那么“H357咪唑环旋转”这样的结论从何而来？</p>
-<h4 id="3-1-分子对接软件：预测结合模式的“预言家”"><a href="#3-1-分子对接软件：预测结合模式的“预言家”" class="headerlink" title="3.1 分子对接软件：预测结合模式的“预言家”"></a><strong>3.1 分子对接软件：预测结合模式的“预言家”</strong></h4><p><strong>代表性工具</strong>：</p>
-<ul>
-<li><strong>AutoDock Vina</strong>：免费、快速、易用</li>
-<li><strong>DOCK6</strong>：学术免费、精度高（我们文献中使用）</li>
-<li><strong>Schrödinger Glide</strong>：商业软件、工业标准</li>
-</ul>
-<p><strong>工作原理</strong>：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 简化的对接流程</span>
-<span class="token number">1</span>. 准备蛋白结构 → protein.pdbqt
-<span class="token number">2</span>. 准备配体结构 → ligand.pdbqt  
-<span class="token number">3</span>. 定义结合口袋 → config.txt
-<span class="token number">4</span>. 运行对接计算 → vina <span class="token parameter variable">--receptor</span> protein.pdbqt <span class="token parameter variable">--ligand</span> ligand.pdbqt
-<span class="token number">5</span>. 获得预测结果 → out.pdbqt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>预测过程</strong>：</p>
-<ol>
-<li><strong>构象搜索</strong>：系统旋转配体的可旋转键</li>
-<li><strong>位置采样</strong>：在口袋中尝试数百万个位置和朝向</li>
-<li><strong>打分评估</strong>：用打分函数评估每个构象的结合能力</li>
-<li><strong>结果排序</strong>：输出能量最优的结合模式</li>
-</ol>
-<h4 id="3-2-分子动力学软件：验证稳定性的“时间机器”"><a href="#3-2-分子动力学软件：验证稳定性的“时间机器”" class="headerlink" title="3.2 分子动力学软件：验证稳定性的“时间机器”"></a><strong>3.2 分子动力学软件：验证稳定性的“时间机器”</strong></h4><p><strong>代表性工具</strong>：</p>
-<ul>
-<li><strong>GROMACS</strong>：免费、高性能、社区强大</li>
-<li><strong>AMBER</strong>：学术界常用、力场精度高</li>
-<li><strong>NAMD</strong>：擅长大体系模拟</li>
-</ul>
-<p><strong>工作原理</strong>：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 分子动力学模拟流程</span>
-gmx pdb2gmx <span class="token parameter variable">-f</span> complex.pdb <span class="token parameter variable">-o</span> processed.gro    <span class="token comment"># 结构准备</span>
-gmx mdrun <span class="token parameter variable">-s</span> simulation.tpr <span class="token parameter variable">-deffnm</span> md_results <span class="token comment"># 运行模拟</span>
-gmx energy <span class="token parameter variable">-f</span> md_results.edr <span class="token parameter variable">-o</span> energy.xvg     <span class="token comment"># 能量分析</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>能告诉我们什么</strong>：</p>
-<ul>
-<li>预测的结合模式在生理条件下是否稳定？</li>
-<li>蛋白-配体复合物如何随时间波动？</li>
-<li>相互作用的持续时间是多少？</li>
-</ul>
-<h2 id="第四章：革命篇-AI如何重塑分子模拟与设计"><a href="#第四章：革命篇-AI如何重塑分子模拟与设计" class="headerlink" title="第四章：革命篇 - AI如何重塑分子模拟与设计"></a><strong>第四章：革命篇 - AI如何重塑分子模拟与设计</strong></h2><p>人工智能正在引发计算分子科学领域的范式转移，从传统的基于物理的模拟，走向数据驱动与物理模型融合的新范式。</p>
-<h3 id="4-1-为什么AI适合分子科学？"><a href="#4-1-为什么AI适合分子科学？" class="headerlink" title="4.1 为什么AI适合分子科学？"></a><strong>4.1 为什么AI适合分子科学？</strong></h3><p>分子科学中存在大量适合AI技术的特点：</p>
-<p><strong>分子数据的天然特征</strong>：</p>
-<ul>
-<li><strong>图结构</strong>：原子为节点，化学键为边</li>
-<li><strong>几何对称性</strong>：旋转、平移不变性</li>
-<li><strong>多尺度性</strong>：从量子到宏观的层次结构</li>
-<li><strong>组合爆炸</strong>：化学空间极其庞大</li>
-</ul>
-<p><strong>AI技术的对应优势</strong>：</p>
-<ul>
-<li><strong>图神经网络</strong>：直接处理分子图结构</li>
-<li><strong>等变神经网络</strong>：尊重物理对称性</li>
-<li><strong>多尺度模型</strong>：跨层次信息整合</li>
-<li><strong>生成模型</strong>：探索广阔化学空间</li>
-</ul>
-<h3 id="4-2-核心AI技术栈"><a href="#4-2-核心AI技术栈" class="headerlink" title="4.2 核心AI技术栈"></a><strong>4.2 核心AI技术栈</strong></h3><h4 id="结构预测的革命"><a href="#结构预测的革命" class="headerlink" title="结构预测的革命"></a><strong>结构预测的革命</strong></h4><p>AlphaFold2带来了方法论的根本变革：</p>
-<table>
-<thead>
-<tr>
-<th align="left">方面</th>
-<th align="left">传统方法</th>
-<th align="left">AI方法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left"><strong>方法论</strong></td>
-<td align="left">模板依赖、片段组装</td>
-<td align="left">端到端直接预测</td>
-</tr>
-<tr>
-<td align="left"><strong>信息利用</strong></td>
-<td align="left">局部序列信息</td>
-<td align="left">全局注意力机制</td>
-</tr>
-<tr>
-<td align="left"><strong>输出形式</strong></td>
-<td align="left">坐标优化</td>
-<td align="left">直接输出3D结构</td>
-</tr>
-<tr>
-<td align="left"><strong>计算速度</strong></td>
-<td align="left">数天至数周</td>
-<td align="left">分钟级别</td>
-</tr>
-</tbody></table>
-<p>应用场景包括：蛋白-蛋白复合物预测、蛋白-小分子对接、RNA结构预测、突变效应评估等。</p>
-<h4 id="分子生成与优化"><a href="#分子生成与优化" class="headerlink" title="分子生成与优化"></a><strong>分子生成与优化</strong></h4><p>AI驱动的分子设计已经扩展到多个领域：</p>
-<ul>
-<li><strong>材料设计</strong>：新型催化剂、电池材料、聚合物</li>
-<li><strong>酶工程</strong>：优化工业酶催化效率和稳定性</li>
-<li><strong>生物传感器</strong>：开发高灵敏度检测分子</li>
-<li><strong>蛋白质设计</strong>：创造全新功能的蛋白质</li>
-</ul>
-<p>代表性工具包括：Pocket2Mol、GraphBP、MolGPT等生成模型，以及REINVENT、MARS等优化算法。</p>
-<h4 id="高效分子对接"><a href="#高效分子对接" class="headerlink" title="高效分子对接"></a><strong>高效分子对接</strong></h4><p>传统分子对接与AI方法的对比：</p>
-<p><strong>传统对接的瓶颈</strong>：</p>
-<ul>
-<li>搜索空间巨大（配体6个自由度 + 构象变化）</li>
-<li>需要数百万至数亿个姿态采样</li>
-<li>打分函数准确性有限</li>
-<li>计算成本高昂（小时至天量级）</li>
-</ul>
-<p><strong>AI对接的创新</strong>：</p>
-<ul>
-<li><strong>EquiBind</strong>：等变网络直接预测结合姿态</li>
-<li><strong>DiffDock</strong>：扩散模型生成候选姿态</li>
-<li><strong>TANKBind</strong>：结合口袋的全局感知</li>
-<li><strong>速度提升</strong>：达到100-1000倍加速</li>
-</ul>
-<h3 id="4-3-AI在不同领域的应用案例"><a href="#4-3-AI在不同领域的应用案例" class="headerlink" title="4.3 AI在不同领域的应用案例"></a><strong>4.3 AI在不同领域的应用案例</strong></h3><h4 id="能源材料设计"><a href="#能源材料设计" class="headerlink" title="能源材料设计"></a><strong>能源材料设计</strong></h4><p>设计目标包括高能量密度（&gt;500 Wh/kg）、长循环寿命（&gt;1000次）、高安全性（无枝晶形成）的锂离子电池材料，同时考虑元素丰度和合成可行性。</p>
-<h4 id="环境催化"><a href="#环境催化" class="headerlink" title="环境催化"></a><strong>环境催化</strong></h4><p>开发CO2转化催化剂，目标转化率&gt;90%，选择性&gt;95%，稳定性&gt;1000小时，在温和条件下（200-300°C，常压）实现高效转化。</p>
-<h4 id="农业生物技术"><a href="#农业生物技术" class="headerlink" title="农业生物技术"></a><strong>农业生物技术</strong></h4><p>设计生物农药，针对特定昆虫物种，要求对哺乳动物无毒、环境可快速降解、不影响有益昆虫，且在24小时内有效。</p>
-<h3 id="4-4-AI方法的独特优势"><a href="#4-4-AI方法的独特优势" class="headerlink" title="4.4 AI方法的独特优势"></a><strong>4.4 AI方法的独特优势</strong></h3><h4 id="物理规律的隐式学习"><a href="#物理规律的隐式学习" class="headerlink" title="物理规律的隐式学习"></a><strong>物理规律的隐式学习</strong></h4><p>AI通过从已知结构和性质的分子数据中学习，自动掌握原子间相互作用的复杂模式，无需显式编程物理规则，同时保持物理一致性。</p>
-<h4 id="高维空间的高效探索"><a href="#高维空间的高效探索" class="headerlink" title="高维空间的高效探索"></a><strong>高维空间的高效探索</strong></h4><table>
-<thead>
-<tr>
-<th align="left">方面</th>
-<th align="left">传统方法</th>
-<th align="left">AI方法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left"><strong>搜索策略</strong></td>
-<td align="left">基于规则的逐步优化</td>
-<td align="left">在亿万可能性中智能采样</td>
-</tr>
-<tr>
-<td align="left"><strong>搜索效率</strong></td>
-<td align="left">局部搜索，易陷入次优</td>
-<td align="left">全局感知，跳出局部最优</td>
-</tr>
-<tr>
-<td align="left"><strong>创造性</strong></td>
-<td align="left">受限于人类先验知识</td>
-<td align="left">发现反直觉的设计</td>
-</tr>
-</tbody></table>
-<h4 id="多目标并行优化"><a href="#多目标并行优化" class="headerlink" title="多目标并行优化"></a><strong>多目标并行优化</strong></h4><p>AI能够同时优化多个相互冲突的目标，如结合强度与选择性、活性与毒性、性能与合成难度、稳定性与成本等，通过Pareto前沿找到最佳平衡点。</p>
-<h3 id="4-5-当前挑战与未来方向"><a href="#4-5-当前挑战与未来方向" class="headerlink" title="4.5 当前挑战与未来方向"></a><strong>4.5 当前挑战与未来方向</strong></h3><h4 id="数据质量与偏差"><a href="#数据质量与偏差" class="headerlink" title="数据质量与偏差"></a><strong>数据质量与偏差</strong></h4><ul>
-<li><strong>数据稀缺</strong>：某些领域标注数据有限</li>
-<li><strong>分布偏差</strong>：训练数据不能代表全部化学空间</li>
-<li><strong>实验噪声</strong>：测量误差影响模型学习</li>
-<li><strong>标准化</strong>：不同来源数据格式不一</li>
-</ul>
-<h4 id="可解释性与可信度"><a href="#可解释性与可信度" class="headerlink" title="可解释性与可信度"></a><strong>可解释性与可信度</strong></h4><ul>
-<li><strong>机制理解</strong>：AI预测缺乏物理解释</li>
-<li><strong>错误分析</strong>：难以诊断失败原因</li>
-<li><strong>置信度评估</strong>：不确定性量化不完善</li>
-<li><strong>科学发现</strong>：从预测中提取新知识</li>
-</ul>
-<h4 id="未来技术融合"><a href="#未来技术融合" class="headerlink" title="未来技术融合"></a><strong>未来技术融合</strong></h4><p>包括AI与传统模拟的深度融合、自动化实验验证闭环、跨尺度统一建模框架、科学大语言模型发展等方向。</p>
-<h3 id="4-6-实践建议"><a href="#4-6-实践建议" class="headerlink" title="4.6 实践建议"></a><strong>4.6 实践建议</strong></h3><h4 id="何时选择AI方法？"><a href="#何时选择AI方法？" class="headerlink" title="何时选择AI方法？"></a><strong>何时选择AI方法？</strong></h4><p><strong>适合AI的场景</strong>：</p>
-<ul>
-<li>高通量初筛</li>
-<li>传统方法计算昂贵</li>
-<li>数据充足且有代表性</li>
-<li>需要创造性设计</li>
-</ul>
-<p><strong>适合传统方法的场景</strong>：</p>
-<ul>
-<li>高精度能量计算</li>
-<li>动态过程研究</li>
-<li>数据稀缺的新领域</li>
-<li>机制深入研究</li>
-</ul>
-<h4 id="入门路径建议"><a href="#入门路径建议" class="headerlink" title="入门路径建议"></a><strong>入门路径建议</strong></h4><ol>
-<li><strong>第一阶段</strong>：理解基础分子生物学和化学知识</li>
-<li><strong>第二阶段</strong>：掌握传统计算方法原理</li>
-<li><strong>第三阶段</strong>：学习机器学习基础</li>
-<li><strong>第四阶段</strong>：实践AI分子科学工具</li>
-<li><strong>最终目标</strong>：建立批判性思维，选择合适的工具</li>
-</ol>
-<hr>
-<p><strong>本章小结</strong>：AI在分子科学中的应用正在从药物发现扩展到能源、材料、环境、农业等众多领域。这种技术革命的核心在于其能够从海量数据中学习复杂的分子行为模式，实现传统方法难以完成的高效探索和创造性设计。然而，AI并非万能钥匙，理解其适用范围和局限性，与传统方法形成互补，才是真正的技术进步之路。</p>
-<h3 id="第五章：整合篇-现代科研的真实工作流"><a href="#第五章：整合篇-现代科研的真实工作流" class="headerlink" title="第五章：整合篇 - 现代科研的真实工作流"></a><strong>第五章：整合篇 - 现代科研的真实工作流</strong></h3><p>了解了各个工具后，让我们看看它们如何在现代科研中协同工作。</p>
-<h4 id="5-1-传统科研工作流"><a href="#5-1-传统科研工作流" class="headerlink" title="5.1 传统科研工作流"></a><strong>5.1 传统科研工作流</strong></h4><pre class="line-numbers language-none"><code class="language-none">蛋白准备 → 分子对接 → 动力学验证 → PyMOL分析 → 实验验证<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h4 id="5-2-AI增强工作流"><a href="#5-2-AI增强工作流" class="headerlink" title="5.2 AI增强工作流"></a><strong>5.2 AI增强工作流</strong></h4><pre class="line-numbers language-none"><code class="language-none">AI结构预测 → AI快速对接 → 传统方法验证 → AI结果分析 → 实验验证<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h4 id="5-3-在PyMOL中的完整实践"><a href="#5-3-在PyMOL中的完整实践" class="headerlink" title="5.3 在PyMOL中的完整实践"></a><strong>5.3 在PyMOL中的完整实践</strong></h4><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 阶段1：准备工作</span>
-fetch 4cb4                          <span class="token comment"># 获取蛋白结构</span>
-load d715_2441_ai_docked<span class="token punctuation">.</span>pdb        <span class="token comment"># 加载AI预测的结合模式</span>
-
-<span class="token comment"># 阶段2：基础分析</span>
-create receptor<span class="token punctuation">,</span> 4cb4
-create ligand<span class="token punctuation">,</span> d715_2441
-show cartoon<span class="token punctuation">,</span> receptor
-show sticks<span class="token punctuation">,</span> ligand
-show sticks<span class="token punctuation">,</span> resi <span class="token number">357</span><span class="token operator">+</span><span class="token number">361</span><span class="token operator">+</span><span class="token number">376</span><span class="token operator">+</span><span class="token number">404</span>   <span class="token comment"># 显示关键残基</span>
-
-<span class="token comment"># 阶段3：相互作用分析</span>
-distance h_bond1<span class="token punctuation">,</span> <span class="token punctuation">(</span>resi <span class="token number">361</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>ligand<span class="token punctuation">)</span>  <span class="token comment"># 氢键</span>
-distance pi_pi<span class="token punctuation">,</span> <span class="token punctuation">(</span>resi <span class="token number">357</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>ligand<span class="token punctuation">)</span>    <span class="token comment"># π-π堆积</span>
-<span class="token builtin">set</span> dash_radius<span class="token punctuation">,</span> <span class="token number">0.08</span>                  <span class="token comment"># 美化虚线</span>
-
-<span class="token comment"># 阶段4：结果呈现</span>
-bg_color white
-<span class="token builtin">set</span> cartoon_transparency<span class="token punctuation">,</span> <span class="token number">0.3</span>
-ray <span class="token number">2000</span><span class="token punctuation">,</span> <span class="token number">2000</span>
-png publication_figure<span class="token punctuation">.</span>png<span class="token punctuation">,</span> dpi<span class="token operator">=</span><span class="token number">300</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="总结与展望"><a href="#总结与展望" class="headerlink" title="总结与展望"></a><strong>总结与展望</strong></h3><p>通过这次从概念到实践的探索，我们应该认识到：</p>
-<ol>
-<li><strong>明确工具边界</strong>：PyMOL是卓越的可视化工具，但不是预测工具</li>
-<li><strong>理解动态本质</strong>：蛋白-配体结合是动态调整的过程</li>
-<li><strong>善用计算生态</strong>：根据不同需求选择合适的计算工具</li>
-<li><strong>拥抱技术革命</strong>：AI正在重塑药物发现的每一个环节</li>
-</ol>
-<p><strong>未来的研究方向</strong>：</p>
-<ul>
-<li>AI预测与物理模型的深度融合</li>
-<li>自动化、一体化的药物发现平台</li>
-<li>多尺度建模从量子到细胞水平的贯通</li>
-</ul>
-<p>当我们下次再看到一张漂亮的蛋白-配体相互作用图时，我们看到的不再只是一张静态图片，而是一个动态分子世界的精彩瞬间，以及背后一整套强大的计算生物学方法学支撑。</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-        <category>PyMOL</category>
       </categories>
   </entry>
   <entry>
