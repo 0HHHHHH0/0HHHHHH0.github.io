@@ -1630,7 +1630,7 @@ canvas:not(#ribbon-canvas),
   }
 }
 :root {
-  --global-font-size: 15px;
+  --global-font-size: 16px;
   --global-bg: #fff;
   --font-color: #4c4948;
   --hr-border: #d2ebfd;
@@ -1735,7 +1735,7 @@ body {
   background: var(--global-bg);
   color: var(--font-color);
   font-size: var(--global-font-size);
-  font-family: AlimamaShuHeiTi;
+  font-family: "LXGW WenKai Screen", sans-serif;
   line-height: 2;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
   scroll-behavior: smooth;
@@ -2059,8 +2059,8 @@ pre[class*='language-'] .token.italic {
 }
 .container pre,
 .container code {
-  font-size: var(--global-font-size);
-  font-family: Consolas, "Courier New", monospace !important;
+  font-size: 14px;
+  font-family: "JetBrains Mono", monospace !important;
   border-radius: 6px;
 }
 .container code {
@@ -2089,7 +2089,7 @@ pre[class*='language-'] .token.italic {
 .container figure.highlight figcaption,
 .container figure.highlight .caption {
   padding: 6px 0 2px 14px;
-  font-size: var(--global-font-size);
+  font-size: 14px;
   line-height: 1em;
 }
 .container figure.highlight figcaption a,
@@ -2134,7 +2134,7 @@ pre[class*='language-'] .token.italic {
   height: 2.15em;
   background: var(--hltools-bg);
   color: var(--hltools-color);
-  font-size: var(--global-font-size);
+  font-size: 14px;
   overflow: hidden;
 }
 .container .highlight-tools > * {
