@@ -786,13 +786,13 @@ htmlwidgets::saveWidget(
 <li><strong>定位候选基因区域</strong>：为后续的功能验证提供可靠的候选位点</li>
 <li><strong>支撑分子标记开发</strong>：为育种标记辅助选择提供理论基础</li>
 </ul>
-<h2 id="🔧-1-筛选流程设计与实现"><a href="#🔧-1-筛选流程设计与实现" class="headerlink" title="🔧 1. 筛选流程设计与实现"></a>🔧 1. 筛选流程设计与实现</h2><h3 id="核心算法逻辑"><a href="#核心算法逻辑" class="headerlink" title="核心算法逻辑"></a>核心算法逻辑</h3><pre class="line-numbers language-mermaid" data-language="mermaid"><code class="language-mermaid"><span class="token keyword">graph</span> TD
-    A<span class="token text string">[原始基因型数据]</span> <span class="token arrow operator">--&gt;</span> B<span class="token text string">[群体分组统计]</span>
-    B <span class="token arrow operator">--&gt;</span> C<span class="token text string">{组内一致性检验}</span>
-    C <span class="token arrow operator">--&gt;</span><span class="token label property">|通过|</span> D<span class="token text string">{组间差异性检验}</span>
-    C <span class="token arrow operator">--&gt;</span><span class="token label property">|不通过|</span> E<span class="token text string">[过滤掉]</span>
-    D <span class="token arrow operator">--&gt;</span><span class="token label property">|有差异|</span> F<span class="token text string">[输出结果]</span>
-    D <span class="token arrow operator">--&gt;</span><span class="token label property">|无差异|</span> E<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="🔧-1-筛选流程设计与实现"><a href="#🔧-1-筛选流程设计与实现" class="headerlink" title="🔧 1. 筛选流程设计与实现"></a>🔧 1. 筛选流程设计与实现</h2><h3 id="核心算法逻辑"><a href="#核心算法逻辑" class="headerlink" title="核心算法逻辑"></a>核心算法逻辑</h3><pre class="mermaid">graph TD
+    A[原始基因型数据] --&gt; B[群体分组统计]
+    B --&gt; C{组内一致性检验}
+    C --&gt;|通过| D{组间差异性检验}
+    C --&gt;|不通过| E[过滤掉]
+    D --&gt;|有差异| F[输出结果]
+    D --&gt;|无差异| E</pre>
 
 <h3 id="筛选命令详解"><a href="#筛选命令详解" class="headerlink" title="筛选命令详解"></a>筛选命令详解</h3><pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash">#!/bin/bash
 # filename: filter_variants_integrated.sh
@@ -1047,7 +1047,7 @@ fig  # 在RStudio中查看
 </ol>
 <hr>
 <p><strong>总结</strong>：本流程提供了一个完整的从原始基因型数据到高质量差异位点筛选的解决方案，结合严格的统计标准和直观的可视化验证，确保结果的生物学可靠性和技术可重复性。</p>
-]]></content>
+<script type="module"> import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';	mermaid.initialize({startOnLoad: true, flowchart: {curve: 'linear'}}); </script>]]></content>
       <categories>
         <category>默认分类</category>
         <category>重测序</category>
@@ -1086,110 +1086,6 @@ fig  # 在RStudio中查看
 ]]></content>
       <categories>
         <category>折腾</category>
-        <category>WIFI</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>Typecho快速修改文章图片和文件链接地址</title>
-    <url>/2025/09/03/50/</url>
-    <content><![CDATA[<p>说明<br>为了使我们的博客速度更快，图片等一些文件会采用外接的形式。但当跟换域名或CDN图片地址时，需要大批修正一切文章的援用图片链接和一些文件链接地址，手动修正又烦劳，这里就说一下通过 phpMyAdmin工具快速修正数据库文章图片，文件链接地址。</p>
-<hr>
-<h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1.安装"></a>1.安装</h2><p>如果您使用的是基于 Debian 或 Ubuntu 的 Linux 系统，可以尝试使用 apt-get 命令。例如：</p>
-<blockquote>
-<p>sudo apt-get update<br>sudo apt-get install phpmyadmin</p>
-</blockquote>
-<hr>
-<p>The phpmyadmin package must have a database installed and configured before it c<br>with dbconfig-common.</p>
-<p>If you are an advanced database administrator and know that you want to perform<br>database has already been installed and configured, you should refuse this optio<br>most likely be provided in /usr/share/doc/phpmyadmin.</p>
-<p>Otherwise, you should probably choose this option.</p>
-<p>Configure database for phpmyadmin with dbconfig-common? [yes/no] yes</p>
-<p>Please provide a password for phpmyadmin to register with the database server. I<br>generated.</p>
-<p>MySQL application password for phpmyadmin:</p>
-<p>Password confirmation:</p>
-<p>Determining localhost credentials from /etc/mysql/debian.cnf: succeeded.<br>请选择要自动配置以运行 phpMyAdmin 的网络服务器。</p>
-<ol>
-<li>apache2  2. lighttpd</li>
-</ol>
-<p>(Enter the items or ranges you want to select, separated by spaces.)</p>
-<p>要自动重新配置的网络服务器： 2</p>
-<p>dbconfig-common: writing config to /etc/dbconfig-common/phpmyadmin.conf</p>
-<p>Creating config file /etc/dbconfig-common/phpmyadmin.conf with new version</p>
-<p>Creating config file /etc/phpmyadmin/config-db.php with new version<br>checking privileges on database phpmyadmin for phpmyadmin@localhost: user creati<br>granting access to database phpmyadmin for phpmyadmin@localhost: success.<br>verifying access for phpmyadmin@localhost: success.<br>creating database phpmyadmin: success.<br>verifying database phpmyadmin exists: success.<br>populating database via sql…  done.<br>dbconfig-common: flushing administrative password<br>Lighttpd not installed, skipping<br>正在处理用于 libc-bin (2.31-13+deb11u2) 的触发器 …<br>ldconfig: /lib/libusbgx.so.2 is not a symbolic link</p>
-<p>正在处理用于 php7.4-fpm (7.4.33-1+deb11u9) 的触发器 …<br>正在处理用于 php7.4-cli (7.4.33-1+deb11u9) 的触发器 …</p>
-<hr>
-<p>选择了 lighttpd (选项2) 作为Web服务器，但你的系统实际上运行的是 Nginx</p>
-<p>下面是后续的解决步骤：</p>
-<h3 id="第一步：手动配置-Nginx-以支持-phpMyAdmin"><a href="#第一步：手动配置-Nginx-以支持-phpMyAdmin" class="headerlink" title="第一步：手动配置 Nginx 以支持 phpMyAdmin"></a>第一步：手动配置 Nginx 以支持 phpMyAdmin</h3><p>由于自动配置失败了，我们需要手动为 Nginx 创建配置文件。</p>
-<ol>
-<li><p><strong>创建 phpMyAdmin 的符号链接</strong>（如果尚未存在）：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">ln</span> <span class="token parameter variable">-s</span> /usr/share/phpmyadmin /var/www/html/phpmyadmin<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p><strong>编辑 Nginx 站点配置文件</strong>：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">nano</span> /etc/nginx/sites-enabled/default<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
-<li><p><strong>在 <code>server</code> 块中添加以下 location 配置</strong>（放在PHP location块之前或之后）：</p>
-<pre class="line-numbers language-Nginx" data-language="Nginx"><code class="language-Nginx"># phpMyAdmin 配置
-location /phpmyadmin {
-    root /usr/share/;
-    index index.php index.html index.htm;
-    
-    location ~ ^/phpmyadmin/(.+.php)$ {
-        try_files $uri =404;
-        root /usr/share/;
-        fastcgi_pass unix:/run/php/php7.4-fpm.sock;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        include /etc/nginx/fastcgi_params;
-    }
-    
-    location ~* ^/phpmyadmin/(.+.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
-        root /usr/share/;
-    }
-}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
-</ol>
-<h3 id="第二步：测试并重启-Nginx"><a href="#第二步：测试并重启-Nginx" class="headerlink" title="第二步：测试并重启 Nginx"></a>第二步：测试并重启 Nginx</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 测试配置语法</span>
-<span class="token function">sudo</span> nginx <span class="token parameter variable">-t</span>
-
-<span class="token comment"># 如果语法正确，重启Nginx</span>
-<span class="token function">sudo</span> systemctl restart nginx
-<span class="token comment"># 或者使用重载</span>
-<span class="token function">sudo</span> nginx <span class="token parameter variable">-s</span> reload<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="第三步：访问-phpMyAdmin"><a href="#第三步：访问-phpMyAdmin" class="headerlink" title="第三步：访问 phpMyAdmin"></a>第三步：访问 phpMyAdmin</h3><p>现在你应该可以通过浏览器访问 phpMyAdmin：</p>
-<pre class="line-numbers language-none"><code class="language-none">http://你的服务器IP或域名/phpmyadmin<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h3 id="第四步：登录-phpMyAdmin"><a href="#第四步：登录-phpMyAdmin" class="headerlink" title="第四步：登录 phpMyAdmin"></a>第四步：登录 phpMyAdmin</h3><p>使用以下凭据登录：</p>
-<ul>
-<li><strong>用户名</strong>：phpmyadmin（或者你之前设置的MySQL用户名）</li>
-<li><strong>密码</strong>：你刚才安装时设置的密码</li>
-</ul>
-<h3 id="如果遇到权限问题"><a href="#如果遇到权限问题" class="headerlink" title="如果遇到权限问题"></a>如果遇到权限问题</h3><p>如果无法访问，可能需要调整权限：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 调整phpMyAdmin目录权限</span>
-<span class="token function">sudo</span> <span class="token function">chown</span> <span class="token parameter variable">-R</span> www-data:www-data /usr/share/phpmyadmin/
-<span class="token function">sudo</span> <span class="token function">chmod</span> <span class="token parameter variable">-R</span> <span class="token number">755</span> /usr/share/phpmyadmin/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="验证MySQL连接"><a href="#验证MySQL连接" class="headerlink" title="验证MySQL连接"></a>验证MySQL连接</h3><p>如果仍然无法连接，检查MySQL用户权限：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 登录MySQL</span>
-<span class="token function">sudo</span> mysql <span class="token parameter variable">-u</span> root <span class="token parameter variable">-p</span>
-
-<span class="token comment"># 检查phpmyadmin用户权限</span>
-SELECT user, <span class="token function">host</span> FROM mysql.user<span class="token punctuation">;</span>
-SHOW GRANTS FOR <span class="token string">'phpmyadmin'</span>@<span class="token string">'localhost'</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="安全建议"><a href="#安全建议" class="headerlink" title="安全建议"></a>安全建议</h3><ol>
-<li><strong>限制访问</strong>：考虑通过IP限制或HTTP认证来保护phpMyAdmin</li>
-<li><strong>使用HTTPS</strong>：确保通过SSL访问phpMyAdmin</li>
-<li><strong>修改URL路径</strong>：将 <code>/phpmyadmin</code> 改为不易猜测的路径</li>
-</ol>
-<p>这样配置后，phpMyAdmin 就应该可以正常工作了。完成后你可以通过浏览器访问并管理你的Typecho数据库，然后运行之前提到的SQL命令来批量更新图片链接。</p>
-<p>{lamp/}</p>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>操作前请各位先备份一下数据库</p>
-<p>(1)执行sql</p>
-<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">UPDATE `typecho_contents` SET `text` = REPLACE(`text`,'旧域名地址','新域名地址');<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p> <code>typecho_contents</code>  是typecho存放文章的一个表<br>(2)方法2<br><img src="/images/50/3725854188.png" alt="mf3n8p7s.png"></p>
-<p>选中 <code>typecho_contents</code> ，然后点上面的搜索，选择查找和替换，输入之前的图片或者文件地址和之后的地址，字段选择 <code>text</code> ，确认后执行即可批量修改。</p>
-]]></content>
-      <categories>
         <category>WIFI</category>
       </categories>
   </entry>
@@ -1357,6 +1253,110 @@ gene2go$GO
       </categories>
   </entry>
   <entry>
+    <title>Typecho快速修改文章图片和文件链接地址</title>
+    <url>/2025/09/03/50/</url>
+    <content><![CDATA[<p>说明<br>为了使我们的博客速度更快，图片等一些文件会采用外接的形式。但当跟换域名或CDN图片地址时，需要大批修正一切文章的援用图片链接和一些文件链接地址，手动修正又烦劳，这里就说一下通过 phpMyAdmin工具快速修正数据库文章图片，文件链接地址。</p>
+<hr>
+<h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1.安装"></a>1.安装</h2><p>如果您使用的是基于 Debian 或 Ubuntu 的 Linux 系统，可以尝试使用 apt-get 命令。例如：</p>
+<blockquote>
+<p>sudo apt-get update<br>sudo apt-get install phpmyadmin</p>
+</blockquote>
+<hr>
+<p>The phpmyadmin package must have a database installed and configured before it c<br>with dbconfig-common.</p>
+<p>If you are an advanced database administrator and know that you want to perform<br>database has already been installed and configured, you should refuse this optio<br>most likely be provided in /usr/share/doc/phpmyadmin.</p>
+<p>Otherwise, you should probably choose this option.</p>
+<p>Configure database for phpmyadmin with dbconfig-common? [yes/no] yes</p>
+<p>Please provide a password for phpmyadmin to register with the database server. I<br>generated.</p>
+<p>MySQL application password for phpmyadmin:</p>
+<p>Password confirmation:</p>
+<p>Determining localhost credentials from /etc/mysql/debian.cnf: succeeded.<br>请选择要自动配置以运行 phpMyAdmin 的网络服务器。</p>
+<ol>
+<li>apache2  2. lighttpd</li>
+</ol>
+<p>(Enter the items or ranges you want to select, separated by spaces.)</p>
+<p>要自动重新配置的网络服务器： 2</p>
+<p>dbconfig-common: writing config to /etc/dbconfig-common/phpmyadmin.conf</p>
+<p>Creating config file /etc/dbconfig-common/phpmyadmin.conf with new version</p>
+<p>Creating config file /etc/phpmyadmin/config-db.php with new version<br>checking privileges on database phpmyadmin for phpmyadmin@localhost: user creati<br>granting access to database phpmyadmin for phpmyadmin@localhost: success.<br>verifying access for phpmyadmin@localhost: success.<br>creating database phpmyadmin: success.<br>verifying database phpmyadmin exists: success.<br>populating database via sql…  done.<br>dbconfig-common: flushing administrative password<br>Lighttpd not installed, skipping<br>正在处理用于 libc-bin (2.31-13+deb11u2) 的触发器 …<br>ldconfig: /lib/libusbgx.so.2 is not a symbolic link</p>
+<p>正在处理用于 php7.4-fpm (7.4.33-1+deb11u9) 的触发器 …<br>正在处理用于 php7.4-cli (7.4.33-1+deb11u9) 的触发器 …</p>
+<hr>
+<p>选择了 lighttpd (选项2) 作为Web服务器，但你的系统实际上运行的是 Nginx</p>
+<p>下面是后续的解决步骤：</p>
+<h3 id="第一步：手动配置-Nginx-以支持-phpMyAdmin"><a href="#第一步：手动配置-Nginx-以支持-phpMyAdmin" class="headerlink" title="第一步：手动配置 Nginx 以支持 phpMyAdmin"></a>第一步：手动配置 Nginx 以支持 phpMyAdmin</h3><p>由于自动配置失败了，我们需要手动为 Nginx 创建配置文件。</p>
+<ol>
+<li><p><strong>创建 phpMyAdmin 的符号链接</strong>（如果尚未存在）：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">ln</span> <span class="token parameter variable">-s</span> /usr/share/phpmyadmin /var/www/html/phpmyadmin<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+</li>
+<li><p><strong>编辑 Nginx 站点配置文件</strong>：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">nano</span> /etc/nginx/sites-enabled/default<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+<li><p><strong>在 <code>server</code> 块中添加以下 location 配置</strong>（放在PHP location块之前或之后）：</p>
+<pre class="line-numbers language-Nginx" data-language="Nginx"><code class="language-Nginx"># phpMyAdmin 配置
+location /phpmyadmin {
+    root /usr/share/;
+    index index.php index.html index.htm;
+    
+    location ~ ^/phpmyadmin/(.+.php)$ {
+        try_files $uri =404;
+        root /usr/share/;
+        fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include /etc/nginx/fastcgi_params;
+    }
+    
+    location ~* ^/phpmyadmin/(.+.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+        root /usr/share/;
+    }
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+</ol>
+<h3 id="第二步：测试并重启-Nginx"><a href="#第二步：测试并重启-Nginx" class="headerlink" title="第二步：测试并重启 Nginx"></a>第二步：测试并重启 Nginx</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 测试配置语法</span>
+<span class="token function">sudo</span> nginx <span class="token parameter variable">-t</span>
+
+<span class="token comment"># 如果语法正确，重启Nginx</span>
+<span class="token function">sudo</span> systemctl restart nginx
+<span class="token comment"># 或者使用重载</span>
+<span class="token function">sudo</span> nginx <span class="token parameter variable">-s</span> reload<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="第三步：访问-phpMyAdmin"><a href="#第三步：访问-phpMyAdmin" class="headerlink" title="第三步：访问 phpMyAdmin"></a>第三步：访问 phpMyAdmin</h3><p>现在你应该可以通过浏览器访问 phpMyAdmin：</p>
+<pre class="line-numbers language-none"><code class="language-none">http://你的服务器IP或域名/phpmyadmin<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="第四步：登录-phpMyAdmin"><a href="#第四步：登录-phpMyAdmin" class="headerlink" title="第四步：登录 phpMyAdmin"></a>第四步：登录 phpMyAdmin</h3><p>使用以下凭据登录：</p>
+<ul>
+<li><strong>用户名</strong>：phpmyadmin（或者你之前设置的MySQL用户名）</li>
+<li><strong>密码</strong>：你刚才安装时设置的密码</li>
+</ul>
+<h3 id="如果遇到权限问题"><a href="#如果遇到权限问题" class="headerlink" title="如果遇到权限问题"></a>如果遇到权限问题</h3><p>如果无法访问，可能需要调整权限：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 调整phpMyAdmin目录权限</span>
+<span class="token function">sudo</span> <span class="token function">chown</span> <span class="token parameter variable">-R</span> www-data:www-data /usr/share/phpmyadmin/
+<span class="token function">sudo</span> <span class="token function">chmod</span> <span class="token parameter variable">-R</span> <span class="token number">755</span> /usr/share/phpmyadmin/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="验证MySQL连接"><a href="#验证MySQL连接" class="headerlink" title="验证MySQL连接"></a>验证MySQL连接</h3><p>如果仍然无法连接，检查MySQL用户权限：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 登录MySQL</span>
+<span class="token function">sudo</span> mysql <span class="token parameter variable">-u</span> root <span class="token parameter variable">-p</span>
+
+<span class="token comment"># 检查phpmyadmin用户权限</span>
+SELECT user, <span class="token function">host</span> FROM mysql.user<span class="token punctuation">;</span>
+SHOW GRANTS FOR <span class="token string">'phpmyadmin'</span>@<span class="token string">'localhost'</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="安全建议"><a href="#安全建议" class="headerlink" title="安全建议"></a>安全建议</h3><ol>
+<li><strong>限制访问</strong>：考虑通过IP限制或HTTP认证来保护phpMyAdmin</li>
+<li><strong>使用HTTPS</strong>：确保通过SSL访问phpMyAdmin</li>
+<li><strong>修改URL路径</strong>：将 <code>/phpmyadmin</code> 改为不易猜测的路径</li>
+</ol>
+<p>这样配置后，phpMyAdmin 就应该可以正常工作了。完成后你可以通过浏览器访问并管理你的Typecho数据库，然后运行之前提到的SQL命令来批量更新图片链接。</p>
+<p>{lamp/}</p>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>操作前请各位先备份一下数据库</p>
+<p>(1)执行sql</p>
+<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">UPDATE `typecho_contents` SET `text` = REPLACE(`text`,'旧域名地址','新域名地址');<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p> <code>typecho_contents</code>  是typecho存放文章的一个表<br>(2)方法2<br><img src="/images/50/3725854188.png" alt="mf3n8p7s.png"></p>
+<p>选中 <code>typecho_contents</code> ，然后点上面的搜索，选择查找和替换，输入之前的图片或者文件地址和之后的地址，字段选择 <code>text</code> ，确认后执行即可批量修改。</p>
+]]></content>
+      <categories>
+        <category>WIFI</category>
+      </categories>
+  </entry>
+  <entry>
     <title>基因结构</title>
     <url>/2025/09/17/55/</url>
     <content><![CDATA[<h2 id="结构图"><a href="#结构图" class="headerlink" title="结构图"></a>结构图</h2><p>!!!</p>
@@ -1427,67 +1427,69 @@ gene2go$GO
 
 
 <p>下面是代码</p>
-<pre class="line-numbers language-mermaid" data-language="mermaid"><code class="language-mermaid"><span class="token keyword">flowchart</span> TD
-A<span class="token text string">["一个完整的真核生物基因（DNA模板链）"]</span>
+<pre class="mermaid">flowchart TD
+A["一个完整的真核生物基因（DNA模板链）"]
 
-<span class="token keyword">subgraph</span> A_Sub<span class="token text string">[基因结构]</span>
-    <span class="token keyword">direction</span> LR
-    Promoter<span class="token text string">[启动子 Promoter]</span>
-    Exon1<span class="token text string">[外显子1 Exon 1]</span>
-    Intron<span class="token text string">[内含子 Intron]</span>
-    Exon2<span class="token text string">[外显子2 Exon 2]</span>
-    Terminator<span class="token text string">[终止子 Terminator]</span>
-<span class="token keyword">end</span>
+subgraph A_Sub[基因结构]
+    direction LR
+    Promoter[启动子 Promoter]
+    Exon1[外显子1 Exon 1]
+    Intron[内含子 Intron]
+    Exon2[外显子2 Exon 2]
+    Terminator[终止子 Terminator]
+end
 
-A <span class="token arrow operator">--&gt;</span> A_Sub
+A --&gt; A_Sub
 
-<span class="token keyword">subgraph</span> Transcription<span class="token text string">[第一步：转录]</span>
-    <span class="token keyword">direction</span> TB
-    B<span class="token text string">["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]</span>
-<span class="token keyword">end</span>
+subgraph Transcription[第一步：转录]
+    direction TB
+    B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
+end
 
-A_Sub <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">转录</span><span class="token arrow operator">--&gt;</span></span> Transcription
+A_Sub --转录--&gt; Transcription
 
-<span class="token keyword">subgraph</span> Splicing<span class="token text string">[第二步：加工（剪切与拼接）]</span>
-    <span class="token keyword">direction</span> TB
-    C<span class="token text string">["切除内含子并将外显子连接起来"]</span>
-<span class="token keyword">end</span>
+subgraph Splicing[第二步：加工（剪切与拼接）]
+    direction TB
+    C["切除内含子并将外显子连接起来"]
+end
 
-Transcription <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">加工</span><span class="token arrow operator">--&gt;</span></span> Splicing
+Transcription --加工--&gt; Splicing
 
-<span class="token keyword">subgraph</span> Final_mRNA<span class="token text string">[第三步：成熟mRNA]</span>
-    <span class="token keyword">direction</span> LR
-    D<span class="token text string">["5' 帽子"]</span>
-    E<span class="token text string">["5' UTR"]</span>
-    F[<span class="token string">"CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"</span>]
-    G<span class="token text string">["3' UTR"]</span>
-    H<span class="token text string">["多聚A尾巴"]</span>
-<span class="token keyword">end</span>
+subgraph Final_mRNA[第三步：成熟mRNA]
+    direction LR
+    D["5' 帽子"]
+    E["5' UTR"]
+    F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
+    G["3' UTR"]
+    H["多聚A尾巴"]
+end
 
-Splicing <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">"拼接后形成"</span><span class="token arrow operator">--&gt;</span></span> Final_mRNA
+Splicing --"拼接后形成"--&gt; Final_mRNA
 
-<span class="token comment">%% 定义关系</span>
-Exon1 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">包含</span><span class="token arrow operator">--&gt;</span></span> UTR1<span class="token text string">[5' UTR部分]</span>
-Exon1 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">包含</span><span class="token arrow operator">--&gt;</span></span> CDS_Part1<span class="token text string">[CDS部分]</span>
-Exon2 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">包含</span><span class="token arrow operator">--&gt;</span></span> CDS_Part2<span class="token text string">[CDS部分]</span>
-Exon2 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">包含</span><span class="token arrow operator">--&gt;</span></span> UTR2<span class="token text string">[3' UTR部分]</span>
+%% 定义关系
+Exon1 --包含--&gt; UTR1[5' UTR部分]
+Exon1 --包含--&gt; CDS_Part1[CDS部分]
+Exon2 --包含--&gt; CDS_Part2[CDS部分]
+Exon2 --包含--&gt; UTR2[3' UTR部分]
 
-UTR1 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">最终成为</span><span class="token arrow operator">--&gt;</span></span> E
-CDS_Part1 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">最终成为</span><span class="token arrow operator">--&gt;</span></span> F
-CDS_Part2 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">最终成为</span><span class="token arrow operator">--&gt;</span></span> F
-UTR2 <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">最终成为</span><span class="token arrow operator">--&gt;</span></span> G
+UTR1 --最终成为--&gt; E
+CDS_Part1 --最终成为--&gt; F
+CDS_Part2 --最终成为--&gt; F
+UTR2 --最终成为--&gt; G
 
-Final_mRNA <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">"进入细胞质进行翻译（核糖体）"</span><span class="token arrow operator">--&gt;</span></span> I<span class="token text string">["合成的蛋白质"]</span>
-F <span class="token arrow operator">--&gt;</span> I
+Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
+F --&gt; I
 
-<span class="token keyword">classDef</span> default <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#f9f9f9<span class="token punctuation">,</span><span class="token property">stroke</span><span class="token operator">:</span>#333<span class="token punctuation">,</span><span class="token property">stroke-width</span><span class="token operator">:</span>2px</span><span class="token punctuation">;</span>
-<span class="token keyword">classDef</span> coding <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#e6f7ff<span class="token punctuation">,</span><span class="token property">stroke</span><span class="token operator">:</span>#333<span class="token punctuation">,</span><span class="token property">stroke-width</span><span class="token operator">:</span>1px</span><span class="token punctuation">;</span>
-<span class="token keyword">classDef</span> noncoding <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#fff5e6<span class="token punctuation">,</span><span class="token property">stroke</span><span class="token operator">:</span>#333<span class="token punctuation">,</span><span class="token property">stroke-width</span><span class="token operator">:</span>1px</span><span class="token punctuation">;</span>
-<span class="token keyword">classDef</span> process <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#f0f8ff<span class="token punctuation">,</span><span class="token property">stroke</span><span class="token operator">:</span>#2266ff<span class="token punctuation">,</span><span class="token property">stroke-width</span><span class="token operator">:</span>2px</span><span class="token punctuation">;</span>
+classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
+classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
+classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
+classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
 
-<span class="token keyword">class</span> Exon1,Exon2,CDS_Part1,CDS_Part2,F coding<span class="token punctuation">;</span>
-<span class="token keyword">class</span> Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding<span class="token punctuation">;</span>
-<span class="token keyword">class</span> Transcription,Splicing process<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
+class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
+class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
+class Transcription,Splicing process;</pre>
+
+<script type="module"> import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';	mermaid.initialize({startOnLoad: true, flowchart: {curve: 'linear'}}); </script>]]></content>
       <categories>
         <category>重测序</category>
       </categories>
@@ -1744,192 +1746,6 @@ tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
 ]]></content>
       <categories>
         <category>默认分类</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>使用ANNOVAR进行长牡蛎SNP注释完整流程</title>
-    <url>/2025/10/31/annovar/</url>
-    <content><![CDATA[<h1 id="使用ANNOVAR进行长牡蛎-Crassostrea-gigas-SNP注释完整流程"><a href="#使用ANNOVAR进行长牡蛎-Crassostrea-gigas-SNP注释完整流程" class="headerlink" title="使用ANNOVAR进行长牡蛎(Crassostrea gigas)SNP注释完整流程"></a>使用ANNOVAR进行长牡蛎(<em>Crassostrea gigas</em>)SNP注释完整流程</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本文介绍如何使用ANNOVAR对长牡蛎(<em>Crassostrea gigas</em>)的SNP变异数据进行功能注释。流程包括参考基因组数据库构建、变异数据格式转换、功能注释和结果整合。</p>
-<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><h3 id="1-软件安装"><a href="#1-软件安装" class="headerlink" title="1. 软件安装"></a>1. 软件安装</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># ANNOVAR下载</span>
-<span class="token function">wget</span> http://www.openbioinformatics.org/annovar/annovar.tar.gz
-<span class="token function">tar</span> <span class="token parameter variable">-xzvf</span> annovar.tar.gz
-
-<span class="token comment"># 其他依赖工具</span>
-conda <span class="token function">install</span> <span class="token parameter variable">-c</span> bioconda ucsc-gtftogenepred<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="2-数据文件准备"><a href="#2-数据文件准备" class="headerlink" title="2. 数据文件准备"></a>2. 数据文件准备</h3><ul>
-<li>参考基因组GTF文件：<code>/home/wanglab/Ywh/adductor_muscle_scar/Crassostrea_gigas.cgigas_uk_roslin_v1.61.gtf</code></li>
-<li>基因组FASTA文件：<code>GCF_902806645.1_cgigas_uk_roslin_v1_genomic.fna</code></li>
-<li>SNP数据：<code>filtered_variants_thr0p7_20250902_162128.tsv</code></li>
-</ul>
-<h2 id="完整流程"><a href="#完整流程" class="headerlink" title="完整流程"></a>完整流程</h2><h3 id="步骤1：构建自定义参考基因组数据库"><a href="#步骤1：构建自定义参考基因组数据库" class="headerlink" title="步骤1：构建自定义参考基因组数据库"></a>步骤1：构建自定义参考基因组数据库</h3><h4 id="1-1-转换GTF为GenePred格式"><a href="#1-1-转换GTF为GenePred格式" class="headerlink" title="1.1 转换GTF为GenePred格式"></a>1.1 转换GTF为GenePred格式</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">gtfToGenePred <span class="token parameter variable">-genePredExt</span> <span class="token punctuation">\</span>
-    <span class="token string">"/home/wanglab/Ywh/adductor_muscle_scar/ReSeq_Data/DZQD2023092909/annovar/Cgigasdb/GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gtf"</span> <span class="token punctuation">\</span>
-    Cg_refGene.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="1-2-提取mRNA序列"><a href="#1-2-提取mRNA序列" class="headerlink" title="1.2 提取mRNA序列"></a>1.2 提取mRNA序列</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">perl retrieve_seq_from_fasta.pl <span class="token punctuation">\</span>
-    <span class="token parameter variable">--format</span> refGene <span class="token punctuation">\</span>
-    <span class="token parameter variable">--seqfile</span> GCF_902806645.1_cgigas_uk_roslin_v1_genomic.fna <span class="token punctuation">\</span>
-    <span class="token parameter variable">--outfile</span> Cg_refGeneMrna.fa <span class="token punctuation">\</span>
-    Cg_refGene.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="步骤2：准备SNP输入文件"><a href="#步骤2：准备SNP输入文件" class="headerlink" title="步骤2：准备SNP输入文件"></a>步骤2：准备SNP输入文件</h3><h4 id="2-1-转换TSV为ANNOVAR输入格式"><a href="#2-1-转换TSV为ANNOVAR输入格式" class="headerlink" title="2.1 转换TSV为ANNOVAR输入格式"></a>2.1 转换TSV为ANNOVAR输入格式</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'NR&gt;1 {print $1"\t"$2"\t"$2"\t"$3"\t"$4}'</span> <span class="token punctuation">\</span>
-    /home/wanglab/Ywh/adductor_muscle_scar/Variants/filtered_variants_thr0p7_20250902_162128.tsv <span class="token punctuation">\</span>
-    <span class="token operator">&gt;</span> filtered_variants_thr0p7_20250902_162128.avinput<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>输入TSV格式：</strong></p>
-<pre class="line-numbers language-none"><code class="language-none">chromosome	position	ref	alt	...
-NC_047567.1	32667511	G	T	...<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p><strong>输出AVINPUT格式：</strong></p>
-<pre class="line-numbers language-none"><code class="language-none">chromosome	start	end	ref	alt
-NC_047567.1	32667511	32667511	G	T<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<h3 id="步骤3：执行功能注释"><a href="#步骤3：执行功能注释" class="headerlink" title="步骤3：执行功能注释"></a>步骤3：执行功能注释</h3><h4 id="3-1-使用table-annovar-pl进行注释"><a href="#3-1-使用table-annovar-pl进行注释" class="headerlink" title="3.1 使用table_annovar.pl进行注释"></a>3.1 使用table_annovar.pl进行注释</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">perl table_annovar.pl <span class="token punctuation">\</span>
-    filtered_variants_thr0p7_20250902_162128.avinput <span class="token punctuation">\</span>
-    Cgigasdb/ <span class="token punctuation">\</span>
-    <span class="token parameter variable">-buildver</span> Cg <span class="token punctuation">\</span>
-    <span class="token parameter variable">-out</span> filtered_variants_thr0p7_20250902_162128 <span class="token punctuation">\</span>
-    <span class="token parameter variable">-remove</span> <span class="token punctuation">\</span>
-    <span class="token parameter variable">-protocol</span> refGene <span class="token punctuation">\</span>
-    <span class="token parameter variable">-operation</span> g <span class="token punctuation">\</span>
-    <span class="token parameter variable">-nastring</span> <span class="token builtin class-name">.</span> <span class="token punctuation">\</span>
-    <span class="token parameter variable">-csvout</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>参数说明：</strong></p>
-<ul>
-<li><code>-buildver Cg</code>: 使用自定义构建版本”Cg”</li>
-<li><code>-protocol refGene</code>: 使用refGene数据库</li>
-<li><code>-operation g</code>: 基因-based注释</li>
-<li><code>-csvout</code>: 输出CSV格式</li>
-<li><code>-nastring .</code>: 用”.”表示缺失值</li>
-</ul>
-<h3 id="步骤4：整合注释结果"><a href="#步骤4：整合注释结果" class="headerlink" title="步骤4：整合注释结果"></a>步骤4：整合注释结果</h3><h4 id="4-1-方法一：基于行号合并（推荐）"><a href="#4-1-方法一：基于行号合并（推荐）" class="headerlink" title="4.1 方法一：基于行号合并（推荐）"></a>4.1 方法一：基于行号合并（推荐）</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 为原始文件添加行号</span>
-<span class="token function">awk</span> <span class="token string">'NR==1 {print "LineNumber\t"$0} NR&gt;1 {print NR-1"\t"$0}'</span> <span class="token punctuation">\</span>
-    /home/wanglab/Ywh/adductor_muscle_scar/Variants/filtered_variants_thr0p7_20250902_162128.tsv <span class="token punctuation">\</span>
-    <span class="token operator">&gt;</span> original_with_linenum.tsv
-
-<span class="token comment"># 为注释文件添加行号</span>
-<span class="token function">awk</span> <span class="token string">'NR==1 {print "LineNumber\t"$0} NR&gt;1 {print NR-1"\t"$0}'</span> <span class="token punctuation">\</span>
-    filtered_variants_thr0p7_20250902_162128.Cg_multianno.csv <span class="token punctuation">\</span>
-    <span class="token operator">&gt;</span> anno_with_linenum.tsv
-
-<span class="token comment"># 基于行号合并</span>
-<span class="token function">join</span> <span class="token parameter variable">-t</span> <span class="token string">$'<span class="token entity" title="\t">\t</span>'</span> <span class="token parameter variable">-1</span> <span class="token number">1</span> <span class="token parameter variable">-2</span> <span class="token number">1</span> <span class="token punctuation">\</span>
-    original_with_linenum.tsv anno_with_linenum.tsv <span class="token punctuation">\</span>
-    <span class="token operator">&gt;</span> merged_result.tsv
-
-<span class="token comment"># 清理临时文件</span>
-<span class="token function">rm</span> original_with_linenum.tsv anno_with_linenum.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="4-2-方法二：一次性合并"><a href="#4-2-方法二：一次性合并" class="headerlink" title="4.2 方法二：一次性合并"></a>4.2 方法二：一次性合并</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> -F<span class="token string">','</span> <span class="token string">'
-BEGIN {OFS="\t"}
-NR==FNR {
-    if (FNR==1) {
-        anno_header = $6"\t"$7"\t"$8"\t"$9"\t"$10
-    } else {
-        annotation[FNR] = $6"\t"$7"\t"$8"\t"$9"\t"$10
-    }
-    next
-}
-{
-    if (FNR==1) {
-        print $0 "\t" anno_header
-    } else {
-        print $0 "\t" annotation[FNR]
-    }
-}'</span> filtered_variants_thr0p7_20250902_162128.Cg_multianno.csv <span class="token punctuation">\</span>
-   /home/wanglab/Ywh/adductor_muscle_scar/Variants/filtered_variants_thr0p7_20250902_162128.tsv <span class="token punctuation">\</span>
-   <span class="token operator">&gt;</span> filtered_variants_thr0p7_20250902_162128_annotated.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h2 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h2><h3 id="注释结果包含的字段："><a href="#注释结果包含的字段：" class="headerlink" title="注释结果包含的字段："></a>注释结果包含的字段：</h3><ul>
-<li><strong>Gene-based注释</strong>: 基因名称、转录本、外显子功能等</li>
-<li><strong>位置信息</strong>: 染色体、位置、参考/变异碱基</li>
-<li><strong>功能预测</strong>: 对蛋白质功能的影响</li>
-</ul>
-<h3 id="典型输出格式："><a href="#典型输出格式：" class="headerlink" title="典型输出格式："></a>典型输出格式：</h3><pre class="line-numbers language-none"><code class="language-none">Chr     Start   End     Ref     Alt     Func.refGene    Gene.refGene    ExonicFunc.refGene    AAChange.refGene
-NC_047567.1 32667511 32667511 G T downstream LOC105320120 . .
-NC_047567.1 32661831 32661831 C A exonic LOC105320120 nonsynonymous SNV LOC105320120:NM_001345123:exon2:c.T142A:p.S48T<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<h2 id="常见问题与解决方案"><a href="#常见问题与解决方案" class="headerlink" title="常见问题与解决方案"></a>常见问题与解决方案</h2><h3 id="1-数据库构建失败"><a href="#1-数据库构建失败" class="headerlink" title="1. 数据库构建失败"></a>1. 数据库构建失败</h3><p><strong>问题</strong>: GTF文件格式不兼容<br><strong>解决</strong>: 确保GTF文件来自官方来源，使用<code>gtfToGenePred</code>前检查文件完整性</p>
-<h3 id="2-注释结果为空"><a href="#2-注释结果为空" class="headerlink" title="2. 注释结果为空"></a>2. 注释结果为空</h3><p><strong>问题</strong>: 构建版本不匹配<br><strong>解决</strong>: 检查<code>-buildver</code>参数与数据库构建版本一致</p>
-<h3 id="3-合并结果错位"><a href="#3-合并结果错位" class="headerlink" title="3. 合并结果错位"></a>3. 合并结果错位</h3><p><strong>问题</strong>: 输入文件行数不匹配<br><strong>解决</strong>: 使用基于行号的合并方法确保准确性</p>
-<h2 id="流程优化建议"><a href="#流程优化建议" class="headerlink" title="流程优化建议"></a>流程优化建议</h2><h3 id="1-批量处理"><a href="#1-批量处理" class="headerlink" title="1. 批量处理"></a>1. 批量处理</h3><p>对于多个样本，可以编写循环脚本批量处理：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token keyword">for</span> <span class="token for-or-select variable">sample</span> <span class="token keyword">in</span> sample1 sample2 sample3<span class="token punctuation">;</span> <span class="token keyword">do</span>
-    perl table_annovar.pl <span class="token variable">${sample}</span>.avinput Cgigasdb/ <span class="token punctuation">\</span>
-        <span class="token parameter variable">-buildver</span> Cg <span class="token punctuation">\</span>
-        <span class="token parameter variable">-out</span> <span class="token variable">${sample}</span>_annotated <span class="token punctuation">\</span>
-        <span class="token parameter variable">-protocol</span> refGene <span class="token punctuation">\</span>
-        <span class="token parameter variable">-operation</span> g <span class="token punctuation">\</span>
-        <span class="token parameter variable">-csvout</span>
-<span class="token keyword">done</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="2-添加更多注释数据库"><a href="#2-添加更多注释数据库" class="headerlink" title="2. 添加更多注释数据库"></a>2. 添加更多注释数据库</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 添加保守性预测</span>
-perl table_annovar.pl input.avinput Cgigasdb/ <span class="token punctuation">\</span>
-    <span class="token parameter variable">-buildver</span> Cg <span class="token punctuation">\</span>
-    <span class="token parameter variable">-out</span> output <span class="token punctuation">\</span>
-    <span class="token parameter variable">-protocol</span> refGene,phastConsElements100way <span class="token punctuation">\</span>
-    <span class="token parameter variable">-operation</span> g,r <span class="token punctuation">\</span>
-    <span class="token parameter variable">-csvout</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h2 id=""><a href="#" class="headerlink" title=""></a></h2><p>本流程提供了从原始SNP数据到功能注释的完整解决方案，特别针对长牡蛎等非模式生物。通过构建自定义数据库，可以有效地对物种特异性变异进行功能注释，为后续的群体遗传学和功能基因组学研究奠定基础。</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>AlphaFold与PyMOL的示例</title>
-    <url>/2025/11/05/alphafold-pymol/</url>
-    <content><![CDATA[<p>蛋白质与蛋白质互作是指不同蛋白质之间的相互作用，这种作用可以发生在细胞内或细胞外。蛋白质通过互相结合，形成复杂的细胞机制和信号传导网络，参与多种生物过程，如基因调控、代谢、信号传导等。这种互作是生命活动中的重要组成部分，对维持生物体的正常功能具有重要意义。</p>
-<p><strong>那么如何用AlphaFold3预测候选蛋白质与蛋白质互作呢？</strong></p>
-<h2 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a><strong>第一步</strong></h2><p>通过Uniport网站获取候选基因的蛋白质序列（以cGAS、STING为例）。获取cGAS蛋白质序列。</p>
-<pre class="line-numbers language-none"><code class="language-none">&gt;XP_065930211.1 cyclic GMP-AMP synthase-like receptor isoform X1 [Magallana gigas]
-MVFKCPICKREDFQSEGGLSSHITWKHSGSSDGRGSRPSTGGRGRRDDRDIKARVFKCPICKREDFQSEGGLSSHITWKHSGSSDGRGSRPSTGHGACGRSDNREYNTTVIKCPICKRGDFKSEGGLSCHITTVHPGSANGKGSRPSSCTNGKRDDGARPKTYTPRHRDHERHNSDRDVVRGVARVQRESSQRGSPDEFPFKDGAGGATWKSSSAKYKESPKQSRKTEEPRERPSSSDLNLSLSFNAQNFEKFVGMIEGSIVRPREDSTLRTDSINKFIDDLLVVMDRISDIPIKLLRSGSYYDRTKIDYNDEFDFMFYADIRMEADFTNCPPGYCKIRKGMTVKPDLDPFIDRNGYLVPEKYKAHMFDIFEKCRTDSSFRQGRRTQKQDRKPESPAYTLLFDLGISGKPPIDIDLVPAIKIDGWPKPARKIGPSKWIEKSMAERAMQCFHVVTKKFPEAHQDSRLLWRISFSHAEKELILHANMSDNGCRKDVFKILKRIKENMKSKNPTEMDKFCSYHLKMFILRFYDKHGDFSKERKLDLLKESIKQLAKCVREGTIENYFIPKDNVLQSVPEKERLSVVRELDGLLQ<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>获取PRMT5的蛋白质序列。</p>
-<pre class="line-numbers language-none"><code class="language-none">&gt;XP_011431693.2 STING ER exit protein [Magallana gigas]
-MPKVVSRSVVCTDVKDQEEYQGEKPLYVYYCICGQISLILDCPIDKLPMRRRDNARVIDSQKHAHKLTCDPDDIVYLKRPQGIEKQYRQKCKRCGLWLYYHHQGNSGVMFVVDGALKRDAAKTDVYSQISEPKKVTLTKHTKNMGKFSSVTVSTVDEEEDEIEAKEIADSYAANAKVIEKQLFRKGINKRRQEEAAEEAKKKVKGTLIDK<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<h2 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a><strong>第二步</strong></h2><p>访问 <a href="https://alphafoldserver.com/">AlphaFold Server</a>（AlphaFold Server需要科学上网，而且建议使用Google浏览器，使用谷歌账号登录）和输入数据进行预测。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105180712857.png" alt="image-20251105180712857"></p>
-<p>登录谷歌邮箱账号，点击Add entity框就可以添加蛋白质、DNA、RNA、配体和离子（金属离子）。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105180808034.png" alt="image-20251105180808034"></p>
-<p>将cGAS和STING的蛋白质序列序列输入，点击”Continue and preview job”。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175436222.png" alt="image-20251105175436222"></p>
-<p>点击“Confirm and submit job”即可提交作业，一般运行约10 分钟左右。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175503515.png" alt="image-20251105175503515"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175535419.png" alt="image-20251105175535419"></p>
-<h2 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a><strong>第三步</strong></h2><p>cGAS和STING互作预测结果。点击“Download”可下载数据。颜色越蓝表示预测的置信度越高，越橙则越低。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175019365.png" alt="image-20251105175019365"></p>
-<p>注：**<a href="https://zhida.zhihu.com/search?content_id=243460627&amp;content_type=Article&amp;match_order=1&amp;q=pLDDT&amp;zhida_source=entity">pLDDT</a>：基于 0-100 量表的每个原子置信度估计，其中较高的值表示置信度较高。**</p>
-<p><a href="https://zhida.zhihu.com/search?content_id=243460627&amp;content_type=Article&amp;match_order=1&amp;q=pTM&amp;zhida_source=entity">pTM</a> 和 <a href="https://zhida.zhihu.com/search?content_id=243460627&amp;content_type=Article&amp;match_order=1&amp;q=ipTM&amp;zhida_source=entity">ipTM</a> 分数：预测模板建模（<code>pTM</code>）分数和界面预测模板建模（<code>ipTM</code>）分数均来自称为模板建模（<code>TM</code>）分数的度量。</p>
-<p><code>pTM</code> 分数高于 0.5 表示整体预测的复合物折叠可能与真实结构相似。</p>
-<p><strong><code>ipTM</code> 衡量复合物内亚基相对位置的预测准确性，高于 0.8 的值表示置信度高的高质量预测，而低于 0.6 的值则表明可能是失败的预测。</strong></p>
-<p><code>ipTM</code> 分数在 0.6 到 0.8 之间为灰色区域，预测可能正确或不正确。</p>
-<p>对于小结构或短链，TM 分数非常严格，因此当涉及少于 20 个标记时，<code>pTM</code> 分数赋值低于 0.05；在这些情况下，PAE 或 pLDDT 可能更能指示预测质量。</p>
-<p>这些cif文件可以用PyMol类似的软件打开，然后进行后续分析。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175320026.png" alt="image-20251105175320026"></p>
-<h2 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h2><p>在PyMOL中进行显示和绘制等</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200012399.png" alt="image-20251105200012399"></p>
-<p>整体</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200216830.png" alt="image-20251105200216830"></p>
-<p>绘制氢键等</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200320268.png" alt="image-20251105200320268"></p>
-<p>可能的分子对接</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200927677.png" alt="image-20251105200927677"></p>
-<p>加Label等</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105201019286.png" alt="image-20251105201019286"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105201511853.png" alt="image-20251105201511853"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105202531766.png" alt="image-20251105202531766"></p>
-<blockquote>
-<p>注意：需要配合rosetta蛋白对接互作分析和实验验证！</p>
-</blockquote>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105201718871.png" alt="image-20251105201718871"></p>
-<p>关于rosetta，尽请期待！</p>
-]]></content>
-      <categories>
-        <category>蛋白互作</category>
-        <category>PyMOL</category>
       </categories>
   </entry>
   <entry>
@@ -2216,6 +2032,192 @@ perl retrieve_seq_from_fasta.pl --format refGene --seqfile Arabidopsis_thaliana.
 ]]></content>
       <categories>
         <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>使用ANNOVAR进行长牡蛎SNP注释完整流程</title>
+    <url>/2025/10/31/annovar/</url>
+    <content><![CDATA[<h1 id="使用ANNOVAR进行长牡蛎-Crassostrea-gigas-SNP注释完整流程"><a href="#使用ANNOVAR进行长牡蛎-Crassostrea-gigas-SNP注释完整流程" class="headerlink" title="使用ANNOVAR进行长牡蛎(Crassostrea gigas)SNP注释完整流程"></a>使用ANNOVAR进行长牡蛎(<em>Crassostrea gigas</em>)SNP注释完整流程</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本文介绍如何使用ANNOVAR对长牡蛎(<em>Crassostrea gigas</em>)的SNP变异数据进行功能注释。流程包括参考基因组数据库构建、变异数据格式转换、功能注释和结果整合。</p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><h3 id="1-软件安装"><a href="#1-软件安装" class="headerlink" title="1. 软件安装"></a>1. 软件安装</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># ANNOVAR下载</span>
+<span class="token function">wget</span> http://www.openbioinformatics.org/annovar/annovar.tar.gz
+<span class="token function">tar</span> <span class="token parameter variable">-xzvf</span> annovar.tar.gz
+
+<span class="token comment"># 其他依赖工具</span>
+conda <span class="token function">install</span> <span class="token parameter variable">-c</span> bioconda ucsc-gtftogenepred<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="2-数据文件准备"><a href="#2-数据文件准备" class="headerlink" title="2. 数据文件准备"></a>2. 数据文件准备</h3><ul>
+<li>参考基因组GTF文件：<code>/home/wanglab/Ywh/adductor_muscle_scar/Crassostrea_gigas.cgigas_uk_roslin_v1.61.gtf</code></li>
+<li>基因组FASTA文件：<code>GCF_902806645.1_cgigas_uk_roslin_v1_genomic.fna</code></li>
+<li>SNP数据：<code>filtered_variants_thr0p7_20250902_162128.tsv</code></li>
+</ul>
+<h2 id="完整流程"><a href="#完整流程" class="headerlink" title="完整流程"></a>完整流程</h2><h3 id="步骤1：构建自定义参考基因组数据库"><a href="#步骤1：构建自定义参考基因组数据库" class="headerlink" title="步骤1：构建自定义参考基因组数据库"></a>步骤1：构建自定义参考基因组数据库</h3><h4 id="1-1-转换GTF为GenePred格式"><a href="#1-1-转换GTF为GenePred格式" class="headerlink" title="1.1 转换GTF为GenePred格式"></a>1.1 转换GTF为GenePred格式</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">gtfToGenePred <span class="token parameter variable">-genePredExt</span> <span class="token punctuation">\</span>
+    <span class="token string">"/home/wanglab/Ywh/adductor_muscle_scar/ReSeq_Data/DZQD2023092909/annovar/Cgigasdb/GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gtf"</span> <span class="token punctuation">\</span>
+    Cg_refGene.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="1-2-提取mRNA序列"><a href="#1-2-提取mRNA序列" class="headerlink" title="1.2 提取mRNA序列"></a>1.2 提取mRNA序列</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">perl retrieve_seq_from_fasta.pl <span class="token punctuation">\</span>
+    <span class="token parameter variable">--format</span> refGene <span class="token punctuation">\</span>
+    <span class="token parameter variable">--seqfile</span> GCF_902806645.1_cgigas_uk_roslin_v1_genomic.fna <span class="token punctuation">\</span>
+    <span class="token parameter variable">--outfile</span> Cg_refGeneMrna.fa <span class="token punctuation">\</span>
+    Cg_refGene.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="步骤2：准备SNP输入文件"><a href="#步骤2：准备SNP输入文件" class="headerlink" title="步骤2：准备SNP输入文件"></a>步骤2：准备SNP输入文件</h3><h4 id="2-1-转换TSV为ANNOVAR输入格式"><a href="#2-1-转换TSV为ANNOVAR输入格式" class="headerlink" title="2.1 转换TSV为ANNOVAR输入格式"></a>2.1 转换TSV为ANNOVAR输入格式</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'NR&gt;1 {print $1"\t"$2"\t"$2"\t"$3"\t"$4}'</span> <span class="token punctuation">\</span>
+    /home/wanglab/Ywh/adductor_muscle_scar/Variants/filtered_variants_thr0p7_20250902_162128.tsv <span class="token punctuation">\</span>
+    <span class="token operator">&gt;</span> filtered_variants_thr0p7_20250902_162128.avinput<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>输入TSV格式：</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">chromosome	position	ref	alt	...
+NC_047567.1	32667511	G	T	...<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><strong>输出AVINPUT格式：</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">chromosome	start	end	ref	alt
+NC_047567.1	32667511	32667511	G	T<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h3 id="步骤3：执行功能注释"><a href="#步骤3：执行功能注释" class="headerlink" title="步骤3：执行功能注释"></a>步骤3：执行功能注释</h3><h4 id="3-1-使用table-annovar-pl进行注释"><a href="#3-1-使用table-annovar-pl进行注释" class="headerlink" title="3.1 使用table_annovar.pl进行注释"></a>3.1 使用table_annovar.pl进行注释</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">perl table_annovar.pl <span class="token punctuation">\</span>
+    filtered_variants_thr0p7_20250902_162128.avinput <span class="token punctuation">\</span>
+    Cgigasdb/ <span class="token punctuation">\</span>
+    <span class="token parameter variable">-buildver</span> Cg <span class="token punctuation">\</span>
+    <span class="token parameter variable">-out</span> filtered_variants_thr0p7_20250902_162128 <span class="token punctuation">\</span>
+    <span class="token parameter variable">-remove</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-protocol</span> refGene <span class="token punctuation">\</span>
+    <span class="token parameter variable">-operation</span> g <span class="token punctuation">\</span>
+    <span class="token parameter variable">-nastring</span> <span class="token builtin class-name">.</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-csvout</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>参数说明：</strong></p>
+<ul>
+<li><code>-buildver Cg</code>: 使用自定义构建版本”Cg”</li>
+<li><code>-protocol refGene</code>: 使用refGene数据库</li>
+<li><code>-operation g</code>: 基因-based注释</li>
+<li><code>-csvout</code>: 输出CSV格式</li>
+<li><code>-nastring .</code>: 用”.”表示缺失值</li>
+</ul>
+<h3 id="步骤4：整合注释结果"><a href="#步骤4：整合注释结果" class="headerlink" title="步骤4：整合注释结果"></a>步骤4：整合注释结果</h3><h4 id="4-1-方法一：基于行号合并（推荐）"><a href="#4-1-方法一：基于行号合并（推荐）" class="headerlink" title="4.1 方法一：基于行号合并（推荐）"></a>4.1 方法一：基于行号合并（推荐）</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 为原始文件添加行号</span>
+<span class="token function">awk</span> <span class="token string">'NR==1 {print "LineNumber\t"$0} NR&gt;1 {print NR-1"\t"$0}'</span> <span class="token punctuation">\</span>
+    /home/wanglab/Ywh/adductor_muscle_scar/Variants/filtered_variants_thr0p7_20250902_162128.tsv <span class="token punctuation">\</span>
+    <span class="token operator">&gt;</span> original_with_linenum.tsv
+
+<span class="token comment"># 为注释文件添加行号</span>
+<span class="token function">awk</span> <span class="token string">'NR==1 {print "LineNumber\t"$0} NR&gt;1 {print NR-1"\t"$0}'</span> <span class="token punctuation">\</span>
+    filtered_variants_thr0p7_20250902_162128.Cg_multianno.csv <span class="token punctuation">\</span>
+    <span class="token operator">&gt;</span> anno_with_linenum.tsv
+
+<span class="token comment"># 基于行号合并</span>
+<span class="token function">join</span> <span class="token parameter variable">-t</span> <span class="token string">$'<span class="token entity" title="\t">\t</span>'</span> <span class="token parameter variable">-1</span> <span class="token number">1</span> <span class="token parameter variable">-2</span> <span class="token number">1</span> <span class="token punctuation">\</span>
+    original_with_linenum.tsv anno_with_linenum.tsv <span class="token punctuation">\</span>
+    <span class="token operator">&gt;</span> merged_result.tsv
+
+<span class="token comment"># 清理临时文件</span>
+<span class="token function">rm</span> original_with_linenum.tsv anno_with_linenum.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="4-2-方法二：一次性合并"><a href="#4-2-方法二：一次性合并" class="headerlink" title="4.2 方法二：一次性合并"></a>4.2 方法二：一次性合并</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> -F<span class="token string">','</span> <span class="token string">'
+BEGIN {OFS="\t"}
+NR==FNR {
+    if (FNR==1) {
+        anno_header = $6"\t"$7"\t"$8"\t"$9"\t"$10
+    } else {
+        annotation[FNR] = $6"\t"$7"\t"$8"\t"$9"\t"$10
+    }
+    next
+}
+{
+    if (FNR==1) {
+        print $0 "\t" anno_header
+    } else {
+        print $0 "\t" annotation[FNR]
+    }
+}'</span> filtered_variants_thr0p7_20250902_162128.Cg_multianno.csv <span class="token punctuation">\</span>
+   /home/wanglab/Ywh/adductor_muscle_scar/Variants/filtered_variants_thr0p7_20250902_162128.tsv <span class="token punctuation">\</span>
+   <span class="token operator">&gt;</span> filtered_variants_thr0p7_20250902_162128_annotated.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h2><h3 id="注释结果包含的字段："><a href="#注释结果包含的字段：" class="headerlink" title="注释结果包含的字段："></a>注释结果包含的字段：</h3><ul>
+<li><strong>Gene-based注释</strong>: 基因名称、转录本、外显子功能等</li>
+<li><strong>位置信息</strong>: 染色体、位置、参考/变异碱基</li>
+<li><strong>功能预测</strong>: 对蛋白质功能的影响</li>
+</ul>
+<h3 id="典型输出格式："><a href="#典型输出格式：" class="headerlink" title="典型输出格式："></a>典型输出格式：</h3><pre class="line-numbers language-none"><code class="language-none">Chr     Start   End     Ref     Alt     Func.refGene    Gene.refGene    ExonicFunc.refGene    AAChange.refGene
+NC_047567.1 32667511 32667511 G T downstream LOC105320120 . .
+NC_047567.1 32661831 32661831 C A exonic LOC105320120 nonsynonymous SNV LOC105320120:NM_001345123:exon2:c.T142A:p.S48T<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="常见问题与解决方案"><a href="#常见问题与解决方案" class="headerlink" title="常见问题与解决方案"></a>常见问题与解决方案</h2><h3 id="1-数据库构建失败"><a href="#1-数据库构建失败" class="headerlink" title="1. 数据库构建失败"></a>1. 数据库构建失败</h3><p><strong>问题</strong>: GTF文件格式不兼容<br><strong>解决</strong>: 确保GTF文件来自官方来源，使用<code>gtfToGenePred</code>前检查文件完整性</p>
+<h3 id="2-注释结果为空"><a href="#2-注释结果为空" class="headerlink" title="2. 注释结果为空"></a>2. 注释结果为空</h3><p><strong>问题</strong>: 构建版本不匹配<br><strong>解决</strong>: 检查<code>-buildver</code>参数与数据库构建版本一致</p>
+<h3 id="3-合并结果错位"><a href="#3-合并结果错位" class="headerlink" title="3. 合并结果错位"></a>3. 合并结果错位</h3><p><strong>问题</strong>: 输入文件行数不匹配<br><strong>解决</strong>: 使用基于行号的合并方法确保准确性</p>
+<h2 id="流程优化建议"><a href="#流程优化建议" class="headerlink" title="流程优化建议"></a>流程优化建议</h2><h3 id="1-批量处理"><a href="#1-批量处理" class="headerlink" title="1. 批量处理"></a>1. 批量处理</h3><p>对于多个样本，可以编写循环脚本批量处理：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token keyword">for</span> <span class="token for-or-select variable">sample</span> <span class="token keyword">in</span> sample1 sample2 sample3<span class="token punctuation">;</span> <span class="token keyword">do</span>
+    perl table_annovar.pl <span class="token variable">${sample}</span>.avinput Cgigasdb/ <span class="token punctuation">\</span>
+        <span class="token parameter variable">-buildver</span> Cg <span class="token punctuation">\</span>
+        <span class="token parameter variable">-out</span> <span class="token variable">${sample}</span>_annotated <span class="token punctuation">\</span>
+        <span class="token parameter variable">-protocol</span> refGene <span class="token punctuation">\</span>
+        <span class="token parameter variable">-operation</span> g <span class="token punctuation">\</span>
+        <span class="token parameter variable">-csvout</span>
+<span class="token keyword">done</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="2-添加更多注释数据库"><a href="#2-添加更多注释数据库" class="headerlink" title="2. 添加更多注释数据库"></a>2. 添加更多注释数据库</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 添加保守性预测</span>
+perl table_annovar.pl input.avinput Cgigasdb/ <span class="token punctuation">\</span>
+    <span class="token parameter variable">-buildver</span> Cg <span class="token punctuation">\</span>
+    <span class="token parameter variable">-out</span> output <span class="token punctuation">\</span>
+    <span class="token parameter variable">-protocol</span> refGene,phastConsElements100way <span class="token punctuation">\</span>
+    <span class="token parameter variable">-operation</span> g,r <span class="token punctuation">\</span>
+    <span class="token parameter variable">-csvout</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><p>本流程提供了从原始SNP数据到功能注释的完整解决方案，特别针对长牡蛎等非模式生物。通过构建自定义数据库，可以有效地对物种特异性变异进行功能注释，为后续的群体遗传学和功能基因组学研究奠定基础。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>AlphaFold与PyMOL的示例</title>
+    <url>/2025/11/05/alphafold-pymol/</url>
+    <content><![CDATA[<p>蛋白质与蛋白质互作是指不同蛋白质之间的相互作用，这种作用可以发生在细胞内或细胞外。蛋白质通过互相结合，形成复杂的细胞机制和信号传导网络，参与多种生物过程，如基因调控、代谢、信号传导等。这种互作是生命活动中的重要组成部分，对维持生物体的正常功能具有重要意义。</p>
+<p><strong>那么如何用AlphaFold3预测候选蛋白质与蛋白质互作呢？</strong></p>
+<h2 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a><strong>第一步</strong></h2><p>通过Uniport网站获取候选基因的蛋白质序列（以cGAS、STING为例）。获取cGAS蛋白质序列。</p>
+<pre class="line-numbers language-none"><code class="language-none">&gt;XP_065930211.1 cyclic GMP-AMP synthase-like receptor isoform X1 [Magallana gigas]
+MVFKCPICKREDFQSEGGLSSHITWKHSGSSDGRGSRPSTGGRGRRDDRDIKARVFKCPICKREDFQSEGGLSSHITWKHSGSSDGRGSRPSTGHGACGRSDNREYNTTVIKCPICKRGDFKSEGGLSCHITTVHPGSANGKGSRPSSCTNGKRDDGARPKTYTPRHRDHERHNSDRDVVRGVARVQRESSQRGSPDEFPFKDGAGGATWKSSSAKYKESPKQSRKTEEPRERPSSSDLNLSLSFNAQNFEKFVGMIEGSIVRPREDSTLRTDSINKFIDDLLVVMDRISDIPIKLLRSGSYYDRTKIDYNDEFDFMFYADIRMEADFTNCPPGYCKIRKGMTVKPDLDPFIDRNGYLVPEKYKAHMFDIFEKCRTDSSFRQGRRTQKQDRKPESPAYTLLFDLGISGKPPIDIDLVPAIKIDGWPKPARKIGPSKWIEKSMAERAMQCFHVVTKKFPEAHQDSRLLWRISFSHAEKELILHANMSDNGCRKDVFKILKRIKENMKSKNPTEMDKFCSYHLKMFILRFYDKHGDFSKERKLDLLKESIKQLAKCVREGTIENYFIPKDNVLQSVPEKERLSVVRELDGLLQ<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>获取PRMT5的蛋白质序列。</p>
+<pre class="line-numbers language-none"><code class="language-none">&gt;XP_011431693.2 STING ER exit protein [Magallana gigas]
+MPKVVSRSVVCTDVKDQEEYQGEKPLYVYYCICGQISLILDCPIDKLPMRRRDNARVIDSQKHAHKLTCDPDDIVYLKRPQGIEKQYRQKCKRCGLWLYYHHQGNSGVMFVVDGALKRDAAKTDVYSQISEPKKVTLTKHTKNMGKFSSVTVSTVDEEEDEIEAKEIADSYAANAKVIEKQLFRKGINKRRQEEAAEEAKKKVKGTLIDK<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h2 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a><strong>第二步</strong></h2><p>访问 <a href="https://alphafoldserver.com/">AlphaFold Server</a>（AlphaFold Server需要科学上网，而且建议使用Google浏览器，使用谷歌账号登录）和输入数据进行预测。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105180712857.png" alt="image-20251105180712857"></p>
+<p>登录谷歌邮箱账号，点击Add entity框就可以添加蛋白质、DNA、RNA、配体和离子（金属离子）。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105180808034.png" alt="image-20251105180808034"></p>
+<p>将cGAS和STING的蛋白质序列序列输入，点击”Continue and preview job”。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175436222.png" alt="image-20251105175436222"></p>
+<p>点击“Confirm and submit job”即可提交作业，一般运行约10 分钟左右。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175503515.png" alt="image-20251105175503515"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175535419.png" alt="image-20251105175535419"></p>
+<h2 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a><strong>第三步</strong></h2><p>cGAS和STING互作预测结果。点击“Download”可下载数据。颜色越蓝表示预测的置信度越高，越橙则越低。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175019365.png" alt="image-20251105175019365"></p>
+<p>注：**<a href="https://zhida.zhihu.com/search?content_id=243460627&amp;content_type=Article&amp;match_order=1&amp;q=pLDDT&amp;zhida_source=entity">pLDDT</a>：基于 0-100 量表的每个原子置信度估计，其中较高的值表示置信度较高。**</p>
+<p><a href="https://zhida.zhihu.com/search?content_id=243460627&amp;content_type=Article&amp;match_order=1&amp;q=pTM&amp;zhida_source=entity">pTM</a> 和 <a href="https://zhida.zhihu.com/search?content_id=243460627&amp;content_type=Article&amp;match_order=1&amp;q=ipTM&amp;zhida_source=entity">ipTM</a> 分数：预测模板建模（<code>pTM</code>）分数和界面预测模板建模（<code>ipTM</code>）分数均来自称为模板建模（<code>TM</code>）分数的度量。</p>
+<p><code>pTM</code> 分数高于 0.5 表示整体预测的复合物折叠可能与真实结构相似。</p>
+<p><strong><code>ipTM</code> 衡量复合物内亚基相对位置的预测准确性，高于 0.8 的值表示置信度高的高质量预测，而低于 0.6 的值则表明可能是失败的预测。</strong></p>
+<p><code>ipTM</code> 分数在 0.6 到 0.8 之间为灰色区域，预测可能正确或不正确。</p>
+<p>对于小结构或短链，TM 分数非常严格，因此当涉及少于 20 个标记时，<code>pTM</code> 分数赋值低于 0.05；在这些情况下，PAE 或 pLDDT 可能更能指示预测质量。</p>
+<p>这些cif文件可以用PyMol类似的软件打开，然后进行后续分析。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175320026.png" alt="image-20251105175320026"></p>
+<h2 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h2><p>在PyMOL中进行显示和绘制等</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200012399.png" alt="image-20251105200012399"></p>
+<p>整体</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200216830.png" alt="image-20251105200216830"></p>
+<p>绘制氢键等</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200320268.png" alt="image-20251105200320268"></p>
+<p>可能的分子对接</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200927677.png" alt="image-20251105200927677"></p>
+<p>加Label等</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105201019286.png" alt="image-20251105201019286"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105201511853.png" alt="image-20251105201511853"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105202531766.png" alt="image-20251105202531766"></p>
+<blockquote>
+<p>注意：需要配合rosetta蛋白对接互作分析和实验验证！</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105201718871.png" alt="image-20251105201718871"></p>
+<p>关于rosetta，尽请期待！</p>
+]]></content>
+      <categories>
+        <category>蛋白互作</category>
+        <category>PyMOL</category>
       </categories>
   </entry>
   <entry>
@@ -3035,6 +3037,304 @@ GFF_FILE="/path/to/your/genome.gff"  # 改为你实际的GFF文件路径
 ]]></content>
       <categories>
         <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</title>
+    <url>/2025/11/03/pymol/</url>
+    <content><![CDATA[<h1 id="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"><a href="#【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片" class="headerlink" title="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"></a>【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</h1><blockquote>
+<p>转载自：<code>https://blog.csdn.net/qq_37126941/article/details/115793062</code>。</p>
+<p>本文将以D715-2441抑制剂与PB2蛋白复合物为例，手把手教你用PyMOL制作专业的结合模式图</p>
+</blockquote>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文将带大家使用免费开源的PyMOL软件绘制D715-2441蛋白与与<a href="https://link.zhihu.com/?target=https://www.rcsb.org/structure/4CB4">PB2cap配体分子</a>的结合模式图。</p>
+<p>我们先来看一张成品图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5bb95a5e415241b5719ec50baf888d67.jpeg" alt="在这里插入图片描述"></p>
+<h2 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h2><p>流感病毒PB2蛋白是重要的药物靶点，D715-2441是一个新型抗流感病毒化合物。通过分子对接分析，我们发现以下关键相互作用：</p>
+<p>1、化合物D715-2441的<code>芳环</code>夹在氨基酸残基<code>H357</code>和<code>F404</code>之间并形成<code>π-π</code>堆积作用，还与<code>F404</code>形成疏水作用；</p>
+<p>2、化合物苯环上的<code>羟基</code>与E361的<code>羧基</code>和K376的<code>N+原子</code>形成氢键作用，另一个<code>羟基</code>与F404的<code>O原子</code>形成氢键作用；</p>
+<p>3、化合物吡喃酮环酯基与K339的<code>N+原子</code>和H357的<code>咪唑基</code>形成盐桥作用。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><blockquote>
+<p>PyMOL作图通常是对特定对象进行展示形式、颜色、字体等方面的修饰。PyMOL的精髓在于命令行与鼠标的配合使用，本文高度依赖命令行，请做好心理准备。大多数命令格式较为一致，请注意总结归纳。</p>
+</blockquote>
+<h3 id="1-下载蛋白结构"><a href="#1-下载蛋白结构" class="headerlink" title="1. 下载蛋白结构"></a>1. 下载蛋白结构</h3><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 在PyMOL中直接下载PDB结构</span>
+fetch 4cb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h3 id="2-获取配体结构"><a href="#2-获取配体结构" class="headerlink" title="2. 获取配体结构"></a>2. 获取配体结构</h3><p>由于D715-2441不在PDB中，我们需要自行准备：</p>
+<p><strong>方法一：在线SMILES转换</strong></p>
+<p>​	1.使用<strong>PubChem</strong>: <a href="https://pubchem.ncbi.nlm.nih.gov/">https://pubchem.ncbi.nlm.nih.gov/</a></p>
+<p>​	2.绘制完后，SIMLES：<code>C1=CC=CC3=C1C2=C(C=C(C=C2O[H])O[H])OC3=O</code></p>
+<p>​	3.访问：<strong><a href="https://cactus.nci.nih.gov/translate/">https://cactus.nci.nih.gov/translate/</a></strong></p>
+<p>​	4.在输入框粘贴：<code>C1=CC=CC3=C1C2=C(C=C(C=C2O[H])O[H])OC3=O</code></p>
+<p>​	5.选择格式：<strong>Protein Data Bank (pdb)</strong></p>
+<p>​	6.点击 <strong>Translate</strong></p>
+<p>​	7.下载文件并在PyMOL中加载</p>
+<p><strong>方法二：手动构建</strong><br>在PyMOL中使用Builder工具逐步绘制分子结构</p>
+<h2 id="基础操作流程"><a href="#基础操作流程" class="headerlink" title="基础操作流程"></a>基础操作流程</h2><h3 id="1-初始设置"><a href="#1-初始设置" class="headerlink" title="1. 初始设置"></a>1. 初始设置</h3><p>打开<code>PyMOL</code>软件，导入刚才下载的复合物PDB文件（rli-D715-2441-1.pdb）。</p>
+<p>注意：有两种方法导入文件，一种是鼠标点击菜单栏File -&gt; Open…，另一种是通过命令行。在这里，我们采用命令来操作，因为这样可以同时把工作目录设置好，方便后续保存文件。</p>
+<p>假设我们的工作目录为<code>D:\demo</code>。注意：路径中不要有中文和空格，这是导致很多计算类软件（尤其是免费软件）出现问题的原因。</p>
+<pre class="line-numbers language-none"><code class="language-none"># 设置工作目录
+cd E:\下载\Pymol\test
+
+# 基本显示设置
+hide everything
+show cartoon, 4cb4
+show sticks, resn MGT  # 参考配体
+color gray, 4cb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>在PyMOL上界面或下界面的命令输入框输入以下命令（PyMOL&gt;表示这是PyMOL的命令），每行输入完毕后按【Enter】键：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/a777cf49858f76eec599ecfd8f881301.jpeg" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/fa8eaf9a056c73c583d30921f453ab60.png" alt="在这里插入图片描述"></p>
+<h3 id="2-设置操作对象"><a href="#2-设置操作对象" class="headerlink" title="2 设置操作对象"></a>2 设置操作对象</h3><p><strong>结合模式图</strong>通常涉及到<code>受体</code>（蛋白）与<code>配体</code>（小分子化合物）两部分（有的还可能涉及<code>水分子</code>、<code>金属离子</code>、<code>辅酶</code>等等），需为之分别设置对象，以便后续操作。<strong>设置配体对象</strong>：按照下图顺序，将配体设置为<code>lig</code>对象。<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/2568e1b24aca318f02d497b946f2635b.png" alt="在这里插入图片描述"></p>
+<p><strong>设置关键残基对象</strong>: 关键残基包括：A链的K339、H357、E361、K376和F404。由于该蛋白只有一条链，在使用命令选择残基时，可以不用指定链名。按照下图顺序，将关键残基设置为res对象。</p>
+<p><code>select res, resi 339+357+361+376+404</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/3a9fd3f025f59f1e691f72009f398653.png" alt="在这里插入图片描述"></p>
+<h3 id="3-显示样式优化"><a href="#3-显示样式优化" class="headerlink" title="3. 显示样式优化"></a>3. 显示样式优化</h3><p>在PyMOL中输入以下命令：</p>
+<pre class="line-numbers language-none"><code class="language-none"># 基本显示设置
+hide everything
+show sticks, lig | res
+hide sticks, h.
+zoom lig | res
+# 颜色设置
+color wheat, lig &amp; name C*
+# 标签设置
+set label_size, 30
+set label_font_id, 9<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/8eec91dbd5bb84f2cc2a553f8aaca60c.jpeg" alt="在这里插入图片描述"><br>然后，进行鼠标操作：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/3f3c38acd7270f0ad5a310dbfa8b8189.png" alt="在这里插入图片描述"></p>
+<h4 id="绘制相互作用力"><a href="#绘制相互作用力" class="headerlink" title="绘制相互作用力"></a>绘制相互作用力</h4><p>前面说过，命令行和鼠标的配合是很重要的。这里再简单讲讲鼠标的几个操作用法：</p>
+<p>​	A） 拖动鼠标左键：按住右键，任意方向拖动鼠标，使视图转动；</p>
+<p>​	B） 上下拖动鼠标右键：按住右键，上下拖动鼠标，使视图缩放；</p>
+<p>​	C） 拖动鼠标中间滚轮：按住滚轮，任意方向拖动鼠标，使视图移动；</p>
+<p>​	D）滚动鼠标中间滚轮：拉进或拉远镜头，使近处原子逐渐显示或隐藏。</p>
+<p>我们参照平台给出的结合模式图（本文第二张图），通过下面的键鼠操作来绘制相互作用力。</p>
+<h6 id="·-绘制π-π堆积与盐桥作用"><a href="#·-绘制π-π堆积与盐桥作用" class="headerlink" title="· 绘制π-π堆积与盐桥作用"></a>· 绘制π-π堆积与盐桥作用</h6><p>首先，确保鼠标模式（Mouse Mode）为Viewing状态，选择（Selecting）模式为<code>Atoms</code>状态（位置在PyMOL右下方）。然后，按照下面步骤操作：</p>
+<p>新建文件<code>center_of_mass.py</code>，<code>run /PATH/TO/center_of_mass.py</code></p>
+<pre class="line-numbers language-none"><code class="language-none">from pymol import cmd
+from chempy import cpv
+
+def center_of_mass(selection, state=1, object=None, color=None, quiet=1):
+    """
+    Calculate the center of mass (COM) for a selection and optionally create a pseudo-atom at that position.
+    
+    Parameters:
+    selection (str): atom selection
+    state (int): object state (default=1)
+    object (str): name of pseudo-atom to create (default=None)
+    color (str): color for the pseudo-atom (default=None)
+    quiet (int): suppress output (default=1)
+    """
+    quiet = int(quiet)
+    
+    # Get the coordinates and masses
+    model = cmd.get_model(selection, state)
+    if not model.atom:
+        print("Error: No atoms selected")
+        return
+    
+    # Calculate center of mass
+    total_mass = 0.0
+    com = [0.0, 0.0, 0.0]
+    
+    for atom in model.atom:
+        mass = atom.get_mass()
+        total_mass += mass
+        com[0] += atom.coord[0] * mass
+        com[1] += atom.coord[1] * mass
+        com[2] += atom.coord[2] * mass
+    
+    if total_mass == 0:
+        print("Error: Total mass is zero")
+        return
+    
+    com[0] /= total_mass
+    com[1] /= total_mass
+    com[2] /= total_mass
+    
+    if not quiet:
+        print("Center of Mass: %.3f, %.3f, %.3f" % (com[0], com[1], com[2]))
+    
+    # Create pseudo-atom if requested
+    if object:
+        if color:
+            cmd.pseudoatom(object, pos=com, color=color)
+        else:
+            cmd.pseudoatom(object, pos=com)
+        
+        # 自动设置显示属性
+        cmd.set("sphere_scale", 0.3, object)
+        cmd.show("spheres", object)
+        
+        if not quiet:
+            print("Created pseudo-atom '%s' at COM" % object)
+    
+    return com
+
+# Add the command to PyMOL
+cmd.extend("com", center_of_mass)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-none"><code class="language-none"># 导入必要插件
+run /PATH/TO/center_of_mass.py
+# 创建小球的命令序列
+com sele, object=p1
+com sele, object=p2  
+com sele, object=p3
+com sele, object=p4
+com sele, object=p5
+com sele, object=p6
+com sele, object=p7<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/4c73e3f7a2e524d6d72641c589585b53.jpeg" alt="在这里插入图片描述">然后，点击PyMOL菜单栏的Wizard -&gt; Measurement，然后根据示意图点击刚才创建的小球，两两一组，便画出虚线（相应地，生成对象measure01~05）。<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cdcb8f03c0f348271b32051bd021c1cd.png" alt="在这里插入图片描述"></p>
+<h6 id="·-绘制其他作用力"><a href="#·-绘制其他作用力" class="headerlink" title="· 绘制其他作用力"></a>· 绘制其他作用力</h6><p>采用相同的办法，把<code>氢键</code>和<code>疏水作用</code>也画出来。由于这些作用力的两端刚好落在原子上，因此，不用绘制小球。<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/6da4239d1e6785671f043216731b13b4.png" alt="在这里插入图片描述"></p>
+<h3 id="图像美化与输出"><a href="#图像美化与输出" class="headerlink" title="图像美化与输出"></a>图像美化与输出</h3><p>为方便调整，也为图片规格符合要求（通常，出版社要求全版图片宽度≤2000像素，半版图片宽度≤1000像素，分辨率≥300 dpi)，我们将PyMOL界面放大或靠边最大化，并将上半部分的对话框往上拉到最小，让视图最大。然后放大、摆动视图至合适的角度，使尽可能清晰地看到各关键细节。</p>
+<p>基本的创建工作已经完成，接下来进行细致的修饰。</p>
+<p><strong>🎯 隐藏和显示控制</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 居中显示</span>
+zoom ligand <span class="token keyword">or</span> key_residues
+
+<span class="token comment"># 小球显示控制</span>
+hide everything<span class="token punctuation">,</span> p<span class="token operator">*</span>
+show spheres<span class="token punctuation">,</span> p<span class="token operator">*</span>
+
+<span class="token comment"># 标签显示控制</span>
+hide labels<span class="token punctuation">,</span> measure<span class="token operator">*</span>
+show labels<span class="token punctuation">,</span> measure06
+show labels<span class="token punctuation">,</span> measure07  
+show labels<span class="token punctuation">,</span> measure08<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>🎨 虚线样式设置</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 虚线外观调整</span>
+<span class="token builtin">set</span> dash_length<span class="token punctuation">,</span> <span class="token number">0.3</span>
+<span class="token builtin">set</span> dash_radius<span class="token punctuation">,</span> <span class="token number">0.08</span>
+<span class="token builtin">set</span> dash_gap<span class="token punctuation">,</span> <span class="token number">0.3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>🌈 虚线颜色设置</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 相互作用颜色编码</span>
+color magenta<span class="token punctuation">,</span> measure04    <span class="token comment"># 盐桥</span>
+color magenta<span class="token punctuation">,</span> measure05    <span class="token comment"># 盐桥  </span>
+color green<span class="token punctuation">,</span> measure06      <span class="token comment"># 氢键</span>
+color green<span class="token punctuation">,</span> measure07      <span class="token comment"># 氢键</span>
+color green<span class="token punctuation">,</span> measure08      <span class="token comment"># 氢键</span>
+color gray70<span class="token punctuation">,</span> measure09     <span class="token comment"># 疏水作用</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>🖼️ 背景和蛋白显示</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 背景设置</span>
+bg_color white
+
+<span class="token comment"># 蛋白结构显示</span>
+show cartoon
+color smudge<span class="token punctuation">,</span> lig <span class="token keyword">and</span> name C<span class="token operator">*</span>
+<span class="token builtin">set</span> cartoon_transparency<span class="token punctuation">,</span> <span class="token number">0.3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/243fc636fd2a30ce86bd04121d969461.jpeg" alt="在这里插入图片描述"></p>
+<p>我们还可按下图步骤微调cartoon样式：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/9988aba7cb104fd00f608bd0f601c6e3.png" alt="在这里插入图片描述"><br>还可移动label的位置（设置Mouse Mode为Editing模式后，按住Ctrl键，用鼠标左键或右键拖动label；必要时，可先将cartoo隐藏起来，等调整好label后，再显示出来），让视图更清晰。经过上述一系列操作，得到下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f1c0110ffc04461492536e39811d4eba.png" alt="在这里插入图片描述"></p>
+<p>✅ 一、目标效果</p>
+<ul>
+<li>整体蛋白以 <strong>cartoon 灰色显示</strong>（作为背景板）</li>
+<li>配体（<code>lig</code>）与特定残基（<code>res</code>）<strong>前置显示、保持高亮颜色</strong></li>
+<li>cartoon 不遮挡配体和关键残基</li>
+<li>其余部分颜色偏淡，突出关键信息</li>
+</ul>
+<hr>
+<p>✅ 二、实现命令步骤（PyMOL 命令行版）</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 1. 全局设置
+bg_color white
+set cartoon_transparency, 0.6      # 半透明背景板感觉更好
+set depth_cue, 0                   # 去掉景深影响
+
+# 2. 设置蛋白主链为灰色 cartoon
+show cartoon, all
+color grey80, all
+
+# 3. 高亮配体与特定残基
+show sticks, (lig or res)
+util.cbag (lig or res)             # 让配体/残基彩色显示（carbon by atom type）
+
+# 4. 把配体、残基显示在最前层（不被遮挡）
+# set cartoon_side_chain_helper, on
+set transparency_mode, 2           # 优化透明度混合效果
+set ray_opaque_background, off
+
+# 5. 可以单独调整颜色
+# color red, lig
+# color yellow, res
+
+color yellow, measure01
+color yellow, measure02
+color yellow, measure03
+color green, measure04
+color green, measure05
+color green, measure06
+color gray70, measure07
+
+color yellow, p1
+color yellow, p2
+color yellow, p3
+color yellow, p4
+color purple, p6
+color purple, p7
+
+# 6. 重新绘制（Ray tracing 渲染可选）
+ray 1200,900<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<hr>
+<p>✅ 三、可选优化效果</p>
+<p>如果你发现 <strong>cartoon 仍挡住配体/残基</strong>，可进一步操作：</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 让 cartoon 更透明
+set cartoon_transparency, 0.7
+
+# 或者单独隐藏关键区域的 cartoon
+hide cartoon, (byres (lig around 3))  # 隐藏配体周围3Å范围的cartoon<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<blockquote>
+<p>这样配体周围的 cartoon 会消失，配体完全露出；蛋白其他部分仍然是灰色背景板。</p>
+</blockquote>
+<hr>
+<p>✅ 四、额外技巧</p>
+<p>你还可以使用分层渲染的方式，例如：</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 生成两层视图（适合高质量图）
+disable all
+enable protein
+color grey80, protein
+set cartoon_transparency, 0.7
+enable lig, res
+show sticks, lig or res<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>再用：</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol">ray 2000,1500
+png output.png, dpi=300<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>7 生成图片<br>上面的图已经可以发表文章了，但为了更好看，还需要进行一步：光线追踪（Ray tracing)。</p>
+<p>继续使用命令：</p>
+<p>💾 保存工作文件</p>
+<pre class="line-numbers language-none"><code class="language-none">save focus.pse
+save overview.pse<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>📷 图像保存命令</p>
+<pre class="line-numbers language-none"><code class="language-none"># 保存标签图像
+png label.png
+# 保存焦点图像（高分辨率）
+png focus.png, 16.93cm, 16.93cm, dpi=300
+# 保存概览图像（高分辨率）
+png overview.png, 16.93cm, 16.93cm, dpi=300<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>🎨 显示调整命令</p>
+<pre class="line-numbers language-none"><code class="language-none"># 标签控制
+hide labels
+# 视图调整
+zoom
+# 透明度设置
+set cartoon_transparency, 0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>✨ 渲染命令</p>
+<pre class="line-numbers language-none"><code class="language-none"># 光线追踪渲染
+ray<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5a2bf78817d4276796571a66229be702.jpeg" alt="在这里插入图片描述"><br>至此，我们拿到3张图片：focus.png、label.png和overview.png。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/label.png" alt="label"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/overview.png" alt="overview"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/focus.png" alt="focus"></p>
+]]></content>
+      <categories>
+        <category>PyMOL</category>
       </categories>
   </entry>
   <entry>
@@ -4082,304 +4382,6 @@ OLED_WR_Byte(0xAF,OLED_CMD); /*display ON*/
 ]]></content>
       <categories>
         <category>Linux</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</title>
-    <url>/2025/11/03/pymol/</url>
-    <content><![CDATA[<h1 id="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"><a href="#【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片" class="headerlink" title="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"></a>【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</h1><blockquote>
-<p>转载自：<code>https://blog.csdn.net/qq_37126941/article/details/115793062</code>。</p>
-<p>本文将以D715-2441抑制剂与PB2蛋白复合物为例，手把手教你用PyMOL制作专业的结合模式图</p>
-</blockquote>
-<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文将带大家使用免费开源的PyMOL软件绘制D715-2441蛋白与与<a href="https://link.zhihu.com/?target=https://www.rcsb.org/structure/4CB4">PB2cap配体分子</a>的结合模式图。</p>
-<p>我们先来看一张成品图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5bb95a5e415241b5719ec50baf888d67.jpeg" alt="在这里插入图片描述"></p>
-<h2 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h2><p>流感病毒PB2蛋白是重要的药物靶点，D715-2441是一个新型抗流感病毒化合物。通过分子对接分析，我们发现以下关键相互作用：</p>
-<p>1、化合物D715-2441的<code>芳环</code>夹在氨基酸残基<code>H357</code>和<code>F404</code>之间并形成<code>π-π</code>堆积作用，还与<code>F404</code>形成疏水作用；</p>
-<p>2、化合物苯环上的<code>羟基</code>与E361的<code>羧基</code>和K376的<code>N+原子</code>形成氢键作用，另一个<code>羟基</code>与F404的<code>O原子</code>形成氢键作用；</p>
-<p>3、化合物吡喃酮环酯基与K339的<code>N+原子</code>和H357的<code>咪唑基</code>形成盐桥作用。</p>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><blockquote>
-<p>PyMOL作图通常是对特定对象进行展示形式、颜色、字体等方面的修饰。PyMOL的精髓在于命令行与鼠标的配合使用，本文高度依赖命令行，请做好心理准备。大多数命令格式较为一致，请注意总结归纳。</p>
-</blockquote>
-<h3 id="1-下载蛋白结构"><a href="#1-下载蛋白结构" class="headerlink" title="1. 下载蛋白结构"></a>1. 下载蛋白结构</h3><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 在PyMOL中直接下载PDB结构</span>
-fetch 4cb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<h3 id="2-获取配体结构"><a href="#2-获取配体结构" class="headerlink" title="2. 获取配体结构"></a>2. 获取配体结构</h3><p>由于D715-2441不在PDB中，我们需要自行准备：</p>
-<p><strong>方法一：在线SMILES转换</strong></p>
-<p>​	1.使用<strong>PubChem</strong>: <a href="https://pubchem.ncbi.nlm.nih.gov/">https://pubchem.ncbi.nlm.nih.gov/</a></p>
-<p>​	2.绘制完后，SIMLES：<code>C1=CC=CC3=C1C2=C(C=C(C=C2O[H])O[H])OC3=O</code></p>
-<p>​	3.访问：<strong><a href="https://cactus.nci.nih.gov/translate/">https://cactus.nci.nih.gov/translate/</a></strong></p>
-<p>​	4.在输入框粘贴：<code>C1=CC=CC3=C1C2=C(C=C(C=C2O[H])O[H])OC3=O</code></p>
-<p>​	5.选择格式：<strong>Protein Data Bank (pdb)</strong></p>
-<p>​	6.点击 <strong>Translate</strong></p>
-<p>​	7.下载文件并在PyMOL中加载</p>
-<p><strong>方法二：手动构建</strong><br>在PyMOL中使用Builder工具逐步绘制分子结构</p>
-<h2 id="基础操作流程"><a href="#基础操作流程" class="headerlink" title="基础操作流程"></a>基础操作流程</h2><h3 id="1-初始设置"><a href="#1-初始设置" class="headerlink" title="1. 初始设置"></a>1. 初始设置</h3><p>打开<code>PyMOL</code>软件，导入刚才下载的复合物PDB文件（rli-D715-2441-1.pdb）。</p>
-<p>注意：有两种方法导入文件，一种是鼠标点击菜单栏File -&gt; Open…，另一种是通过命令行。在这里，我们采用命令来操作，因为这样可以同时把工作目录设置好，方便后续保存文件。</p>
-<p>假设我们的工作目录为<code>D:\demo</code>。注意：路径中不要有中文和空格，这是导致很多计算类软件（尤其是免费软件）出现问题的原因。</p>
-<pre class="line-numbers language-none"><code class="language-none"># 设置工作目录
-cd E:\下载\Pymol\test
-
-# 基本显示设置
-hide everything
-show cartoon, 4cb4
-show sticks, resn MGT  # 参考配体
-color gray, 4cb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>在PyMOL上界面或下界面的命令输入框输入以下命令（PyMOL&gt;表示这是PyMOL的命令），每行输入完毕后按【Enter】键：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/a777cf49858f76eec599ecfd8f881301.jpeg" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/fa8eaf9a056c73c583d30921f453ab60.png" alt="在这里插入图片描述"></p>
-<h3 id="2-设置操作对象"><a href="#2-设置操作对象" class="headerlink" title="2 设置操作对象"></a>2 设置操作对象</h3><p><strong>结合模式图</strong>通常涉及到<code>受体</code>（蛋白）与<code>配体</code>（小分子化合物）两部分（有的还可能涉及<code>水分子</code>、<code>金属离子</code>、<code>辅酶</code>等等），需为之分别设置对象，以便后续操作。<strong>设置配体对象</strong>：按照下图顺序，将配体设置为<code>lig</code>对象。<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/2568e1b24aca318f02d497b946f2635b.png" alt="在这里插入图片描述"></p>
-<p><strong>设置关键残基对象</strong>: 关键残基包括：A链的K339、H357、E361、K376和F404。由于该蛋白只有一条链，在使用命令选择残基时，可以不用指定链名。按照下图顺序，将关键残基设置为res对象。</p>
-<p><code>select res, resi 339+357+361+376+404</code></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/3a9fd3f025f59f1e691f72009f398653.png" alt="在这里插入图片描述"></p>
-<h3 id="3-显示样式优化"><a href="#3-显示样式优化" class="headerlink" title="3. 显示样式优化"></a>3. 显示样式优化</h3><p>在PyMOL中输入以下命令：</p>
-<pre class="line-numbers language-none"><code class="language-none"># 基本显示设置
-hide everything
-show sticks, lig | res
-hide sticks, h.
-zoom lig | res
-# 颜色设置
-color wheat, lig &amp; name C*
-# 标签设置
-set label_size, 30
-set label_font_id, 9<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/8eec91dbd5bb84f2cc2a553f8aaca60c.jpeg" alt="在这里插入图片描述"><br>然后，进行鼠标操作：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/3f3c38acd7270f0ad5a310dbfa8b8189.png" alt="在这里插入图片描述"></p>
-<h4 id="绘制相互作用力"><a href="#绘制相互作用力" class="headerlink" title="绘制相互作用力"></a>绘制相互作用力</h4><p>前面说过，命令行和鼠标的配合是很重要的。这里再简单讲讲鼠标的几个操作用法：</p>
-<p>​	A） 拖动鼠标左键：按住右键，任意方向拖动鼠标，使视图转动；</p>
-<p>​	B） 上下拖动鼠标右键：按住右键，上下拖动鼠标，使视图缩放；</p>
-<p>​	C） 拖动鼠标中间滚轮：按住滚轮，任意方向拖动鼠标，使视图移动；</p>
-<p>​	D）滚动鼠标中间滚轮：拉进或拉远镜头，使近处原子逐渐显示或隐藏。</p>
-<p>我们参照平台给出的结合模式图（本文第二张图），通过下面的键鼠操作来绘制相互作用力。</p>
-<h6 id="·-绘制π-π堆积与盐桥作用"><a href="#·-绘制π-π堆积与盐桥作用" class="headerlink" title="· 绘制π-π堆积与盐桥作用"></a>· 绘制π-π堆积与盐桥作用</h6><p>首先，确保鼠标模式（Mouse Mode）为Viewing状态，选择（Selecting）模式为<code>Atoms</code>状态（位置在PyMOL右下方）。然后，按照下面步骤操作：</p>
-<p>新建文件<code>center_of_mass.py</code>，<code>run /PATH/TO/center_of_mass.py</code></p>
-<pre class="line-numbers language-none"><code class="language-none">from pymol import cmd
-from chempy import cpv
-
-def center_of_mass(selection, state=1, object=None, color=None, quiet=1):
-    """
-    Calculate the center of mass (COM) for a selection and optionally create a pseudo-atom at that position.
-    
-    Parameters:
-    selection (str): atom selection
-    state (int): object state (default=1)
-    object (str): name of pseudo-atom to create (default=None)
-    color (str): color for the pseudo-atom (default=None)
-    quiet (int): suppress output (default=1)
-    """
-    quiet = int(quiet)
-    
-    # Get the coordinates and masses
-    model = cmd.get_model(selection, state)
-    if not model.atom:
-        print("Error: No atoms selected")
-        return
-    
-    # Calculate center of mass
-    total_mass = 0.0
-    com = [0.0, 0.0, 0.0]
-    
-    for atom in model.atom:
-        mass = atom.get_mass()
-        total_mass += mass
-        com[0] += atom.coord[0] * mass
-        com[1] += atom.coord[1] * mass
-        com[2] += atom.coord[2] * mass
-    
-    if total_mass == 0:
-        print("Error: Total mass is zero")
-        return
-    
-    com[0] /= total_mass
-    com[1] /= total_mass
-    com[2] /= total_mass
-    
-    if not quiet:
-        print("Center of Mass: %.3f, %.3f, %.3f" % (com[0], com[1], com[2]))
-    
-    # Create pseudo-atom if requested
-    if object:
-        if color:
-            cmd.pseudoatom(object, pos=com, color=color)
-        else:
-            cmd.pseudoatom(object, pos=com)
-        
-        # 自动设置显示属性
-        cmd.set("sphere_scale", 0.3, object)
-        cmd.show("spheres", object)
-        
-        if not quiet:
-            print("Created pseudo-atom '%s' at COM" % object)
-    
-    return com
-
-# Add the command to PyMOL
-cmd.extend("com", center_of_mass)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<pre class="line-numbers language-none"><code class="language-none"># 导入必要插件
-run /PATH/TO/center_of_mass.py
-# 创建小球的命令序列
-com sele, object=p1
-com sele, object=p2  
-com sele, object=p3
-com sele, object=p4
-com sele, object=p5
-com sele, object=p6
-com sele, object=p7<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/4c73e3f7a2e524d6d72641c589585b53.jpeg" alt="在这里插入图片描述">然后，点击PyMOL菜单栏的Wizard -&gt; Measurement，然后根据示意图点击刚才创建的小球，两两一组，便画出虚线（相应地，生成对象measure01~05）。<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cdcb8f03c0f348271b32051bd021c1cd.png" alt="在这里插入图片描述"></p>
-<h6 id="·-绘制其他作用力"><a href="#·-绘制其他作用力" class="headerlink" title="· 绘制其他作用力"></a>· 绘制其他作用力</h6><p>采用相同的办法，把<code>氢键</code>和<code>疏水作用</code>也画出来。由于这些作用力的两端刚好落在原子上，因此，不用绘制小球。<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/6da4239d1e6785671f043216731b13b4.png" alt="在这里插入图片描述"></p>
-<h3 id="图像美化与输出"><a href="#图像美化与输出" class="headerlink" title="图像美化与输出"></a>图像美化与输出</h3><p>为方便调整，也为图片规格符合要求（通常，出版社要求全版图片宽度≤2000像素，半版图片宽度≤1000像素，分辨率≥300 dpi)，我们将PyMOL界面放大或靠边最大化，并将上半部分的对话框往上拉到最小，让视图最大。然后放大、摆动视图至合适的角度，使尽可能清晰地看到各关键细节。</p>
-<p>基本的创建工作已经完成，接下来进行细致的修饰。</p>
-<p><strong>🎯 隐藏和显示控制</strong></p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 居中显示</span>
-zoom ligand <span class="token keyword">or</span> key_residues
-
-<span class="token comment"># 小球显示控制</span>
-hide everything<span class="token punctuation">,</span> p<span class="token operator">*</span>
-show spheres<span class="token punctuation">,</span> p<span class="token operator">*</span>
-
-<span class="token comment"># 标签显示控制</span>
-hide labels<span class="token punctuation">,</span> measure<span class="token operator">*</span>
-show labels<span class="token punctuation">,</span> measure06
-show labels<span class="token punctuation">,</span> measure07  
-show labels<span class="token punctuation">,</span> measure08<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>🎨 虚线样式设置</strong></p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 虚线外观调整</span>
-<span class="token builtin">set</span> dash_length<span class="token punctuation">,</span> <span class="token number">0.3</span>
-<span class="token builtin">set</span> dash_radius<span class="token punctuation">,</span> <span class="token number">0.08</span>
-<span class="token builtin">set</span> dash_gap<span class="token punctuation">,</span> <span class="token number">0.3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>🌈 虚线颜色设置</strong></p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 相互作用颜色编码</span>
-color magenta<span class="token punctuation">,</span> measure04    <span class="token comment"># 盐桥</span>
-color magenta<span class="token punctuation">,</span> measure05    <span class="token comment"># 盐桥  </span>
-color green<span class="token punctuation">,</span> measure06      <span class="token comment"># 氢键</span>
-color green<span class="token punctuation">,</span> measure07      <span class="token comment"># 氢键</span>
-color green<span class="token punctuation">,</span> measure08      <span class="token comment"># 氢键</span>
-color gray70<span class="token punctuation">,</span> measure09     <span class="token comment"># 疏水作用</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>🖼️ 背景和蛋白显示</strong></p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 背景设置</span>
-bg_color white
-
-<span class="token comment"># 蛋白结构显示</span>
-show cartoon
-color smudge<span class="token punctuation">,</span> lig <span class="token keyword">and</span> name C<span class="token operator">*</span>
-<span class="token builtin">set</span> cartoon_transparency<span class="token punctuation">,</span> <span class="token number">0.3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/243fc636fd2a30ce86bd04121d969461.jpeg" alt="在这里插入图片描述"></p>
-<p>我们还可按下图步骤微调cartoon样式：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/9988aba7cb104fd00f608bd0f601c6e3.png" alt="在这里插入图片描述"><br>还可移动label的位置（设置Mouse Mode为Editing模式后，按住Ctrl键，用鼠标左键或右键拖动label；必要时，可先将cartoo隐藏起来，等调整好label后，再显示出来），让视图更清晰。经过上述一系列操作，得到下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f1c0110ffc04461492536e39811d4eba.png" alt="在这里插入图片描述"></p>
-<p>✅ 一、目标效果</p>
-<ul>
-<li>整体蛋白以 <strong>cartoon 灰色显示</strong>（作为背景板）</li>
-<li>配体（<code>lig</code>）与特定残基（<code>res</code>）<strong>前置显示、保持高亮颜色</strong></li>
-<li>cartoon 不遮挡配体和关键残基</li>
-<li>其余部分颜色偏淡，突出关键信息</li>
-</ul>
-<hr>
-<p>✅ 二、实现命令步骤（PyMOL 命令行版）</p>
-<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 1. 全局设置
-bg_color white
-set cartoon_transparency, 0.6      # 半透明背景板感觉更好
-set depth_cue, 0                   # 去掉景深影响
-
-# 2. 设置蛋白主链为灰色 cartoon
-show cartoon, all
-color grey80, all
-
-# 3. 高亮配体与特定残基
-show sticks, (lig or res)
-util.cbag (lig or res)             # 让配体/残基彩色显示（carbon by atom type）
-
-# 4. 把配体、残基显示在最前层（不被遮挡）
-# set cartoon_side_chain_helper, on
-set transparency_mode, 2           # 优化透明度混合效果
-set ray_opaque_background, off
-
-# 5. 可以单独调整颜色
-# color red, lig
-# color yellow, res
-
-color yellow, measure01
-color yellow, measure02
-color yellow, measure03
-color green, measure04
-color green, measure05
-color green, measure06
-color gray70, measure07
-
-color yellow, p1
-color yellow, p2
-color yellow, p3
-color yellow, p4
-color purple, p6
-color purple, p7
-
-# 6. 重新绘制（Ray tracing 渲染可选）
-ray 1200,900<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<hr>
-<p>✅ 三、可选优化效果</p>
-<p>如果你发现 <strong>cartoon 仍挡住配体/残基</strong>，可进一步操作：</p>
-<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 让 cartoon 更透明
-set cartoon_transparency, 0.7
-
-# 或者单独隐藏关键区域的 cartoon
-hide cartoon, (byres (lig around 3))  # 隐藏配体周围3Å范围的cartoon<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<blockquote>
-<p>这样配体周围的 cartoon 会消失，配体完全露出；蛋白其他部分仍然是灰色背景板。</p>
-</blockquote>
-<hr>
-<p>✅ 四、额外技巧</p>
-<p>你还可以使用分层渲染的方式，例如：</p>
-<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 生成两层视图（适合高质量图）
-disable all
-enable protein
-color grey80, protein
-set cartoon_transparency, 0.7
-enable lig, res
-show sticks, lig or res<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>再用：</p>
-<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol">ray 2000,1500
-png output.png, dpi=300<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>7 生成图片<br>上面的图已经可以发表文章了，但为了更好看，还需要进行一步：光线追踪（Ray tracing)。</p>
-<p>继续使用命令：</p>
-<p>💾 保存工作文件</p>
-<pre class="line-numbers language-none"><code class="language-none">save focus.pse
-save overview.pse<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>📷 图像保存命令</p>
-<pre class="line-numbers language-none"><code class="language-none"># 保存标签图像
-png label.png
-# 保存焦点图像（高分辨率）
-png focus.png, 16.93cm, 16.93cm, dpi=300
-# 保存概览图像（高分辨率）
-png overview.png, 16.93cm, 16.93cm, dpi=300<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>🎨 显示调整命令</p>
-<pre class="line-numbers language-none"><code class="language-none"># 标签控制
-hide labels
-# 视图调整
-zoom
-# 透明度设置
-set cartoon_transparency, 0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>✨ 渲染命令</p>
-<pre class="line-numbers language-none"><code class="language-none"># 光线追踪渲染
-ray<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5a2bf78817d4276796571a66229be702.jpeg" alt="在这里插入图片描述"><br>至此，我们拿到3张图片：focus.png、label.png和overview.png。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/label.png" alt="label"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/overview.png" alt="overview"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/focus.png" alt="focus"></p>
-]]></content>
-      <categories>
-        <category>PyMOL</category>
       </categories>
   </entry>
   <entry>
@@ -6336,6 +6338,167 @@ EOF</span>
       </categories>
   </entry>
   <entry>
+    <title>从基因到结构：用PyMOL可视化理解分子对接与突变效应</title>
+    <url>/2025/11/09/fen-zi-dui-jie/</url>
+    <content><![CDATA[<h2 id="从基因到结构：用PyMOL可视化理解分子对接与突变效应"><a href="#从基因到结构：用PyMOL可视化理解分子对接与突变效应" class="headerlink" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应"></a><strong>从基因到结构：用PyMOL可视化理解分子对接与突变效应</strong></h2><p>亲爱的同学们，当我们谈论“结构生物学”或“计算药物设计”时，分子对接和蛋白质突变是两个核心概念。它们一个关乎<strong>预测</strong>，一个关乎<strong>解释</strong>。今天，我们将不仅从原理上理解它们，更将借助强大的分子可视化软件<strong>PyMOL</strong>，将抽象的概念转化为可见的3D结构。</p>
+<h3 id="第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”"><a href="#第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”" class="headerlink" title="第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”"></a><strong>第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”</strong></h3><p>分子对接的本质是<strong>在原子层面预测小分子（配体）与其靶标生物大分子（受体）之间的最优结合模式</strong>。传统的流程我们比作“钥匙配锁”，但现在，我们迎来了一位强大的AI助手——<strong>AlphaFold</strong>——它能为许多我们不知道精确结构的“锁”生成高精度的3D模型。</p>
+<p><strong>现代分子对接的增强版流程如下：</strong></p>
+<p><strong>1. 结构准备与预处理：获取“锁”和“钥匙”的3D蓝图</strong></p>
+<p>这是所有计算的基石。蛋白质受体的三维结构是分子对接的起点。其来源主要分为实验解析和计算预测两大类。</p>
+<ul>
+<li><strong>a) 传统路径（实验结构）</strong>：从PDB数据库下载通过X射线晶体学、冷冻电镜或核磁共振等技术解析的结构。这是<strong>金标准</strong>，精度最高。然而，并非所有蛋白质，特别是某些膜蛋白或大型复合物，都能被轻易解析出结构。</li>
+<li><strong>b) 计算预测路径（当实验结构缺失时）</strong>：在AlphaFold之前，这是一个充满挑战的领域，主要依赖以下方法，其演进历程如下图所示：</li>
+</ul>
+<pre class="mermaid">graph LR
+    A[蛋白质序列] --&gt; B[“同源建模<br>（1990s-）<br>寻找已知结构的同源蛋白”]
+    B --&gt; C[“ threading<br>（1990s-）<br>在结构折叠库中匹配”]
+    A --&gt; D[“Ab initio折叠<br>（2000s-）<br>基于物理力场从头计算”]
+    C &amp; D --&gt; E[“集成方法<br>（如Rosetta<br>将多种方法结合）”]
+    E --&gt; F[“AI革命<br>（AlphaFold2等<br>2020s-）”]
+    F --&gt; G[精度接近实验水平]
+    
+    style B fill:#e1f5fe
+    style C fill:#f3e5f5
+    style D fill:#e8f5e8
+    style F fill:#fff3e0
+    style G fill:#ffebee</pre>
+
+<ul>
+<li><p><strong>i) 同源建模</strong>：</p>
+<ul>
+<li><strong>原理</strong>：这是AlphaFold之前<strong>最成功、应用最广</strong>的方法。其核心假设是：序列相似的蛋白质，结构也相似。该方法需要一个与目标序列相似度较高（通常&gt;30%）的模板蛋白（已知结构）。</li>
+<li><strong>流程</strong>：将目标序列与模板结构进行比对，保守区域直接沿用模板骨架，对于可变区域（尤其是环区）则需要进行建模和优化。</li>
+<li><strong>经典工具</strong>：SWISS-MODEL、Modeller。</li>
+<li><strong>局限性</strong>：高度依赖于一个高质量的、高相似度的模板。当没有合适模板时，预测结果很差。</li>
+</ul>
+</li>
+<li><p><strong>ii) Threading（折叠识别）</strong>：</p>
+<ul>
+<li><strong>原理</strong>：当目标序列与任何已知结构的蛋白质相似度都很低时，Threading方法尝试判断目标序列是否可能适配某个已知的蛋白质折叠模式（即“折叠模板”）。</li>
+<li><strong>流程</strong>：将目标序列“穿”到不同的结构模板上，通过一个打分函数来评估其兼容性，选择最合适的模板。</li>
+<li><strong>经典工具</strong>：I-TASSER（在其流程中整合了Threading）。</li>
+<li><strong>局限性</strong>：仍然依赖于已知的折叠库，无法预测全新的折叠类型。</li>
+</ul>
+</li>
+<li><p><strong>iii) Ab initio（从头计算）折叠</strong>：</p>
+<ul>
+<li><strong>原理</strong>：这是最理想也最困难的方法。它<strong>不依赖任何已知模板</strong>，仅从蛋白质的氨基酸序列出发，基于物理力场（分子力学）和能量最小化原理，通过计算模拟蛋白质的折叠过程。</li>
+<li><strong>经典工具</strong>：Rosetta的一个核心功能。</li>
+<li><strong>局限性</strong>：计算量极其巨大，且通常只对很小的蛋白质域（&lt;100个氨基酸）有较好的预测效果，精度有限。</li>
+</ul>
+</li>
+<li><p><strong>iv) 集成工具（如I-TASSER, Rosetta）</strong>：</p>
+<ul>
+<li>在实际应用中，顶尖的预测工具（如CASP竞赛中的佼佼者）通常会将上述多种方法集成起来，取长补短，以产生更可靠的结果。</li>
+</ul>
+</li>
+<li><p><strong>v) AI革命路径（以AlphaFold2为代表）</strong>：</p>
+<ul>
+<li><strong>原理</strong>：基于深度学习的Transformer架构，AlphaFold2的核心突破在于它能从多序列比对中极其高效地学习氨基酸残基间的空间几何约束，并直接生成精确的原子坐标。它<strong>不是传统意义上的同源建模或ab initio</strong>，而是一种全新的、数据驱动的方法。</li>
+<li><strong>变革</strong>：其预测精度<strong>首次达到甚至部分超越实验水平</strong>，解决了困扰生物学界长达半个世纪的“蛋白质结构预测”难题，极大地扩展了分子对接的靶点空间。</li>
+</ul>
+</li>
+</ul>
+<p><strong>PyMOL可视化</strong>：在PyMOL中，你可以加载来自任何来源的结构——实验的、同源建模的或AI预测的。对于预测模型，务必注意其置信度指标（如AlphaFold的pLDDT），并批判性地看待低置信度区域。</p>
+<ul>
+<li><strong>专业预处理</strong>：无论结构来源如何，后续预处理都至关重要。需要使用专业工具（如AutoDock Tools, Schrödinger Maestro）为结构<strong>添加氢原子</strong>、<strong>分配Gasteiger电荷</strong>、<strong>设定可旋转键</strong>。这是因为实验结构和AI预测模型通常不包含氢原子，而氢原子和电荷对于计算分子间相互作用力至关重要。</li>
+</ul>
+<p><strong>2. 格点计算与结合位点定义：划定“锁眼”</strong></p>
+<p>计算机需要知道在哪里进行“搜索”。</p>
+<ul>
+<li><strong>专业概念</strong>：对接程序会在结合位点周围生成一个三维的“能量格点”。这个格点图预先计算了受体在不同位置的特性（如疏水性、静电势、氢键受体/供体倾向）。</li>
+<li><strong>PyMOL可视化</strong>：我们可以将对接软件（如AutoDock）生成的格点文件（.grd）在PyMOL中可视化为一个网格框。这个框直观地定义了构象搜索的空间范围。对于AI预测的结构，尤其需要确保这个网格框覆盖了pLDDT置信度高的潜在活性口袋。</li>
+</ul>
+<p><strong>3. 构象搜索与优化：疯狂尝试</strong></p>
+<p>这是对接的计算核心。</p>
+<ul>
+<li><strong>专业概念</strong>：算法（如拉马克遗传算法、遗传算法）会在定义的网格内，对配体进行<strong>平移</strong>、<strong>旋转</strong>和<strong>内部可旋转键的扭转</strong>，生成成千上万个可能的“姿势”。</li>
+<li><strong>目标</strong>：寻找与受体形状和化学性质<strong>互补性最佳</strong>的构象。</li>
+</ul>
+<p><strong>4. 打分函数排名：评分</strong></p>
+<p>如何判断哪个姿势是最好的？</p>
+<ul>
+<li><strong>专业概念</strong>：打分函数是一个数学函数，用于估算结合亲和力。它综合评估：<ul>
+<li><strong>范德华力</strong>（形状互补性）</li>
+<li><strong>静电相互作用</strong></li>
+<li><strong>氢键</strong></li>
+<li><strong>疏水效应</strong></li>
+</ul>
+</li>
+<li>最终，所有生成的构象会按打分值排序，得分越低（在力场中通常代表能量越低）或越高（在经验打分函数中代表概率越高）的构象越优。</li>
+</ul>
+<p><strong>5. 结果分析与PyMOL验证：宣布结果</strong></p>
+<p>这是将计算结果与结构生物学洞察相结合的关键一步。</p>
+<ul>
+<li><strong>PyMOL操作</strong>：将排名第一的对接构象与原始的晶体结构中的配体（如果有）或AI预测的结构进行叠合。<ul>
+<li>命令：<code>align docking_pose, crystal_ligand</code></li>
+</ul>
+</li>
+<li><strong>专业分析</strong>：我们需要仔细检查计算预测的结合模式是否重现了实验观察到的或理论上合理的<strong>关键相互作用</strong>，例如：<ul>
+<li><strong>氢键</strong>：<code>distance hb1, resi X and chain A, resi Y and chain B</code></li>
+<li><strong>疏水空腔的填充</strong></li>
+</ul>
+</li>
+<li><strong>特别关注（对于AI结构）</strong>：当使用<strong>AlphaFold预测的结构</strong>进行对接时，需要特别小心。结合位点区域的pLDDT置信度是否足够高？低置信度环区的构象可能不可靠。同时，AI预测的是<strong>天然状态</strong>，而配体结合可能引起局部构象变化（“诱导契合”），刚性对接可能无法捕捉这一点。</li>
+</ul>
+<p><strong>总结：AI如何改变了分子对接？</strong><br><strong>AlphaFold等工具极大地扩展了分子对接的应用边界。</strong> 过去，对于没有实验结构的靶点，我们往往束手无策。现在，我们可以利用AI生成高质量的结构模型，使得针对这些“难以捉摸”的靶点进行<strong>虚拟筛选</strong>和<strong>理性药物设计</strong>成为可能。这标志着计算结构生物学和药物发现进入了一个全新的时代。</p>
+<hr>
+<h3 id="第二部分：氨基酸突变如何改变构象——从序列到功能的因果链"><a href="#第二部分：氨基酸突变如何改变构象——从序列到功能的因果链" class="headerlink" title="第二部分：氨基酸突变如何改变构象——从序列到功能的因果链"></a><strong>第二部分：氨基酸突变如何改变构象——从序列到功能的因果链</strong></h3><p>一个点突变如何通过改变一个氨基酸，最终影响整个蛋白质的功能？让我们从结构的角度来剖析。</p>
+<p><strong>1. 突变类型的结构后果</strong></p>
+<ul>
+<li><strong>同义突变</strong>：通常 silent，不改变氨基酸，对结构无影响。</li>
+<li><strong>无义突变</strong>：产生截短的蛋白，通常完全破坏结构。</li>
+<li><strong>错义突变</strong>：这是影响构象的<strong>主战场</strong>，其效应取决于突变位点和性质。</li>
+</ul>
+<p><strong>2. 错义突变的结构效应机制（PyMOL视角）</strong></p>
+<p>让我们以著名的<strong>镰刀型细胞贫血症</strong>为例（HbS β链 Glu6Val）。</p>
+<p><strong>a) 侧链物理化学性质的剧变</strong></p>
+<ul>
+<li><strong>专业概念</strong>：从带负电荷的<strong>谷氨酸</strong> 突变为非极性的<strong>缬氨酸</strong>。<ul>
+<li><strong>电荷丢失</strong>：失去了一个可形成强盐桥（与对侧β链的Lys82）的带负电侧链。</li>
+<li><strong>疏水性增加</strong>：引入了一个疏水的“粘性贴片”。</li>
+</ul>
+</li>
+<li><strong>PyMOL可视化</strong>：<ol>
+<li>加载野生型血红蛋白（如2HHB）和突变体结构。</li>
+<li>使用 <code>show sticks, resi 6</code> 显示第6位残基。</li>
+<li>对比 <code>Glu6</code> 的长侧链和 <code>Val6</code> 的短小疏水侧链，直观感受其化学性质的巨大差异。</li>
+<li>使用 <code>show surface</code> 观察疏水表面的变化。</li>
+</ol>
+</li>
+</ul>
+<p><strong>b) 破坏关键相互作用并诱导新相互作用</strong></p>
+<ul>
+<li><strong>专业概念</strong>：Val6的疏水侧链无法与Lys82形成盐桥，反而在脱氧状态下，与另一个血红蛋白β链的Phe85和Leu88发生<strong>疏水相互作用</strong>。</li>
+<li><strong>PyMOL可视化</strong>：<ol>
+<li>在脱氧HbS结构（如2HBS）中，选择Val6及其周围的残基。</li>
+<li>使用 <code>show sticks, resi 6+85+88</code> 并上色。</li>
+<li>测量它们之间的距离：<code>distance mut_int, resi 6, resi 85</code>。你会发现它们紧密接触，驱动了异常的多聚化。</li>
+</ol>
+</li>
+</ul>
+<p><strong>c) 诱导整体构象变化与功能丧失</strong></p>
+<ul>
+<li><strong>专业概念</strong>：这种异常的疏水相互作用作为“成核点”，驱动血红蛋白形成长的、不溶的纤维，最终导致红细胞扭曲成镰刀形。</li>
+<li><strong>PyMOL可视化</strong>：<ol>
+<li>叠合野生型和突变体的整体结构：<code>align wild_type, mutant</code>。</li>
+<li>观察RMSD值，量化整体结构的偏移。</li>
+<li>重点关注突变位点局部区域的主链和侧链的显著位移。</li>
+</ol>
+</li>
+</ul>
+<h3 id="总结：当预测遇见解释"><a href="#总结：当预测遇见解释" class="headerlink" title="总结：当预测遇见解释"></a><strong>总结：当预测遇见解释</strong></h3><ul>
+<li><strong>分子对接</strong>是我们的<strong>预测工具</strong>。通过计算模拟，我们可以预测一个新设计的抑制剂如何与野生型或突变型靶标结合，从而指导<strong>基于结构的药物设计</strong>。</li>
+<li><strong>突变的结构分析</strong>是我们的<strong>解释工具</strong>。它让我们能从原子层面理解疾病的分子病因，并解释为什么对野生型有效的药物可能对突变体失效（<strong>耐药性</strong>）。</li>
+</ul>
+<p><strong>PyMOL</strong>在其中扮演了不可或-缺的“翻译官”角色，它将抽象的序列信息、计算数据和能量术语，翻译成我们肉眼可见的、直观的3D结构图像。通过将计算（对接）与实验（突变体结构）在PyMOL中进行比对和验证，我们才能真正将生物信息学、计算化学和结构生物学融会贯通，推动生命科学的前沿发展。</p>
+<script type="module"> import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';	mermaid.initialize({startOnLoad: true, flowchart: {curve: 'linear'}}); </script>]]></content>
+      <categories>
+        <category>蛋白互作</category>
+        <category>PyMOL</category>
+      </categories>
+  </entry>
+  <entry>
     <title>根据SNP位点进行快速引物设计</title>
     <url>/2025/07/03/kuai-su-yin-wu-she-ji/</url>
     <content><![CDATA[<h1 id="根据SNP位点进行快速引物设计"><a href="#根据SNP位点进行快速引物设计" class="headerlink" title="根据SNP位点进行快速引物设计"></a>根据SNP位点进行快速引物设计</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>这是一个基于Python Tkinter开发的图形化界面工具，专门用于基因突变位点的引物设计。通过输入基因序列和突变位点信息，工具能够自动定位目标碱基并设计出合适的PCR引物对。</p>
@@ -8220,167 +8383,6 @@ gvcf/chr2/BM_S_1.g.vcf.gz<span aria-hidden="true" class="line-numbers-rows"><spa
 ]]></content>
       <categories>
         <category>Linux</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>从基因到结构：用PyMOL可视化理解分子对接与突变效应</title>
-    <url>/2025/11/09/fen-zi-dui-jie/</url>
-    <content><![CDATA[<h2 id="从基因到结构：用PyMOL可视化理解分子对接与突变效应"><a href="#从基因到结构：用PyMOL可视化理解分子对接与突变效应" class="headerlink" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应"></a><strong>从基因到结构：用PyMOL可视化理解分子对接与突变效应</strong></h2><p>亲爱的同学们，当我们谈论“结构生物学”或“计算药物设计”时，分子对接和蛋白质突变是两个核心概念。它们一个关乎<strong>预测</strong>，一个关乎<strong>解释</strong>。今天，我们将不仅从原理上理解它们，更将借助强大的分子可视化软件<strong>PyMOL</strong>，将抽象的概念转化为可见的3D结构。</p>
-<h3 id="第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”"><a href="#第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”" class="headerlink" title="第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”"></a><strong>第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”</strong></h3><p>分子对接的本质是<strong>在原子层面预测小分子（配体）与其靶标生物大分子（受体）之间的最优结合模式</strong>。传统的流程我们比作“钥匙配锁”，但现在，我们迎来了一位强大的AI助手——<strong>AlphaFold</strong>——它能为许多我们不知道精确结构的“锁”生成高精度的3D模型。</p>
-<p><strong>现代分子对接的增强版流程如下：</strong></p>
-<p><strong>1. 结构准备与预处理：获取“锁”和“钥匙”的3D蓝图</strong></p>
-<p>这是所有计算的基石。蛋白质受体的三维结构是分子对接的起点。其来源主要分为实验解析和计算预测两大类。</p>
-<ul>
-<li><strong>a) 传统路径（实验结构）</strong>：从PDB数据库下载通过X射线晶体学、冷冻电镜或核磁共振等技术解析的结构。这是<strong>金标准</strong>，精度最高。然而，并非所有蛋白质，特别是某些膜蛋白或大型复合物，都能被轻易解析出结构。</li>
-<li><strong>b) 计算预测路径（当实验结构缺失时）</strong>：在AlphaFold之前，这是一个充满挑战的领域，主要依赖以下方法，其演进历程如下图所示：</li>
-</ul>
-<pre class="line-numbers language-mermaid" data-language="mermaid"><code class="language-mermaid"><span class="token keyword">graph</span> LR
-    A<span class="token text string">[蛋白质序列]</span> <span class="token arrow operator">--&gt;</span> B<span class="token text string">[“同源建模&lt;br&gt;（1990s-）&lt;br&gt;寻找已知结构的同源蛋白”]</span>
-    B <span class="token arrow operator">--&gt;</span> C<span class="token text string">[“ threading&lt;br&gt;（1990s-）&lt;br&gt;在结构折叠库中匹配”]</span>
-    A <span class="token arrow operator">--&gt;</span> D<span class="token text string">[“Ab initio折叠&lt;br&gt;（2000s-）&lt;br&gt;基于物理力场从头计算”]</span>
-    C <span class="token operator">&amp;</span> D <span class="token arrow operator">--&gt;</span> E<span class="token text string">[“集成方法&lt;br&gt;（如Rosetta&lt;br&gt;将多种方法结合）”]</span>
-    E <span class="token arrow operator">--&gt;</span> F<span class="token text string">[“AI革命&lt;br&gt;（AlphaFold2等&lt;br&gt;2020s-）”]</span>
-    F <span class="token arrow operator">--&gt;</span> G<span class="token text string">[精度接近实验水平]</span>
-    
-    <span class="token keyword">style</span> B <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#e1f5fe</span>
-    <span class="token keyword">style</span> C <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#f3e5f5</span>
-    <span class="token keyword">style</span> D <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#e8f5e8</span>
-    <span class="token keyword">style</span> F <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#fff3e0</span>
-    <span class="token keyword">style</span> G <span class="token style"><span class="token property">fill</span><span class="token operator">:</span>#ffebee</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<ul>
-<li><p><strong>i) 同源建模</strong>：</p>
-<ul>
-<li><strong>原理</strong>：这是AlphaFold之前<strong>最成功、应用最广</strong>的方法。其核心假设是：序列相似的蛋白质，结构也相似。该方法需要一个与目标序列相似度较高（通常&gt;30%）的模板蛋白（已知结构）。</li>
-<li><strong>流程</strong>：将目标序列与模板结构进行比对，保守区域直接沿用模板骨架，对于可变区域（尤其是环区）则需要进行建模和优化。</li>
-<li><strong>经典工具</strong>：SWISS-MODEL、Modeller。</li>
-<li><strong>局限性</strong>：高度依赖于一个高质量的、高相似度的模板。当没有合适模板时，预测结果很差。</li>
-</ul>
-</li>
-<li><p><strong>ii) Threading（折叠识别）</strong>：</p>
-<ul>
-<li><strong>原理</strong>：当目标序列与任何已知结构的蛋白质相似度都很低时，Threading方法尝试判断目标序列是否可能适配某个已知的蛋白质折叠模式（即“折叠模板”）。</li>
-<li><strong>流程</strong>：将目标序列“穿”到不同的结构模板上，通过一个打分函数来评估其兼容性，选择最合适的模板。</li>
-<li><strong>经典工具</strong>：I-TASSER（在其流程中整合了Threading）。</li>
-<li><strong>局限性</strong>：仍然依赖于已知的折叠库，无法预测全新的折叠类型。</li>
-</ul>
-</li>
-<li><p><strong>iii) Ab initio（从头计算）折叠</strong>：</p>
-<ul>
-<li><strong>原理</strong>：这是最理想也最困难的方法。它<strong>不依赖任何已知模板</strong>，仅从蛋白质的氨基酸序列出发，基于物理力场（分子力学）和能量最小化原理，通过计算模拟蛋白质的折叠过程。</li>
-<li><strong>经典工具</strong>：Rosetta的一个核心功能。</li>
-<li><strong>局限性</strong>：计算量极其巨大，且通常只对很小的蛋白质域（&lt;100个氨基酸）有较好的预测效果，精度有限。</li>
-</ul>
-</li>
-<li><p><strong>iv) 集成工具（如I-TASSER, Rosetta）</strong>：</p>
-<ul>
-<li>在实际应用中，顶尖的预测工具（如CASP竞赛中的佼佼者）通常会将上述多种方法集成起来，取长补短，以产生更可靠的结果。</li>
-</ul>
-</li>
-<li><p><strong>v) AI革命路径（以AlphaFold2为代表）</strong>：</p>
-<ul>
-<li><strong>原理</strong>：基于深度学习的Transformer架构，AlphaFold2的核心突破在于它能从多序列比对中极其高效地学习氨基酸残基间的空间几何约束，并直接生成精确的原子坐标。它<strong>不是传统意义上的同源建模或ab initio</strong>，而是一种全新的、数据驱动的方法。</li>
-<li><strong>变革</strong>：其预测精度<strong>首次达到甚至部分超越实验水平</strong>，解决了困扰生物学界长达半个世纪的“蛋白质结构预测”难题，极大地扩展了分子对接的靶点空间。</li>
-</ul>
-</li>
-</ul>
-<p><strong>PyMOL可视化</strong>：在PyMOL中，你可以加载来自任何来源的结构——实验的、同源建模的或AI预测的。对于预测模型，务必注意其置信度指标（如AlphaFold的pLDDT），并批判性地看待低置信度区域。</p>
-<ul>
-<li><strong>专业预处理</strong>：无论结构来源如何，后续预处理都至关重要。需要使用专业工具（如AutoDock Tools, Schrödinger Maestro）为结构<strong>添加氢原子</strong>、<strong>分配Gasteiger电荷</strong>、<strong>设定可旋转键</strong>。这是因为实验结构和AI预测模型通常不包含氢原子，而氢原子和电荷对于计算分子间相互作用力至关重要。</li>
-</ul>
-<p><strong>2. 格点计算与结合位点定义：划定“锁眼”</strong></p>
-<p>计算机需要知道在哪里进行“搜索”。</p>
-<ul>
-<li><strong>专业概念</strong>：对接程序会在结合位点周围生成一个三维的“能量格点”。这个格点图预先计算了受体在不同位置的特性（如疏水性、静电势、氢键受体/供体倾向）。</li>
-<li><strong>PyMOL可视化</strong>：我们可以将对接软件（如AutoDock）生成的格点文件（.grd）在PyMOL中可视化为一个网格框。这个框直观地定义了构象搜索的空间范围。对于AI预测的结构，尤其需要确保这个网格框覆盖了pLDDT置信度高的潜在活性口袋。</li>
-</ul>
-<p><strong>3. 构象搜索与优化：疯狂尝试</strong></p>
-<p>这是对接的计算核心。</p>
-<ul>
-<li><strong>专业概念</strong>：算法（如拉马克遗传算法、遗传算法）会在定义的网格内，对配体进行<strong>平移</strong>、<strong>旋转</strong>和<strong>内部可旋转键的扭转</strong>，生成成千上万个可能的“姿势”。</li>
-<li><strong>目标</strong>：寻找与受体形状和化学性质<strong>互补性最佳</strong>的构象。</li>
-</ul>
-<p><strong>4. 打分函数排名：评分</strong></p>
-<p>如何判断哪个姿势是最好的？</p>
-<ul>
-<li><strong>专业概念</strong>：打分函数是一个数学函数，用于估算结合亲和力。它综合评估：<ul>
-<li><strong>范德华力</strong>（形状互补性）</li>
-<li><strong>静电相互作用</strong></li>
-<li><strong>氢键</strong></li>
-<li><strong>疏水效应</strong></li>
-</ul>
-</li>
-<li>最终，所有生成的构象会按打分值排序，得分越低（在力场中通常代表能量越低）或越高（在经验打分函数中代表概率越高）的构象越优。</li>
-</ul>
-<p><strong>5. 结果分析与PyMOL验证：宣布结果</strong></p>
-<p>这是将计算结果与结构生物学洞察相结合的关键一步。</p>
-<ul>
-<li><strong>PyMOL操作</strong>：将排名第一的对接构象与原始的晶体结构中的配体（如果有）或AI预测的结构进行叠合。<ul>
-<li>命令：<code>align docking_pose, crystal_ligand</code></li>
-</ul>
-</li>
-<li><strong>专业分析</strong>：我们需要仔细检查计算预测的结合模式是否重现了实验观察到的或理论上合理的<strong>关键相互作用</strong>，例如：<ul>
-<li><strong>氢键</strong>：<code>distance hb1, resi X and chain A, resi Y and chain B</code></li>
-<li><strong>疏水空腔的填充</strong></li>
-</ul>
-</li>
-<li><strong>特别关注（对于AI结构）</strong>：当使用<strong>AlphaFold预测的结构</strong>进行对接时，需要特别小心。结合位点区域的pLDDT置信度是否足够高？低置信度环区的构象可能不可靠。同时，AI预测的是<strong>天然状态</strong>，而配体结合可能引起局部构象变化（“诱导契合”），刚性对接可能无法捕捉这一点。</li>
-</ul>
-<p><strong>总结：AI如何改变了分子对接？</strong><br><strong>AlphaFold等工具极大地扩展了分子对接的应用边界。</strong> 过去，对于没有实验结构的靶点，我们往往束手无策。现在，我们可以利用AI生成高质量的结构模型，使得针对这些“难以捉摸”的靶点进行<strong>虚拟筛选</strong>和<strong>理性药物设计</strong>成为可能。这标志着计算结构生物学和药物发现进入了一个全新的时代。</p>
-<hr>
-<h3 id="第二部分：氨基酸突变如何改变构象——从序列到功能的因果链"><a href="#第二部分：氨基酸突变如何改变构象——从序列到功能的因果链" class="headerlink" title="第二部分：氨基酸突变如何改变构象——从序列到功能的因果链"></a><strong>第二部分：氨基酸突变如何改变构象——从序列到功能的因果链</strong></h3><p>一个点突变如何通过改变一个氨基酸，最终影响整个蛋白质的功能？让我们从结构的角度来剖析。</p>
-<p><strong>1. 突变类型的结构后果</strong></p>
-<ul>
-<li><strong>同义突变</strong>：通常 silent，不改变氨基酸，对结构无影响。</li>
-<li><strong>无义突变</strong>：产生截短的蛋白，通常完全破坏结构。</li>
-<li><strong>错义突变</strong>：这是影响构象的<strong>主战场</strong>，其效应取决于突变位点和性质。</li>
-</ul>
-<p><strong>2. 错义突变的结构效应机制（PyMOL视角）</strong></p>
-<p>让我们以著名的<strong>镰刀型细胞贫血症</strong>为例（HbS β链 Glu6Val）。</p>
-<p><strong>a) 侧链物理化学性质的剧变</strong></p>
-<ul>
-<li><strong>专业概念</strong>：从带负电荷的<strong>谷氨酸</strong> 突变为非极性的<strong>缬氨酸</strong>。<ul>
-<li><strong>电荷丢失</strong>：失去了一个可形成强盐桥（与对侧β链的Lys82）的带负电侧链。</li>
-<li><strong>疏水性增加</strong>：引入了一个疏水的“粘性贴片”。</li>
-</ul>
-</li>
-<li><strong>PyMOL可视化</strong>：<ol>
-<li>加载野生型血红蛋白（如2HHB）和突变体结构。</li>
-<li>使用 <code>show sticks, resi 6</code> 显示第6位残基。</li>
-<li>对比 <code>Glu6</code> 的长侧链和 <code>Val6</code> 的短小疏水侧链，直观感受其化学性质的巨大差异。</li>
-<li>使用 <code>show surface</code> 观察疏水表面的变化。</li>
-</ol>
-</li>
-</ul>
-<p><strong>b) 破坏关键相互作用并诱导新相互作用</strong></p>
-<ul>
-<li><strong>专业概念</strong>：Val6的疏水侧链无法与Lys82形成盐桥，反而在脱氧状态下，与另一个血红蛋白β链的Phe85和Leu88发生<strong>疏水相互作用</strong>。</li>
-<li><strong>PyMOL可视化</strong>：<ol>
-<li>在脱氧HbS结构（如2HBS）中，选择Val6及其周围的残基。</li>
-<li>使用 <code>show sticks, resi 6+85+88</code> 并上色。</li>
-<li>测量它们之间的距离：<code>distance mut_int, resi 6, resi 85</code>。你会发现它们紧密接触，驱动了异常的多聚化。</li>
-</ol>
-</li>
-</ul>
-<p><strong>c) 诱导整体构象变化与功能丧失</strong></p>
-<ul>
-<li><strong>专业概念</strong>：这种异常的疏水相互作用作为“成核点”，驱动血红蛋白形成长的、不溶的纤维，最终导致红细胞扭曲成镰刀形。</li>
-<li><strong>PyMOL可视化</strong>：<ol>
-<li>叠合野生型和突变体的整体结构：<code>align wild_type, mutant</code>。</li>
-<li>观察RMSD值，量化整体结构的偏移。</li>
-<li>重点关注突变位点局部区域的主链和侧链的显著位移。</li>
-</ol>
-</li>
-</ul>
-<h3 id="总结：当预测遇见解释"><a href="#总结：当预测遇见解释" class="headerlink" title="总结：当预测遇见解释"></a><strong>总结：当预测遇见解释</strong></h3><ul>
-<li><strong>分子对接</strong>是我们的<strong>预测工具</strong>。通过计算模拟，我们可以预测一个新设计的抑制剂如何与野生型或突变型靶标结合，从而指导<strong>基于结构的药物设计</strong>。</li>
-<li><strong>突变的结构分析</strong>是我们的<strong>解释工具</strong>。它让我们能从原子层面理解疾病的分子病因，并解释为什么对野生型有效的药物可能对突变体失效（<strong>耐药性</strong>）。</li>
-</ul>
-<p><strong>PyMOL</strong>在其中扮演了不可或-缺的“翻译官”角色，它将抽象的序列信息、计算数据和能量术语，翻译成我们肉眼可见的、直观的3D结构图像。通过将计算（对接）与实验（突变体结构）在PyMOL中进行比对和验证，我们才能真正将生物信息学、计算化学和结构生物学融会贯通，推动生命科学的前沿发展。</p>
-]]></content>
-      <categories>
-        <category>蛋白互作</category>
-        <category>PyMOL</category>
       </categories>
   </entry>
   <entry>
