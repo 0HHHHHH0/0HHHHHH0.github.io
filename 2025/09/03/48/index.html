@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>6.筛选组内一致率90%，组间有差异的SNP位点 | HHHH</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="分析需求：   请分析查找组间差异SNP &amp; Indel。需要找组内一致，组间具有差异的突变位点，样本一致率卡90%，即在大于90%的样本中突变型一致就认为是组内一致的突变。  关键技术要求：  组内一致性：在&gt;90%的样本中突变型一致即认为组内一致 组间差异性：不同群体间基因型存在明显分化 质量控制：确保结果的统计学可靠性   1.筛选的命令如下#!&#x2F;bin&#x2F;bash # file">
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>6.筛选组内一致率90%，组间有差异的SNP位点 | HHHH</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="分析需求：   请分析查找组间差异SNP &amp; Indel。需要找组内一致，组间具有差异的突变位点，样本一致率卡90%，即在大于90%的样本中突变型一致就认为是组内一致的突变。  关键技术要求：  组内一致性：在&gt;90%的样本中突变型一致即认为组内一致 组间差异性：不同群体间基因型存在明显分化 质量控制：确保结果的统计学可靠性   🎯 分析目标与生物学意义在群体遗传学和分子育种研究中">
 <meta property="og:type" content="article">
 <meta property="og:title" content="6.筛选组内一致率90%，组间有差异的SNP位点">
 <meta property="og:url" content="https://0hhhhhh0.github.io/2025/09/03/48/index.html">
 <meta property="og:site_name" content="HHHH">
-<meta property="og:description" content="分析需求：   请分析查找组间差异SNP &amp; Indel。需要找组内一致，组间具有差异的突变位点，样本一致率卡90%，即在大于90%的样本中突变型一致就认为是组内一致的突变。  关键技术要求：  组内一致性：在&gt;90%的样本中突变型一致即认为组内一致 组间差异性：不同群体间基因型存在明显分化 质量控制：确保结果的统计学可靠性   1.筛选的命令如下#!&#x2F;bin&#x2F;bash # file">
+<meta property="og:description" content="分析需求：   请分析查找组间差异SNP &amp; Indel。需要找组内一致，组间具有差异的突变位点，样本一致率卡90%，即在大于90%的样本中突变型一致就认为是组内一致的突变。  关键技术要求：  组内一致性：在&gt;90%的样本中突变型一致即认为组内一致 组间差异性：不同群体间基因型存在明显分化 质量控制：确保结果的统计学可靠性   🎯 分析目标与生物学意义在群体遗传学和分子育种研究中">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://0hhhhhh0.github.io/uploads/avatar.png">
 <meta property="article:published_time" content="2025-09-03T03:32:00.000Z">
@@ -206,7 +206,21 @@
 <li><strong>质量控制</strong>：确保结果的统计学可靠性</li>
 </ul>
 <hr>
-<h2 id="1-筛选的命令如下"><a href="#1-筛选的命令如下" class="headerlink" title="1.筛选的命令如下"></a>1.筛选的命令如下</h2><pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash">#!/bin/bash
+<h2 id="🎯-分析目标与生物学意义"><a href="#🎯-分析目标与生物学意义" class="headerlink" title="🎯 分析目标与生物学意义"></a>🎯 分析目标与生物学意义</h2><p>在群体遗传学和分子育种研究中，识别群体特异性变异位点是理解物种分化、适应性进化以及关键性状遗传基础的核心任务。本次分析旨在：</p>
+<ul>
+<li><strong>揭示群体分化标记</strong>：找到在不同群体间固定差异的SNP位点</li>
+<li><strong>定位候选基因区域</strong>：为后续的功能验证提供可靠的候选位点</li>
+<li><strong>支撑分子标记开发</strong>：为育种标记辅助选择提供理论基础</li>
+</ul>
+<h2 id="🔧-1-筛选流程设计与实现"><a href="#🔧-1-筛选流程设计与实现" class="headerlink" title="🔧 1. 筛选流程设计与实现"></a>🔧 1. 筛选流程设计与实现</h2><h3 id="核心算法逻辑"><a href="#核心算法逻辑" class="headerlink" title="核心算法逻辑"></a>核心算法逻辑</h3><pre class="mermaid">graph TD
+    A[原始基因型数据] --&gt; B[群体分组统计]
+    B --&gt; C{组内一致性检验}
+    C --&gt;|通过| D{组间差异性检验}
+    C --&gt;|不通过| E[过滤掉]
+    D --&gt;|有差异| F[输出结果]
+    D --&gt;|无差异| E</pre>
+
+<h3 id="筛选命令详解"><a href="#筛选命令详解" class="headerlink" title="筛选命令详解"></a>筛选命令详解</h3><pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash">#!/bin/bash
 # filename: filter_variants_integrated.sh
 # Usage: ./filter_variants_integrated.sh [threshold] [input_file] [output_file] [include_het] [diff_mode]
 
@@ -294,10 +308,9 @@ END {
 RESULT_COUNT=$(($(wc -l &lt; "$OUTPUT_FILE") - 1))
 log "INFO" "分析完成！ 筛选通过: $RESULT_COUNT"
 echo "结果输出到: $OUTPUT_FILE"
-echo "日志文件: $LOG_FILE"
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+echo "日志文件: $LOG_FILE"<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<h2 id="筛选命令的输入输出说明"><a href="#筛选命令的输入输出说明" class="headerlink" title="筛选命令的输入输出说明"></a>筛选命令的输入输出说明</h2><h3 id="输入文件格式要求："><a href="#输入文件格式要求：" class="headerlink" title="输入文件格式要求："></a>输入文件格式要求：</h3><pre class="line-numbers language-none"><code class="language-none"># 输入文件应该是制表符分隔的文本文件，包含以下列：
+<h3 id="筛选命令的输入输出说明"><a href="#筛选命令的输入输出说明" class="headerlink" title="筛选命令的输入输出说明"></a>筛选命令的输入输出说明</h3><h4 id="输入文件格式要求："><a href="#输入文件格式要求：" class="headerlink" title="输入文件格式要求："></a>输入文件格式要求：</h4><pre class="line-numbers language-none"><code class="language-none"># 输入文件应该是制表符分隔的文本文件，包含以下列：
 # CHROM  POS     REF     ALT     Sample1 Sample2 Sample3 ... SampleN
 # 1      1000    A       G       0/1     1/1     0/0     ... 0/1
 # 1      2000    C       T       1/1     0/1     1/1     ... 0/0
@@ -308,9 +321,7 @@ echo "日志文件: $LOG_FILE"
 # 0/1: 杂合型
 # ./.: 缺失数据<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-
-
-<h3 id="输出结果内容："><a href="#输出结果内容：" class="headerlink" title="输出结果内容："></a>输出结果内容：</h3><pre class="line-numbers language-none"><code class="language-none"># 输出文件在原文件基础上添加以下统计列：
+<h4 id="输出结果内容："><a href="#输出结果内容：" class="headerlink" title="输出结果内容："></a>输出结果内容：</h4><pre class="line-numbers language-none"><code class="language-none"># 输出文件在原文件基础上添加以下统计列：
 # bm_ref    bm_alt    bm_het    bm_total  bm_ref_ratio  bm_alt_ratio  bm_het_ratio  bm_gt
 # wm_ref    wm_alt    wm_het    wm_total  wm_ref_ratio  wm_alt_ratio  wm_het_ratio  wm_gt
 
@@ -319,16 +330,12 @@ echo "日志文件: $LOG_FILE"
 # 1      1000  A    G    ...  18      2       REF    2       18      ALT
 # 这表示：BM组18个样本为REF型，WM组18个样本为ALT型，符合组间差异条件<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-
-
-<h3 id="关键输出解读："><a href="#关键输出解读：" class="headerlink" title="关键输出解读："></a>关键输出解读：</h3><ul>
+<h4 id="关键输出解读："><a href="#关键输出解读：" class="headerlink" title="关键输出解读："></a>关键输出解读：</h4><ul>
 <li><strong>bm_gt/wm_gt</strong>: 群体基因型判定（REF/ALT/HET/MIXED）</li>
 <li>***_ratio**: 各类基因型在群体中的比例</li>
 <li><strong>筛选逻辑</strong>: BM组和WM组基因型相反且各自组内一致率&gt;90%的位点</li>
-<li></li>
 </ul>
-<h2 id="2-可视化代码"><a href="#2-可视化代码" class="headerlink" title="2. 可视化代码"></a>2. 可视化代码</h2><pre class="line-numbers language-R" data-language="R"><code class="language-R">
-library(tidyverse)
+<h2 id="📊-2-结果可视化与质控"><a href="#📊-2-结果可视化与质控" class="headerlink" title="📊 2. 结果可视化与质控"></a>📊 2. 结果可视化与质控</h2><h3 id="可视化代码实现"><a href="#可视化代码实现" class="headerlink" title="可视化代码实现"></a>可视化代码实现</h3><pre class="line-numbers language-R" data-language="R"><code class="language-R">library(tidyverse)
 library(vcfR)
 library(data.table)
 library(ggplot2)
@@ -361,10 +368,9 @@ snp_data %
 fig  # 在RStudio中查看
 
 # 可选：保存为HTML
-# htmlwidgets::saveWidget(fig, "snp_heatmap.html", selfcontained = TRUE)
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+# htmlwidgets::saveWidget(fig, "snp_heatmap.html", selfcontained = TRUE)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<h2 id="可视化代码的输入输出说明"><a href="#可视化代码的输入输出说明" class="headerlink" title="可视化代码的输入输出说明"></a>可视化代码的输入输出说明</h2><h3 id="输入数据格式："><a href="#输入数据格式：" class="headerlink" title="输入数据格式："></a>输入数据格式：</h3><pre class="line-numbers language-none"><code class="language-none"># 输入数据应为数据框格式，包含以下列：
+<h3 id="可视化代码的输入输出说明"><a href="#可视化代码的输入输出说明" class="headerlink" title="可视化代码的输入输出说明"></a>可视化代码的输入输出说明</h3><h4 id="输入数据格式："><a href="#输入数据格式：" class="headerlink" title="输入数据格式："></a>输入数据格式：</h4><pre class="line-numbers language-none"><code class="language-none"># 输入数据应为数据框格式，包含以下列：
 # CHROM  POS     Sample1 Sample2 Sample3 ... SampleN
 # 1      1000    0/1     1/1     0/0     ... 0/1
 # 1      2000    1/1     0/1     1/1     ... 0/0
@@ -373,9 +379,7 @@ fig  # 在RStudio中查看
 # vcf &lt;- read.vcfR("input.vcf")
 # snp_data &lt;- vcfR2tidy(vcf)$fix<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-
-
-<h3 id="输出可视化结果："><a href="#输出可视化结果：" class="headerlink" title="输出可视化结果："></a>输出可视化结果：</h3><pre class="line-numbers language-none"><code class="language-none"># 1. 交互式热图 - 在RStudio中显示或保存为HTML
+<h4 id="输出可视化结果："><a href="#输出可视化结果：" class="headerlink" title="输出可视化结果："></a>输出可视化结果：</h4><pre class="line-numbers language-none"><code class="language-none"># 1. 交互式热图 - 在RStudio中显示或保存为HTML
 #    - X轴: 基因组位置
 #    - Y轴: 样本名称  
 #    - 颜色: 蓝色(0/0), 红色(1/1), 黄色(0/1), 灰色(缺失)
@@ -390,15 +394,86 @@ fig  # 在RStudio中查看
 #    - 鼠标悬停显示具体基因型信息
 #    - 自适应布局，适合发表级图片输出<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-
-
-<h3 id="可视化价值："><a href="#可视化价值：" class="headerlink" title="可视化价值："></a>可视化价值：</h3><ul>
+<h4 id="可视化价值："><a href="#可视化价值：" class="headerlink" title="可视化价值："></a>可视化价值：</h4><ul>
 <li><strong>快速质控</strong>: 一眼识别数据质量问题</li>
 <li><strong>模式识别</strong>: 直观看到群体分层和基因型分布模式</li>
 <li><strong>结果验证</strong>: 确认筛选出的差异位点确实显示预期模式</li>
 <li><strong>报告展示</strong>: 生成可用于发表的高质量图表</li>
 </ul>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://0HHHHHH0.github.io">HHHH</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://0hhhhhh0.github.io/2025/09/03/48/">https://0hhhhhh0.github.io/2025/09/03/48/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/uploads/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/09/03/50/" title="Typecho快速修改文章图片和文件链接地址"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Typecho快速修改文章图片和文件链接地址</div></div><div class="info-2"><div class="info-item-1">说明为了使我们的博客速度更快，图片等一些文件会采用外接的形式。但当跟换域名或CDN图片地址时，需要大批修正一切文章的援用图片链接和一些文件链接地址，手动修正又烦劳，这里就说一下通过 phpMyAdmin工具快速修正数据库文章图片，文件链接地址。  1.安装如果您使用的是基于 Debian 或 Ubuntu 的 Linux 系统，可以尝试使用 apt-get 命令。例如：  sudo apt-get updatesudo apt-get install phpmyadmin   The phpmyadmin package must have a database installed and configured before it cwith dbconfig-common. If you are an advanced database administrator and know that you want to performdatabase has already been installed and configured, you should refuse this ...</div></div></div></a><a class="pagination-related" href="/2025/08/03/40/" title="5.各样本SNP位点信息可视化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">5.各样本SNP位点信息可视化</div></div><div class="info-2"><div class="info-item-1"> 前面我们对各样本的SNP位点信息进行了提取，现在我们要进行SNP位点的筛选，相对快捷的办法就是可视化，下面我们进行分析  需要用到的R包 library(tidyverse) library(vcfR) library(data.table) library(ggplot2) library(dplyr) library(tidyr) 下面以单个基因为例进行分析 # 先读取数据（不自动解析列名） snp_data %   as.matrix()  # 5. 可视化设置 ------------------------------------------------ # 颜色映射 gt_colors %   layout(     title = list(text = "SNP Genotype Heatmap", y = 0.98),     xaxis = list(       title = "Genomic Position",       rangeslider = list(visible = TRUE),  # 横向滚动条       type = "categ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">28</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">15</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%AD%9B%E9%80%89%E7%9A%84%E5%91%BD%E4%BB%A4%E5%A6%82%E4%B8%8B"><span class="toc-number">1.</span> <span class="toc-text">1.筛选的命令如下</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%9B%E9%80%89%E5%91%BD%E4%BB%A4%E7%9A%84%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E8%AF%B4%E6%98%8E"><span class="toc-number">2.</span> <span class="toc-text">筛选命令的输入输出说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E8%A6%81%E6%B1%82%EF%BC%9A"><span class="toc-number">2.1.</span> <span class="toc-text">输入文件格式要求：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E7%BB%93%E6%9E%9C%E5%86%85%E5%AE%B9%EF%BC%9A"><span class="toc-number">2.2.</span> <span class="toc-text">输出结果内容：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E8%BE%93%E5%87%BA%E8%A7%A3%E8%AF%BB%EF%BC%9A"><span class="toc-number">2.3.</span> <span class="toc-text">关键输出解读：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%8F%AF%E8%A7%86%E5%8C%96%E4%BB%A3%E7%A0%81"><span class="toc-number">3.</span> <span class="toc-text">2. 可视化代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E4%BB%A3%E7%A0%81%E7%9A%84%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E8%AF%B4%E6%98%8E"><span class="toc-number">4.</span> <span class="toc-text">可视化代码的输入输出说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F%EF%BC%9A"><span class="toc-number">4.1.</span> <span class="toc-text">输入数据格式：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E5%8F%AF%E8%A7%86%E5%8C%96%E7%BB%93%E6%9E%9C%EF%BC%9A"><span class="toc-number">4.2.</span> <span class="toc-text">输出可视化结果：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E4%BB%B7%E5%80%BC%EF%BC%9A"><span class="toc-number">4.3.</span> <span class="toc-text">可视化价值：</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应">从基因到结构：用PyMOL可视化理解分子对接与突变效应</a><time datetime="2025-11-09T14:26:00.000Z" title="Created 2025-11-09 22:26:00">2025-11-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/06/rosetta/" title="Rosetta全面使用指南">Rosetta全面使用指南</a><time datetime="2025-11-06T14:26:00.000Z" title="Created 2025-11-06 22:26:00">2025-11-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/05/alphafold-pymol/" title="AlphaFold与PyMOL的示例">AlphaFold与PyMOL的示例</a><time datetime="2025-11-05T14:26:00.000Z" title="Created 2025-11-05 22:26:00">2025-11-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/03/dan-bai-pei-ti-xiang-hu-zuo-yong/" title="从可视化到设计：深入理解蛋白-配体相互作用的分子世界">从可视化到设计：深入理解蛋白-配体相互作用的分子世界</a><time datetime="2025-11-03T14:26:00.000Z" title="Created 2025-11-03 22:26:00">2025-11-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/03/pymol/" title="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片">【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</a><time datetime="2025-11-03T04:26:00.000Z" title="Created 2025-11-03 12:26:00">2025-11-03</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
+<h2 id="💡-技术要点与注意事项"><a href="#💡-技术要点与注意事项" class="headerlink" title="💡 技术要点与注意事项"></a>💡 技术要点与注意事项</h2><h3 id="参数选择策略"><a href="#参数选择策略" class="headerlink" title="参数选择策略"></a>参数选择策略</h3><ol>
+<li><p><strong>一致率阈值（90%）</strong>：</p>
+<ul>
+<li>平衡了统计严格性和生物学现实性</li>
+<li>允许少量个体变异或测序错误</li>
+<li>可根据样本量调整：样本量越大，阈值可适当提高</li>
+</ul>
+</li>
+<li><p><strong>样本量要求</strong>：</p>
+<ul>
+<li>每组至少20个有效样本确保统计可靠性</li>
+<li>小样本群体建议调整阈值或使用其他统计方法</li>
+</ul>
+</li>
+<li><p><strong>杂合位点处理</strong>：</p>
+<ul>
+<li>默认排除杂合型作为”一致”基因型</li>
+<li>对于异交物种可考虑包含杂合型</li>
+</ul>
+</li>
+</ol>
+<h3 id="常见问题排查"><a href="#常见问题排查" class="headerlink" title="常见问题排查"></a>常见问题排查</h3><ol>
+<li><p><strong>结果位点过少</strong>：</p>
+<ul>
+<li>检查群体间真实分化程度</li>
+<li>验证一致率阈值是否过高</li>
+<li>确认样本分组是否正确</li>
+</ul>
+</li>
+<li><p><strong>热图显示异常</strong>：</p>
+<ul>
+<li>检查基因型编码格式</li>
+<li>确认染色体坐标系统一</li>
+<li>验证样本名称一致性</li>
+</ul>
+</li>
+<li><p><strong>性能优化建议</strong>：</p>
+<ul>
+<li>大文件使用<code>data.table</code>替代<code>data.frame</code></li>
+<li>分染色体并行处理</li>
+<li>预处理时过滤低质量位点</li>
+</ul>
+</li>
+</ol>
+<h2 id="🚀-下游分析方向"><a href="#🚀-下游分析方向" class="headerlink" title="🚀 下游分析方向"></a>🚀 下游分析方向</h2><p>筛选得到的差异位点可用于：</p>
+<ol>
+<li><p><strong>基因组扫描分析</strong>：</p>
+<ul>
+<li>识别选择扫荡区域</li>
+<li>定位群体分化热点</li>
+</ul>
+</li>
+<li><p><strong>功能注释</strong>：</p>
+<ul>
+<li>基因本体富集分析</li>
+<li>通路分析</li>
+</ul>
+</li>
+<li><p><strong>育种应用</strong>：</p>
+<ul>
+<li>开发群体特异性分子标记</li>
+<li>辅助亲本选配</li>
+</ul>
+</li>
+<li><p><strong>进化研究</strong>：</p>
+<ul>
+<li>构建系统发育树</li>
+<li>群体结构分析</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><strong>总结</strong>：本流程提供了一个完整的从原始基因型数据到高质量差异位点筛选的解决方案，结合严格的统计标准和直观的可视化验证，确保结果的生物学可靠性和技术可重复性。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://0HHHHHH0.github.io">HHHH</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://0hhhhhh0.github.io/2025/09/03/48/">https://0hhhhhh0.github.io/2025/09/03/48/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/uploads/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/09/03/50/" title="Typecho快速修改文章图片和文件链接地址"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Typecho快速修改文章图片和文件链接地址</div></div><div class="info-2"><div class="info-item-1">说明为了使我们的博客速度更快，图片等一些文件会采用外接的形式。但当跟换域名或CDN图片地址时，需要大批修正一切文章的援用图片链接和一些文件链接地址，手动修正又烦劳，这里就说一下通过 phpMyAdmin工具快速修正数据库文章图片，文件链接地址。  1.安装如果您使用的是基于 Debian 或 Ubuntu 的 Linux 系统，可以尝试使用 apt-get 命令。例如：  sudo apt-get updatesudo apt-get install phpmyadmin   The phpmyadmin package must have a database installed and configured before it cwith dbconfig-common. If you are an advanced database administrator and know that you want to performdatabase has already been installed and configured, you should refuse this ...</div></div></div></a><a class="pagination-related" href="/2025/08/03/40/" title="5.各样本SNP位点信息可视化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">5.各样本SNP位点信息可视化</div></div><div class="info-2"><div class="info-item-1"> 前面我们对各样本的SNP位点信息进行了提取，现在我们要进行SNP位点的筛选，相对快捷的办法就是可视化，下面我们进行分析  需要用到的R包 library(tidyverse) library(vcfR) library(data.table) library(ggplot2) library(dplyr) library(tidyr) 下面以单个基因为例进行分析 # 先读取数据（不自动解析列名） snp_data %   as.matrix()  # 5. 可视化设置 ------------------------------------------------ # 颜色映射 gt_colors %   layout(     title = list(text = "SNP Genotype Heatmap", y = 0.98),     xaxis = list(       title = "Genomic Position",       rangeslider = list(visible = TRUE),  # 横向滚动条       type = "categ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">28</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">15</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8E%AF-%E5%88%86%E6%9E%90%E7%9B%AE%E6%A0%87%E4%B8%8E%E7%94%9F%E7%89%A9%E5%AD%A6%E6%84%8F%E4%B9%89"><span class="toc-number">1.</span> <span class="toc-text">🎯 分析目标与生物学意义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%A7-1-%E7%AD%9B%E9%80%89%E6%B5%81%E7%A8%8B%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">🔧 1. 筛选流程设计与实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E7%AE%97%E6%B3%95%E9%80%BB%E8%BE%91"><span class="toc-number">2.1.</span> <span class="toc-text">核心算法逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%9B%E9%80%89%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3"><span class="toc-number">2.2.</span> <span class="toc-text">筛选命令详解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%9B%E9%80%89%E5%91%BD%E4%BB%A4%E7%9A%84%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E8%AF%B4%E6%98%8E"><span class="toc-number">2.3.</span> <span class="toc-text">筛选命令的输入输出说明</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E8%A6%81%E6%B1%82%EF%BC%9A"><span class="toc-number">2.3.1.</span> <span class="toc-text">输入文件格式要求：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E7%BB%93%E6%9E%9C%E5%86%85%E5%AE%B9%EF%BC%9A"><span class="toc-number">2.3.2.</span> <span class="toc-text">输出结果内容：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E8%BE%93%E5%87%BA%E8%A7%A3%E8%AF%BB%EF%BC%9A"><span class="toc-number">2.3.3.</span> <span class="toc-text">关键输出解读：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%8A-2-%E7%BB%93%E6%9E%9C%E5%8F%AF%E8%A7%86%E5%8C%96%E4%B8%8E%E8%B4%A8%E6%8E%A7"><span class="toc-number">3.</span> <span class="toc-text">📊 2. 结果可视化与质控</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.1.</span> <span class="toc-text">可视化代码实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E4%BB%A3%E7%A0%81%E7%9A%84%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E8%AF%B4%E6%98%8E"><span class="toc-number">3.2.</span> <span class="toc-text">可视化代码的输入输出说明</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F%EF%BC%9A"><span class="toc-number">3.2.1.</span> <span class="toc-text">输入数据格式：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E5%8F%AF%E8%A7%86%E5%8C%96%E7%BB%93%E6%9E%9C%EF%BC%9A"><span class="toc-number">3.2.2.</span> <span class="toc-text">输出可视化结果：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E4%BB%B7%E5%80%BC%EF%BC%9A"><span class="toc-number">3.2.3.</span> <span class="toc-text">可视化价值：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%92%A1-%E6%8A%80%E6%9C%AF%E8%A6%81%E7%82%B9%E4%B8%8E%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">4.</span> <span class="toc-text">💡 技术要点与注意事项</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E9%80%89%E6%8B%A9%E7%AD%96%E7%95%A5"><span class="toc-number">4.1.</span> <span class="toc-text">参数选择策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5"><span class="toc-number">4.2.</span> <span class="toc-text">常见问题排查</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%9A%80-%E4%B8%8B%E6%B8%B8%E5%88%86%E6%9E%90%E6%96%B9%E5%90%91"><span class="toc-number">5.</span> <span class="toc-text">🚀 下游分析方向</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应">从基因到结构：用PyMOL可视化理解分子对接与突变效应</a><time datetime="2025-11-09T14:26:00.000Z" title="Created 2025-11-09 22:26:00">2025-11-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/06/rosetta/" title="Rosetta全面使用指南">Rosetta全面使用指南</a><time datetime="2025-11-06T14:26:00.000Z" title="Created 2025-11-06 22:26:00">2025-11-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/05/alphafold-pymol/" title="AlphaFold与PyMOL的示例">AlphaFold与PyMOL的示例</a><time datetime="2025-11-05T14:26:00.000Z" title="Created 2025-11-05 22:26:00">2025-11-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/03/dan-bai-pei-ti-xiang-hu-zuo-yong/" title="从可视化到设计：深入理解蛋白-配体相互作用的分子世界">从可视化到设计：深入理解蛋白-配体相互作用的分子世界</a><time datetime="2025-11-03T14:26:00.000Z" title="Created 2025-11-03 22:26:00">2025-11-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/03/pymol/" title="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片">【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</a><time datetime="2025-11-03T04:26:00.000Z" title="Created 2025-11-03 12:26:00">2025-11-03</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
    #sidebar_search_box input[type=text]{width:calc(100% - 24px)}
 }
 </style><script type="text/javascript" id="maid-script" src="https://unpkg.com/mermaid@undefined/dist/mermaid.min.js?v=undefined"></script><script>if (window.mermaid) {

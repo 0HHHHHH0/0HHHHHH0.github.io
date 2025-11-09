@@ -212,6 +212,23 @@
     E --&gt; F[“AI革命<br>（AlphaFold2等<br>2020s-）”]
     F --&gt; G[精度接近实验水平]</pre>
 
+<pre class="mermaid">flowchart TD
+    A[蛋白质序列] --&gt; B[同源建模]
+    A --&gt; C[Threading]
+    A --&gt; D[Ab initio折叠]
+    
+    B --&gt; E[集成方法]
+    C --&gt; E
+    D --&gt; E
+    E --&gt; F[AI革命 AlphaFold2]
+    F --&gt; G[精度接近实验水平]
+    
+    style B fill:#e1f5fe
+    style C fill:#f3e5f5
+    style D fill:#e8f5e8
+    style F fill:#fff3e0
+    style G fill:#ffebee</pre>
+
 <ul>
 <li><p><strong>i) 同源建模</strong>：</p>
 <ul>

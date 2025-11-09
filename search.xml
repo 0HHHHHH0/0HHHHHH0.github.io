@@ -943,7 +943,21 @@ htmlwidgets::saveWidget(
 <li><strong>质量控制</strong>：确保结果的统计学可靠性</li>
 </ul>
 <hr>
-<h2 id="1-筛选的命令如下"><a href="#1-筛选的命令如下" class="headerlink" title="1.筛选的命令如下"></a>1.筛选的命令如下</h2><pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash">#!/bin/bash
+<h2 id="🎯-分析目标与生物学意义"><a href="#🎯-分析目标与生物学意义" class="headerlink" title="🎯 分析目标与生物学意义"></a>🎯 分析目标与生物学意义</h2><p>在群体遗传学和分子育种研究中，识别群体特异性变异位点是理解物种分化、适应性进化以及关键性状遗传基础的核心任务。本次分析旨在：</p>
+<ul>
+<li><strong>揭示群体分化标记</strong>：找到在不同群体间固定差异的SNP位点</li>
+<li><strong>定位候选基因区域</strong>：为后续的功能验证提供可靠的候选位点</li>
+<li><strong>支撑分子标记开发</strong>：为育种标记辅助选择提供理论基础</li>
+</ul>
+<h2 id="🔧-1-筛选流程设计与实现"><a href="#🔧-1-筛选流程设计与实现" class="headerlink" title="🔧 1. 筛选流程设计与实现"></a>🔧 1. 筛选流程设计与实现</h2><h3 id="核心算法逻辑"><a href="#核心算法逻辑" class="headerlink" title="核心算法逻辑"></a>核心算法逻辑</h3><pre class="mermaid">graph TD
+    A[原始基因型数据] --&gt; B[群体分组统计]
+    B --&gt; C{组内一致性检验}
+    C --&gt;|通过| D{组间差异性检验}
+    C --&gt;|不通过| E[过滤掉]
+    D --&gt;|有差异| F[输出结果]
+    D --&gt;|无差异| E</pre>
+
+<h3 id="筛选命令详解"><a href="#筛选命令详解" class="headerlink" title="筛选命令详解"></a>筛选命令详解</h3><pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash">#!/bin/bash
 # filename: filter_variants_integrated.sh
 # Usage: ./filter_variants_integrated.sh [threshold] [input_file] [output_file] [include_het] [diff_mode]
 
@@ -1031,10 +1045,9 @@ END {
 RESULT_COUNT=$(($(wc -l &lt; "$OUTPUT_FILE") - 1))
 log "INFO" "分析完成！ 筛选通过: $RESULT_COUNT"
 echo "结果输出到: $OUTPUT_FILE"
-echo "日志文件: $LOG_FILE"
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+echo "日志文件: $LOG_FILE"<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<h2 id="筛选命令的输入输出说明"><a href="#筛选命令的输入输出说明" class="headerlink" title="筛选命令的输入输出说明"></a>筛选命令的输入输出说明</h2><h3 id="输入文件格式要求："><a href="#输入文件格式要求：" class="headerlink" title="输入文件格式要求："></a>输入文件格式要求：</h3><pre class="line-numbers language-none"><code class="language-none"># 输入文件应该是制表符分隔的文本文件，包含以下列：
+<h3 id="筛选命令的输入输出说明"><a href="#筛选命令的输入输出说明" class="headerlink" title="筛选命令的输入输出说明"></a>筛选命令的输入输出说明</h3><h4 id="输入文件格式要求："><a href="#输入文件格式要求：" class="headerlink" title="输入文件格式要求："></a>输入文件格式要求：</h4><pre class="line-numbers language-none"><code class="language-none"># 输入文件应该是制表符分隔的文本文件，包含以下列：
 # CHROM  POS     REF     ALT     Sample1 Sample2 Sample3 ... SampleN
 # 1      1000    A       G       0/1     1/1     0/0     ... 0/1
 # 1      2000    C       T       1/1     0/1     1/1     ... 0/0
@@ -1045,9 +1058,7 @@ echo "日志文件: $LOG_FILE"
 # 0/1: 杂合型
 # ./.: 缺失数据<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-
-
-<h3 id="输出结果内容："><a href="#输出结果内容：" class="headerlink" title="输出结果内容："></a>输出结果内容：</h3><pre class="line-numbers language-none"><code class="language-none"># 输出文件在原文件基础上添加以下统计列：
+<h4 id="输出结果内容："><a href="#输出结果内容：" class="headerlink" title="输出结果内容："></a>输出结果内容：</h4><pre class="line-numbers language-none"><code class="language-none"># 输出文件在原文件基础上添加以下统计列：
 # bm_ref    bm_alt    bm_het    bm_total  bm_ref_ratio  bm_alt_ratio  bm_het_ratio  bm_gt
 # wm_ref    wm_alt    wm_het    wm_total  wm_ref_ratio  wm_alt_ratio  wm_het_ratio  wm_gt
 
@@ -1056,16 +1067,12 @@ echo "日志文件: $LOG_FILE"
 # 1      1000  A    G    ...  18      2       REF    2       18      ALT
 # 这表示：BM组18个样本为REF型，WM组18个样本为ALT型，符合组间差异条件<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-
-
-<h3 id="关键输出解读："><a href="#关键输出解读：" class="headerlink" title="关键输出解读："></a>关键输出解读：</h3><ul>
+<h4 id="关键输出解读："><a href="#关键输出解读：" class="headerlink" title="关键输出解读："></a>关键输出解读：</h4><ul>
 <li><strong>bm_gt/wm_gt</strong>: 群体基因型判定（REF/ALT/HET/MIXED）</li>
 <li>***_ratio**: 各类基因型在群体中的比例</li>
 <li><strong>筛选逻辑</strong>: BM组和WM组基因型相反且各自组内一致率&gt;90%的位点</li>
-<li></li>
 </ul>
-<h2 id="2-可视化代码"><a href="#2-可视化代码" class="headerlink" title="2. 可视化代码"></a>2. 可视化代码</h2><pre class="line-numbers language-R" data-language="R"><code class="language-R">
-library(tidyverse)
+<h2 id="📊-2-结果可视化与质控"><a href="#📊-2-结果可视化与质控" class="headerlink" title="📊 2. 结果可视化与质控"></a>📊 2. 结果可视化与质控</h2><h3 id="可视化代码实现"><a href="#可视化代码实现" class="headerlink" title="可视化代码实现"></a>可视化代码实现</h3><pre class="line-numbers language-R" data-language="R"><code class="language-R">library(tidyverse)
 library(vcfR)
 library(data.table)
 library(ggplot2)
@@ -1098,10 +1105,9 @@ snp_data %
 fig  # 在RStudio中查看
 
 # 可选：保存为HTML
-# htmlwidgets::saveWidget(fig, "snp_heatmap.html", selfcontained = TRUE)
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+# htmlwidgets::saveWidget(fig, "snp_heatmap.html", selfcontained = TRUE)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<h2 id="可视化代码的输入输出说明"><a href="#可视化代码的输入输出说明" class="headerlink" title="可视化代码的输入输出说明"></a>可视化代码的输入输出说明</h2><h3 id="输入数据格式："><a href="#输入数据格式：" class="headerlink" title="输入数据格式："></a>输入数据格式：</h3><pre class="line-numbers language-none"><code class="language-none"># 输入数据应为数据框格式，包含以下列：
+<h3 id="可视化代码的输入输出说明"><a href="#可视化代码的输入输出说明" class="headerlink" title="可视化代码的输入输出说明"></a>可视化代码的输入输出说明</h3><h4 id="输入数据格式："><a href="#输入数据格式：" class="headerlink" title="输入数据格式："></a>输入数据格式：</h4><pre class="line-numbers language-none"><code class="language-none"># 输入数据应为数据框格式，包含以下列：
 # CHROM  POS     Sample1 Sample2 Sample3 ... SampleN
 # 1      1000    0/1     1/1     0/0     ... 0/1
 # 1      2000    1/1     0/1     1/1     ... 0/0
@@ -1110,9 +1116,7 @@ fig  # 在RStudio中查看
 # vcf &lt;- read.vcfR("input.vcf")
 # snp_data &lt;- vcfR2tidy(vcf)$fix<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-
-
-<h3 id="输出可视化结果："><a href="#输出可视化结果：" class="headerlink" title="输出可视化结果："></a>输出可视化结果：</h3><pre class="line-numbers language-none"><code class="language-none"># 1. 交互式热图 - 在RStudio中显示或保存为HTML
+<h4 id="输出可视化结果："><a href="#输出可视化结果：" class="headerlink" title="输出可视化结果："></a>输出可视化结果：</h4><pre class="line-numbers language-none"><code class="language-none"># 1. 交互式热图 - 在RStudio中显示或保存为HTML
 #    - X轴: 基因组位置
 #    - Y轴: 样本名称  
 #    - 颜色: 蓝色(0/0), 红色(1/1), 黄色(0/1), 灰色(缺失)
@@ -1127,14 +1131,85 @@ fig  # 在RStudio中查看
 #    - 鼠标悬停显示具体基因型信息
 #    - 自适应布局，适合发表级图片输出<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-
-
-<h3 id="可视化价值："><a href="#可视化价值：" class="headerlink" title="可视化价值："></a>可视化价值：</h3><ul>
+<h4 id="可视化价值："><a href="#可视化价值：" class="headerlink" title="可视化价值："></a>可视化价值：</h4><ul>
 <li><strong>快速质控</strong>: 一眼识别数据质量问题</li>
 <li><strong>模式识别</strong>: 直观看到群体分层和基因型分布模式</li>
 <li><strong>结果验证</strong>: 确认筛选出的差异位点确实显示预期模式</li>
 <li><strong>报告展示</strong>: 生成可用于发表的高质量图表</li>
 </ul>
+<h2 id="💡-技术要点与注意事项"><a href="#💡-技术要点与注意事项" class="headerlink" title="💡 技术要点与注意事项"></a>💡 技术要点与注意事项</h2><h3 id="参数选择策略"><a href="#参数选择策略" class="headerlink" title="参数选择策略"></a>参数选择策略</h3><ol>
+<li><p><strong>一致率阈值（90%）</strong>：</p>
+<ul>
+<li>平衡了统计严格性和生物学现实性</li>
+<li>允许少量个体变异或测序错误</li>
+<li>可根据样本量调整：样本量越大，阈值可适当提高</li>
+</ul>
+</li>
+<li><p><strong>样本量要求</strong>：</p>
+<ul>
+<li>每组至少20个有效样本确保统计可靠性</li>
+<li>小样本群体建议调整阈值或使用其他统计方法</li>
+</ul>
+</li>
+<li><p><strong>杂合位点处理</strong>：</p>
+<ul>
+<li>默认排除杂合型作为”一致”基因型</li>
+<li>对于异交物种可考虑包含杂合型</li>
+</ul>
+</li>
+</ol>
+<h3 id="常见问题排查"><a href="#常见问题排查" class="headerlink" title="常见问题排查"></a>常见问题排查</h3><ol>
+<li><p><strong>结果位点过少</strong>：</p>
+<ul>
+<li>检查群体间真实分化程度</li>
+<li>验证一致率阈值是否过高</li>
+<li>确认样本分组是否正确</li>
+</ul>
+</li>
+<li><p><strong>热图显示异常</strong>：</p>
+<ul>
+<li>检查基因型编码格式</li>
+<li>确认染色体坐标系统一</li>
+<li>验证样本名称一致性</li>
+</ul>
+</li>
+<li><p><strong>性能优化建议</strong>：</p>
+<ul>
+<li>大文件使用<code>data.table</code>替代<code>data.frame</code></li>
+<li>分染色体并行处理</li>
+<li>预处理时过滤低质量位点</li>
+</ul>
+</li>
+</ol>
+<h2 id="🚀-下游分析方向"><a href="#🚀-下游分析方向" class="headerlink" title="🚀 下游分析方向"></a>🚀 下游分析方向</h2><p>筛选得到的差异位点可用于：</p>
+<ol>
+<li><p><strong>基因组扫描分析</strong>：</p>
+<ul>
+<li>识别选择扫荡区域</li>
+<li>定位群体分化热点</li>
+</ul>
+</li>
+<li><p><strong>功能注释</strong>：</p>
+<ul>
+<li>基因本体富集分析</li>
+<li>通路分析</li>
+</ul>
+</li>
+<li><p><strong>育种应用</strong>：</p>
+<ul>
+<li>开发群体特异性分子标记</li>
+<li>辅助亲本选配</li>
+</ul>
+</li>
+<li><p><strong>进化研究</strong>：</p>
+<ul>
+<li>构建系统发育树</li>
+<li>群体结构分析</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><strong>总结</strong>：本流程提供了一个完整的从原始基因型数据到高质量差异位点筛选的解决方案，结合严格的统计标准和直观的可视化验证，确保结果的生物学可靠性和技术可重复性。</p>
 ]]></content>
       <categories>
         <category>默认分类</category>
@@ -1279,142 +1354,6 @@ SHOW GRANTS FOR <span class="token string">'phpmyadmin'</span>@<span class="toke
 ]]></content>
       <categories>
         <category>WIFI</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>基因结构</title>
-    <url>/2025/09/17/55/</url>
-    <content><![CDATA[<h2 id="结构图"><a href="#结构图" class="headerlink" title="结构图"></a>结构图</h2><p>!!!</p>
-<pre><code>    flowchart TD
-    A["一个完整的真核生物基因（DNA模板链）"]
-    
-    subgraph A_Sub[基因结构]
-        direction LR
-        Promoter[启动子 Promoter]
-        Exon1[外显子1 Exon 1]
-        Intron[内含子 Intron]
-        Exon2[外显子2 Exon 2]
-        Terminator[终止子 Terminator]
-    end
-    
-    A --&gt; A_Sub
-    
-    subgraph Transcription[第一步：转录]
-        direction TB
-        B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
-    end
-    
-    A_Sub --转录--&gt; Transcription
-    
-    subgraph Splicing[第二步：加工（剪切与拼接）]
-        direction TB
-        C["切除内含子并将外显子连接起来"]
-    end
-    
-    Transcription --加工--&gt; Splicing
-    
-    subgraph Final_mRNA[第三步：成熟mRNA]
-        direction LR
-        D["5' 帽子"]
-        E["5' UTR"]
-        F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
-        G["3' UTR"]
-        H["多聚A尾巴"]
-    end
-    
-    Splicing --"拼接后形成"--&gt; Final_mRNA
-    
-    %% 定义关系
-    Exon1 --包含--&gt; UTR1[5' UTR部分]
-    Exon1 --包含--&gt; CDS_Part1[CDS部分]
-    Exon2 --包含--&gt; CDS_Part2[CDS部分]
-    Exon2 --包含--&gt; UTR2[3' UTR部分]
-    
-    UTR1 --最终成为--&gt; E
-    CDS_Part1 --最终成为--&gt; F
-    CDS_Part2 --最终成为--&gt; F
-    UTR2 --最终成为--&gt; G
-    
-    Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
-    F --&gt; I
-    
-    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
-    classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
-    classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
-    
-    class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
-    class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
-    class Transcription,Splicing process;
-</code></pre>
-<p>!!!</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-
-<p>下面是代码</p>
-<pre class="mermaid">flowchart TD
-A["一个完整的真核生物基因（DNA模板链）"]
-
-subgraph A_Sub[基因结构]
-    direction LR
-    Promoter[启动子 Promoter]
-    Exon1[外显子1 Exon 1]
-    Intron[内含子 Intron]
-    Exon2[外显子2 Exon 2]
-    Terminator[终止子 Terminator]
-end
-
-A --&gt; A_Sub
-
-subgraph Transcription[第一步：转录]
-    direction TB
-    B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
-end
-
-A_Sub --转录--&gt; Transcription
-
-subgraph Splicing[第二步：加工（剪切与拼接）]
-    direction TB
-    C["切除内含子并将外显子连接起来"]
-end
-
-Transcription --加工--&gt; Splicing
-
-subgraph Final_mRNA[第三步：成熟mRNA]
-    direction LR
-    D["5' 帽子"]
-    E["5' UTR"]
-    F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
-    G["3' UTR"]
-    H["多聚A尾巴"]
-end
-
-Splicing --"拼接后形成"--&gt; Final_mRNA
-
-%% 定义关系
-Exon1 --包含--&gt; UTR1[5' UTR部分]
-Exon1 --包含--&gt; CDS_Part1[CDS部分]
-Exon2 --包含--&gt; CDS_Part2[CDS部分]
-Exon2 --包含--&gt; UTR2[3' UTR部分]
-
-UTR1 --最终成为--&gt; E
-CDS_Part1 --最终成为--&gt; F
-CDS_Part2 --最终成为--&gt; F
-UTR2 --最终成为--&gt; G
-
-Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
-F --&gt; I
-
-classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
-classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
-classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
-classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
-
-class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
-class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
-class Transcription,Splicing process;</pre>]]></content>
-      <categories>
-        <category>重测序</category>
       </categories>
   </entry>
   <entry>
@@ -1699,6 +1638,142 @@ perl retrieve_seq_from_fasta.pl --format refGene --seqfile Arabidopsis_thaliana.
 <p>ANNOVAR注释变异VCF结果说明<br><a href="https://www.omicsclass.com/article/464">https://www.omicsclass.com/article/464</a><br><a href="https://www.omicsclass.com/article/804">https://www.omicsclass.com/article/804</a><br><a href="http://blog.sina.com.cn/s/blog_71df25810102ybtt.html">http://blog.sina.com.cn/s/blog_71df25810102ybtt.html</a></p>
 <p>Hui Y, Kai W. Genomic variant annotation and prioritization with ANNOVAR and wANNOVAR[J]. Nature Protocols, 2015, 10(10).</p>
 ]]></content>
+      <categories>
+        <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>基因结构</title>
+    <url>/2025/09/17/55/</url>
+    <content><![CDATA[<h2 id="结构图"><a href="#结构图" class="headerlink" title="结构图"></a>结构图</h2><p>!!!</p>
+<pre><code>    flowchart TD
+    A["一个完整的真核生物基因（DNA模板链）"]
+    
+    subgraph A_Sub[基因结构]
+        direction LR
+        Promoter[启动子 Promoter]
+        Exon1[外显子1 Exon 1]
+        Intron[内含子 Intron]
+        Exon2[外显子2 Exon 2]
+        Terminator[终止子 Terminator]
+    end
+    
+    A --&gt; A_Sub
+    
+    subgraph Transcription[第一步：转录]
+        direction TB
+        B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
+    end
+    
+    A_Sub --转录--&gt; Transcription
+    
+    subgraph Splicing[第二步：加工（剪切与拼接）]
+        direction TB
+        C["切除内含子并将外显子连接起来"]
+    end
+    
+    Transcription --加工--&gt; Splicing
+    
+    subgraph Final_mRNA[第三步：成熟mRNA]
+        direction LR
+        D["5' 帽子"]
+        E["5' UTR"]
+        F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
+        G["3' UTR"]
+        H["多聚A尾巴"]
+    end
+    
+    Splicing --"拼接后形成"--&gt; Final_mRNA
+    
+    %% 定义关系
+    Exon1 --包含--&gt; UTR1[5' UTR部分]
+    Exon1 --包含--&gt; CDS_Part1[CDS部分]
+    Exon2 --包含--&gt; CDS_Part2[CDS部分]
+    Exon2 --包含--&gt; UTR2[3' UTR部分]
+    
+    UTR1 --最终成为--&gt; E
+    CDS_Part1 --最终成为--&gt; F
+    CDS_Part2 --最终成为--&gt; F
+    UTR2 --最终成为--&gt; G
+    
+    Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
+    F --&gt; I
+    
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
+    classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
+    classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
+    
+    class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
+    class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
+    class Transcription,Splicing process;
+</code></pre>
+<p>!!!</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+
+<p>下面是代码</p>
+<pre class="mermaid">flowchart TD
+A["一个完整的真核生物基因（DNA模板链）"]
+
+subgraph A_Sub[基因结构]
+    direction LR
+    Promoter[启动子 Promoter]
+    Exon1[外显子1 Exon 1]
+    Intron[内含子 Intron]
+    Exon2[外显子2 Exon 2]
+    Terminator[终止子 Terminator]
+end
+
+A --&gt; A_Sub
+
+subgraph Transcription[第一步：转录]
+    direction TB
+    B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
+end
+
+A_Sub --转录--&gt; Transcription
+
+subgraph Splicing[第二步：加工（剪切与拼接）]
+    direction TB
+    C["切除内含子并将外显子连接起来"]
+end
+
+Transcription --加工--&gt; Splicing
+
+subgraph Final_mRNA[第三步：成熟mRNA]
+    direction LR
+    D["5' 帽子"]
+    E["5' UTR"]
+    F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
+    G["3' UTR"]
+    H["多聚A尾巴"]
+end
+
+Splicing --"拼接后形成"--&gt; Final_mRNA
+
+%% 定义关系
+Exon1 --包含--&gt; UTR1[5' UTR部分]
+Exon1 --包含--&gt; CDS_Part1[CDS部分]
+Exon2 --包含--&gt; CDS_Part2[CDS部分]
+Exon2 --包含--&gt; UTR2[3' UTR部分]
+
+UTR1 --最终成为--&gt; E
+CDS_Part1 --最终成为--&gt; F
+CDS_Part2 --最终成为--&gt; F
+UTR2 --最终成为--&gt; G
+
+Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
+F --&gt; I
+
+classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
+classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
+classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
+classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
+
+class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
+class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
+class Transcription,Splicing process;</pre>]]></content>
       <categories>
         <category>重测序</category>
       </categories>
@@ -2963,6 +3038,304 @@ GFF_FILE="/path/to/your/genome.gff"  # 改为你实际的GFF文件路径
       </categories>
   </entry>
   <entry>
+    <title>【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</title>
+    <url>/2025/11/03/pymol/</url>
+    <content><![CDATA[<h1 id="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"><a href="#【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片" class="headerlink" title="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"></a>【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</h1><blockquote>
+<p>转载自：<code>https://blog.csdn.net/qq_37126941/article/details/115793062</code>。</p>
+<p>本文将以D715-2441抑制剂与PB2蛋白复合物为例，手把手教你用PyMOL制作专业的结合模式图</p>
+</blockquote>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文将带大家使用免费开源的PyMOL软件绘制D715-2441蛋白与与<a href="https://link.zhihu.com/?target=https://www.rcsb.org/structure/4CB4">PB2cap配体分子</a>的结合模式图。</p>
+<p>我们先来看一张成品图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5bb95a5e415241b5719ec50baf888d67.jpeg" alt="在这里插入图片描述"></p>
+<h2 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h2><p>流感病毒PB2蛋白是重要的药物靶点，D715-2441是一个新型抗流感病毒化合物。通过分子对接分析，我们发现以下关键相互作用：</p>
+<p>1、化合物D715-2441的<code>芳环</code>夹在氨基酸残基<code>H357</code>和<code>F404</code>之间并形成<code>π-π</code>堆积作用，还与<code>F404</code>形成疏水作用；</p>
+<p>2、化合物苯环上的<code>羟基</code>与E361的<code>羧基</code>和K376的<code>N+原子</code>形成氢键作用，另一个<code>羟基</code>与F404的<code>O原子</code>形成氢键作用；</p>
+<p>3、化合物吡喃酮环酯基与K339的<code>N+原子</code>和H357的<code>咪唑基</code>形成盐桥作用。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><blockquote>
+<p>PyMOL作图通常是对特定对象进行展示形式、颜色、字体等方面的修饰。PyMOL的精髓在于命令行与鼠标的配合使用，本文高度依赖命令行，请做好心理准备。大多数命令格式较为一致，请注意总结归纳。</p>
+</blockquote>
+<h3 id="1-下载蛋白结构"><a href="#1-下载蛋白结构" class="headerlink" title="1. 下载蛋白结构"></a>1. 下载蛋白结构</h3><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 在PyMOL中直接下载PDB结构</span>
+fetch 4cb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h3 id="2-获取配体结构"><a href="#2-获取配体结构" class="headerlink" title="2. 获取配体结构"></a>2. 获取配体结构</h3><p>由于D715-2441不在PDB中，我们需要自行准备：</p>
+<p><strong>方法一：在线SMILES转换</strong></p>
+<p>​	1.使用<strong>PubChem</strong>: <a href="https://pubchem.ncbi.nlm.nih.gov/">https://pubchem.ncbi.nlm.nih.gov/</a></p>
+<p>​	2.绘制完后，SIMLES：<code>C1=CC=CC3=C1C2=C(C=C(C=C2O[H])O[H])OC3=O</code></p>
+<p>​	3.访问：<strong><a href="https://cactus.nci.nih.gov/translate/">https://cactus.nci.nih.gov/translate/</a></strong></p>
+<p>​	4.在输入框粘贴：<code>C1=CC=CC3=C1C2=C(C=C(C=C2O[H])O[H])OC3=O</code></p>
+<p>​	5.选择格式：<strong>Protein Data Bank (pdb)</strong></p>
+<p>​	6.点击 <strong>Translate</strong></p>
+<p>​	7.下载文件并在PyMOL中加载</p>
+<p><strong>方法二：手动构建</strong><br>在PyMOL中使用Builder工具逐步绘制分子结构</p>
+<h2 id="基础操作流程"><a href="#基础操作流程" class="headerlink" title="基础操作流程"></a>基础操作流程</h2><h3 id="1-初始设置"><a href="#1-初始设置" class="headerlink" title="1. 初始设置"></a>1. 初始设置</h3><p>打开<code>PyMOL</code>软件，导入刚才下载的复合物PDB文件（rli-D715-2441-1.pdb）。</p>
+<p>注意：有两种方法导入文件，一种是鼠标点击菜单栏File -&gt; Open…，另一种是通过命令行。在这里，我们采用命令来操作，因为这样可以同时把工作目录设置好，方便后续保存文件。</p>
+<p>假设我们的工作目录为<code>D:\demo</code>。注意：路径中不要有中文和空格，这是导致很多计算类软件（尤其是免费软件）出现问题的原因。</p>
+<pre class="line-numbers language-none"><code class="language-none"># 设置工作目录
+cd E:\下载\Pymol\test
+
+# 基本显示设置
+hide everything
+show cartoon, 4cb4
+show sticks, resn MGT  # 参考配体
+color gray, 4cb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>在PyMOL上界面或下界面的命令输入框输入以下命令（PyMOL&gt;表示这是PyMOL的命令），每行输入完毕后按【Enter】键：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/a777cf49858f76eec599ecfd8f881301.jpeg" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/fa8eaf9a056c73c583d30921f453ab60.png" alt="在这里插入图片描述"></p>
+<h3 id="2-设置操作对象"><a href="#2-设置操作对象" class="headerlink" title="2 设置操作对象"></a>2 设置操作对象</h3><p><strong>结合模式图</strong>通常涉及到<code>受体</code>（蛋白）与<code>配体</code>（小分子化合物）两部分（有的还可能涉及<code>水分子</code>、<code>金属离子</code>、<code>辅酶</code>等等），需为之分别设置对象，以便后续操作。<strong>设置配体对象</strong>：按照下图顺序，将配体设置为<code>lig</code>对象。<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/2568e1b24aca318f02d497b946f2635b.png" alt="在这里插入图片描述"></p>
+<p><strong>设置关键残基对象</strong>: 关键残基包括：A链的K339、H357、E361、K376和F404。由于该蛋白只有一条链，在使用命令选择残基时，可以不用指定链名。按照下图顺序，将关键残基设置为res对象。</p>
+<p><code>select res, resi 339+357+361+376+404</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/3a9fd3f025f59f1e691f72009f398653.png" alt="在这里插入图片描述"></p>
+<h3 id="3-显示样式优化"><a href="#3-显示样式优化" class="headerlink" title="3. 显示样式优化"></a>3. 显示样式优化</h3><p>在PyMOL中输入以下命令：</p>
+<pre class="line-numbers language-none"><code class="language-none"># 基本显示设置
+hide everything
+show sticks, lig | res
+hide sticks, h.
+zoom lig | res
+# 颜色设置
+color wheat, lig &amp; name C*
+# 标签设置
+set label_size, 30
+set label_font_id, 9<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/8eec91dbd5bb84f2cc2a553f8aaca60c.jpeg" alt="在这里插入图片描述"><br>然后，进行鼠标操作：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/3f3c38acd7270f0ad5a310dbfa8b8189.png" alt="在这里插入图片描述"></p>
+<h4 id="绘制相互作用力"><a href="#绘制相互作用力" class="headerlink" title="绘制相互作用力"></a>绘制相互作用力</h4><p>前面说过，命令行和鼠标的配合是很重要的。这里再简单讲讲鼠标的几个操作用法：</p>
+<p>​	A） 拖动鼠标左键：按住右键，任意方向拖动鼠标，使视图转动；</p>
+<p>​	B） 上下拖动鼠标右键：按住右键，上下拖动鼠标，使视图缩放；</p>
+<p>​	C） 拖动鼠标中间滚轮：按住滚轮，任意方向拖动鼠标，使视图移动；</p>
+<p>​	D）滚动鼠标中间滚轮：拉进或拉远镜头，使近处原子逐渐显示或隐藏。</p>
+<p>我们参照平台给出的结合模式图（本文第二张图），通过下面的键鼠操作来绘制相互作用力。</p>
+<h6 id="·-绘制π-π堆积与盐桥作用"><a href="#·-绘制π-π堆积与盐桥作用" class="headerlink" title="· 绘制π-π堆积与盐桥作用"></a>· 绘制π-π堆积与盐桥作用</h6><p>首先，确保鼠标模式（Mouse Mode）为Viewing状态，选择（Selecting）模式为<code>Atoms</code>状态（位置在PyMOL右下方）。然后，按照下面步骤操作：</p>
+<p>新建文件<code>center_of_mass.py</code>，<code>run /PATH/TO/center_of_mass.py</code></p>
+<pre class="line-numbers language-none"><code class="language-none">from pymol import cmd
+from chempy import cpv
+
+def center_of_mass(selection, state=1, object=None, color=None, quiet=1):
+    """
+    Calculate the center of mass (COM) for a selection and optionally create a pseudo-atom at that position.
+    
+    Parameters:
+    selection (str): atom selection
+    state (int): object state (default=1)
+    object (str): name of pseudo-atom to create (default=None)
+    color (str): color for the pseudo-atom (default=None)
+    quiet (int): suppress output (default=1)
+    """
+    quiet = int(quiet)
+    
+    # Get the coordinates and masses
+    model = cmd.get_model(selection, state)
+    if not model.atom:
+        print("Error: No atoms selected")
+        return
+    
+    # Calculate center of mass
+    total_mass = 0.0
+    com = [0.0, 0.0, 0.0]
+    
+    for atom in model.atom:
+        mass = atom.get_mass()
+        total_mass += mass
+        com[0] += atom.coord[0] * mass
+        com[1] += atom.coord[1] * mass
+        com[2] += atom.coord[2] * mass
+    
+    if total_mass == 0:
+        print("Error: Total mass is zero")
+        return
+    
+    com[0] /= total_mass
+    com[1] /= total_mass
+    com[2] /= total_mass
+    
+    if not quiet:
+        print("Center of Mass: %.3f, %.3f, %.3f" % (com[0], com[1], com[2]))
+    
+    # Create pseudo-atom if requested
+    if object:
+        if color:
+            cmd.pseudoatom(object, pos=com, color=color)
+        else:
+            cmd.pseudoatom(object, pos=com)
+        
+        # 自动设置显示属性
+        cmd.set("sphere_scale", 0.3, object)
+        cmd.show("spheres", object)
+        
+        if not quiet:
+            print("Created pseudo-atom '%s' at COM" % object)
+    
+    return com
+
+# Add the command to PyMOL
+cmd.extend("com", center_of_mass)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-none"><code class="language-none"># 导入必要插件
+run /PATH/TO/center_of_mass.py
+# 创建小球的命令序列
+com sele, object=p1
+com sele, object=p2  
+com sele, object=p3
+com sele, object=p4
+com sele, object=p5
+com sele, object=p6
+com sele, object=p7<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/4c73e3f7a2e524d6d72641c589585b53.jpeg" alt="在这里插入图片描述">然后，点击PyMOL菜单栏的Wizard -&gt; Measurement，然后根据示意图点击刚才创建的小球，两两一组，便画出虚线（相应地，生成对象measure01~05）。<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cdcb8f03c0f348271b32051bd021c1cd.png" alt="在这里插入图片描述"></p>
+<h6 id="·-绘制其他作用力"><a href="#·-绘制其他作用力" class="headerlink" title="· 绘制其他作用力"></a>· 绘制其他作用力</h6><p>采用相同的办法，把<code>氢键</code>和<code>疏水作用</code>也画出来。由于这些作用力的两端刚好落在原子上，因此，不用绘制小球。<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/6da4239d1e6785671f043216731b13b4.png" alt="在这里插入图片描述"></p>
+<h3 id="图像美化与输出"><a href="#图像美化与输出" class="headerlink" title="图像美化与输出"></a>图像美化与输出</h3><p>为方便调整，也为图片规格符合要求（通常，出版社要求全版图片宽度≤2000像素，半版图片宽度≤1000像素，分辨率≥300 dpi)，我们将PyMOL界面放大或靠边最大化，并将上半部分的对话框往上拉到最小，让视图最大。然后放大、摆动视图至合适的角度，使尽可能清晰地看到各关键细节。</p>
+<p>基本的创建工作已经完成，接下来进行细致的修饰。</p>
+<p><strong>🎯 隐藏和显示控制</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 居中显示</span>
+zoom ligand <span class="token keyword">or</span> key_residues
+
+<span class="token comment"># 小球显示控制</span>
+hide everything<span class="token punctuation">,</span> p<span class="token operator">*</span>
+show spheres<span class="token punctuation">,</span> p<span class="token operator">*</span>
+
+<span class="token comment"># 标签显示控制</span>
+hide labels<span class="token punctuation">,</span> measure<span class="token operator">*</span>
+show labels<span class="token punctuation">,</span> measure06
+show labels<span class="token punctuation">,</span> measure07  
+show labels<span class="token punctuation">,</span> measure08<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>🎨 虚线样式设置</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 虚线外观调整</span>
+<span class="token builtin">set</span> dash_length<span class="token punctuation">,</span> <span class="token number">0.3</span>
+<span class="token builtin">set</span> dash_radius<span class="token punctuation">,</span> <span class="token number">0.08</span>
+<span class="token builtin">set</span> dash_gap<span class="token punctuation">,</span> <span class="token number">0.3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>🌈 虚线颜色设置</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 相互作用颜色编码</span>
+color magenta<span class="token punctuation">,</span> measure04    <span class="token comment"># 盐桥</span>
+color magenta<span class="token punctuation">,</span> measure05    <span class="token comment"># 盐桥  </span>
+color green<span class="token punctuation">,</span> measure06      <span class="token comment"># 氢键</span>
+color green<span class="token punctuation">,</span> measure07      <span class="token comment"># 氢键</span>
+color green<span class="token punctuation">,</span> measure08      <span class="token comment"># 氢键</span>
+color gray70<span class="token punctuation">,</span> measure09     <span class="token comment"># 疏水作用</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>🖼️ 背景和蛋白显示</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 背景设置</span>
+bg_color white
+
+<span class="token comment"># 蛋白结构显示</span>
+show cartoon
+color smudge<span class="token punctuation">,</span> lig <span class="token keyword">and</span> name C<span class="token operator">*</span>
+<span class="token builtin">set</span> cartoon_transparency<span class="token punctuation">,</span> <span class="token number">0.3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/243fc636fd2a30ce86bd04121d969461.jpeg" alt="在这里插入图片描述"></p>
+<p>我们还可按下图步骤微调cartoon样式：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/9988aba7cb104fd00f608bd0f601c6e3.png" alt="在这里插入图片描述"><br>还可移动label的位置（设置Mouse Mode为Editing模式后，按住Ctrl键，用鼠标左键或右键拖动label；必要时，可先将cartoo隐藏起来，等调整好label后，再显示出来），让视图更清晰。经过上述一系列操作，得到下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f1c0110ffc04461492536e39811d4eba.png" alt="在这里插入图片描述"></p>
+<p>✅ 一、目标效果</p>
+<ul>
+<li>整体蛋白以 <strong>cartoon 灰色显示</strong>（作为背景板）</li>
+<li>配体（<code>lig</code>）与特定残基（<code>res</code>）<strong>前置显示、保持高亮颜色</strong></li>
+<li>cartoon 不遮挡配体和关键残基</li>
+<li>其余部分颜色偏淡，突出关键信息</li>
+</ul>
+<hr>
+<p>✅ 二、实现命令步骤（PyMOL 命令行版）</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 1. 全局设置
+bg_color white
+set cartoon_transparency, 0.6      # 半透明背景板感觉更好
+set depth_cue, 0                   # 去掉景深影响
+
+# 2. 设置蛋白主链为灰色 cartoon
+show cartoon, all
+color grey80, all
+
+# 3. 高亮配体与特定残基
+show sticks, (lig or res)
+util.cbag (lig or res)             # 让配体/残基彩色显示（carbon by atom type）
+
+# 4. 把配体、残基显示在最前层（不被遮挡）
+# set cartoon_side_chain_helper, on
+set transparency_mode, 2           # 优化透明度混合效果
+set ray_opaque_background, off
+
+# 5. 可以单独调整颜色
+# color red, lig
+# color yellow, res
+
+color yellow, measure01
+color yellow, measure02
+color yellow, measure03
+color green, measure04
+color green, measure05
+color green, measure06
+color gray70, measure07
+
+color yellow, p1
+color yellow, p2
+color yellow, p3
+color yellow, p4
+color purple, p6
+color purple, p7
+
+# 6. 重新绘制（Ray tracing 渲染可选）
+ray 1200,900<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<hr>
+<p>✅ 三、可选优化效果</p>
+<p>如果你发现 <strong>cartoon 仍挡住配体/残基</strong>，可进一步操作：</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 让 cartoon 更透明
+set cartoon_transparency, 0.7
+
+# 或者单独隐藏关键区域的 cartoon
+hide cartoon, (byres (lig around 3))  # 隐藏配体周围3Å范围的cartoon<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<blockquote>
+<p>这样配体周围的 cartoon 会消失，配体完全露出；蛋白其他部分仍然是灰色背景板。</p>
+</blockquote>
+<hr>
+<p>✅ 四、额外技巧</p>
+<p>你还可以使用分层渲染的方式，例如：</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 生成两层视图（适合高质量图）
+disable all
+enable protein
+color grey80, protein
+set cartoon_transparency, 0.7
+enable lig, res
+show sticks, lig or res<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>再用：</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol">ray 2000,1500
+png output.png, dpi=300<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>7 生成图片<br>上面的图已经可以发表文章了，但为了更好看，还需要进行一步：光线追踪（Ray tracing)。</p>
+<p>继续使用命令：</p>
+<p>💾 保存工作文件</p>
+<pre class="line-numbers language-none"><code class="language-none">save focus.pse
+save overview.pse<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>📷 图像保存命令</p>
+<pre class="line-numbers language-none"><code class="language-none"># 保存标签图像
+png label.png
+# 保存焦点图像（高分辨率）
+png focus.png, 16.93cm, 16.93cm, dpi=300
+# 保存概览图像（高分辨率）
+png overview.png, 16.93cm, 16.93cm, dpi=300<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>🎨 显示调整命令</p>
+<pre class="line-numbers language-none"><code class="language-none"># 标签控制
+hide labels
+# 视图调整
+zoom
+# 透明度设置
+set cartoon_transparency, 0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>✨ 渲染命令</p>
+<pre class="line-numbers language-none"><code class="language-none"># 光线追踪渲染
+ray<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5a2bf78817d4276796571a66229be702.jpeg" alt="在这里插入图片描述"><br>至此，我们拿到3张图片：focus.png、label.png和overview.png。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/label.png" alt="label"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/overview.png" alt="overview"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/focus.png" alt="focus"></p>
+]]></content>
+      <categories>
+        <category>PyMOL</category>
+      </categories>
+  </entry>
+  <entry>
     <title>Planck-Pi学习</title>
     <url>/2025/10/26/planck-pi/</url>
     <content><![CDATA[<h1 id="1-配置编译环境"><a href="#1-配置编译环境" class="headerlink" title="1. 配置编译环境"></a>1. 配置编译环境</h1><pre class="line-numbers language-none"><code class="language-none">1.1 编译过程中需要的依赖
@@ -4007,304 +4380,6 @@ OLED_WR_Byte(0xAF,OLED_CMD); /*display ON*/
 ]]></content>
       <categories>
         <category>Linux</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</title>
-    <url>/2025/11/03/pymol/</url>
-    <content><![CDATA[<h1 id="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"><a href="#【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片" class="headerlink" title="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"></a>【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</h1><blockquote>
-<p>转载自：<code>https://blog.csdn.net/qq_37126941/article/details/115793062</code>。</p>
-<p>本文将以D715-2441抑制剂与PB2蛋白复合物为例，手把手教你用PyMOL制作专业的结合模式图</p>
-</blockquote>
-<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文将带大家使用免费开源的PyMOL软件绘制D715-2441蛋白与与<a href="https://link.zhihu.com/?target=https://www.rcsb.org/structure/4CB4">PB2cap配体分子</a>的结合模式图。</p>
-<p>我们先来看一张成品图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5bb95a5e415241b5719ec50baf888d67.jpeg" alt="在这里插入图片描述"></p>
-<h2 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h2><p>流感病毒PB2蛋白是重要的药物靶点，D715-2441是一个新型抗流感病毒化合物。通过分子对接分析，我们发现以下关键相互作用：</p>
-<p>1、化合物D715-2441的<code>芳环</code>夹在氨基酸残基<code>H357</code>和<code>F404</code>之间并形成<code>π-π</code>堆积作用，还与<code>F404</code>形成疏水作用；</p>
-<p>2、化合物苯环上的<code>羟基</code>与E361的<code>羧基</code>和K376的<code>N+原子</code>形成氢键作用，另一个<code>羟基</code>与F404的<code>O原子</code>形成氢键作用；</p>
-<p>3、化合物吡喃酮环酯基与K339的<code>N+原子</code>和H357的<code>咪唑基</code>形成盐桥作用。</p>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><blockquote>
-<p>PyMOL作图通常是对特定对象进行展示形式、颜色、字体等方面的修饰。PyMOL的精髓在于命令行与鼠标的配合使用，本文高度依赖命令行，请做好心理准备。大多数命令格式较为一致，请注意总结归纳。</p>
-</blockquote>
-<h3 id="1-下载蛋白结构"><a href="#1-下载蛋白结构" class="headerlink" title="1. 下载蛋白结构"></a>1. 下载蛋白结构</h3><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 在PyMOL中直接下载PDB结构</span>
-fetch 4cb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<h3 id="2-获取配体结构"><a href="#2-获取配体结构" class="headerlink" title="2. 获取配体结构"></a>2. 获取配体结构</h3><p>由于D715-2441不在PDB中，我们需要自行准备：</p>
-<p><strong>方法一：在线SMILES转换</strong></p>
-<p>​	1.使用<strong>PubChem</strong>: <a href="https://pubchem.ncbi.nlm.nih.gov/">https://pubchem.ncbi.nlm.nih.gov/</a></p>
-<p>​	2.绘制完后，SIMLES：<code>C1=CC=CC3=C1C2=C(C=C(C=C2O[H])O[H])OC3=O</code></p>
-<p>​	3.访问：<strong><a href="https://cactus.nci.nih.gov/translate/">https://cactus.nci.nih.gov/translate/</a></strong></p>
-<p>​	4.在输入框粘贴：<code>C1=CC=CC3=C1C2=C(C=C(C=C2O[H])O[H])OC3=O</code></p>
-<p>​	5.选择格式：<strong>Protein Data Bank (pdb)</strong></p>
-<p>​	6.点击 <strong>Translate</strong></p>
-<p>​	7.下载文件并在PyMOL中加载</p>
-<p><strong>方法二：手动构建</strong><br>在PyMOL中使用Builder工具逐步绘制分子结构</p>
-<h2 id="基础操作流程"><a href="#基础操作流程" class="headerlink" title="基础操作流程"></a>基础操作流程</h2><h3 id="1-初始设置"><a href="#1-初始设置" class="headerlink" title="1. 初始设置"></a>1. 初始设置</h3><p>打开<code>PyMOL</code>软件，导入刚才下载的复合物PDB文件（rli-D715-2441-1.pdb）。</p>
-<p>注意：有两种方法导入文件，一种是鼠标点击菜单栏File -&gt; Open…，另一种是通过命令行。在这里，我们采用命令来操作，因为这样可以同时把工作目录设置好，方便后续保存文件。</p>
-<p>假设我们的工作目录为<code>D:\demo</code>。注意：路径中不要有中文和空格，这是导致很多计算类软件（尤其是免费软件）出现问题的原因。</p>
-<pre class="line-numbers language-none"><code class="language-none"># 设置工作目录
-cd E:\下载\Pymol\test
-
-# 基本显示设置
-hide everything
-show cartoon, 4cb4
-show sticks, resn MGT  # 参考配体
-color gray, 4cb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>在PyMOL上界面或下界面的命令输入框输入以下命令（PyMOL&gt;表示这是PyMOL的命令），每行输入完毕后按【Enter】键：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/a777cf49858f76eec599ecfd8f881301.jpeg" alt="在这里插入图片描述"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/fa8eaf9a056c73c583d30921f453ab60.png" alt="在这里插入图片描述"></p>
-<h3 id="2-设置操作对象"><a href="#2-设置操作对象" class="headerlink" title="2 设置操作对象"></a>2 设置操作对象</h3><p><strong>结合模式图</strong>通常涉及到<code>受体</code>（蛋白）与<code>配体</code>（小分子化合物）两部分（有的还可能涉及<code>水分子</code>、<code>金属离子</code>、<code>辅酶</code>等等），需为之分别设置对象，以便后续操作。<strong>设置配体对象</strong>：按照下图顺序，将配体设置为<code>lig</code>对象。<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/2568e1b24aca318f02d497b946f2635b.png" alt="在这里插入图片描述"></p>
-<p><strong>设置关键残基对象</strong>: 关键残基包括：A链的K339、H357、E361、K376和F404。由于该蛋白只有一条链，在使用命令选择残基时，可以不用指定链名。按照下图顺序，将关键残基设置为res对象。</p>
-<p><code>select res, resi 339+357+361+376+404</code></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/3a9fd3f025f59f1e691f72009f398653.png" alt="在这里插入图片描述"></p>
-<h3 id="3-显示样式优化"><a href="#3-显示样式优化" class="headerlink" title="3. 显示样式优化"></a>3. 显示样式优化</h3><p>在PyMOL中输入以下命令：</p>
-<pre class="line-numbers language-none"><code class="language-none"># 基本显示设置
-hide everything
-show sticks, lig | res
-hide sticks, h.
-zoom lig | res
-# 颜色设置
-color wheat, lig &amp; name C*
-# 标签设置
-set label_size, 30
-set label_font_id, 9<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/8eec91dbd5bb84f2cc2a553f8aaca60c.jpeg" alt="在这里插入图片描述"><br>然后，进行鼠标操作：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/3f3c38acd7270f0ad5a310dbfa8b8189.png" alt="在这里插入图片描述"></p>
-<h4 id="绘制相互作用力"><a href="#绘制相互作用力" class="headerlink" title="绘制相互作用力"></a>绘制相互作用力</h4><p>前面说过，命令行和鼠标的配合是很重要的。这里再简单讲讲鼠标的几个操作用法：</p>
-<p>​	A） 拖动鼠标左键：按住右键，任意方向拖动鼠标，使视图转动；</p>
-<p>​	B） 上下拖动鼠标右键：按住右键，上下拖动鼠标，使视图缩放；</p>
-<p>​	C） 拖动鼠标中间滚轮：按住滚轮，任意方向拖动鼠标，使视图移动；</p>
-<p>​	D）滚动鼠标中间滚轮：拉进或拉远镜头，使近处原子逐渐显示或隐藏。</p>
-<p>我们参照平台给出的结合模式图（本文第二张图），通过下面的键鼠操作来绘制相互作用力。</p>
-<h6 id="·-绘制π-π堆积与盐桥作用"><a href="#·-绘制π-π堆积与盐桥作用" class="headerlink" title="· 绘制π-π堆积与盐桥作用"></a>· 绘制π-π堆积与盐桥作用</h6><p>首先，确保鼠标模式（Mouse Mode）为Viewing状态，选择（Selecting）模式为<code>Atoms</code>状态（位置在PyMOL右下方）。然后，按照下面步骤操作：</p>
-<p>新建文件<code>center_of_mass.py</code>，<code>run /PATH/TO/center_of_mass.py</code></p>
-<pre class="line-numbers language-none"><code class="language-none">from pymol import cmd
-from chempy import cpv
-
-def center_of_mass(selection, state=1, object=None, color=None, quiet=1):
-    """
-    Calculate the center of mass (COM) for a selection and optionally create a pseudo-atom at that position.
-    
-    Parameters:
-    selection (str): atom selection
-    state (int): object state (default=1)
-    object (str): name of pseudo-atom to create (default=None)
-    color (str): color for the pseudo-atom (default=None)
-    quiet (int): suppress output (default=1)
-    """
-    quiet = int(quiet)
-    
-    # Get the coordinates and masses
-    model = cmd.get_model(selection, state)
-    if not model.atom:
-        print("Error: No atoms selected")
-        return
-    
-    # Calculate center of mass
-    total_mass = 0.0
-    com = [0.0, 0.0, 0.0]
-    
-    for atom in model.atom:
-        mass = atom.get_mass()
-        total_mass += mass
-        com[0] += atom.coord[0] * mass
-        com[1] += atom.coord[1] * mass
-        com[2] += atom.coord[2] * mass
-    
-    if total_mass == 0:
-        print("Error: Total mass is zero")
-        return
-    
-    com[0] /= total_mass
-    com[1] /= total_mass
-    com[2] /= total_mass
-    
-    if not quiet:
-        print("Center of Mass: %.3f, %.3f, %.3f" % (com[0], com[1], com[2]))
-    
-    # Create pseudo-atom if requested
-    if object:
-        if color:
-            cmd.pseudoatom(object, pos=com, color=color)
-        else:
-            cmd.pseudoatom(object, pos=com)
-        
-        # 自动设置显示属性
-        cmd.set("sphere_scale", 0.3, object)
-        cmd.show("spheres", object)
-        
-        if not quiet:
-            print("Created pseudo-atom '%s' at COM" % object)
-    
-    return com
-
-# Add the command to PyMOL
-cmd.extend("com", center_of_mass)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<pre class="line-numbers language-none"><code class="language-none"># 导入必要插件
-run /PATH/TO/center_of_mass.py
-# 创建小球的命令序列
-com sele, object=p1
-com sele, object=p2  
-com sele, object=p3
-com sele, object=p4
-com sele, object=p5
-com sele, object=p6
-com sele, object=p7<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/4c73e3f7a2e524d6d72641c589585b53.jpeg" alt="在这里插入图片描述">然后，点击PyMOL菜单栏的Wizard -&gt; Measurement，然后根据示意图点击刚才创建的小球，两两一组，便画出虚线（相应地，生成对象measure01~05）。<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cdcb8f03c0f348271b32051bd021c1cd.png" alt="在这里插入图片描述"></p>
-<h6 id="·-绘制其他作用力"><a href="#·-绘制其他作用力" class="headerlink" title="· 绘制其他作用力"></a>· 绘制其他作用力</h6><p>采用相同的办法，把<code>氢键</code>和<code>疏水作用</code>也画出来。由于这些作用力的两端刚好落在原子上，因此，不用绘制小球。<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/6da4239d1e6785671f043216731b13b4.png" alt="在这里插入图片描述"></p>
-<h3 id="图像美化与输出"><a href="#图像美化与输出" class="headerlink" title="图像美化与输出"></a>图像美化与输出</h3><p>为方便调整，也为图片规格符合要求（通常，出版社要求全版图片宽度≤2000像素，半版图片宽度≤1000像素，分辨率≥300 dpi)，我们将PyMOL界面放大或靠边最大化，并将上半部分的对话框往上拉到最小，让视图最大。然后放大、摆动视图至合适的角度，使尽可能清晰地看到各关键细节。</p>
-<p>基本的创建工作已经完成，接下来进行细致的修饰。</p>
-<p><strong>🎯 隐藏和显示控制</strong></p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 居中显示</span>
-zoom ligand <span class="token keyword">or</span> key_residues
-
-<span class="token comment"># 小球显示控制</span>
-hide everything<span class="token punctuation">,</span> p<span class="token operator">*</span>
-show spheres<span class="token punctuation">,</span> p<span class="token operator">*</span>
-
-<span class="token comment"># 标签显示控制</span>
-hide labels<span class="token punctuation">,</span> measure<span class="token operator">*</span>
-show labels<span class="token punctuation">,</span> measure06
-show labels<span class="token punctuation">,</span> measure07  
-show labels<span class="token punctuation">,</span> measure08<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>🎨 虚线样式设置</strong></p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 虚线外观调整</span>
-<span class="token builtin">set</span> dash_length<span class="token punctuation">,</span> <span class="token number">0.3</span>
-<span class="token builtin">set</span> dash_radius<span class="token punctuation">,</span> <span class="token number">0.08</span>
-<span class="token builtin">set</span> dash_gap<span class="token punctuation">,</span> <span class="token number">0.3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>🌈 虚线颜色设置</strong></p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 相互作用颜色编码</span>
-color magenta<span class="token punctuation">,</span> measure04    <span class="token comment"># 盐桥</span>
-color magenta<span class="token punctuation">,</span> measure05    <span class="token comment"># 盐桥  </span>
-color green<span class="token punctuation">,</span> measure06      <span class="token comment"># 氢键</span>
-color green<span class="token punctuation">,</span> measure07      <span class="token comment"># 氢键</span>
-color green<span class="token punctuation">,</span> measure08      <span class="token comment"># 氢键</span>
-color gray70<span class="token punctuation">,</span> measure09     <span class="token comment"># 疏水作用</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>🖼️ 背景和蛋白显示</strong></p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 背景设置</span>
-bg_color white
-
-<span class="token comment"># 蛋白结构显示</span>
-show cartoon
-color smudge<span class="token punctuation">,</span> lig <span class="token keyword">and</span> name C<span class="token operator">*</span>
-<span class="token builtin">set</span> cartoon_transparency<span class="token punctuation">,</span> <span class="token number">0.3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/243fc636fd2a30ce86bd04121d969461.jpeg" alt="在这里插入图片描述"></p>
-<p>我们还可按下图步骤微调cartoon样式：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/9988aba7cb104fd00f608bd0f601c6e3.png" alt="在这里插入图片描述"><br>还可移动label的位置（设置Mouse Mode为Editing模式后，按住Ctrl键，用鼠标左键或右键拖动label；必要时，可先将cartoo隐藏起来，等调整好label后，再显示出来），让视图更清晰。经过上述一系列操作，得到下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f1c0110ffc04461492536e39811d4eba.png" alt="在这里插入图片描述"></p>
-<p>✅ 一、目标效果</p>
-<ul>
-<li>整体蛋白以 <strong>cartoon 灰色显示</strong>（作为背景板）</li>
-<li>配体（<code>lig</code>）与特定残基（<code>res</code>）<strong>前置显示、保持高亮颜色</strong></li>
-<li>cartoon 不遮挡配体和关键残基</li>
-<li>其余部分颜色偏淡，突出关键信息</li>
-</ul>
-<hr>
-<p>✅ 二、实现命令步骤（PyMOL 命令行版）</p>
-<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 1. 全局设置
-bg_color white
-set cartoon_transparency, 0.6      # 半透明背景板感觉更好
-set depth_cue, 0                   # 去掉景深影响
-
-# 2. 设置蛋白主链为灰色 cartoon
-show cartoon, all
-color grey80, all
-
-# 3. 高亮配体与特定残基
-show sticks, (lig or res)
-util.cbag (lig or res)             # 让配体/残基彩色显示（carbon by atom type）
-
-# 4. 把配体、残基显示在最前层（不被遮挡）
-# set cartoon_side_chain_helper, on
-set transparency_mode, 2           # 优化透明度混合效果
-set ray_opaque_background, off
-
-# 5. 可以单独调整颜色
-# color red, lig
-# color yellow, res
-
-color yellow, measure01
-color yellow, measure02
-color yellow, measure03
-color green, measure04
-color green, measure05
-color green, measure06
-color gray70, measure07
-
-color yellow, p1
-color yellow, p2
-color yellow, p3
-color yellow, p4
-color purple, p6
-color purple, p7
-
-# 6. 重新绘制（Ray tracing 渲染可选）
-ray 1200,900<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<hr>
-<p>✅ 三、可选优化效果</p>
-<p>如果你发现 <strong>cartoon 仍挡住配体/残基</strong>，可进一步操作：</p>
-<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 让 cartoon 更透明
-set cartoon_transparency, 0.7
-
-# 或者单独隐藏关键区域的 cartoon
-hide cartoon, (byres (lig around 3))  # 隐藏配体周围3Å范围的cartoon<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<blockquote>
-<p>这样配体周围的 cartoon 会消失，配体完全露出；蛋白其他部分仍然是灰色背景板。</p>
-</blockquote>
-<hr>
-<p>✅ 四、额外技巧</p>
-<p>你还可以使用分层渲染的方式，例如：</p>
-<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 生成两层视图（适合高质量图）
-disable all
-enable protein
-color grey80, protein
-set cartoon_transparency, 0.7
-enable lig, res
-show sticks, lig or res<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>再用：</p>
-<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol">ray 2000,1500
-png output.png, dpi=300<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>7 生成图片<br>上面的图已经可以发表文章了，但为了更好看，还需要进行一步：光线追踪（Ray tracing)。</p>
-<p>继续使用命令：</p>
-<p>💾 保存工作文件</p>
-<pre class="line-numbers language-none"><code class="language-none">save focus.pse
-save overview.pse<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>📷 图像保存命令</p>
-<pre class="line-numbers language-none"><code class="language-none"># 保存标签图像
-png label.png
-# 保存焦点图像（高分辨率）
-png focus.png, 16.93cm, 16.93cm, dpi=300
-# 保存概览图像（高分辨率）
-png overview.png, 16.93cm, 16.93cm, dpi=300<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>🎨 显示调整命令</p>
-<pre class="line-numbers language-none"><code class="language-none"># 标签控制
-hide labels
-# 视图调整
-zoom
-# 透明度设置
-set cartoon_transparency, 0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>✨ 渲染命令</p>
-<pre class="line-numbers language-none"><code class="language-none"># 光线追踪渲染
-ray<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5a2bf78817d4276796571a66229be702.jpeg" alt="在这里插入图片描述"><br>至此，我们拿到3张图片：focus.png、label.png和overview.png。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/label.png" alt="label"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/overview.png" alt="overview"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/focus.png" alt="focus"></p>
-]]></content>
-      <categories>
-        <category>PyMOL</category>
       </categories>
   </entry>
   <entry>
@@ -6280,6 +6355,23 @@ EOF</span>
     E --&gt; F[“AI革命<br>（AlphaFold2等<br>2020s-）”]
     F --&gt; G[精度接近实验水平]</pre>
 
+<pre class="mermaid">flowchart TD
+    A[蛋白质序列] --&gt; B[同源建模]
+    A --&gt; C[Threading]
+    A --&gt; D[Ab initio折叠]
+    
+    B --&gt; E[集成方法]
+    C --&gt; E
+    D --&gt; E
+    E --&gt; F[AI革命 AlphaFold2]
+    F --&gt; G[精度接近实验水平]
+    
+    style B fill:#e1f5fe
+    style C fill:#f3e5f5
+    style D fill:#e8f5e8
+    style F fill:#fff3e0
+    style G fill:#ffebee</pre>
+
 <ul>
 <li><p><strong>i) 同源建模</strong>：</p>
 <ul>
@@ -6462,6 +6554,34 @@ EOF</span>
       <categories>
         <category>蛋白互作</category>
         <category>PyMOL</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>文件处理与数据筛选-终端</title>
+    <url>/2025/10/31/wen-jian-chu-li-yu-shu-ju-shai-xuan-liu-cheng/</url>
+    <content><![CDATA[<h1 id="文件处理与数据筛选流程"><a href="#文件处理与数据筛选流程" class="headerlink" title="文件处理与数据筛选流程"></a>文件处理与数据筛选流程</h1><h2 id="流程概述"><a href="#流程概述" class="headerlink" title="流程概述"></a>流程概述</h2><p>从两个基因组数据文件中筛选共有基因位点，生成TSV格式结果。</p>
+<h2 id="处理步骤"><a href="#处理步骤" class="headerlink" title="处理步骤"></a>处理步骤</h2><h3 id="1-文件格式标准化"><a href="#1-文件格式标准化" class="headerlink" title="1. 文件格式标准化"></a>1. 文件格式标准化</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">dos2unix color_GWAS.anno.xls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>作用：</strong> Windows转Unix换行符</p>
+<h3 id="2-CSV转TSV格式"><a href="#2-CSV转TSV格式" class="headerlink" title="2. CSV转TSV格式"></a>2. CSV转TSV格式</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sed</span> <span class="token string">'1s/^\xEF\xBB\xBF//'</span> 红标0.7与黄标与GWAS共有.csv <span class="token operator">|</span> <span class="token function">tr</span> <span class="token string">','</span> <span class="token string">'\t'</span> <span class="token operator">&gt;</span> 红标0.7与黄标与GWAS共有.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>作用：</strong> 去除BOM头，逗号转制表符</p>
+<h3 id="3-数据筛选"><a href="#3-数据筛选" class="headerlink" title="3. 数据筛选"></a>3. 数据筛选</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'BEGIN {OFS="\t"} 
+     NR==FNR {if(FNR&gt;1) start_values[$2] = 1; next} 
+     FNR==1 {print; next} 
+     $2 in start_values'</span> color_GWAS.anno.xls 红标0.7与黄标与GWAS共有.tsv <span class="token operator">&gt;</span> filtered_three2one.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>逻辑：</strong></p>
+<ul>
+<li>读取第一个文件的<code>第二列</code>作为筛选依据</li>
+<li><code>保留</code>第二个文件中<code>匹配</code>的数据行</li>
+<li><code>输出</code>制表符分隔的结果</li>
+</ul>
+<h2 id="文件说明"><a href="#文件说明" class="headerlink" title="文件说明"></a>文件说明</h2><ul>
+<li><strong>输入：</strong> color_GWAS.anno.xls, 红标0.7与黄标与GWAS共有.csv</li>
+<li><strong>输出：</strong> filtered_three2one.tsv（共有位点数据）</li>
+</ul>
+<h2 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h2><p>数据整合筛选、多源数据筛选、文件格式标准化。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
       </categories>
   </entry>
   <entry>
@@ -7324,34 +7444,6 @@ TTGTATTAATCAACAAATAACATTTCATTTTGATTAAATT"""</span>
       <categories>
         <category>分子实验</category>
         <category>Python</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>文件处理与数据筛选-终端</title>
-    <url>/2025/10/31/wen-jian-chu-li-yu-shu-ju-shai-xuan-liu-cheng/</url>
-    <content><![CDATA[<h1 id="文件处理与数据筛选流程"><a href="#文件处理与数据筛选流程" class="headerlink" title="文件处理与数据筛选流程"></a>文件处理与数据筛选流程</h1><h2 id="流程概述"><a href="#流程概述" class="headerlink" title="流程概述"></a>流程概述</h2><p>从两个基因组数据文件中筛选共有基因位点，生成TSV格式结果。</p>
-<h2 id="处理步骤"><a href="#处理步骤" class="headerlink" title="处理步骤"></a>处理步骤</h2><h3 id="1-文件格式标准化"><a href="#1-文件格式标准化" class="headerlink" title="1. 文件格式标准化"></a>1. 文件格式标准化</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">dos2unix color_GWAS.anno.xls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><strong>作用：</strong> Windows转Unix换行符</p>
-<h3 id="2-CSV转TSV格式"><a href="#2-CSV转TSV格式" class="headerlink" title="2. CSV转TSV格式"></a>2. CSV转TSV格式</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sed</span> <span class="token string">'1s/^\xEF\xBB\xBF//'</span> 红标0.7与黄标与GWAS共有.csv <span class="token operator">|</span> <span class="token function">tr</span> <span class="token string">','</span> <span class="token string">'\t'</span> <span class="token operator">&gt;</span> 红标0.7与黄标与GWAS共有.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><strong>作用：</strong> 去除BOM头，逗号转制表符</p>
-<h3 id="3-数据筛选"><a href="#3-数据筛选" class="headerlink" title="3. 数据筛选"></a>3. 数据筛选</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'BEGIN {OFS="\t"} 
-     NR==FNR {if(FNR&gt;1) start_values[$2] = 1; next} 
-     FNR==1 {print; next} 
-     $2 in start_values'</span> color_GWAS.anno.xls 红标0.7与黄标与GWAS共有.tsv <span class="token operator">&gt;</span> filtered_three2one.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p><strong>逻辑：</strong></p>
-<ul>
-<li>读取第一个文件的<code>第二列</code>作为筛选依据</li>
-<li><code>保留</code>第二个文件中<code>匹配</code>的数据行</li>
-<li><code>输出</code>制表符分隔的结果</li>
-</ul>
-<h2 id="文件说明"><a href="#文件说明" class="headerlink" title="文件说明"></a>文件说明</h2><ul>
-<li><strong>输入：</strong> color_GWAS.anno.xls, 红标0.7与黄标与GWAS共有.csv</li>
-<li><strong>输出：</strong> filtered_three2one.tsv（共有位点数据）</li>
-</ul>
-<h2 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h2><p>数据整合筛选、多源数据筛选、文件格式标准化。</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
       </categories>
   </entry>
   <entry>
