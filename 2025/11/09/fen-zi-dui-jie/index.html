@@ -204,7 +204,7 @@
 <li><strong>a) 传统路径（实验结构）</strong>：从PDB数据库下载通过X射线晶体学、冷冻电镜或核磁共振等技术解析的结构。这是<strong>金标准</strong>，精度最高。然而，并非所有蛋白质，特别是某些膜蛋白或大型复合物，都能被轻易解析出结构。</li>
 <li><strong>b) 计算预测路径（当实验结构缺失时）</strong>：在AlphaFold之前，这是一个充满挑战的领域，主要依赖以下方法，其演进历程如下图所示：</li>
 </ul>
-<pre class="mermaid">flowchart TD
+<pre class="mermaid">graph LR
     A[蛋白质序列] --&gt; B[“同源建模<br>（1990s-）<br>寻找已知结构的同源蛋白”]
     B --&gt; C[“ threading<br>（1990s-）<br>在结构折叠库中匹配”]
     A --&gt; D[“Ab initio折叠<br>（2000s-）<br>基于物理力场从头计算”]
