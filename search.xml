@@ -289,6 +289,169 @@ p<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><s
       </categories>
   </entry>
   <entry>
+    <title>3.对基因进行注释，长牡蛎注释包的构建及KEGG和GO分析</title>
+    <url>/2025/08/02/25/</url>
+    <content><![CDATA[<blockquote>
+<p>前面我们发现了一些显著的SNP窗口位点，下面对显著的SNP位点进行提取。</p>
+</blockquote>
+<h1 id="1-提取SNP位点信息"><a href="#1-提取SNP位点信息" class="headerlink" title="1.提取SNP位点信息"></a>1.提取SNP位点信息</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 设置FST阈值（例如取WEIGHTED_FST &gt; 0.2）</span>
+awk '$5 &gt; 0.2' fst_binned.windowed.weir.fst &gt; high_fst_windows.txt
+
+<span class="token title important"><span class="token punctuation">##</span> 检查最高FST窗口</span>
+sort -k5,5nr high_fst_windows.txt | head
+
+
+<span class="token title important"><span class="token punctuation">##</span> 从高FST结果生成BED格式（用于后续注释）</span>
+awk '{print $1"\t"$2"\t"$3"\t"$5}' high_fst_windows.txt &gt; high_fst_regions.bed
+
+<span class="token title important"><span class="token punctuation">##</span> 合并相邻窗口（如距离 merged_high_fst.bed</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="2-对提取SNP位点注释"><a href="#2-对提取SNP位点注释" class="headerlink" title="2.对提取SNP位点注释"></a>2.对提取SNP位点注释</h1><p>然后提取与基因重叠的区域（需准备reference.gtf）</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 步骤1：过滤GFF3中的基因行（注意GFF3中gene的第三列为"gene"）</span>
+bedtools intersect -a merged_high_fst.bed -b ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff -wa -wb | \
+awk -F'\t' '$8 == "gene" {print $1,$2,$3,$12}' OFS='\t' | \
+awk -F'[;\t]' '{gsub(/ID=gene-/, "", $4); print $1,$2,$3,$4}' | sort | uniq &gt; fst_genes.txt
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="3-提取SNP位点所在基因的ID号"><a href="#3-提取SNP位点所在基因的ID号" class="headerlink" title="3.提取SNP位点所在基因的ID号"></a>3.提取SNP位点所在基因的ID号</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">awk -F'\t' '{
+  match($8, /ID=gene-([^;]+)/, id_arr);
+  match($8, /Name=([^;]+)/, name_arr);
+  if (id_arr[1] &amp;&amp; name_arr[1]) {
+    print $1, $2, $3, id_arr[1], name_arr[1];
+  }
+}' OFS='\t' fst_genes_annotated.bed &gt; fst_gene_ids_names.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+
+<p>下面为整理好的上述过程的脚本</p>
+<p>命名为<code># annotate_fst.sh</code> </p>
+<pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash">#!/bin/bash
+# 输入文件
+BED="merged_high_fst.bed"
+GFF="../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff"
+
+# 步骤1：提取基因（直接运行，若为空则需名称映射）
+bedtools intersect -a $BED -b $GFF -wa -wb | \
+awk -F'\t' '$8 == "gene" {print $1,$2,$3,$12}' OFS='\t' | \
+awk -F'[;\t]' '{gsub(/ID=gene-/, "", $4); print $1,$2,$3,$4}' | sort | uniq &gt; fst_genes.txt
+
+# 步骤2：检查结果
+echo "=== 前10行基因 ==="
+head fst_genes.txt
+echo "=== 行数统计 ==="
+wc -l fst_genes.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<h1 id="4-通过基因ID提取蛋白序列"><a href="#4-通过基因ID提取蛋白序列" class="headerlink" title="4.通过基因ID提取蛋白序列"></a>4.通过基因ID提取蛋白序列</h1><p>下面为根据基因ID提取转录本序列，然后进行注释（后面不用这个，直接构建注释包进行分析，感觉更好</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">grep -E "$(paste -sd'|' missing_loc.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "gene" | grep -E "$(paste -sd'|' missing_loc.txt)" | grep -o "gene_biotype=[^;]*" | sort | uniq -c
+
+
+grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "protein_id=" | \
+sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | sort | uniq &gt; protein_ids.txt
+
+
+seqkit grep -f protein_ids.txt ../GCF_902806645.1_cgigas_uk_roslin_v1_protein.faa &gt; proteins_extracted/fst_genes_proteins.faa
+
+grep "^&gt;" proteins_extracted/fst_genes_proteins.faa | wc -l
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>发现不能完全匹配所有LOC，查看哪些没匹配到</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span> 找所有LOC对应的protein_id</span>
+grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "protein_id=" | \
+sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | sort | uniq &gt; protein_ids_all.txt
+
+<span class="token title important"><span class="token punctuation">#</span> 检查protein_ids.txt是否包含所有</span>
+<span class="token blockquote punctuation">&gt;</span> comm -23 protein_ids_all.txt protein_ids.txt &gt; missing_proteins.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<p>下面是上述命令整理好的查找脚本</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span>!/bin/bash</span>
+set -euo pipefail
+
+<span class="token title important"><span class="token punctuation">#</span> 1. 从fst_gene_ids_names.txt中提取LOC ID列表（假设第4列为LOC ID）</span>
+cut -f4 fst_gene_ids_names.txt | sort | uniq &gt; gene_loc_ids.txt
+
+<span class="token title important"><span class="token punctuation">#</span> 2. 从基因组注释GFF文件中筛选出这些LOC对应的protein_id</span>
+grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | \
+    grep "protein_id=" | \
+    sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | \
+    sort | uniq &gt; protein_ids.txt
+
+<span class="token title important"><span class="token punctuation">#</span> 3. 使用seqkit提取对应的蛋白序列到指定文件</span>
+seqkit grep -f protein_ids.txt ../GCF_902806645.1_cgigas_uk_roslin_v1_protein.faa &gt; proteins_extracted/fst_genes_proteins.faa
+
+<span class="token title important"><span class="token punctuation">#</span> 4. 统计提取到的蛋白数量，确认数量</span>
+grep "^&gt;" proteins_extracted/fst_genes_proteins.faa | wc -l<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<h1 id="5-对提取的蛋白进行注释"><a href="#5-对提取的蛋白进行注释" class="headerlink" title="5.对提取的蛋白进行注释"></a>5.对提取的蛋白进行注释</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">conda create -n eggnog3_env -c bioconda -c conda-forge eggnog-mapper
+conda activate eggnog3_env
+
+
+emapper.py -h
+
+tar -xvzf eggnog_mapper_data-5.0.2.tar.gz -C ./data<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">emapper.py -i proteins_extracted/fst_genes_proteins.faa \
+  --output fst_proteins_annotation \
+  --data_dir ./data \
+  -m diamond \
+  --cpu 12 \
+  --override<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<p>下面是R中的操作，主要进行KEGG和GO分析</p>
+<h1 id="1-对前面注释的基因进行聚类分析"><a href="#1-对前面注释的基因进行聚类分析" class="headerlink" title="1.对前面注释的基因进行聚类分析"></a>1.对前面注释的基因进行聚类分析</h1><p>详细内容见 <a href="http://192.168.1.101/usr/uploads/2025/08/706163015.ipynb">Fst_2.ipynb</a><br><img src="/images/25/2038951127.png" alt="mdvyq9m6.png"><br>结果如上，没有达到我的预期，操作也较麻烦。</p>
+<h1 id="2-构建非模式物种注释包org-Cgigas-eg-db"><a href="#2-构建非模式物种注释包org-Cgigas-eg-db" class="headerlink" title="2.构建非模式物种注释包org.Cgigas.eg.db"></a>2.构建非模式物种注释包org.Cgigas.eg.db</h1><p>详细内容见 <a href="http://192.168.1.101/usr/uploads/2025/08/3120321603.ipynb">Fst_3.ipynb</a> </p>
+<pre><code class="markdown">library(tidyverse)
+library(AnnotationForge)
+library(readxl)
+
+emapper %
+  dplyr::select(GID=query,Gene_Symbol=Preferred_name, 
+                GO=GOs,KO=KEGG_ko,Pathway =KEGG_Pathway, 
+                OG=eggNOG_OGs,Gene_Name =seed_ortholog)
+
+emapper$GID %   #这是只提取有GO注释信息的行，判断的标准时GO信息不是NA，这也就是为什么前面必须将“-”替换为NA，不替换就无法进行有效过滤。
+  mutate(EVIDENCE = 'gigas')     #硬生生加了1列EVIDENCE，全部赋值A,凑数的。
+dim(gene2go)    #查看数据维度。
+#[1] 1523399       3
+
+#提取GID与KO信息，这里只有2列信息
+gene2ko%
+ separate_rows(KO, sep = ',', convert = F) %&gt;%
+  dplyr::filter(!is.na(KO))
+dim(gene2ko)
+#[1] 30530     2
+
+#提取GID与Pathway信息，这里只有2列信息
+gene2pathway%
+separate_rows(Pathway, sep = ',', convert = F) %&gt;%
+  dplyr::filter(!is.na(Pathway))
+ dim(gene2pathway)
+#[1] 143056      2
+
+#提取GID与Gene_Symbol信息，Gene_Symbol是Preferred_name信息，这里只有2列信息
+gene2symbol%
+  dplyr::filter(!is.na(Gene_Symbol))
+dim(gene2symbol)
+#[1] 4561    2
+
+## 删除 GO ID 中的空格、制表符、换行符
+
+gene2go$GO
+</code></pre>
+]]></content>
+      <categories>
+        <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
     <title>4.提取重测序数据中黑白肌痕组中各SNP的位点信息及基因型频率</title>
     <url>/2025/08/03/32/</url>
     <content><![CDATA[<p>相关的sh文件内容如下：</p>
@@ -1194,747 +1357,6 @@ SHOW GRANTS FOR <span class="token string">'phpmyadmin'</span>@<span class="toke
       </categories>
   </entry>
   <entry>
-    <title>3.对基因进行注释，长牡蛎注释包的构建及KEGG和GO分析</title>
-    <url>/2025/08/02/25/</url>
-    <content><![CDATA[<blockquote>
-<p>前面我们发现了一些显著的SNP窗口位点，下面对显著的SNP位点进行提取。</p>
-</blockquote>
-<h1 id="1-提取SNP位点信息"><a href="#1-提取SNP位点信息" class="headerlink" title="1.提取SNP位点信息"></a>1.提取SNP位点信息</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 设置FST阈值（例如取WEIGHTED_FST &gt; 0.2）</span>
-awk '$5 &gt; 0.2' fst_binned.windowed.weir.fst &gt; high_fst_windows.txt
-
-<span class="token title important"><span class="token punctuation">##</span> 检查最高FST窗口</span>
-sort -k5,5nr high_fst_windows.txt | head
-
-
-<span class="token title important"><span class="token punctuation">##</span> 从高FST结果生成BED格式（用于后续注释）</span>
-awk '{print $1"\t"$2"\t"$3"\t"$5}' high_fst_windows.txt &gt; high_fst_regions.bed
-
-<span class="token title important"><span class="token punctuation">##</span> 合并相邻窗口（如距离 merged_high_fst.bed</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h1 id="2-对提取SNP位点注释"><a href="#2-对提取SNP位点注释" class="headerlink" title="2.对提取SNP位点注释"></a>2.对提取SNP位点注释</h1><p>然后提取与基因重叠的区域（需准备reference.gtf）</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 步骤1：过滤GFF3中的基因行（注意GFF3中gene的第三列为"gene"）</span>
-bedtools intersect -a merged_high_fst.bed -b ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff -wa -wb | \
-awk -F'\t' '$8 == "gene" {print $1,$2,$3,$12}' OFS='\t' | \
-awk -F'[;\t]' '{gsub(/ID=gene-/, "", $4); print $1,$2,$3,$4}' | sort | uniq &gt; fst_genes.txt
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h1 id="3-提取SNP位点所在基因的ID号"><a href="#3-提取SNP位点所在基因的ID号" class="headerlink" title="3.提取SNP位点所在基因的ID号"></a>3.提取SNP位点所在基因的ID号</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">awk -F'\t' '{
-  match($8, /ID=gene-([^;]+)/, id_arr);
-  match($8, /Name=([^;]+)/, name_arr);
-  if (id_arr[1] &amp;&amp; name_arr[1]) {
-    print $1, $2, $3, id_arr[1], name_arr[1];
-  }
-}' OFS='\t' fst_genes_annotated.bed &gt; fst_gene_ids_names.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-
-<p>下面为整理好的上述过程的脚本</p>
-<p>命名为<code># annotate_fst.sh</code> </p>
-<pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash">#!/bin/bash
-# 输入文件
-BED="merged_high_fst.bed"
-GFF="../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff"
-
-# 步骤1：提取基因（直接运行，若为空则需名称映射）
-bedtools intersect -a $BED -b $GFF -wa -wb | \
-awk -F'\t' '$8 == "gene" {print $1,$2,$3,$12}' OFS='\t' | \
-awk -F'[;\t]' '{gsub(/ID=gene-/, "", $4); print $1,$2,$3,$4}' | sort | uniq &gt; fst_genes.txt
-
-# 步骤2：检查结果
-echo "=== 前10行基因 ==="
-head fst_genes.txt
-echo "=== 行数统计 ==="
-wc -l fst_genes.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<h1 id="4-通过基因ID提取蛋白序列"><a href="#4-通过基因ID提取蛋白序列" class="headerlink" title="4.通过基因ID提取蛋白序列"></a>4.通过基因ID提取蛋白序列</h1><p>下面为根据基因ID提取转录本序列，然后进行注释（后面不用这个，直接构建注释包进行分析，感觉更好</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">grep -E "$(paste -sd'|' missing_loc.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "gene" | grep -E "$(paste -sd'|' missing_loc.txt)" | grep -o "gene_biotype=[^;]*" | sort | uniq -c
-
-
-grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "protein_id=" | \
-sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | sort | uniq &gt; protein_ids.txt
-
-
-seqkit grep -f protein_ids.txt ../GCF_902806645.1_cgigas_uk_roslin_v1_protein.faa &gt; proteins_extracted/fst_genes_proteins.faa
-
-grep "^&gt;" proteins_extracted/fst_genes_proteins.faa | wc -l
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>发现不能完全匹配所有LOC，查看哪些没匹配到</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span> 找所有LOC对应的protein_id</span>
-grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "protein_id=" | \
-sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | sort | uniq &gt; protein_ids_all.txt
-
-<span class="token title important"><span class="token punctuation">#</span> 检查protein_ids.txt是否包含所有</span>
-<span class="token blockquote punctuation">&gt;</span> comm -23 protein_ids_all.txt protein_ids.txt &gt; missing_proteins.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-<p>下面是上述命令整理好的查找脚本</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span>!/bin/bash</span>
-set -euo pipefail
-
-<span class="token title important"><span class="token punctuation">#</span> 1. 从fst_gene_ids_names.txt中提取LOC ID列表（假设第4列为LOC ID）</span>
-cut -f4 fst_gene_ids_names.txt | sort | uniq &gt; gene_loc_ids.txt
-
-<span class="token title important"><span class="token punctuation">#</span> 2. 从基因组注释GFF文件中筛选出这些LOC对应的protein_id</span>
-grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | \
-    grep "protein_id=" | \
-    sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | \
-    sort | uniq &gt; protein_ids.txt
-
-<span class="token title important"><span class="token punctuation">#</span> 3. 使用seqkit提取对应的蛋白序列到指定文件</span>
-seqkit grep -f protein_ids.txt ../GCF_902806645.1_cgigas_uk_roslin_v1_protein.faa &gt; proteins_extracted/fst_genes_proteins.faa
-
-<span class="token title important"><span class="token punctuation">#</span> 4. 统计提取到的蛋白数量，确认数量</span>
-grep "^&gt;" proteins_extracted/fst_genes_proteins.faa | wc -l<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<h1 id="5-对提取的蛋白进行注释"><a href="#5-对提取的蛋白进行注释" class="headerlink" title="5.对提取的蛋白进行注释"></a>5.对提取的蛋白进行注释</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">conda create -n eggnog3_env -c bioconda -c conda-forge eggnog-mapper
-conda activate eggnog3_env
-
-
-emapper.py -h
-
-tar -xvzf eggnog_mapper_data-5.0.2.tar.gz -C ./data<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">emapper.py -i proteins_extracted/fst_genes_proteins.faa \
-  --output fst_proteins_annotation \
-  --data_dir ./data \
-  -m diamond \
-  --cpu 12 \
-  --override<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<p>下面是R中的操作，主要进行KEGG和GO分析</p>
-<h1 id="1-对前面注释的基因进行聚类分析"><a href="#1-对前面注释的基因进行聚类分析" class="headerlink" title="1.对前面注释的基因进行聚类分析"></a>1.对前面注释的基因进行聚类分析</h1><p>详细内容见 <a href="http://192.168.1.101/usr/uploads/2025/08/706163015.ipynb">Fst_2.ipynb</a><br><img src="/images/25/2038951127.png" alt="mdvyq9m6.png"><br>结果如上，没有达到我的预期，操作也较麻烦。</p>
-<h1 id="2-构建非模式物种注释包org-Cgigas-eg-db"><a href="#2-构建非模式物种注释包org-Cgigas-eg-db" class="headerlink" title="2.构建非模式物种注释包org.Cgigas.eg.db"></a>2.构建非模式物种注释包org.Cgigas.eg.db</h1><p>详细内容见 <a href="http://192.168.1.101/usr/uploads/2025/08/3120321603.ipynb">Fst_3.ipynb</a> </p>
-<pre><code class="markdown">library(tidyverse)
-library(AnnotationForge)
-library(readxl)
-
-emapper %
-  dplyr::select(GID=query,Gene_Symbol=Preferred_name, 
-                GO=GOs,KO=KEGG_ko,Pathway =KEGG_Pathway, 
-                OG=eggNOG_OGs,Gene_Name =seed_ortholog)
-
-emapper$GID %   #这是只提取有GO注释信息的行，判断的标准时GO信息不是NA，这也就是为什么前面必须将“-”替换为NA，不替换就无法进行有效过滤。
-  mutate(EVIDENCE = 'gigas')     #硬生生加了1列EVIDENCE，全部赋值A,凑数的。
-dim(gene2go)    #查看数据维度。
-#[1] 1523399       3
-
-#提取GID与KO信息，这里只有2列信息
-gene2ko%
- separate_rows(KO, sep = ',', convert = F) %&gt;%
-  dplyr::filter(!is.na(KO))
-dim(gene2ko)
-#[1] 30530     2
-
-#提取GID与Pathway信息，这里只有2列信息
-gene2pathway%
-separate_rows(Pathway, sep = ',', convert = F) %&gt;%
-  dplyr::filter(!is.na(Pathway))
- dim(gene2pathway)
-#[1] 143056      2
-
-#提取GID与Gene_Symbol信息，Gene_Symbol是Preferred_name信息，这里只有2列信息
-gene2symbol%
-  dplyr::filter(!is.na(Gene_Symbol))
-dim(gene2symbol)
-#[1] 4561    2
-
-## 删除 GO ID 中的空格、制表符、换行符
-
-gene2go$GO
-</code></pre>
-]]></content>
-      <categories>
-        <category>重测序</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>基因结构</title>
-    <url>/2025/09/17/55/</url>
-    <content><![CDATA[<h2 id="结构图"><a href="#结构图" class="headerlink" title="结构图"></a>结构图</h2><p>!!!</p>
-<pre><code>    flowchart TD
-    A["一个完整的真核生物基因（DNA模板链）"]
-    
-    subgraph A_Sub[基因结构]
-        direction LR
-        Promoter[启动子 Promoter]
-        Exon1[外显子1 Exon 1]
-        Intron[内含子 Intron]
-        Exon2[外显子2 Exon 2]
-        Terminator[终止子 Terminator]
-    end
-    
-    A --&gt; A_Sub
-    
-    subgraph Transcription[第一步：转录]
-        direction TB
-        B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
-    end
-    
-    A_Sub --转录--&gt; Transcription
-    
-    subgraph Splicing[第二步：加工（剪切与拼接）]
-        direction TB
-        C["切除内含子并将外显子连接起来"]
-    end
-    
-    Transcription --加工--&gt; Splicing
-    
-    subgraph Final_mRNA[第三步：成熟mRNA]
-        direction LR
-        D["5' 帽子"]
-        E["5' UTR"]
-        F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
-        G["3' UTR"]
-        H["多聚A尾巴"]
-    end
-    
-    Splicing --"拼接后形成"--&gt; Final_mRNA
-    
-    %% 定义关系
-    Exon1 --包含--&gt; UTR1[5' UTR部分]
-    Exon1 --包含--&gt; CDS_Part1[CDS部分]
-    Exon2 --包含--&gt; CDS_Part2[CDS部分]
-    Exon2 --包含--&gt; UTR2[3' UTR部分]
-    
-    UTR1 --最终成为--&gt; E
-    CDS_Part1 --最终成为--&gt; F
-    CDS_Part2 --最终成为--&gt; F
-    UTR2 --最终成为--&gt; G
-    
-    Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
-    F --&gt; I
-    
-    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
-    classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
-    classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
-    
-    class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
-    class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
-    class Transcription,Splicing process;
-</code></pre>
-<p>!!!</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-
-<p>下面是代码</p>
-<pre class="mermaid">flowchart TD
-A["一个完整的真核生物基因（DNA模板链）"]
-
-subgraph A_Sub[基因结构]
-    direction LR
-    Promoter[启动子 Promoter]
-    Exon1[外显子1 Exon 1]
-    Intron[内含子 Intron]
-    Exon2[外显子2 Exon 2]
-    Terminator[终止子 Terminator]
-end
-
-A --&gt; A_Sub
-
-subgraph Transcription[第一步：转录]
-    direction TB
-    B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
-end
-
-A_Sub --转录--&gt; Transcription
-
-subgraph Splicing[第二步：加工（剪切与拼接）]
-    direction TB
-    C["切除内含子并将外显子连接起来"]
-end
-
-Transcription --加工--&gt; Splicing
-
-subgraph Final_mRNA[第三步：成熟mRNA]
-    direction LR
-    D["5' 帽子"]
-    E["5' UTR"]
-    F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
-    G["3' UTR"]
-    H["多聚A尾巴"]
-end
-
-Splicing --"拼接后形成"--&gt; Final_mRNA
-
-%% 定义关系
-Exon1 --包含--&gt; UTR1[5' UTR部分]
-Exon1 --包含--&gt; CDS_Part1[CDS部分]
-Exon2 --包含--&gt; CDS_Part2[CDS部分]
-Exon2 --包含--&gt; UTR2[3' UTR部分]
-
-UTR1 --最终成为--&gt; E
-CDS_Part1 --最终成为--&gt; F
-CDS_Part2 --最终成为--&gt; F
-UTR2 --最终成为--&gt; G
-
-Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
-F --&gt; I
-
-classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
-classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
-classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
-classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
-
-class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
-class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
-class Transcription,Splicing process;</pre>
-
-<script type="module"> import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';	mermaid.initialize({startOnLoad: true, flowchart: {curve: 'linear'}}); </script>]]></content>
-      <categories>
-        <category>重测序</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>openipc goke7205v200</title>
-    <url>/2024/12/03/7/</url>
-    <content><![CDATA[<h1 id="保存原始固件"><a href="#保存原始固件" class="headerlink" title="保存原始固件"></a>保存原始固件</h1><hr>
-<h2 id="备份您的原始固件，请不要跳过这个步骤！"><a href="#备份您的原始固件，请不要跳过这个步骤！" class="headerlink" title="备份您的原始固件，请不要跳过这个步骤！"></a>备份您的原始固件，请不要跳过这个步骤！</h2><p>OpenIPC U-Boot 会覆盖原始的加密分区，因此无法恢复为出厂固件，除非您拥有此特定摄像机的完整闪存备份！要创建完整的固件备份，请启动 TFTP 服务器并在引导加载程序 shell 中执行这些命令。</p>
-<blockquote>
-<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python"> # Enter commands line by line! Do not copy and paste multiple lines at once!
-setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105
-mw.b 0x42000000 0xff 0x1000000
-sf probe 0; sf read 0x42000000 0x0 0x1000000
-tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
-# if there is no tftpput but tftp then run this instead
- tftp 0x42000000 backup-gk7205v200-nor16m.bin 0x1000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</blockquote>
-<p>有关详细信息，请参阅项目 wiki 中的安装说明。</p>
-<h1 id="烧录完整的-OpenIPC-固件"><a href="#烧录完整的-OpenIPC-固件" class="headerlink" title="烧录完整的 OpenIPC 固件"></a>烧录完整的 OpenIPC 固件</h1><h2 id="下载-OpenIPC-固件-Ultimate"><a href="#下载-OpenIPC-固件-Ultimate" class="headerlink" title="下载 OpenIPC 固件 (Ultimate)"></a>下载 OpenIPC 固件 (Ultimate)</h2><p>for Goke GK7205V200 with 16MB NOR flash</p>
-<p>完整的固件由引导加载程序、内核和根文件系统组成，也适用于使用编程器烧写闪存芯片。 请注意，完整固件不包含预设环境。你还需要添加自己的MAC地址、IP地址等设置。</p>
-<blockquote>
-<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105<br>mw.b 0x42000000 0xff 0x1000000<br>tftpboot 0x42000000 openipc-gk7205v200-ultimate-16mb.bin</p>
-<h1 id="if-there-is-no-tftpboot-but-tftp-then-run-this-instead"><a href="#if-there-is-no-tftpboot-but-tftp-then-run-this-instead" class="headerlink" title="if there is no tftpboot but tftp then run this instead"></a>if there is no tftpboot but tftp then run this instead</h1><p>tftp 0x42000000 openipc-gk7205v200-ultimate-16mb.bin<br>sf probe 0; sf lock 0;<br>sf erase 0x0 0x1000000; sf write 0x42000000 0x0 0x1000000<br>reset</p>
-</blockquote>
-<p>摄像机将自动重启并使用全新的引导加载程序启动。</p>
-<p>注意准备中断并进入引导程序的命令行。 在引导加载程序的命令行中，根据您的闪存大小和类型重新映射 ROM 分区。</p>
-<blockquote>
-<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>run setnor16m</p>
-</blockquote>
-<h1 id="恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。"><a href="#恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。" class="headerlink" title="恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。"></a>恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。</h1><p>在端口 85 ( <a href="http://192.168.15.169:85/">http://192.168.15.169:85/</a> ) 上打开摄像机的 Web 界面并使用登录root和密码12345登录。登录后将要求您设置自己的安全密码。通过以下方式访问摄像机ssh 或 UART 使用与上述相同的登录名和密码。</p>
-<hr>
-<p>打开web界面后，更新固件，更新完后调整majestic、sensor与设备型号对应。</p>
-<h1 id="majestic"><a href="#majestic" class="headerlink" title="majestic"></a>majestic</h1><p>openipc未开源部分。</p>
-]]></content>
-      <categories>
-        <category>折腾</category>
-      </categories>
-      <tags>
-        <tag>openipc</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>410随身WiFi棒子Debian刷入青龙教程</title>
-    <url>/2025/09/25/56/</url>
-    <content><![CDATA[<p>备份教程<br>刷Debian前请先备份（非常重要！！！）</p>
-<p>弄成砖了是可以刷回来的，大佬可忽略</p>
-<p>备份教程：	<a href="https://xiao54.com/linux/32.html">https://xiao54.com/linux/32.html</a><br>视频教程：	<a href="https://www.bilibili.com/blackboard/webplayer/mbplayer.html?aid=326276265&amp;bvid=BV1iw411J7BG&amp;cid=1406661980&amp;p=1">https://www.bilibili.com/blackboard/webplayer/mbplayer.html?aid=326276265&amp;bvid=BV1iw411J7BG&amp;cid=1406661980&amp;p=1</a><br>下载链接：	<a href="https://www.123pan.com/s/354uVv-z7YU3.html">https://www.123pan.com/s/354uVv-z7YU3.html</a><br>先进入fastboot模式，输入指令</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">adb reboot bootloader<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>410随身WiFi棒子Debian刷入青龙教程<br>SSH账号密码<br>解压要刷的Debian系统，然后点击一件刷入</p>
-<p>cmd登录地址:ssh <a href="mailto:root@10.42.0.1">root@10.42.0.1</a> 密码:1313144</p>
-<p>SSH软件:IP:10.42.0.1 用户名:root 密码:1313144</p>
-<p>热点:4G-wifi 密码:12345678</p>
-<p>更新驱动<br>更新驱动视频教程：<a href="https://player.bilibili.com/">https://player.bilibili.com/</a></p>
-<p>更新驱动前注意事项：需要安装vivo9008drivers.exe软件，如安装过请忽略</p>
-<p>1、在【Android Device】下查看有没有【Android Composite ADB Interface】这个驱动，如果不是，右键【更新驱动程序】-【浏览我的计算机以查找驱动程序软件】-【让我从计算机上的可用驱动程序列表中选取(L)】，选择【Android Composite ADB Interface或者USB Composite Device】-【下一步】</p>
-<p>2、插入棒子会显示一个未知设备或者RNDIS，不确定是那个就先拔掉棒子，然后重新插入</p>
-<p>3、下拉找到【网络适配器】-厂商下拉选择【Microsoft】型号下拉选择【基于远程 NDIS 的Internet 共享设备】-【下一步】-即可完成安装驱动</p>
-<p>网络编辑<br>1、现在就用键盘上的方向键编辑，鼠标就不能用了</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">nmtui<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>2、把热点删除，因为他现在不支持WiFi和热点一起开启，所以要把热点删除连接WiFi给debian系统通网才能继续操作</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">true &gt; /etc/apt/sources.list.d/mobian.list<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>3、更新软件包</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">sudo apt-get update<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>4、更新curl wget</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">apt install curl wget<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>5、安装docker系统</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">apt install docker.io<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>6、docker设置随服务启动而自启动</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">systemctl enable docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>7、启动docker</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">systemctl start docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>给docker设置加速代理<br>1、创建文件夹</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">sudo mkdir -p /etc/docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>2、填入加速代理</p>
-<p>如不能使用则代理失效了，请更换代理，更换里面的链接即可。</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">sudo tee /etc/docker/daemon.json  /sys/kernel/debug/usb/ci_hdrc.0/role
-安装1panel代码
-```html
-curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh &amp;&amp; bash quick_start.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>近期商家为了成本emmmc质量都不太行下面这个指令查看寿命</p>
-<p>查看棒子颗粒寿命<br>查看内存寿命如果显示是0x01寿命就很好，如果显示0+09等越来越远的寿命也就离挂不远了：</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">cat /sys/class/mmc_host/mmc0/mmc0\:0001/life_time<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="/images/56/477017655.png" alt="mfzbzmj7.png"></p>
-<p>410随身WiFi棒子Debian刷入青龙教程<br>关灯方法一<br>1、先安装dialog</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">apt install dialog<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>2、然后执行一键命令</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">curl -L gitee.com/ojf6ii/led-control-script/raw/master/led2.sh -o /bin/ledctl &amp;&amp; chmod 755 /bin/ledctl<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>3、下载完成后输入指令即可打开界面</p>
-<p>ledctl<br>关灯方法二<br>1、打开文件夹</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">vi /etc/rc.local<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>2、粘贴以下代码保存设置开机自启关闭led，重启即可生效</p>
-<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">echo none &gt; /sys/class/leds/red\:os/trigger
-echo none &gt; /sys/class/leds/blue\:wifi/trigger
-echo none &gt; /sys/class/leds/green\:internet/trigger<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>]]></content>
-      <categories>
-        <category>WIFI</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>GPT 学术优化</title>
-    <url>/2024/12/06/8/</url>
-    <content><![CDATA[<h1 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h1><p>安装方法：直接运行 (Windows, Linux or MacOS)<br>下载项目</p>
-<blockquote>
-<p>git clone –depth=1 <a href="https://github.com/binary-husky/gpt_academic.git">https://github.com/binary-husky/gpt_academic.git</a><br>cd gpt_academic<br>配置API_KEY等变量</p>
-</blockquote>
-<p>在config.py中，配置API KEY等变量。特殊网络环境设置方法、Wiki-项目配置说明。</p>
-<p>「 程序会优先检查是否存在名为config_private.py的私密配置文件，并用其中的配置覆盖config.py的同名配置。如您能理解以上读取逻辑，我们强烈建议您在config.py同路径下创建一个名为config_private.py的新配置文件，并使用config_private.py配置项目，从而确保自动更新时不会丢失配置 」。</p>
-<p>「 支持通过环境变量配置项目，环境变量的书写格式参考docker-compose.yml文件或者我们的Wiki页面。配置读取优先级: 环境变量 &gt; config_private.py &gt; config.py 」。</p>
-<p>安装依赖</p>
-<h4 id="（选择I-如熟悉python-python推荐版本-3-9-3-11）"><a href="#（选择I-如熟悉python-python推荐版本-3-9-3-11）" class="headerlink" title="（选择I: 如熟悉python, python推荐版本 3.9 ~ 3.11）"></a>（选择I: 如熟悉python, python推荐版本 3.9 ~ 3.11）</h4><p>备注：使用官方pip源或者阿里pip源, 临时换源方法：</p>
-<blockquote>
-<p>python -m pip install -r requirements.txt -i <a href="https://mirrors.aliyun.com/pypi/simple/">https://mirrors.aliyun.com/pypi/simple/</a></p>
-</blockquote>
-<blockquote>
-<p>python -m pip install -r requirements.txt</p>
-</blockquote>
-<h4 id="（选择II-使用Anaconda）步骤也是类似的-https-www-bilibili-com-video-BV1rc411W7Dr-："><a href="#（选择II-使用Anaconda）步骤也是类似的-https-www-bilibili-com-video-BV1rc411W7Dr-：" class="headerlink" title="（选择II: 使用Anaconda）步骤也是类似的 (https://www.bilibili.com/video/BV1rc411W7Dr)："></a>（选择II: 使用Anaconda）步骤也是类似的 (<a href="https://www.bilibili.com/video/BV1rc411W7Dr)%EF%BC%9A">https://www.bilibili.com/video/BV1rc411W7Dr)：</a></h4><blockquote>
-<p>conda create -n gptac_venv python=3.11    # 创建anaconda环境<br>conda activate gptac_venv                 # 激活anaconda环境</p>
-</blockquote>
-<blockquote>
-<p>python -m pip install -r requirements.txt # 这个步骤和pip安装一样的步骤</p>
-</blockquote>
-<p>如果需要支持清华ChatGLM2/复旦MOSS/RWKV作为后端，请点击展开此处<br>运行</p>
-<blockquote>
-<p>python main.py</p>
-</blockquote>
-<p>使用第三方API、Azure等、文心一言、星火等，见Wiki页面</p>
-<p>云服务器远程部署避坑指南。 请访问云服务器远程部署wiki</p>
-<p>在其他平台部署&amp;二级网址部署</p>
-<p>使用Sealos一键部署。<br>使用WSL2（Windows Subsystem for Linux 子系统）。请访问部署wiki-2<br>如何在二级网址（如<a href="http://localhost/subpath%EF%BC%89%E4%B8%8B%E8%BF%90%E8%A1%8C%E3%80%82%E8%AF%B7%E8%AE%BF%E9%97%AEFastAPI%E8%BF%90%E8%A1%8C%E8%AF%B4%E6%98%8E">http://localhost/subpath）下运行。请访问FastAPI运行说明</a></p>
-<p>Advanced Usage<br>I：自定义新的便捷按钮（学术快捷键）<br>现在已可以通过UI中的界面外观菜单中的自定义菜单添加新的便捷按钮。如果需要在代码中定义，请使用任意文本编辑器打开core_functional.py，添加如下条目即可：</p>
-<p>“超级英译中”: {<br>    # 前缀，会被加在你的输入之前。例如，用来描述你的要求，例如翻译、解释代码、润色等等<br>    “Prefix”: “请翻译把下面一段内容成中文，然后用一个markdown表格逐一解释文中出现的专有名词：\n\n”,</p>
-<pre><code># 后缀，会被加在你的输入之后。例如，配合前缀可以把你的输入内容用引号圈起来。
-"Suffix": "",
-</code></pre>
-<p>},</p>
-<p>II：自定义函数插件<br>编写强大的函数插件来执行任何你想得到的和想不到的任务。 本项目的插件编写、调试难度很低，只要您具备一定的python基础知识，就可以仿照我们提供的模板实现自己的插件功能。 详情请参考函数插件指南。</p>
-<p>⭐Latex/Arxiv论文翻译功能⭐<br> ===&gt;<br>虚空终端（从自然语言输入中，理解用户意图+自动调用其他插件）<br>步骤一：输入 “ 请调用插件翻译PDF论文，地址为<a href="https://openreview.net/pdf?id=rJl0r3R9KX">https://openreview.net/pdf?id=rJl0r3R9KX</a> ”<br>步骤二：点击“虚空终端”</p>
-<p>模块化功能设计，简单的接口却能支持强大的功能</p>
-<p>译解其他开源项目</p>
-<p>装饰live2d的小功能（默认关闭，需要修改config.py）</p>
-<p>OpenAI图像生成</p>
-<p>基于mermaid的流图、脑图绘制</p>
-<p>已知问题<br>某些浏览器翻译插件干扰此软件前端的运行<br>官方Gradio目前有很多兼容性问题，请务必使用requirement.txt安装Gradio</p>
-<p>III：主题<br>可以通过修改THEME选项（config.py）变更主题</p>
-<p>Chuanhu-Small-and-Beautiful 网址</p>
-<p>访问GPT-Academic的在线服务并支持我们<br>V：参考与学习<br>代码中参考了很多其他优秀项目中的设计，顺序不分先后：</p>
-<h1 id="清华ChatGLM2-6B"><a href="#清华ChatGLM2-6B" class="headerlink" title="清华ChatGLM2-6B:"></a>清华ChatGLM2-6B:</h1><p><a href="https://github.com/THUDM/ChatGLM2-6B">https://github.com/THUDM/ChatGLM2-6B</a></p>
-<h1 id="清华JittorLLMs"><a href="#清华JittorLLMs" class="headerlink" title="清华JittorLLMs:"></a>清华JittorLLMs:</h1><p><a href="https://github.com/Jittor/JittorLLMs">https://github.com/Jittor/JittorLLMs</a></p>
-<h1 id="ChatPaper"><a href="#ChatPaper" class="headerlink" title="ChatPaper:"></a>ChatPaper:</h1><p><a href="https://github.com/kaixindelele/ChatPaper">https://github.com/kaixindelele/ChatPaper</a></p>
-<h1 id="Edge-GPT"><a href="#Edge-GPT" class="headerlink" title="Edge-GPT:"></a>Edge-GPT:</h1><p><a href="https://github.com/acheong08/EdgeGPT">https://github.com/acheong08/EdgeGPT</a></p>
-<h1 id="ChuanhuChatGPT"><a href="#ChuanhuChatGPT" class="headerlink" title="ChuanhuChatGPT:"></a>ChuanhuChatGPT:</h1><p><a href="https://github.com/GaiZhenbiao/ChuanhuChatGPT">https://github.com/GaiZhenbiao/ChuanhuChatGPT</a></p>
-<h1 id="Oobabooga-one-click-installer"><a href="#Oobabooga-one-click-installer" class="headerlink" title="Oobabooga one-click installer:"></a>Oobabooga one-click installer:</h1><p><a href="https://github.com/oobabooga/one-click-installers">https://github.com/oobabooga/one-click-installers</a></p>
-<h1 id="More："><a href="#More：" class="headerlink" title="More："></a>More：</h1><p><a href="https://github.com/gradio-app/gradio">https://github.com/gradio-app/gradio</a><br><a href="https://github.com/fghrsh/live2d_demo">https://github.com/fghrsh/live2d_demo</a></p>
-<p>下载项目<br>git命令下载</p>
-<blockquote>
-<p>git clone <a href="https://github.com/binary-husky/chatgpt_academic.git">https://github.com/binary-husky/chatgpt_academic.git</a></p>
-</blockquote>
-<p>github下载 download zip<br>ChatGPT学术优化项目地址:<a href="https://github.com/binary-husky/chatgpt_academic">https://github.com/binary-husky/chatgpt_academic</a></p>
-<p>安装项目环境<br>这里是通过Anaconda Prompt创建环境</p>
-<p>创建环境</p>
-<blockquote>
-<p>conda create -n chatgpt-academic python=3.11.0</p>
-</blockquote>
-<p>输入y，回车安装！</p>
-<p>进入环境</p>
-<blockquote>
-<p>conda activate chatgpt-academic</p>
-</blockquote>
-<p>安装依赖<br>先进入到项目的根目录</p>
-<blockquote>
-<p>python -m pip install -r requirements.txt</p>
-</blockquote>
-<p>PS：我这里是可以正常安装的，因为项目要求gradio&gt;= <strong>3.23</strong> ，有些可能报错。需要先下载python的whl文件再进行安装。地址<a href="https://pypi.org/project/gradio/#files">https://pypi.org/project/gradio/#files</a></p>
-<p>下载保存到你的项目根目录，在通过</p>
-<blockquote>
-<p>pip install gradio-3.24.1-py3-none-any.whl</p>
-</blockquote>
-<p>当我们安装好gradio之后，把requirements.txt文件中gradio注释</p>
-<p>重新运行</p>
-<blockquote>
-<p>python -m pip install -r requirements.txt</p>
-</blockquote>
-<p>此致项目需要的环境就安装完成了！</p>
-<p>打开解压的项目<br>这里以Vscode为例，配置config.py文件</p>
-<p>配置API_KEY<br>打开你的科学上网助手，我这里使用是Clash是可以的（个人感觉路线选择美国的代理更好）<br>进入<a href="https://platform.openai.com/account/api-keys">https://platform.openai.com/account/api-keys</a></p>
-<p>将创建的秘钥复制到config.py文件的API_KEY变量，秘钥配置完成！</p>
-<p>配置代理网络的地址<br>第一步：进入网址<a href="https://ipapi.co/json/">https://ipapi.co/json/</a><br>第二步：打开开发者工具（Google浏览器快捷键Ctrl+Shift+i）,点击网络，按一下Ctrl+r，可以看到一个json文件</p>
-<p>第三步：点击json文件</p>
-<p>第四步：将这个地址复制到config.py文件中的proxies</p>
-<p>运行项目<br>项目所需的环境、秘钥、代理全部配置好就可以运行项目了</p>
-<blockquote>
-<p>python main.py</p>
-</blockquote>
-<p>浏览器输入Running on local URL</p>
-]]></content>
-      <categories>
-        <category>默认分类</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>使用ANNOVAR进行长牡蛎SNP注释完整流程</title>
-    <url>/2025/10/31/annovar/</url>
-    <content><![CDATA[<h1 id="使用ANNOVAR进行长牡蛎-Crassostrea-gigas-SNP注释完整流程"><a href="#使用ANNOVAR进行长牡蛎-Crassostrea-gigas-SNP注释完整流程" class="headerlink" title="使用ANNOVAR进行长牡蛎(Crassostrea gigas)SNP注释完整流程"></a>使用ANNOVAR进行长牡蛎(<em>Crassostrea gigas</em>)SNP注释完整流程</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本文介绍如何使用ANNOVAR对长牡蛎(<em>Crassostrea gigas</em>)的SNP变异数据进行功能注释。流程包括参考基因组数据库构建、变异数据格式转换、功能注释和结果整合。</p>
-<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><h3 id="1-软件安装"><a href="#1-软件安装" class="headerlink" title="1. 软件安装"></a>1. 软件安装</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># ANNOVAR下载</span>
-<span class="token function">wget</span> http://www.openbioinformatics.org/annovar/annovar.tar.gz
-<span class="token function">tar</span> <span class="token parameter variable">-xzvf</span> annovar.tar.gz
-
-<span class="token comment"># 其他依赖工具</span>
-conda <span class="token function">install</span> <span class="token parameter variable">-c</span> bioconda ucsc-gtftogenepred<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="2-数据文件准备"><a href="#2-数据文件准备" class="headerlink" title="2. 数据文件准备"></a>2. 数据文件准备</h3><ul>
-<li>参考基因组GTF文件：<code>/home/wanglab/Ywh/adductor_muscle_scar/Crassostrea_gigas.cgigas_uk_roslin_v1.61.gtf</code></li>
-<li>基因组FASTA文件：<code>GCF_902806645.1_cgigas_uk_roslin_v1_genomic.fna</code></li>
-<li>SNP数据：<code>filtered_variants_thr0p7_20250902_162128.tsv</code></li>
-</ul>
-<h2 id="完整流程"><a href="#完整流程" class="headerlink" title="完整流程"></a>完整流程</h2><h3 id="步骤1：构建自定义参考基因组数据库"><a href="#步骤1：构建自定义参考基因组数据库" class="headerlink" title="步骤1：构建自定义参考基因组数据库"></a>步骤1：构建自定义参考基因组数据库</h3><h4 id="1-1-转换GTF为GenePred格式"><a href="#1-1-转换GTF为GenePred格式" class="headerlink" title="1.1 转换GTF为GenePred格式"></a>1.1 转换GTF为GenePred格式</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">gtfToGenePred <span class="token parameter variable">-genePredExt</span> <span class="token punctuation">\</span>
-    <span class="token string">"/home/wanglab/Ywh/adductor_muscle_scar/ReSeq_Data/DZQD2023092909/annovar/Cgigasdb/GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gtf"</span> <span class="token punctuation">\</span>
-    Cg_refGene.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="1-2-提取mRNA序列"><a href="#1-2-提取mRNA序列" class="headerlink" title="1.2 提取mRNA序列"></a>1.2 提取mRNA序列</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">perl retrieve_seq_from_fasta.pl <span class="token punctuation">\</span>
-    <span class="token parameter variable">--format</span> refGene <span class="token punctuation">\</span>
-    <span class="token parameter variable">--seqfile</span> GCF_902806645.1_cgigas_uk_roslin_v1_genomic.fna <span class="token punctuation">\</span>
-    <span class="token parameter variable">--outfile</span> Cg_refGeneMrna.fa <span class="token punctuation">\</span>
-    Cg_refGene.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="步骤2：准备SNP输入文件"><a href="#步骤2：准备SNP输入文件" class="headerlink" title="步骤2：准备SNP输入文件"></a>步骤2：准备SNP输入文件</h3><h4 id="2-1-转换TSV为ANNOVAR输入格式"><a href="#2-1-转换TSV为ANNOVAR输入格式" class="headerlink" title="2.1 转换TSV为ANNOVAR输入格式"></a>2.1 转换TSV为ANNOVAR输入格式</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'NR&gt;1 {print $1"\t"$2"\t"$2"\t"$3"\t"$4}'</span> <span class="token punctuation">\</span>
-    /home/wanglab/Ywh/adductor_muscle_scar/Variants/filtered_variants_thr0p7_20250902_162128.tsv <span class="token punctuation">\</span>
-    <span class="token operator">&gt;</span> filtered_variants_thr0p7_20250902_162128.avinput<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>输入TSV格式：</strong></p>
-<pre class="line-numbers language-none"><code class="language-none">chromosome	position	ref	alt	...
-NC_047567.1	32667511	G	T	...<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p><strong>输出AVINPUT格式：</strong></p>
-<pre class="line-numbers language-none"><code class="language-none">chromosome	start	end	ref	alt
-NC_047567.1	32667511	32667511	G	T<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<h3 id="步骤3：执行功能注释"><a href="#步骤3：执行功能注释" class="headerlink" title="步骤3：执行功能注释"></a>步骤3：执行功能注释</h3><h4 id="3-1-使用table-annovar-pl进行注释"><a href="#3-1-使用table-annovar-pl进行注释" class="headerlink" title="3.1 使用table_annovar.pl进行注释"></a>3.1 使用table_annovar.pl进行注释</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">perl table_annovar.pl <span class="token punctuation">\</span>
-    filtered_variants_thr0p7_20250902_162128.avinput <span class="token punctuation">\</span>
-    Cgigasdb/ <span class="token punctuation">\</span>
-    <span class="token parameter variable">-buildver</span> Cg <span class="token punctuation">\</span>
-    <span class="token parameter variable">-out</span> filtered_variants_thr0p7_20250902_162128 <span class="token punctuation">\</span>
-    <span class="token parameter variable">-remove</span> <span class="token punctuation">\</span>
-    <span class="token parameter variable">-protocol</span> refGene <span class="token punctuation">\</span>
-    <span class="token parameter variable">-operation</span> g <span class="token punctuation">\</span>
-    <span class="token parameter variable">-nastring</span> <span class="token builtin class-name">.</span> <span class="token punctuation">\</span>
-    <span class="token parameter variable">-csvout</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>参数说明：</strong></p>
-<ul>
-<li><code>-buildver Cg</code>: 使用自定义构建版本”Cg”</li>
-<li><code>-protocol refGene</code>: 使用refGene数据库</li>
-<li><code>-operation g</code>: 基因-based注释</li>
-<li><code>-csvout</code>: 输出CSV格式</li>
-<li><code>-nastring .</code>: 用”.”表示缺失值</li>
-</ul>
-<h3 id="步骤4：整合注释结果"><a href="#步骤4：整合注释结果" class="headerlink" title="步骤4：整合注释结果"></a>步骤4：整合注释结果</h3><h4 id="4-1-方法一：基于行号合并（推荐）"><a href="#4-1-方法一：基于行号合并（推荐）" class="headerlink" title="4.1 方法一：基于行号合并（推荐）"></a>4.1 方法一：基于行号合并（推荐）</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 为原始文件添加行号</span>
-<span class="token function">awk</span> <span class="token string">'NR==1 {print "LineNumber\t"$0} NR&gt;1 {print NR-1"\t"$0}'</span> <span class="token punctuation">\</span>
-    /home/wanglab/Ywh/adductor_muscle_scar/Variants/filtered_variants_thr0p7_20250902_162128.tsv <span class="token punctuation">\</span>
-    <span class="token operator">&gt;</span> original_with_linenum.tsv
-
-<span class="token comment"># 为注释文件添加行号</span>
-<span class="token function">awk</span> <span class="token string">'NR==1 {print "LineNumber\t"$0} NR&gt;1 {print NR-1"\t"$0}'</span> <span class="token punctuation">\</span>
-    filtered_variants_thr0p7_20250902_162128.Cg_multianno.csv <span class="token punctuation">\</span>
-    <span class="token operator">&gt;</span> anno_with_linenum.tsv
-
-<span class="token comment"># 基于行号合并</span>
-<span class="token function">join</span> <span class="token parameter variable">-t</span> <span class="token string">$'<span class="token entity" title="\t">\t</span>'</span> <span class="token parameter variable">-1</span> <span class="token number">1</span> <span class="token parameter variable">-2</span> <span class="token number">1</span> <span class="token punctuation">\</span>
-    original_with_linenum.tsv anno_with_linenum.tsv <span class="token punctuation">\</span>
-    <span class="token operator">&gt;</span> merged_result.tsv
-
-<span class="token comment"># 清理临时文件</span>
-<span class="token function">rm</span> original_with_linenum.tsv anno_with_linenum.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="4-2-方法二：一次性合并"><a href="#4-2-方法二：一次性合并" class="headerlink" title="4.2 方法二：一次性合并"></a>4.2 方法二：一次性合并</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> -F<span class="token string">','</span> <span class="token string">'
-BEGIN {OFS="\t"}
-NR==FNR {
-    if (FNR==1) {
-        anno_header = $6"\t"$7"\t"$8"\t"$9"\t"$10
-    } else {
-        annotation[FNR] = $6"\t"$7"\t"$8"\t"$9"\t"$10
-    }
-    next
-}
-{
-    if (FNR==1) {
-        print $0 "\t" anno_header
-    } else {
-        print $0 "\t" annotation[FNR]
-    }
-}'</span> filtered_variants_thr0p7_20250902_162128.Cg_multianno.csv <span class="token punctuation">\</span>
-   /home/wanglab/Ywh/adductor_muscle_scar/Variants/filtered_variants_thr0p7_20250902_162128.tsv <span class="token punctuation">\</span>
-   <span class="token operator">&gt;</span> filtered_variants_thr0p7_20250902_162128_annotated.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h2 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h2><h3 id="注释结果包含的字段："><a href="#注释结果包含的字段：" class="headerlink" title="注释结果包含的字段："></a>注释结果包含的字段：</h3><ul>
-<li><strong>Gene-based注释</strong>: 基因名称、转录本、外显子功能等</li>
-<li><strong>位置信息</strong>: 染色体、位置、参考/变异碱基</li>
-<li><strong>功能预测</strong>: 对蛋白质功能的影响</li>
-</ul>
-<h3 id="典型输出格式："><a href="#典型输出格式：" class="headerlink" title="典型输出格式："></a>典型输出格式：</h3><pre class="line-numbers language-none"><code class="language-none">Chr     Start   End     Ref     Alt     Func.refGene    Gene.refGene    ExonicFunc.refGene    AAChange.refGene
-NC_047567.1 32667511 32667511 G T downstream LOC105320120 . .
-NC_047567.1 32661831 32661831 C A exonic LOC105320120 nonsynonymous SNV LOC105320120:NM_001345123:exon2:c.T142A:p.S48T<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<h2 id="常见问题与解决方案"><a href="#常见问题与解决方案" class="headerlink" title="常见问题与解决方案"></a>常见问题与解决方案</h2><h3 id="1-数据库构建失败"><a href="#1-数据库构建失败" class="headerlink" title="1. 数据库构建失败"></a>1. 数据库构建失败</h3><p><strong>问题</strong>: GTF文件格式不兼容<br><strong>解决</strong>: 确保GTF文件来自官方来源，使用<code>gtfToGenePred</code>前检查文件完整性</p>
-<h3 id="2-注释结果为空"><a href="#2-注释结果为空" class="headerlink" title="2. 注释结果为空"></a>2. 注释结果为空</h3><p><strong>问题</strong>: 构建版本不匹配<br><strong>解决</strong>: 检查<code>-buildver</code>参数与数据库构建版本一致</p>
-<h3 id="3-合并结果错位"><a href="#3-合并结果错位" class="headerlink" title="3. 合并结果错位"></a>3. 合并结果错位</h3><p><strong>问题</strong>: 输入文件行数不匹配<br><strong>解决</strong>: 使用基于行号的合并方法确保准确性</p>
-<h2 id="流程优化建议"><a href="#流程优化建议" class="headerlink" title="流程优化建议"></a>流程优化建议</h2><h3 id="1-批量处理"><a href="#1-批量处理" class="headerlink" title="1. 批量处理"></a>1. 批量处理</h3><p>对于多个样本，可以编写循环脚本批量处理：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token keyword">for</span> <span class="token for-or-select variable">sample</span> <span class="token keyword">in</span> sample1 sample2 sample3<span class="token punctuation">;</span> <span class="token keyword">do</span>
-    perl table_annovar.pl <span class="token variable">${sample}</span>.avinput Cgigasdb/ <span class="token punctuation">\</span>
-        <span class="token parameter variable">-buildver</span> Cg <span class="token punctuation">\</span>
-        <span class="token parameter variable">-out</span> <span class="token variable">${sample}</span>_annotated <span class="token punctuation">\</span>
-        <span class="token parameter variable">-protocol</span> refGene <span class="token punctuation">\</span>
-        <span class="token parameter variable">-operation</span> g <span class="token punctuation">\</span>
-        <span class="token parameter variable">-csvout</span>
-<span class="token keyword">done</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="2-添加更多注释数据库"><a href="#2-添加更多注释数据库" class="headerlink" title="2. 添加更多注释数据库"></a>2. 添加更多注释数据库</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 添加保守性预测</span>
-perl table_annovar.pl input.avinput Cgigasdb/ <span class="token punctuation">\</span>
-    <span class="token parameter variable">-buildver</span> Cg <span class="token punctuation">\</span>
-    <span class="token parameter variable">-out</span> output <span class="token punctuation">\</span>
-    <span class="token parameter variable">-protocol</span> refGene,phastConsElements100way <span class="token punctuation">\</span>
-    <span class="token parameter variable">-operation</span> g,r <span class="token punctuation">\</span>
-    <span class="token parameter variable">-csvout</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h2 id=""><a href="#" class="headerlink" title=""></a></h2><p>本流程提供了从原始SNP数据到功能注释的完整解决方案，特别针对长牡蛎等非模式生物。通过构建自定义数据库，可以有效地对物种特异性变异进行功能注释，为后续的群体遗传学和功能基因组学研究奠定基础。</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>记一次清空SMART修复群晖报故障的硬盘</title>
-    <url>/2024/12/08/9/</url>
-    <content><![CDATA[<p>事先说明，虽然这篇文章内容大量注水，但是文中涉及的操作有风险，想要照葫芦画瓢的童鞋，请谨慎对待，切记提前备份重要数据。小姐姐们不见了别找我，我这里可不生产小姐姐</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-
-<p>好，让我们进入正题，凡事都有个前因后果，先说说起因</p>
-<p>前几天，群晖里一块希捷的2T硬盘报告故障，查看一下SMART信息，发现是End_to_End计数达到阈值，于是把硬盘抽出来接到Windows下用HDTune再次确认，确实见红了 但是用SeaTools扫描，各种长短检测都能通过，希捷这又是什么操作</p>
-<p>HDTune忘记截图了，借用网上的一张图说明一下是哪一项见红HDTune忘记截图了，借用网上的一张图说明一下是哪一项见红<br><img src="/images/9/762531194.png" alt="m4f55w5m.png"><br>最后用MHDD扫描过后，发现硬盘并没有坏块，那么是什么原因导致的B8 End_to_End计数增加呢？各种说法都有，有说是硬盘上的缓存坏掉了，有说是SATA线接触不良导致，有说是缓存到磁盘的数据包校验出错，反正各种说法都有，具体硬盘SMART里如何判断这个值的，估计也只有硬盘厂家知道，所以就不要纠结了。但是就这样淘汰掉一块2T的硬盘？是不是太浪费了？记一次清空SMART修复群晖报故障的硬盘 </p>
-<p>垃圾佬没别的本事，就是爱折腾，于是先尝试了低格整块硬盘，插回群晖还是报故障，看来只能祭出本垃圾佬的终极大杀器USB转TTL神器和给神器属性加成的TTL杜邦线了，没错，就是下面这俩玩意，马粑粑家几块钱一个，随便挑随便选记一次清空SMART修复群晖报故障的硬盘 </p>
-<p>如果你的电脑是第一次插入USB转TTL神器，要先安装驱动，并像下图这样在属性里设置好端口的波特率为38400</p>
-<p>安装好驱动的USB转TTL安装好驱动的USB转TTL</p>
-<p>端口的设置，第一项要设置为 <strong>38400</strong> 端口的设置<br><img src="/images/9/413614975.png" alt="m4f59zrr.png"><br>第一项要设置为 38400</p>
-<p>硬盘上TTL口的接法硬盘上TTL口的接法<br><img src="/images/9/231601982.png" alt="m4f5akz6.png"></p>
-<p>USB转TTL的接法USB转TTL的接法<br><img src="http://hhhh.ywhywhywh.top/usr/uploads/2024/12/4065335586.png" alt="m4f5awqp.png"></p>
-<p>接好了之后，让我们先把USB转TTL插入电脑的USB口，打开你的putty，像下图这样设置，如果你的USB转TTL在电脑上识别出来是COM4或者COM5这样的，请按你自己的实际情况设置COM口，Speed设置为38400，然后点open</p>
-<p>putty设置putty设置</p>
-<p>这时你会看到一个黑麻麻的窗口，什么都没有记一次清空SMART修复群晖报故障的硬盘 别着急，这时我们再接上电源线，记住，只接电源线。</p>
-<p>不要接SATA数据线，不要接SATA数据线，不要接SATA数据线，重要的事情说三遍</p>
-<p>另外，接电源线最好是用电源上引出来的原生SATA电源线，尽量不要用4pin转SATA的电源转换线</p>
-<p>接上电源线后接上电源线后<br><img src="/images/9/2870995132.png" alt="m4f5bgip.png"></p>
-<p>当你接上硬盘电源线后再看Putty会发现有回显了，当停在(P)SATA Reset后，说明硬盘已经启动完成了，这是可以按Ctrl+z激活终端，这时就会进入到希捷硬盘的F3工厂模式</p>
-<p>按下Ctrl+z后进入F3工厂模式按下Ctrl+z后进入F3工厂模式<br><img src="/images/9/1842945658.png" alt="m4f5bqet.png"></p>
-<p>这时如果只是清零SMART那只要输入两个命令/1和N1就能搞定</p>
-<p>输入/1进入1模式<br><img src="/images/9/391565786.png" alt="m4f5c1cz.png"><br>输入/1进入1模式</p>
-<p>在/1模式下输入N1，看到回显Clear SMART is completed，这时硬盘的SMART值已经被清零了，这时你可以拔掉电源线和TTL线，关机把硬盘接回电源线和SATA线（其实你不关机也行，重新接回SATA线和电源线就行，我经常这样干</p>
-<p>这时在我们再用HDTune查看硬盘的SMART值会发现：马达启停次数，硬盘通电时间，马达旋转重试次数，点到点错误计数，接口CRC错误计数，等等等等的很多参数都已经变成0了</p>
-<p>这是我的硬盘清零后的效果这是我的硬盘清零后的效果</p>
-<p>看看我这个硬盘SMART清零后的效果，“启动/停止次数”因为之前清零SMART后拔插过一次电源线，所以这里计数是1</p>
-<p>当然，有一些参数比如：原始读取错误率，磁头飞行时间等这些没有清零，这些都写在SMART的G-list里，要完全清掉需要在F3工厂模式里进入2模式停掉马达电机，清除G表，然后重建SMART和硬盘索引区到硬盘固件内才行</p>
-<p>这硬盘有固件锁<br><img src="/images/9/1367509578.png" alt="m4f5ehrp.png"></p>
-<p>这硬盘有固件锁</p>
-<p>但是如果你像上图我这块硬盘一样，在进入2模式输入Z想停止电机，返回Diagnostic Port Locked的话，说明这块硬盘有固件锁。被锁了固件是无法清零G表的，这也是希捷为了限制一些返厂硬盘和一些奸商通过改写G表来充当新硬盘坑人做的限制。当然，道高一尺魔高一丈，如果你有PC3000的软件和红卡或者MRT的话，固件锁其实也是可以解开的，这时候你就真的可以为所欲为了</p>
-<p>好了，本次折腾到此记录完毕，剩下的自然是把硬盘继续插回群晖里，把小姐姐们请回来</p>
-<p>仅以此文说明硬盘的SMART是可以清零的，硬盘SMART里的G表也是可以清零的，整个SMART是完全可以清除然后重建成刚出厂的样子的，甚至SMART还是可以通过工厂模式改写成你想要的任何样子的，所以二手硬盘水很深很深，请各位谨慎选择</p>
-<p>最后，此文仅以记录过程为目的，请某些头脑比较发达的朋友不要想着用学会了，拿旧硬盘把SMART清零了去坑人，既然有办法清零那肯定是有办法验出来的</p>
-<p>最后的最后，如果你只是本着不想浪费的原则，想清掉SMART上的错误，让这块硬盘继续发挥余热，建议最好清零SMART后的硬盘不要存放重要数据，同时注意时常关注一下硬盘状态，毕竟一块硬盘如果SMART某项报错了，那硬盘肯定是有一些问题的，所以如果有一天你硬盘里的小姐姐们灰飞烟灭了，千万别怪我没有提醒</p>
-<p>哦，还有个温馨提醒，USB转TTL的神器最好是选择CH340G芯片的，别选RS232的，别问我为什么，都是泪</p>
-]]></content>
-      <categories>
-        <category>默认分类</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>AlphaFold与PyMOL的示例</title>
-    <url>/2025/11/05/alphafold-pymol/</url>
-    <content><![CDATA[<p>蛋白质与蛋白质互作是指不同蛋白质之间的相互作用，这种作用可以发生在细胞内或细胞外。蛋白质通过互相结合，形成复杂的细胞机制和信号传导网络，参与多种生物过程，如基因调控、代谢、信号传导等。这种互作是生命活动中的重要组成部分，对维持生物体的正常功能具有重要意义。</p>
-<p><strong>那么如何用AlphaFold3预测候选蛋白质与蛋白质互作呢？</strong></p>
-<h2 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a><strong>第一步</strong></h2><p>通过Uniport网站获取候选基因的蛋白质序列（以cGAS、STING为例）。获取cGAS蛋白质序列。</p>
-<pre class="line-numbers language-none"><code class="language-none">&gt;XP_065930211.1 cyclic GMP-AMP synthase-like receptor isoform X1 [Magallana gigas]
-MVFKCPICKREDFQSEGGLSSHITWKHSGSSDGRGSRPSTGGRGRRDDRDIKARVFKCPICKREDFQSEGGLSSHITWKHSGSSDGRGSRPSTGHGACGRSDNREYNTTVIKCPICKRGDFKSEGGLSCHITTVHPGSANGKGSRPSSCTNGKRDDGARPKTYTPRHRDHERHNSDRDVVRGVARVQRESSQRGSPDEFPFKDGAGGATWKSSSAKYKESPKQSRKTEEPRERPSSSDLNLSLSFNAQNFEKFVGMIEGSIVRPREDSTLRTDSINKFIDDLLVVMDRISDIPIKLLRSGSYYDRTKIDYNDEFDFMFYADIRMEADFTNCPPGYCKIRKGMTVKPDLDPFIDRNGYLVPEKYKAHMFDIFEKCRTDSSFRQGRRTQKQDRKPESPAYTLLFDLGISGKPPIDIDLVPAIKIDGWPKPARKIGPSKWIEKSMAERAMQCFHVVTKKFPEAHQDSRLLWRISFSHAEKELILHANMSDNGCRKDVFKILKRIKENMKSKNPTEMDKFCSYHLKMFILRFYDKHGDFSKERKLDLLKESIKQLAKCVREGTIENYFIPKDNVLQSVPEKERLSVVRELDGLLQ<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>获取PRMT5的蛋白质序列。</p>
-<pre class="line-numbers language-none"><code class="language-none">&gt;XP_011431693.2 STING ER exit protein [Magallana gigas]
-MPKVVSRSVVCTDVKDQEEYQGEKPLYVYYCICGQISLILDCPIDKLPMRRRDNARVIDSQKHAHKLTCDPDDIVYLKRPQGIEKQYRQKCKRCGLWLYYHHQGNSGVMFVVDGALKRDAAKTDVYSQISEPKKVTLTKHTKNMGKFSSVTVSTVDEEEDEIEAKEIADSYAANAKVIEKQLFRKGINKRRQEEAAEEAKKKVKGTLIDK<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<h2 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a><strong>第二步</strong></h2><p>访问 <a href="https://alphafoldserver.com/">AlphaFold Server</a>（AlphaFold Server需要科学上网，而且建议使用Google浏览器，使用谷歌账号登录）和输入数据进行预测。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105180712857.png" alt="image-20251105180712857"></p>
-<p>登录谷歌邮箱账号，点击Add entity框就可以添加蛋白质、DNA、RNA、配体和离子（金属离子）。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105180808034.png" alt="image-20251105180808034"></p>
-<p>将cGAS和STING的蛋白质序列序列输入，点击”Continue and preview job”。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175436222.png" alt="image-20251105175436222"></p>
-<p>点击“Confirm and submit job”即可提交作业，一般运行约10 分钟左右。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175503515.png" alt="image-20251105175503515"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175535419.png" alt="image-20251105175535419"></p>
-<h2 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a><strong>第三步</strong></h2><p>cGAS和STING互作预测结果。点击“Download”可下载数据。颜色越蓝表示预测的置信度越高，越橙则越低。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175019365.png" alt="image-20251105175019365"></p>
-<p>注：**<a href="https://zhida.zhihu.com/search?content_id=243460627&amp;content_type=Article&amp;match_order=1&amp;q=pLDDT&amp;zhida_source=entity">pLDDT</a>：基于 0-100 量表的每个原子置信度估计，其中较高的值表示置信度较高。**</p>
-<p><a href="https://zhida.zhihu.com/search?content_id=243460627&amp;content_type=Article&amp;match_order=1&amp;q=pTM&amp;zhida_source=entity">pTM</a> 和 <a href="https://zhida.zhihu.com/search?content_id=243460627&amp;content_type=Article&amp;match_order=1&amp;q=ipTM&amp;zhida_source=entity">ipTM</a> 分数：预测模板建模（<code>pTM</code>）分数和界面预测模板建模（<code>ipTM</code>）分数均来自称为模板建模（<code>TM</code>）分数的度量。</p>
-<p><code>pTM</code> 分数高于 0.5 表示整体预测的复合物折叠可能与真实结构相似。</p>
-<p><strong><code>ipTM</code> 衡量复合物内亚基相对位置的预测准确性，高于 0.8 的值表示置信度高的高质量预测，而低于 0.6 的值则表明可能是失败的预测。</strong></p>
-<p><code>ipTM</code> 分数在 0.6 到 0.8 之间为灰色区域，预测可能正确或不正确。</p>
-<p>对于小结构或短链，TM 分数非常严格，因此当涉及少于 20 个标记时，<code>pTM</code> 分数赋值低于 0.05；在这些情况下，PAE 或 pLDDT 可能更能指示预测质量。</p>
-<p>这些cif文件可以用PyMol类似的软件打开，然后进行后续分析。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175320026.png" alt="image-20251105175320026"></p>
-<h2 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h2><p>在PyMOL中进行显示和绘制等</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200012399.png" alt="image-20251105200012399"></p>
-<p>整体</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200216830.png" alt="image-20251105200216830"></p>
-<p>绘制氢键等</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200320268.png" alt="image-20251105200320268"></p>
-<p>可能的分子对接</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200927677.png" alt="image-20251105200927677"></p>
-<p>加Label等</p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105201019286.png" alt="image-20251105201019286"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105201511853.png" alt="image-20251105201511853"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105202531766.png" alt="image-20251105202531766"></p>
-<blockquote>
-<p>注意：需要配合rosetta蛋白对接互作分析和实验验证！</p>
-</blockquote>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105201718871.png" alt="image-20251105201718871"></p>
-<p>关于rosetta，尽请期待！</p>
-]]></content>
-      <categories>
-        <category>蛋白互作</category>
-        <category>PyMOL</category>
-      </categories>
-  </entry>
-  <entry>
     <title>ANNOVAR | 变异注释</title>
     <url>/2025/09/16/53/</url>
     <content><![CDATA[<h2 id="一、简介"><a href="#一、简介" class="headerlink" title="一、简介"></a>一、简介</h2><p>会得到一系列变异数据，这些变异数据只是告诉我们在基因组的某个位置发生了一段序列的改变，至于这个改变会不会影响生物学功能，我们并不清楚。而注释就是将基因组的序列变异数据转化为我们更关心的生物学功能变化的信息。</p>
@@ -2218,6 +1640,584 @@ perl retrieve_seq_from_fasta.pl --format refGene --seqfile Arabidopsis_thaliana.
 ]]></content>
       <categories>
         <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>基因结构</title>
+    <url>/2025/09/17/55/</url>
+    <content><![CDATA[<h2 id="结构图"><a href="#结构图" class="headerlink" title="结构图"></a>结构图</h2><p>!!!</p>
+<pre><code>    flowchart TD
+    A["一个完整的真核生物基因（DNA模板链）"]
+    
+    subgraph A_Sub[基因结构]
+        direction LR
+        Promoter[启动子 Promoter]
+        Exon1[外显子1 Exon 1]
+        Intron[内含子 Intron]
+        Exon2[外显子2 Exon 2]
+        Terminator[终止子 Terminator]
+    end
+    
+    A --&gt; A_Sub
+    
+    subgraph Transcription[第一步：转录]
+        direction TB
+        B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
+    end
+    
+    A_Sub --转录--&gt; Transcription
+    
+    subgraph Splicing[第二步：加工（剪切与拼接）]
+        direction TB
+        C["切除内含子并将外显子连接起来"]
+    end
+    
+    Transcription --加工--&gt; Splicing
+    
+    subgraph Final_mRNA[第三步：成熟mRNA]
+        direction LR
+        D["5' 帽子"]
+        E["5' UTR"]
+        F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
+        G["3' UTR"]
+        H["多聚A尾巴"]
+    end
+    
+    Splicing --"拼接后形成"--&gt; Final_mRNA
+    
+    %% 定义关系
+    Exon1 --包含--&gt; UTR1[5' UTR部分]
+    Exon1 --包含--&gt; CDS_Part1[CDS部分]
+    Exon2 --包含--&gt; CDS_Part2[CDS部分]
+    Exon2 --包含--&gt; UTR2[3' UTR部分]
+    
+    UTR1 --最终成为--&gt; E
+    CDS_Part1 --最终成为--&gt; F
+    CDS_Part2 --最终成为--&gt; F
+    UTR2 --最终成为--&gt; G
+    
+    Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
+    F --&gt; I
+    
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
+    classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
+    classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
+    
+    class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
+    class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
+    class Transcription,Splicing process;
+</code></pre>
+<p>!!!</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+
+<p>下面是代码</p>
+<pre class="mermaid">flowchart TD
+A["一个完整的真核生物基因（DNA模板链）"]
+
+subgraph A_Sub[基因结构]
+    direction LR
+    Promoter[启动子 Promoter]
+    Exon1[外显子1 Exon 1]
+    Intron[内含子 Intron]
+    Exon2[外显子2 Exon 2]
+    Terminator[终止子 Terminator]
+end
+
+A --&gt; A_Sub
+
+subgraph Transcription[第一步：转录]
+    direction TB
+    B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
+end
+
+A_Sub --转录--&gt; Transcription
+
+subgraph Splicing[第二步：加工（剪切与拼接）]
+    direction TB
+    C["切除内含子并将外显子连接起来"]
+end
+
+Transcription --加工--&gt; Splicing
+
+subgraph Final_mRNA[第三步：成熟mRNA]
+    direction LR
+    D["5' 帽子"]
+    E["5' UTR"]
+    F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
+    G["3' UTR"]
+    H["多聚A尾巴"]
+end
+
+Splicing --"拼接后形成"--&gt; Final_mRNA
+
+%% 定义关系
+Exon1 --包含--&gt; UTR1[5' UTR部分]
+Exon1 --包含--&gt; CDS_Part1[CDS部分]
+Exon2 --包含--&gt; CDS_Part2[CDS部分]
+Exon2 --包含--&gt; UTR2[3' UTR部分]
+
+UTR1 --最终成为--&gt; E
+CDS_Part1 --最终成为--&gt; F
+CDS_Part2 --最终成为--&gt; F
+UTR2 --最终成为--&gt; G
+
+Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
+F --&gt; I
+
+classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
+classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
+classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
+classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
+
+class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
+class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
+class Transcription,Splicing process;</pre>
+
+<script type="module"> import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';	mermaid.initialize({startOnLoad: true, flowchart: {curve: 'linear'}}); </script>]]></content>
+      <categories>
+        <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>410随身WiFi棒子Debian刷入青龙教程</title>
+    <url>/2025/09/25/56/</url>
+    <content><![CDATA[<p>备份教程<br>刷Debian前请先备份（非常重要！！！）</p>
+<p>弄成砖了是可以刷回来的，大佬可忽略</p>
+<p>备份教程：	<a href="https://xiao54.com/linux/32.html">https://xiao54.com/linux/32.html</a><br>视频教程：	<a href="https://www.bilibili.com/blackboard/webplayer/mbplayer.html?aid=326276265&amp;bvid=BV1iw411J7BG&amp;cid=1406661980&amp;p=1">https://www.bilibili.com/blackboard/webplayer/mbplayer.html?aid=326276265&amp;bvid=BV1iw411J7BG&amp;cid=1406661980&amp;p=1</a><br>下载链接：	<a href="https://www.123pan.com/s/354uVv-z7YU3.html">https://www.123pan.com/s/354uVv-z7YU3.html</a><br>先进入fastboot模式，输入指令</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">adb reboot bootloader<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>410随身WiFi棒子Debian刷入青龙教程<br>SSH账号密码<br>解压要刷的Debian系统，然后点击一件刷入</p>
+<p>cmd登录地址:ssh <a href="mailto:root@10.42.0.1">root@10.42.0.1</a> 密码:1313144</p>
+<p>SSH软件:IP:10.42.0.1 用户名:root 密码:1313144</p>
+<p>热点:4G-wifi 密码:12345678</p>
+<p>更新驱动<br>更新驱动视频教程：<a href="https://player.bilibili.com/">https://player.bilibili.com/</a></p>
+<p>更新驱动前注意事项：需要安装vivo9008drivers.exe软件，如安装过请忽略</p>
+<p>1、在【Android Device】下查看有没有【Android Composite ADB Interface】这个驱动，如果不是，右键【更新驱动程序】-【浏览我的计算机以查找驱动程序软件】-【让我从计算机上的可用驱动程序列表中选取(L)】，选择【Android Composite ADB Interface或者USB Composite Device】-【下一步】</p>
+<p>2、插入棒子会显示一个未知设备或者RNDIS，不确定是那个就先拔掉棒子，然后重新插入</p>
+<p>3、下拉找到【网络适配器】-厂商下拉选择【Microsoft】型号下拉选择【基于远程 NDIS 的Internet 共享设备】-【下一步】-即可完成安装驱动</p>
+<p>网络编辑<br>1、现在就用键盘上的方向键编辑，鼠标就不能用了</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">nmtui<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>2、把热点删除，因为他现在不支持WiFi和热点一起开启，所以要把热点删除连接WiFi给debian系统通网才能继续操作</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">true &gt; /etc/apt/sources.list.d/mobian.list<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>3、更新软件包</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">sudo apt-get update<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>4、更新curl wget</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">apt install curl wget<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>5、安装docker系统</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">apt install docker.io<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>6、docker设置随服务启动而自启动</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">systemctl enable docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>7、启动docker</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">systemctl start docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>给docker设置加速代理<br>1、创建文件夹</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">sudo mkdir -p /etc/docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>2、填入加速代理</p>
+<p>如不能使用则代理失效了，请更换代理，更换里面的链接即可。</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">sudo tee /etc/docker/daemon.json  /sys/kernel/debug/usb/ci_hdrc.0/role
+安装1panel代码
+```html
+curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh &amp;&amp; bash quick_start.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>近期商家为了成本emmmc质量都不太行下面这个指令查看寿命</p>
+<p>查看棒子颗粒寿命<br>查看内存寿命如果显示是0x01寿命就很好，如果显示0+09等越来越远的寿命也就离挂不远了：</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">cat /sys/class/mmc_host/mmc0/mmc0\:0001/life_time<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="/images/56/477017655.png" alt="mfzbzmj7.png"></p>
+<p>410随身WiFi棒子Debian刷入青龙教程<br>关灯方法一<br>1、先安装dialog</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">apt install dialog<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>2、然后执行一键命令</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">curl -L gitee.com/ojf6ii/led-control-script/raw/master/led2.sh -o /bin/ledctl &amp;&amp; chmod 755 /bin/ledctl<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>3、下载完成后输入指令即可打开界面</p>
+<p>ledctl<br>关灯方法二<br>1、打开文件夹</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">vi /etc/rc.local<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>2、粘贴以下代码保存设置开机自启关闭led，重启即可生效</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">echo none &gt; /sys/class/leds/red\:os/trigger
+echo none &gt; /sys/class/leds/blue\:wifi/trigger
+echo none &gt; /sys/class/leds/green\:internet/trigger<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>]]></content>
+      <categories>
+        <category>WIFI</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>openipc goke7205v200</title>
+    <url>/2024/12/03/7/</url>
+    <content><![CDATA[<h1 id="保存原始固件"><a href="#保存原始固件" class="headerlink" title="保存原始固件"></a>保存原始固件</h1><hr>
+<h2 id="备份您的原始固件，请不要跳过这个步骤！"><a href="#备份您的原始固件，请不要跳过这个步骤！" class="headerlink" title="备份您的原始固件，请不要跳过这个步骤！"></a>备份您的原始固件，请不要跳过这个步骤！</h2><p>OpenIPC U-Boot 会覆盖原始的加密分区，因此无法恢复为出厂固件，除非您拥有此特定摄像机的完整闪存备份！要创建完整的固件备份，请启动 TFTP 服务器并在引导加载程序 shell 中执行这些命令。</p>
+<blockquote>
+<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python"> # Enter commands line by line! Do not copy and paste multiple lines at once!
+setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105
+mw.b 0x42000000 0xff 0x1000000
+sf probe 0; sf read 0x42000000 0x0 0x1000000
+tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
+# if there is no tftpput but tftp then run this instead
+ tftp 0x42000000 backup-gk7205v200-nor16m.bin 0x1000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<p>有关详细信息，请参阅项目 wiki 中的安装说明。</p>
+<h1 id="烧录完整的-OpenIPC-固件"><a href="#烧录完整的-OpenIPC-固件" class="headerlink" title="烧录完整的 OpenIPC 固件"></a>烧录完整的 OpenIPC 固件</h1><h2 id="下载-OpenIPC-固件-Ultimate"><a href="#下载-OpenIPC-固件-Ultimate" class="headerlink" title="下载 OpenIPC 固件 (Ultimate)"></a>下载 OpenIPC 固件 (Ultimate)</h2><p>for Goke GK7205V200 with 16MB NOR flash</p>
+<p>完整的固件由引导加载程序、内核和根文件系统组成，也适用于使用编程器烧写闪存芯片。 请注意，完整固件不包含预设环境。你还需要添加自己的MAC地址、IP地址等设置。</p>
+<blockquote>
+<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105<br>mw.b 0x42000000 0xff 0x1000000<br>tftpboot 0x42000000 openipc-gk7205v200-ultimate-16mb.bin</p>
+<h1 id="if-there-is-no-tftpboot-but-tftp-then-run-this-instead"><a href="#if-there-is-no-tftpboot-but-tftp-then-run-this-instead" class="headerlink" title="if there is no tftpboot but tftp then run this instead"></a>if there is no tftpboot but tftp then run this instead</h1><p>tftp 0x42000000 openipc-gk7205v200-ultimate-16mb.bin<br>sf probe 0; sf lock 0;<br>sf erase 0x0 0x1000000; sf write 0x42000000 0x0 0x1000000<br>reset</p>
+</blockquote>
+<p>摄像机将自动重启并使用全新的引导加载程序启动。</p>
+<p>注意准备中断并进入引导程序的命令行。 在引导加载程序的命令行中，根据您的闪存大小和类型重新映射 ROM 分区。</p>
+<blockquote>
+<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>run setnor16m</p>
+</blockquote>
+<h1 id="恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。"><a href="#恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。" class="headerlink" title="恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。"></a>恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。</h1><p>在端口 85 ( <a href="http://192.168.15.169:85/">http://192.168.15.169:85/</a> ) 上打开摄像机的 Web 界面并使用登录root和密码12345登录。登录后将要求您设置自己的安全密码。通过以下方式访问摄像机ssh 或 UART 使用与上述相同的登录名和密码。</p>
+<hr>
+<p>打开web界面后，更新固件，更新完后调整majestic、sensor与设备型号对应。</p>
+<h1 id="majestic"><a href="#majestic" class="headerlink" title="majestic"></a>majestic</h1><p>openipc未开源部分。</p>
+]]></content>
+      <categories>
+        <category>折腾</category>
+      </categories>
+      <tags>
+        <tag>openipc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GPT 学术优化</title>
+    <url>/2024/12/06/8/</url>
+    <content><![CDATA[<h1 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h1><p>安装方法：直接运行 (Windows, Linux or MacOS)<br>下载项目</p>
+<blockquote>
+<p>git clone –depth=1 <a href="https://github.com/binary-husky/gpt_academic.git">https://github.com/binary-husky/gpt_academic.git</a><br>cd gpt_academic<br>配置API_KEY等变量</p>
+</blockquote>
+<p>在config.py中，配置API KEY等变量。特殊网络环境设置方法、Wiki-项目配置说明。</p>
+<p>「 程序会优先检查是否存在名为config_private.py的私密配置文件，并用其中的配置覆盖config.py的同名配置。如您能理解以上读取逻辑，我们强烈建议您在config.py同路径下创建一个名为config_private.py的新配置文件，并使用config_private.py配置项目，从而确保自动更新时不会丢失配置 」。</p>
+<p>「 支持通过环境变量配置项目，环境变量的书写格式参考docker-compose.yml文件或者我们的Wiki页面。配置读取优先级: 环境变量 &gt; config_private.py &gt; config.py 」。</p>
+<p>安装依赖</p>
+<h4 id="（选择I-如熟悉python-python推荐版本-3-9-3-11）"><a href="#（选择I-如熟悉python-python推荐版本-3-9-3-11）" class="headerlink" title="（选择I: 如熟悉python, python推荐版本 3.9 ~ 3.11）"></a>（选择I: 如熟悉python, python推荐版本 3.9 ~ 3.11）</h4><p>备注：使用官方pip源或者阿里pip源, 临时换源方法：</p>
+<blockquote>
+<p>python -m pip install -r requirements.txt -i <a href="https://mirrors.aliyun.com/pypi/simple/">https://mirrors.aliyun.com/pypi/simple/</a></p>
+</blockquote>
+<blockquote>
+<p>python -m pip install -r requirements.txt</p>
+</blockquote>
+<h4 id="（选择II-使用Anaconda）步骤也是类似的-https-www-bilibili-com-video-BV1rc411W7Dr-："><a href="#（选择II-使用Anaconda）步骤也是类似的-https-www-bilibili-com-video-BV1rc411W7Dr-：" class="headerlink" title="（选择II: 使用Anaconda）步骤也是类似的 (https://www.bilibili.com/video/BV1rc411W7Dr)："></a>（选择II: 使用Anaconda）步骤也是类似的 (<a href="https://www.bilibili.com/video/BV1rc411W7Dr)%EF%BC%9A">https://www.bilibili.com/video/BV1rc411W7Dr)：</a></h4><blockquote>
+<p>conda create -n gptac_venv python=3.11    # 创建anaconda环境<br>conda activate gptac_venv                 # 激活anaconda环境</p>
+</blockquote>
+<blockquote>
+<p>python -m pip install -r requirements.txt # 这个步骤和pip安装一样的步骤</p>
+</blockquote>
+<p>如果需要支持清华ChatGLM2/复旦MOSS/RWKV作为后端，请点击展开此处<br>运行</p>
+<blockquote>
+<p>python main.py</p>
+</blockquote>
+<p>使用第三方API、Azure等、文心一言、星火等，见Wiki页面</p>
+<p>云服务器远程部署避坑指南。 请访问云服务器远程部署wiki</p>
+<p>在其他平台部署&amp;二级网址部署</p>
+<p>使用Sealos一键部署。<br>使用WSL2（Windows Subsystem for Linux 子系统）。请访问部署wiki-2<br>如何在二级网址（如<a href="http://localhost/subpath%EF%BC%89%E4%B8%8B%E8%BF%90%E8%A1%8C%E3%80%82%E8%AF%B7%E8%AE%BF%E9%97%AEFastAPI%E8%BF%90%E8%A1%8C%E8%AF%B4%E6%98%8E">http://localhost/subpath）下运行。请访问FastAPI运行说明</a></p>
+<p>Advanced Usage<br>I：自定义新的便捷按钮（学术快捷键）<br>现在已可以通过UI中的界面外观菜单中的自定义菜单添加新的便捷按钮。如果需要在代码中定义，请使用任意文本编辑器打开core_functional.py，添加如下条目即可：</p>
+<p>“超级英译中”: {<br>    # 前缀，会被加在你的输入之前。例如，用来描述你的要求，例如翻译、解释代码、润色等等<br>    “Prefix”: “请翻译把下面一段内容成中文，然后用一个markdown表格逐一解释文中出现的专有名词：\n\n”,</p>
+<pre><code># 后缀，会被加在你的输入之后。例如，配合前缀可以把你的输入内容用引号圈起来。
+"Suffix": "",
+</code></pre>
+<p>},</p>
+<p>II：自定义函数插件<br>编写强大的函数插件来执行任何你想得到的和想不到的任务。 本项目的插件编写、调试难度很低，只要您具备一定的python基础知识，就可以仿照我们提供的模板实现自己的插件功能。 详情请参考函数插件指南。</p>
+<p>⭐Latex/Arxiv论文翻译功能⭐<br> ===&gt;<br>虚空终端（从自然语言输入中，理解用户意图+自动调用其他插件）<br>步骤一：输入 “ 请调用插件翻译PDF论文，地址为<a href="https://openreview.net/pdf?id=rJl0r3R9KX">https://openreview.net/pdf?id=rJl0r3R9KX</a> ”<br>步骤二：点击“虚空终端”</p>
+<p>模块化功能设计，简单的接口却能支持强大的功能</p>
+<p>译解其他开源项目</p>
+<p>装饰live2d的小功能（默认关闭，需要修改config.py）</p>
+<p>OpenAI图像生成</p>
+<p>基于mermaid的流图、脑图绘制</p>
+<p>已知问题<br>某些浏览器翻译插件干扰此软件前端的运行<br>官方Gradio目前有很多兼容性问题，请务必使用requirement.txt安装Gradio</p>
+<p>III：主题<br>可以通过修改THEME选项（config.py）变更主题</p>
+<p>Chuanhu-Small-and-Beautiful 网址</p>
+<p>访问GPT-Academic的在线服务并支持我们<br>V：参考与学习<br>代码中参考了很多其他优秀项目中的设计，顺序不分先后：</p>
+<h1 id="清华ChatGLM2-6B"><a href="#清华ChatGLM2-6B" class="headerlink" title="清华ChatGLM2-6B:"></a>清华ChatGLM2-6B:</h1><p><a href="https://github.com/THUDM/ChatGLM2-6B">https://github.com/THUDM/ChatGLM2-6B</a></p>
+<h1 id="清华JittorLLMs"><a href="#清华JittorLLMs" class="headerlink" title="清华JittorLLMs:"></a>清华JittorLLMs:</h1><p><a href="https://github.com/Jittor/JittorLLMs">https://github.com/Jittor/JittorLLMs</a></p>
+<h1 id="ChatPaper"><a href="#ChatPaper" class="headerlink" title="ChatPaper:"></a>ChatPaper:</h1><p><a href="https://github.com/kaixindelele/ChatPaper">https://github.com/kaixindelele/ChatPaper</a></p>
+<h1 id="Edge-GPT"><a href="#Edge-GPT" class="headerlink" title="Edge-GPT:"></a>Edge-GPT:</h1><p><a href="https://github.com/acheong08/EdgeGPT">https://github.com/acheong08/EdgeGPT</a></p>
+<h1 id="ChuanhuChatGPT"><a href="#ChuanhuChatGPT" class="headerlink" title="ChuanhuChatGPT:"></a>ChuanhuChatGPT:</h1><p><a href="https://github.com/GaiZhenbiao/ChuanhuChatGPT">https://github.com/GaiZhenbiao/ChuanhuChatGPT</a></p>
+<h1 id="Oobabooga-one-click-installer"><a href="#Oobabooga-one-click-installer" class="headerlink" title="Oobabooga one-click installer:"></a>Oobabooga one-click installer:</h1><p><a href="https://github.com/oobabooga/one-click-installers">https://github.com/oobabooga/one-click-installers</a></p>
+<h1 id="More："><a href="#More：" class="headerlink" title="More："></a>More：</h1><p><a href="https://github.com/gradio-app/gradio">https://github.com/gradio-app/gradio</a><br><a href="https://github.com/fghrsh/live2d_demo">https://github.com/fghrsh/live2d_demo</a></p>
+<p>下载项目<br>git命令下载</p>
+<blockquote>
+<p>git clone <a href="https://github.com/binary-husky/chatgpt_academic.git">https://github.com/binary-husky/chatgpt_academic.git</a></p>
+</blockquote>
+<p>github下载 download zip<br>ChatGPT学术优化项目地址:<a href="https://github.com/binary-husky/chatgpt_academic">https://github.com/binary-husky/chatgpt_academic</a></p>
+<p>安装项目环境<br>这里是通过Anaconda Prompt创建环境</p>
+<p>创建环境</p>
+<blockquote>
+<p>conda create -n chatgpt-academic python=3.11.0</p>
+</blockquote>
+<p>输入y，回车安装！</p>
+<p>进入环境</p>
+<blockquote>
+<p>conda activate chatgpt-academic</p>
+</blockquote>
+<p>安装依赖<br>先进入到项目的根目录</p>
+<blockquote>
+<p>python -m pip install -r requirements.txt</p>
+</blockquote>
+<p>PS：我这里是可以正常安装的，因为项目要求gradio&gt;= <strong>3.23</strong> ，有些可能报错。需要先下载python的whl文件再进行安装。地址<a href="https://pypi.org/project/gradio/#files">https://pypi.org/project/gradio/#files</a></p>
+<p>下载保存到你的项目根目录，在通过</p>
+<blockquote>
+<p>pip install gradio-3.24.1-py3-none-any.whl</p>
+</blockquote>
+<p>当我们安装好gradio之后，把requirements.txt文件中gradio注释</p>
+<p>重新运行</p>
+<blockquote>
+<p>python -m pip install -r requirements.txt</p>
+</blockquote>
+<p>此致项目需要的环境就安装完成了！</p>
+<p>打开解压的项目<br>这里以Vscode为例，配置config.py文件</p>
+<p>配置API_KEY<br>打开你的科学上网助手，我这里使用是Clash是可以的（个人感觉路线选择美国的代理更好）<br>进入<a href="https://platform.openai.com/account/api-keys">https://platform.openai.com/account/api-keys</a></p>
+<p>将创建的秘钥复制到config.py文件的API_KEY变量，秘钥配置完成！</p>
+<p>配置代理网络的地址<br>第一步：进入网址<a href="https://ipapi.co/json/">https://ipapi.co/json/</a><br>第二步：打开开发者工具（Google浏览器快捷键Ctrl+Shift+i）,点击网络，按一下Ctrl+r，可以看到一个json文件</p>
+<p>第三步：点击json文件</p>
+<p>第四步：将这个地址复制到config.py文件中的proxies</p>
+<p>运行项目<br>项目所需的环境、秘钥、代理全部配置好就可以运行项目了</p>
+<blockquote>
+<p>python main.py</p>
+</blockquote>
+<p>浏览器输入Running on local URL</p>
+]]></content>
+      <categories>
+        <category>默认分类</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>记一次清空SMART修复群晖报故障的硬盘</title>
+    <url>/2024/12/08/9/</url>
+    <content><![CDATA[<p>事先说明，虽然这篇文章内容大量注水，但是文中涉及的操作有风险，想要照葫芦画瓢的童鞋，请谨慎对待，切记提前备份重要数据。小姐姐们不见了别找我，我这里可不生产小姐姐</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+
+<p>好，让我们进入正题，凡事都有个前因后果，先说说起因</p>
+<p>前几天，群晖里一块希捷的2T硬盘报告故障，查看一下SMART信息，发现是End_to_End计数达到阈值，于是把硬盘抽出来接到Windows下用HDTune再次确认，确实见红了 但是用SeaTools扫描，各种长短检测都能通过，希捷这又是什么操作</p>
+<p>HDTune忘记截图了，借用网上的一张图说明一下是哪一项见红HDTune忘记截图了，借用网上的一张图说明一下是哪一项见红<br><img src="/images/9/762531194.png" alt="m4f55w5m.png"><br>最后用MHDD扫描过后，发现硬盘并没有坏块，那么是什么原因导致的B8 End_to_End计数增加呢？各种说法都有，有说是硬盘上的缓存坏掉了，有说是SATA线接触不良导致，有说是缓存到磁盘的数据包校验出错，反正各种说法都有，具体硬盘SMART里如何判断这个值的，估计也只有硬盘厂家知道，所以就不要纠结了。但是就这样淘汰掉一块2T的硬盘？是不是太浪费了？记一次清空SMART修复群晖报故障的硬盘 </p>
+<p>垃圾佬没别的本事，就是爱折腾，于是先尝试了低格整块硬盘，插回群晖还是报故障，看来只能祭出本垃圾佬的终极大杀器USB转TTL神器和给神器属性加成的TTL杜邦线了，没错，就是下面这俩玩意，马粑粑家几块钱一个，随便挑随便选记一次清空SMART修复群晖报故障的硬盘 </p>
+<p>如果你的电脑是第一次插入USB转TTL神器，要先安装驱动，并像下图这样在属性里设置好端口的波特率为38400</p>
+<p>安装好驱动的USB转TTL安装好驱动的USB转TTL</p>
+<p>端口的设置，第一项要设置为 <strong>38400</strong> 端口的设置<br><img src="/images/9/413614975.png" alt="m4f59zrr.png"><br>第一项要设置为 38400</p>
+<p>硬盘上TTL口的接法硬盘上TTL口的接法<br><img src="/images/9/231601982.png" alt="m4f5akz6.png"></p>
+<p>USB转TTL的接法USB转TTL的接法<br><img src="http://hhhh.ywhywhywh.top/usr/uploads/2024/12/4065335586.png" alt="m4f5awqp.png"></p>
+<p>接好了之后，让我们先把USB转TTL插入电脑的USB口，打开你的putty，像下图这样设置，如果你的USB转TTL在电脑上识别出来是COM4或者COM5这样的，请按你自己的实际情况设置COM口，Speed设置为38400，然后点open</p>
+<p>putty设置putty设置</p>
+<p>这时你会看到一个黑麻麻的窗口，什么都没有记一次清空SMART修复群晖报故障的硬盘 别着急，这时我们再接上电源线，记住，只接电源线。</p>
+<p>不要接SATA数据线，不要接SATA数据线，不要接SATA数据线，重要的事情说三遍</p>
+<p>另外，接电源线最好是用电源上引出来的原生SATA电源线，尽量不要用4pin转SATA的电源转换线</p>
+<p>接上电源线后接上电源线后<br><img src="/images/9/2870995132.png" alt="m4f5bgip.png"></p>
+<p>当你接上硬盘电源线后再看Putty会发现有回显了，当停在(P)SATA Reset后，说明硬盘已经启动完成了，这是可以按Ctrl+z激活终端，这时就会进入到希捷硬盘的F3工厂模式</p>
+<p>按下Ctrl+z后进入F3工厂模式按下Ctrl+z后进入F3工厂模式<br><img src="/images/9/1842945658.png" alt="m4f5bqet.png"></p>
+<p>这时如果只是清零SMART那只要输入两个命令/1和N1就能搞定</p>
+<p>输入/1进入1模式<br><img src="/images/9/391565786.png" alt="m4f5c1cz.png"><br>输入/1进入1模式</p>
+<p>在/1模式下输入N1，看到回显Clear SMART is completed，这时硬盘的SMART值已经被清零了，这时你可以拔掉电源线和TTL线，关机把硬盘接回电源线和SATA线（其实你不关机也行，重新接回SATA线和电源线就行，我经常这样干</p>
+<p>这时在我们再用HDTune查看硬盘的SMART值会发现：马达启停次数，硬盘通电时间，马达旋转重试次数，点到点错误计数，接口CRC错误计数，等等等等的很多参数都已经变成0了</p>
+<p>这是我的硬盘清零后的效果这是我的硬盘清零后的效果</p>
+<p>看看我这个硬盘SMART清零后的效果，“启动/停止次数”因为之前清零SMART后拔插过一次电源线，所以这里计数是1</p>
+<p>当然，有一些参数比如：原始读取错误率，磁头飞行时间等这些没有清零，这些都写在SMART的G-list里，要完全清掉需要在F3工厂模式里进入2模式停掉马达电机，清除G表，然后重建SMART和硬盘索引区到硬盘固件内才行</p>
+<p>这硬盘有固件锁<br><img src="/images/9/1367509578.png" alt="m4f5ehrp.png"></p>
+<p>这硬盘有固件锁</p>
+<p>但是如果你像上图我这块硬盘一样，在进入2模式输入Z想停止电机，返回Diagnostic Port Locked的话，说明这块硬盘有固件锁。被锁了固件是无法清零G表的，这也是希捷为了限制一些返厂硬盘和一些奸商通过改写G表来充当新硬盘坑人做的限制。当然，道高一尺魔高一丈，如果你有PC3000的软件和红卡或者MRT的话，固件锁其实也是可以解开的，这时候你就真的可以为所欲为了</p>
+<p>好了，本次折腾到此记录完毕，剩下的自然是把硬盘继续插回群晖里，把小姐姐们请回来</p>
+<p>仅以此文说明硬盘的SMART是可以清零的，硬盘SMART里的G表也是可以清零的，整个SMART是完全可以清除然后重建成刚出厂的样子的，甚至SMART还是可以通过工厂模式改写成你想要的任何样子的，所以二手硬盘水很深很深，请各位谨慎选择</p>
+<p>最后，此文仅以记录过程为目的，请某些头脑比较发达的朋友不要想着用学会了，拿旧硬盘把SMART清零了去坑人，既然有办法清零那肯定是有办法验出来的</p>
+<p>最后的最后，如果你只是本着不想浪费的原则，想清掉SMART上的错误，让这块硬盘继续发挥余热，建议最好清零SMART后的硬盘不要存放重要数据，同时注意时常关注一下硬盘状态，毕竟一块硬盘如果SMART某项报错了，那硬盘肯定是有一些问题的，所以如果有一天你硬盘里的小姐姐们灰飞烟灭了，千万别怪我没有提醒</p>
+<p>哦，还有个温馨提醒，USB转TTL的神器最好是选择CH340G芯片的，别选RS232的，别问我为什么，都是泪</p>
+]]></content>
+      <categories>
+        <category>默认分类</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>使用ANNOVAR进行长牡蛎SNP注释完整流程</title>
+    <url>/2025/10/31/annovar/</url>
+    <content><![CDATA[<h1 id="使用ANNOVAR进行长牡蛎-Crassostrea-gigas-SNP注释完整流程"><a href="#使用ANNOVAR进行长牡蛎-Crassostrea-gigas-SNP注释完整流程" class="headerlink" title="使用ANNOVAR进行长牡蛎(Crassostrea gigas)SNP注释完整流程"></a>使用ANNOVAR进行长牡蛎(<em>Crassostrea gigas</em>)SNP注释完整流程</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本文介绍如何使用ANNOVAR对长牡蛎(<em>Crassostrea gigas</em>)的SNP变异数据进行功能注释。流程包括参考基因组数据库构建、变异数据格式转换、功能注释和结果整合。</p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><h3 id="1-软件安装"><a href="#1-软件安装" class="headerlink" title="1. 软件安装"></a>1. 软件安装</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># ANNOVAR下载</span>
+<span class="token function">wget</span> http://www.openbioinformatics.org/annovar/annovar.tar.gz
+<span class="token function">tar</span> <span class="token parameter variable">-xzvf</span> annovar.tar.gz
+
+<span class="token comment"># 其他依赖工具</span>
+conda <span class="token function">install</span> <span class="token parameter variable">-c</span> bioconda ucsc-gtftogenepred<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="2-数据文件准备"><a href="#2-数据文件准备" class="headerlink" title="2. 数据文件准备"></a>2. 数据文件准备</h3><ul>
+<li>参考基因组GTF文件：<code>/home/wanglab/Ywh/adductor_muscle_scar/Crassostrea_gigas.cgigas_uk_roslin_v1.61.gtf</code></li>
+<li>基因组FASTA文件：<code>GCF_902806645.1_cgigas_uk_roslin_v1_genomic.fna</code></li>
+<li>SNP数据：<code>filtered_variants_thr0p7_20250902_162128.tsv</code></li>
+</ul>
+<h2 id="完整流程"><a href="#完整流程" class="headerlink" title="完整流程"></a>完整流程</h2><h3 id="步骤1：构建自定义参考基因组数据库"><a href="#步骤1：构建自定义参考基因组数据库" class="headerlink" title="步骤1：构建自定义参考基因组数据库"></a>步骤1：构建自定义参考基因组数据库</h3><h4 id="1-1-转换GTF为GenePred格式"><a href="#1-1-转换GTF为GenePred格式" class="headerlink" title="1.1 转换GTF为GenePred格式"></a>1.1 转换GTF为GenePred格式</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">gtfToGenePred <span class="token parameter variable">-genePredExt</span> <span class="token punctuation">\</span>
+    <span class="token string">"/home/wanglab/Ywh/adductor_muscle_scar/ReSeq_Data/DZQD2023092909/annovar/Cgigasdb/GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gtf"</span> <span class="token punctuation">\</span>
+    Cg_refGene.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="1-2-提取mRNA序列"><a href="#1-2-提取mRNA序列" class="headerlink" title="1.2 提取mRNA序列"></a>1.2 提取mRNA序列</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">perl retrieve_seq_from_fasta.pl <span class="token punctuation">\</span>
+    <span class="token parameter variable">--format</span> refGene <span class="token punctuation">\</span>
+    <span class="token parameter variable">--seqfile</span> GCF_902806645.1_cgigas_uk_roslin_v1_genomic.fna <span class="token punctuation">\</span>
+    <span class="token parameter variable">--outfile</span> Cg_refGeneMrna.fa <span class="token punctuation">\</span>
+    Cg_refGene.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="步骤2：准备SNP输入文件"><a href="#步骤2：准备SNP输入文件" class="headerlink" title="步骤2：准备SNP输入文件"></a>步骤2：准备SNP输入文件</h3><h4 id="2-1-转换TSV为ANNOVAR输入格式"><a href="#2-1-转换TSV为ANNOVAR输入格式" class="headerlink" title="2.1 转换TSV为ANNOVAR输入格式"></a>2.1 转换TSV为ANNOVAR输入格式</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'NR&gt;1 {print $1"\t"$2"\t"$2"\t"$3"\t"$4}'</span> <span class="token punctuation">\</span>
+    /home/wanglab/Ywh/adductor_muscle_scar/Variants/filtered_variants_thr0p7_20250902_162128.tsv <span class="token punctuation">\</span>
+    <span class="token operator">&gt;</span> filtered_variants_thr0p7_20250902_162128.avinput<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>输入TSV格式：</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">chromosome	position	ref	alt	...
+NC_047567.1	32667511	G	T	...<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><strong>输出AVINPUT格式：</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">chromosome	start	end	ref	alt
+NC_047567.1	32667511	32667511	G	T<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h3 id="步骤3：执行功能注释"><a href="#步骤3：执行功能注释" class="headerlink" title="步骤3：执行功能注释"></a>步骤3：执行功能注释</h3><h4 id="3-1-使用table-annovar-pl进行注释"><a href="#3-1-使用table-annovar-pl进行注释" class="headerlink" title="3.1 使用table_annovar.pl进行注释"></a>3.1 使用table_annovar.pl进行注释</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">perl table_annovar.pl <span class="token punctuation">\</span>
+    filtered_variants_thr0p7_20250902_162128.avinput <span class="token punctuation">\</span>
+    Cgigasdb/ <span class="token punctuation">\</span>
+    <span class="token parameter variable">-buildver</span> Cg <span class="token punctuation">\</span>
+    <span class="token parameter variable">-out</span> filtered_variants_thr0p7_20250902_162128 <span class="token punctuation">\</span>
+    <span class="token parameter variable">-remove</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-protocol</span> refGene <span class="token punctuation">\</span>
+    <span class="token parameter variable">-operation</span> g <span class="token punctuation">\</span>
+    <span class="token parameter variable">-nastring</span> <span class="token builtin class-name">.</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-csvout</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>参数说明：</strong></p>
+<ul>
+<li><code>-buildver Cg</code>: 使用自定义构建版本”Cg”</li>
+<li><code>-protocol refGene</code>: 使用refGene数据库</li>
+<li><code>-operation g</code>: 基因-based注释</li>
+<li><code>-csvout</code>: 输出CSV格式</li>
+<li><code>-nastring .</code>: 用”.”表示缺失值</li>
+</ul>
+<h3 id="步骤4：整合注释结果"><a href="#步骤4：整合注释结果" class="headerlink" title="步骤4：整合注释结果"></a>步骤4：整合注释结果</h3><h4 id="4-1-方法一：基于行号合并（推荐）"><a href="#4-1-方法一：基于行号合并（推荐）" class="headerlink" title="4.1 方法一：基于行号合并（推荐）"></a>4.1 方法一：基于行号合并（推荐）</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 为原始文件添加行号</span>
+<span class="token function">awk</span> <span class="token string">'NR==1 {print "LineNumber\t"$0} NR&gt;1 {print NR-1"\t"$0}'</span> <span class="token punctuation">\</span>
+    /home/wanglab/Ywh/adductor_muscle_scar/Variants/filtered_variants_thr0p7_20250902_162128.tsv <span class="token punctuation">\</span>
+    <span class="token operator">&gt;</span> original_with_linenum.tsv
+
+<span class="token comment"># 为注释文件添加行号</span>
+<span class="token function">awk</span> <span class="token string">'NR==1 {print "LineNumber\t"$0} NR&gt;1 {print NR-1"\t"$0}'</span> <span class="token punctuation">\</span>
+    filtered_variants_thr0p7_20250902_162128.Cg_multianno.csv <span class="token punctuation">\</span>
+    <span class="token operator">&gt;</span> anno_with_linenum.tsv
+
+<span class="token comment"># 基于行号合并</span>
+<span class="token function">join</span> <span class="token parameter variable">-t</span> <span class="token string">$'<span class="token entity" title="\t">\t</span>'</span> <span class="token parameter variable">-1</span> <span class="token number">1</span> <span class="token parameter variable">-2</span> <span class="token number">1</span> <span class="token punctuation">\</span>
+    original_with_linenum.tsv anno_with_linenum.tsv <span class="token punctuation">\</span>
+    <span class="token operator">&gt;</span> merged_result.tsv
+
+<span class="token comment"># 清理临时文件</span>
+<span class="token function">rm</span> original_with_linenum.tsv anno_with_linenum.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="4-2-方法二：一次性合并"><a href="#4-2-方法二：一次性合并" class="headerlink" title="4.2 方法二：一次性合并"></a>4.2 方法二：一次性合并</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> -F<span class="token string">','</span> <span class="token string">'
+BEGIN {OFS="\t"}
+NR==FNR {
+    if (FNR==1) {
+        anno_header = $6"\t"$7"\t"$8"\t"$9"\t"$10
+    } else {
+        annotation[FNR] = $6"\t"$7"\t"$8"\t"$9"\t"$10
+    }
+    next
+}
+{
+    if (FNR==1) {
+        print $0 "\t" anno_header
+    } else {
+        print $0 "\t" annotation[FNR]
+    }
+}'</span> filtered_variants_thr0p7_20250902_162128.Cg_multianno.csv <span class="token punctuation">\</span>
+   /home/wanglab/Ywh/adductor_muscle_scar/Variants/filtered_variants_thr0p7_20250902_162128.tsv <span class="token punctuation">\</span>
+   <span class="token operator">&gt;</span> filtered_variants_thr0p7_20250902_162128_annotated.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h2><h3 id="注释结果包含的字段："><a href="#注释结果包含的字段：" class="headerlink" title="注释结果包含的字段："></a>注释结果包含的字段：</h3><ul>
+<li><strong>Gene-based注释</strong>: 基因名称、转录本、外显子功能等</li>
+<li><strong>位置信息</strong>: 染色体、位置、参考/变异碱基</li>
+<li><strong>功能预测</strong>: 对蛋白质功能的影响</li>
+</ul>
+<h3 id="典型输出格式："><a href="#典型输出格式：" class="headerlink" title="典型输出格式："></a>典型输出格式：</h3><pre class="line-numbers language-none"><code class="language-none">Chr     Start   End     Ref     Alt     Func.refGene    Gene.refGene    ExonicFunc.refGene    AAChange.refGene
+NC_047567.1 32667511 32667511 G T downstream LOC105320120 . .
+NC_047567.1 32661831 32661831 C A exonic LOC105320120 nonsynonymous SNV LOC105320120:NM_001345123:exon2:c.T142A:p.S48T<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="常见问题与解决方案"><a href="#常见问题与解决方案" class="headerlink" title="常见问题与解决方案"></a>常见问题与解决方案</h2><h3 id="1-数据库构建失败"><a href="#1-数据库构建失败" class="headerlink" title="1. 数据库构建失败"></a>1. 数据库构建失败</h3><p><strong>问题</strong>: GTF文件格式不兼容<br><strong>解决</strong>: 确保GTF文件来自官方来源，使用<code>gtfToGenePred</code>前检查文件完整性</p>
+<h3 id="2-注释结果为空"><a href="#2-注释结果为空" class="headerlink" title="2. 注释结果为空"></a>2. 注释结果为空</h3><p><strong>问题</strong>: 构建版本不匹配<br><strong>解决</strong>: 检查<code>-buildver</code>参数与数据库构建版本一致</p>
+<h3 id="3-合并结果错位"><a href="#3-合并结果错位" class="headerlink" title="3. 合并结果错位"></a>3. 合并结果错位</h3><p><strong>问题</strong>: 输入文件行数不匹配<br><strong>解决</strong>: 使用基于行号的合并方法确保准确性</p>
+<h2 id="流程优化建议"><a href="#流程优化建议" class="headerlink" title="流程优化建议"></a>流程优化建议</h2><h3 id="1-批量处理"><a href="#1-批量处理" class="headerlink" title="1. 批量处理"></a>1. 批量处理</h3><p>对于多个样本，可以编写循环脚本批量处理：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token keyword">for</span> <span class="token for-or-select variable">sample</span> <span class="token keyword">in</span> sample1 sample2 sample3<span class="token punctuation">;</span> <span class="token keyword">do</span>
+    perl table_annovar.pl <span class="token variable">${sample}</span>.avinput Cgigasdb/ <span class="token punctuation">\</span>
+        <span class="token parameter variable">-buildver</span> Cg <span class="token punctuation">\</span>
+        <span class="token parameter variable">-out</span> <span class="token variable">${sample}</span>_annotated <span class="token punctuation">\</span>
+        <span class="token parameter variable">-protocol</span> refGene <span class="token punctuation">\</span>
+        <span class="token parameter variable">-operation</span> g <span class="token punctuation">\</span>
+        <span class="token parameter variable">-csvout</span>
+<span class="token keyword">done</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="2-添加更多注释数据库"><a href="#2-添加更多注释数据库" class="headerlink" title="2. 添加更多注释数据库"></a>2. 添加更多注释数据库</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 添加保守性预测</span>
+perl table_annovar.pl input.avinput Cgigasdb/ <span class="token punctuation">\</span>
+    <span class="token parameter variable">-buildver</span> Cg <span class="token punctuation">\</span>
+    <span class="token parameter variable">-out</span> output <span class="token punctuation">\</span>
+    <span class="token parameter variable">-protocol</span> refGene,phastConsElements100way <span class="token punctuation">\</span>
+    <span class="token parameter variable">-operation</span> g,r <span class="token punctuation">\</span>
+    <span class="token parameter variable">-csvout</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><p>本流程提供了从原始SNP数据到功能注释的完整解决方案，特别针对长牡蛎等非模式生物。通过构建自定义数据库，可以有效地对物种特异性变异进行功能注释，为后续的群体遗传学和功能基因组学研究奠定基础。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>AlphaFold与PyMOL的示例</title>
+    <url>/2025/11/05/alphafold-pymol/</url>
+    <content><![CDATA[<p>蛋白质与蛋白质互作是指不同蛋白质之间的相互作用，这种作用可以发生在细胞内或细胞外。蛋白质通过互相结合，形成复杂的细胞机制和信号传导网络，参与多种生物过程，如基因调控、代谢、信号传导等。这种互作是生命活动中的重要组成部分，对维持生物体的正常功能具有重要意义。</p>
+<p><strong>那么如何用AlphaFold3预测候选蛋白质与蛋白质互作呢？</strong></p>
+<h2 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a><strong>第一步</strong></h2><p>通过Uniport网站获取候选基因的蛋白质序列（以cGAS、STING为例）。获取cGAS蛋白质序列。</p>
+<pre class="line-numbers language-none"><code class="language-none">&gt;XP_065930211.1 cyclic GMP-AMP synthase-like receptor isoform X1 [Magallana gigas]
+MVFKCPICKREDFQSEGGLSSHITWKHSGSSDGRGSRPSTGGRGRRDDRDIKARVFKCPICKREDFQSEGGLSSHITWKHSGSSDGRGSRPSTGHGACGRSDNREYNTTVIKCPICKRGDFKSEGGLSCHITTVHPGSANGKGSRPSSCTNGKRDDGARPKTYTPRHRDHERHNSDRDVVRGVARVQRESSQRGSPDEFPFKDGAGGATWKSSSAKYKESPKQSRKTEEPRERPSSSDLNLSLSFNAQNFEKFVGMIEGSIVRPREDSTLRTDSINKFIDDLLVVMDRISDIPIKLLRSGSYYDRTKIDYNDEFDFMFYADIRMEADFTNCPPGYCKIRKGMTVKPDLDPFIDRNGYLVPEKYKAHMFDIFEKCRTDSSFRQGRRTQKQDRKPESPAYTLLFDLGISGKPPIDIDLVPAIKIDGWPKPARKIGPSKWIEKSMAERAMQCFHVVTKKFPEAHQDSRLLWRISFSHAEKELILHANMSDNGCRKDVFKILKRIKENMKSKNPTEMDKFCSYHLKMFILRFYDKHGDFSKERKLDLLKESIKQLAKCVREGTIENYFIPKDNVLQSVPEKERLSVVRELDGLLQ<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>获取PRMT5的蛋白质序列。</p>
+<pre class="line-numbers language-none"><code class="language-none">&gt;XP_011431693.2 STING ER exit protein [Magallana gigas]
+MPKVVSRSVVCTDVKDQEEYQGEKPLYVYYCICGQISLILDCPIDKLPMRRRDNARVIDSQKHAHKLTCDPDDIVYLKRPQGIEKQYRQKCKRCGLWLYYHHQGNSGVMFVVDGALKRDAAKTDVYSQISEPKKVTLTKHTKNMGKFSSVTVSTVDEEEDEIEAKEIADSYAANAKVIEKQLFRKGINKRRQEEAAEEAKKKVKGTLIDK<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h2 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a><strong>第二步</strong></h2><p>访问 <a href="https://alphafoldserver.com/">AlphaFold Server</a>（AlphaFold Server需要科学上网，而且建议使用Google浏览器，使用谷歌账号登录）和输入数据进行预测。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105180712857.png" alt="image-20251105180712857"></p>
+<p>登录谷歌邮箱账号，点击Add entity框就可以添加蛋白质、DNA、RNA、配体和离子（金属离子）。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105180808034.png" alt="image-20251105180808034"></p>
+<p>将cGAS和STING的蛋白质序列序列输入，点击”Continue and preview job”。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175436222.png" alt="image-20251105175436222"></p>
+<p>点击“Confirm and submit job”即可提交作业，一般运行约10 分钟左右。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175503515.png" alt="image-20251105175503515"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175535419.png" alt="image-20251105175535419"></p>
+<h2 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a><strong>第三步</strong></h2><p>cGAS和STING互作预测结果。点击“Download”可下载数据。颜色越蓝表示预测的置信度越高，越橙则越低。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175019365.png" alt="image-20251105175019365"></p>
+<p>注：**<a href="https://zhida.zhihu.com/search?content_id=243460627&amp;content_type=Article&amp;match_order=1&amp;q=pLDDT&amp;zhida_source=entity">pLDDT</a>：基于 0-100 量表的每个原子置信度估计，其中较高的值表示置信度较高。**</p>
+<p><a href="https://zhida.zhihu.com/search?content_id=243460627&amp;content_type=Article&amp;match_order=1&amp;q=pTM&amp;zhida_source=entity">pTM</a> 和 <a href="https://zhida.zhihu.com/search?content_id=243460627&amp;content_type=Article&amp;match_order=1&amp;q=ipTM&amp;zhida_source=entity">ipTM</a> 分数：预测模板建模（<code>pTM</code>）分数和界面预测模板建模（<code>ipTM</code>）分数均来自称为模板建模（<code>TM</code>）分数的度量。</p>
+<p><code>pTM</code> 分数高于 0.5 表示整体预测的复合物折叠可能与真实结构相似。</p>
+<p><strong><code>ipTM</code> 衡量复合物内亚基相对位置的预测准确性，高于 0.8 的值表示置信度高的高质量预测，而低于 0.6 的值则表明可能是失败的预测。</strong></p>
+<p><code>ipTM</code> 分数在 0.6 到 0.8 之间为灰色区域，预测可能正确或不正确。</p>
+<p>对于小结构或短链，TM 分数非常严格，因此当涉及少于 20 个标记时，<code>pTM</code> 分数赋值低于 0.05；在这些情况下，PAE 或 pLDDT 可能更能指示预测质量。</p>
+<p>这些cif文件可以用PyMol类似的软件打开，然后进行后续分析。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105175320026.png" alt="image-20251105175320026"></p>
+<h2 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h2><p>在PyMOL中进行显示和绘制等</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200012399.png" alt="image-20251105200012399"></p>
+<p>整体</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200216830.png" alt="image-20251105200216830"></p>
+<p>绘制氢键等</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200320268.png" alt="image-20251105200320268"></p>
+<p>可能的分子对接</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105200927677.png" alt="image-20251105200927677"></p>
+<p>加Label等</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105201019286.png" alt="image-20251105201019286"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105201511853.png" alt="image-20251105201511853"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105202531766.png" alt="image-20251105202531766"></p>
+<blockquote>
+<p>注意：需要配合rosetta蛋白对接互作分析和实验验证！</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251105201718871.png" alt="image-20251105201718871"></p>
+<p>关于rosetta，尽请期待！</p>
+]]></content>
+      <categories>
+        <category>蛋白互作</category>
+        <category>PyMOL</category>
       </categories>
   </entry>
   <entry>
@@ -6338,6 +6338,227 @@ EOF</span>
       </categories>
   </entry>
   <entry>
+    <title>从基因到结构：用PyMOL可视化理解分子对接与突变效应</title>
+    <url>/2025/11/09/fen-zi-dui-jie/</url>
+    <content><![CDATA[<h2 id="从基因到结构：用PyMOL可视化理解分子对接与突变效应"><a href="#从基因到结构：用PyMOL可视化理解分子对接与突变效应" class="headerlink" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应"></a><strong>从基因到结构：用PyMOL可视化理解分子对接与突变效应</strong></h2><p>亲爱的同学们，当我们谈论“结构生物学”或“计算药物设计”时，分子对接和蛋白质突变是两个核心概念。它们一个关乎<strong>预测</strong>，一个关乎<strong>解释</strong>。今天，我们将不仅从原理上理解它们，更将借助强大的分子可视化软件<strong>PyMOL</strong>，将抽象的概念转化为可见的3D结构。</p>
+<h3 id="第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”"><a href="#第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”" class="headerlink" title="第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”"></a><strong>第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”</strong></h3><p>分子对接的本质是<strong>在原子层面预测小分子（配体）与其靶标生物大分子（受体）之间的最优结合模式</strong>。传统的流程我们比作“钥匙配锁”，但现在，我们迎来了一位强大的AI助手——<strong>AlphaFold</strong>——它能为许多我们不知道精确结构的“锁”生成高精度的3D模型。</p>
+<p><strong>现代分子对接的增强版流程如下：</strong></p>
+<p><strong>1. 结构准备与预处理：获取“锁”和“钥匙”的3D蓝图</strong></p>
+<p>这是所有计算的基石。蛋白质受体的三维结构是分子对接的起点。其来源主要分为实验解析和计算预测两大类。</p>
+<ul>
+<li><strong>a) 传统路径（实验结构）</strong>：从PDB数据库下载通过X射线晶体学、冷冻电镜或核磁共振等技术解析的结构。这是<strong>金标准</strong>，精度最高。然而，并非所有蛋白质，特别是某些膜蛋白或大型复合物，都能被轻易解析出结构。</li>
+<li><strong>b) 计算预测路径（当实验结构缺失时）</strong>：在AlphaFold之前，这是一个充满挑战的领域，主要依赖以下方法，其演进历程如下图所示：</li>
+</ul>
+<pre class="mermaid">graph LR
+    A[蛋白质序列] --&gt; B[“同源建模<br>（1990s-）<br>寻找已知结构的同源蛋白”]
+    B --&gt; C[“ threading<br>（1990s-）<br>在结构折叠库中匹配”]
+    A --&gt; D[“Ab initio折叠<br>（2000s-）<br>基于物理力场从头计算”]
+    C &amp; D --&gt; E[“集成方法<br>（如Rosetta<br>将多种方法结合）”]
+    E --&gt; F[“AI革命<br>（AlphaFold2等<br>2020s-）”]
+    F --&gt; G[精度接近实验水平]</pre>
+
+<pre class="mermaid">flowchart TD
+    A[蛋白质序列] --&gt; B[同源建模]
+    A --&gt; C[Threading]
+    A --&gt; D[Ab initio折叠]
+    
+    B --&gt; E[集成方法]
+    C --&gt; E
+    D --&gt; E
+    E --&gt; F[AI革命 AlphaFold2]
+    F --&gt; G[精度接近实验水平]
+    
+    style B fill:#e1f5fe
+    style C fill:#f3e5f5
+    style D fill:#e8f5e8
+    style F fill:#fff3e0
+    style G fill:#ffebee</pre>
+
+<ul>
+<li><p><strong>i) 同源建模</strong>：</p>
+<ul>
+<li><strong>原理</strong>：这是AlphaFold之前<strong>最成功、应用最广</strong>的方法。其核心假设是：序列相似的蛋白质，结构也相似。该方法需要一个与目标序列相似度较高（通常&gt;30%）的模板蛋白（已知结构）。</li>
+<li><strong>流程</strong>：将目标序列与模板结构进行比对，保守区域直接沿用模板骨架，对于可变区域（尤其是环区）则需要进行建模和优化。</li>
+<li><strong>经典工具</strong>：SWISS-MODEL、Modeller。</li>
+<li><strong>局限性</strong>：高度依赖于一个高质量的、高相似度的模板。当没有合适模板时，预测结果很差。</li>
+</ul>
+</li>
+<li><p><strong>ii) Threading（折叠识别）</strong>：</p>
+<ul>
+<li><strong>原理</strong>：当目标序列与任何已知结构的蛋白质相似度都很低时，Threading方法尝试判断目标序列是否可能适配某个已知的蛋白质折叠模式（即“折叠模板”）。</li>
+<li><strong>流程</strong>：将目标序列“穿”到不同的结构模板上，通过一个打分函数来评估其兼容性，选择最合适的模板。</li>
+<li><strong>经典工具</strong>：I-TASSER（在其流程中整合了Threading）。</li>
+<li><strong>局限性</strong>：仍然依赖于已知的折叠库，无法预测全新的折叠类型。</li>
+</ul>
+</li>
+<li><p><strong>iii) Ab initio（从头计算）折叠</strong>：</p>
+<ul>
+<li><strong>原理</strong>：这是最理想也最困难的方法。它<strong>不依赖任何已知模板</strong>，仅从蛋白质的氨基酸序列出发，基于物理力场（分子力学）和能量最小化原理，通过计算模拟蛋白质的折叠过程。</li>
+<li><strong>经典工具</strong>：Rosetta的一个核心功能。</li>
+<li><strong>局限性</strong>：计算量极其巨大，且通常只对很小的蛋白质域（&lt;100个氨基酸）有较好的预测效果，精度有限。</li>
+</ul>
+</li>
+<li><p><strong>iv) 集成工具（如I-TASSER, Rosetta）</strong>：</p>
+<ul>
+<li>在实际应用中，顶尖的预测工具（如CASP竞赛中的佼佼者）通常会将上述多种方法集成起来，取长补短，以产生更可靠的结果。</li>
+</ul>
+</li>
+<li><p><strong>v) AI革命路径（以AlphaFold2为代表）</strong>：</p>
+<ul>
+<li><strong>原理</strong>：基于深度学习的Transformer架构，AlphaFold2的核心突破在于它能从多序列比对中极其高效地学习氨基酸残基间的空间几何约束，并直接生成精确的原子坐标。它<strong>不是传统意义上的同源建模或ab initio</strong>，而是一种全新的、数据驱动的方法。</li>
+<li><strong>变革</strong>：其预测精度<strong>首次达到甚至部分超越实验水平</strong>，解决了困扰生物学界长达半个世纪的“蛋白质结构预测”难题，极大地扩展了分子对接的靶点空间。</li>
+</ul>
+</li>
+</ul>
+<p><strong>PyMOL可视化</strong>：在PyMOL中，你可以加载来自任何来源的结构——实验的、同源建模的或AI预测的。对于预测模型，务必注意其置信度指标（如AlphaFold的pLDDT），并批判性地看待低置信度区域。</p>
+<ul>
+<li><strong>专业预处理</strong>：无论结构来源如何，后续预处理都至关重要。需要使用专业工具（如AutoDock Tools, Schrödinger Maestro）为结构<strong>添加氢原子</strong>、<strong>分配Gasteiger电荷</strong>、<strong>设定可旋转键</strong>。这是因为实验结构和AI预测模型通常不包含氢原子，而氢原子和电荷对于计算分子间相互作用力至关重要。</li>
+</ul>
+<p><strong>2. 格点计算与结合位点定义：划定“锁眼”</strong></p>
+<p>计算机需要知道在哪里进行“搜索”。</p>
+<ul>
+<li><strong>专业概念</strong>：对接程序会在结合位点周围生成一个三维的“能量格点”。这个格点图预先计算了受体在不同位置的特性（如疏水性、静电势、氢键受体/供体倾向）。</li>
+<li><strong>PyMOL可视化</strong>：我们可以将对接软件（如AutoDock）生成的格点文件（.grd）在PyMOL中可视化为一个网格框。这个框直观地定义了构象搜索的空间范围。对于AI预测的结构，尤其需要确保这个网格框覆盖了pLDDT置信度高的潜在活性口袋。</li>
+</ul>
+<p><strong>3. 构象搜索与优化：疯狂尝试</strong></p>
+<p>这是对接的计算核心。</p>
+<ul>
+<li><strong>专业概念</strong>：算法（如拉马克遗传算法、遗传算法）会在定义的网格内，对配体进行<strong>平移</strong>、<strong>旋转</strong>和<strong>内部可旋转键的扭转</strong>，生成成千上万个可能的“姿势”。</li>
+<li><strong>目标</strong>：寻找与受体形状和化学性质<strong>互补性最佳</strong>的构象。</li>
+</ul>
+<p><strong>4. 打分函数排名：评分</strong></p>
+<p>如何判断哪个姿势是最好的？</p>
+<ul>
+<li><strong>专业概念</strong>：打分函数是一个数学函数，用于估算结合亲和力。它综合评估：<ul>
+<li><strong>范德华力</strong>（形状互补性）</li>
+<li><strong>静电相互作用</strong></li>
+<li><strong>氢键</strong></li>
+<li><strong>疏水效应</strong></li>
+</ul>
+</li>
+<li>最终，所有生成的构象会按打分值排序，得分越低（在力场中通常代表能量越低）或越高（在经验打分函数中代表概率越高）的构象越优。</li>
+</ul>
+<p><strong>5. 结果分析与PyMOL验证：宣布结果</strong></p>
+<p>这是将计算结果与结构生物学洞察相结合的关键一步。</p>
+<ul>
+<li><strong>PyMOL操作</strong>：将排名第一的对接构象与原始的晶体结构中的配体（如果有）或AI预测的结构进行叠合。<ul>
+<li>命令：<code>align docking_pose, crystal_ligand</code></li>
+</ul>
+</li>
+<li><strong>专业分析</strong>：我们需要仔细检查计算预测的结合模式是否重现了实验观察到的或理论上合理的<strong>关键相互作用</strong>，例如：<ul>
+<li><strong>氢键</strong>：<code>distance hb1, resi X and chain A, resi Y and chain B</code></li>
+<li><strong>疏水空腔的填充</strong></li>
+</ul>
+</li>
+<li><strong>特别关注（对于AI结构）</strong>：当使用<strong>AlphaFold预测的结构</strong>进行对接时，需要特别小心。结合位点区域的pLDDT置信度是否足够高？低置信度环区的构象可能不可靠。同时，AI预测的是<strong>天然状态</strong>，而配体结合可能引起局部构象变化（“诱导契合”），刚性对接可能无法捕捉这一点。</li>
+</ul>
+<p><strong>总结：AI如何改变了分子对接？</strong><br><strong>AlphaFold等工具极大地扩展了分子对接的应用边界。</strong> 过去，对于没有实验结构的靶点，我们往往束手无策。现在，我们可以利用AI生成高质量的结构模型，使得针对这些“难以捉摸”的靶点进行<strong>虚拟筛选</strong>和<strong>理性药物设计</strong>成为可能。这标志着计算结构生物学和药物发现进入了一个全新的时代。</p>
+<hr>
+<h3 id="第二部分：氨基酸突变如何改变构象——从序列到功能的因果链"><a href="#第二部分：氨基酸突变如何改变构象——从序列到功能的因果链" class="headerlink" title="第二部分：氨基酸突变如何改变构象——从序列到功能的因果链"></a><strong>第二部分：氨基酸突变如何改变构象——从序列到功能的因果链</strong></h3><p>一个点突变如何通过改变一个氨基酸，最终影响整个蛋白质的功能？让我们从结构的角度来剖析。</p>
+<p><strong>1. 突变类型的结构后果</strong></p>
+<ul>
+<li><strong>同义突变</strong>：通常 silent，不改变氨基酸，对结构无影响。</li>
+<li><strong>无义突变</strong>：产生截短的蛋白，通常完全破坏结构。</li>
+<li><strong>错义突变</strong>：这是影响构象的<strong>主战场</strong>，其效应取决于突变位点和性质。</li>
+</ul>
+<p><strong>2. 错义突变的结构效应机制（PyMOL视角）</strong></p>
+<p>让我们以著名的<strong>镰刀型细胞贫血症</strong>为例（HbS β链 Glu6Val）。</p>
+<p><strong>a) 侧链物理化学性质的剧变</strong></p>
+<ul>
+<li><strong>专业概念</strong>：从带负电荷的<strong>谷氨酸</strong> 突变为非极性的<strong>缬氨酸</strong>。<ul>
+<li><strong>电荷丢失</strong>：失去了一个可形成强盐桥的带负电侧链。</li>
+<li><strong>疏水性增加</strong>：引入了一个疏水的“粘性贴片”。</li>
+</ul>
+</li>
+<li><strong>PyMOL可视化</strong>：<ol>
+<li>加载野生型血红蛋白（如2HHB）和突变体结构。</li>
+<li>使用 <code>show sticks, resi 6</code> 显示第6位残基。</li>
+<li>对比 <code>Glu6</code> 的长侧链和 <code>Val6</code> 的短小疏水侧链，直观感受其化学性质的巨大差异。</li>
+</ol>
+</li>
+</ul>
+<p><strong>b) 破坏关键相互作用并诱导新相互作用</strong></p>
+<ul>
+<li><strong>专业概念</strong>：Val6的疏水侧链无法与Lys82形成盐桥，反而在脱氧状态下，与另一个血红蛋白β链的Phe85和Leu88发生<strong>疏水相互作用</strong>。</li>
+<li><strong>PyMOL可视化</strong>：<ol>
+<li>在脱氧HbS结构（如2HBS）中，使用 <code>show sticks, resi 6+85+88</code> 并上色。</li>
+<li>测量它们之间的距离：<code>distance mut_int, resi 6, resi 85</code>。你会发现它们紧密接触，驱动了异常的多聚化。</li>
+</ol>
+</li>
+</ul>
+<p><strong>c) 诱导整体构象变化与功能丧失</strong></p>
+<ul>
+<li><strong>专业概念</strong>：这种异常的疏水相互作用作为“成核点”，驱动血红蛋白形成长的、不溶的纤维，最终导致红细胞扭曲成镰刀形。</li>
+<li><strong>PyMOL可视化</strong>：<ol>
+<li>叠合野生型和突变体的整体结构：<code>align wild_type, mutant</code>。</li>
+<li>观察RMSD值，量化整体结构的偏移。</li>
+<li>重点关注突变位点局部区域的主链和侧链的显著位移。</li>
+</ol>
+</li>
+</ul>
+<h3 id="总结：当预测遇见解释"><a href="#总结：当预测遇见解释" class="headerlink" title="总结：当预测遇见解释"></a><strong>总结：当预测遇见解释</strong></h3><ul>
+<li><strong>分子对接</strong>是我们的<strong>预测工具</strong>。通过计算模拟，我们可以预测一个新设计的抑制剂如何与野生型或突变型靶标结合，从而指导<strong>基于结构的药物设计（SBDD）</strong>。AI结构预测的加入，使这把“锁”的获取从未如此便捷。</li>
+<li><strong>突变的结构分析</strong>是我们的<strong>解释工具</strong>。它让我们能从原子层面理解疾病的分子病因，并解释为什么对野生型有效的药物可能对突变体失效（<strong>耐药性</strong>）。</li>
+</ul>
+<p><strong>PyMOL</strong>在其中扮演了不可或缺的“翻译官”角色，它将抽象的序列信息、计算数据和能量术语，翻译成我们肉眼可见的、直观的3D结构图像。通过将计算（对接）与实验（突变体结构）在PyMOL中进行比对和验证，我们才能真正将生物信息学、计算化学和结构生物学融会贯通，推动生命科学的前沿发展。</p>
+<p>希望这次结合PyMOL的讲解，能帮助大家建立起更立体、更专业的认知！</p>
+<hr>
+<h3 id="第二部分：氨基酸突变如何改变构象——从序列到功能的因果链-1"><a href="#第二部分：氨基酸突变如何改变构象——从序列到功能的因果链-1" class="headerlink" title="第二部分：氨基酸突变如何改变构象——从序列到功能的因果链"></a><strong>第二部分：氨基酸突变如何改变构象——从序列到功能的因果链</strong></h3><p>一个点突变如何通过改变一个氨基酸，最终影响整个蛋白质的功能？让我们从结构的角度来剖析。</p>
+<p><strong>1. 突变类型的结构后果</strong></p>
+<ul>
+<li><strong>同义突变</strong>：通常 silent，不改变氨基酸，对结构无影响。</li>
+<li><strong>无义突变</strong>：产生截短的蛋白，通常完全破坏结构。</li>
+<li><strong>错义突变</strong>：这是影响构象的<strong>主战场</strong>，其效应取决于突变位点和性质。</li>
+</ul>
+<p><strong>2. 错义突变的结构效应机制（PyMOL视角）</strong></p>
+<p>让我们以著名的<strong>镰刀型细胞贫血症</strong>为例（HbS β链 Glu6Val）。</p>
+<p><strong>a) 侧链物理化学性质的剧变</strong></p>
+<ul>
+<li><strong>专业概念</strong>：从带负电荷的<strong>谷氨酸</strong> 突变为非极性的<strong>缬氨酸</strong>。<ul>
+<li><strong>电荷丢失</strong>：失去了一个可形成强盐桥（与对侧β链的Lys82）的带负电侧链。</li>
+<li><strong>疏水性增加</strong>：引入了一个疏水的“粘性贴片”。</li>
+</ul>
+</li>
+<li><strong>PyMOL可视化</strong>：<ol>
+<li>加载野生型血红蛋白（如2HHB）和突变体结构。</li>
+<li>使用 <code>show sticks, resi 6</code> 显示第6位残基。</li>
+<li>对比 <code>Glu6</code> 的长侧链和 <code>Val6</code> 的短小疏水侧链，直观感受其化学性质的巨大差异。</li>
+<li>使用 <code>show surface</code> 观察疏水表面的变化。</li>
+</ol>
+</li>
+</ul>
+<p><strong>b) 破坏关键相互作用并诱导新相互作用</strong></p>
+<ul>
+<li><strong>专业概念</strong>：Val6的疏水侧链无法与Lys82形成盐桥，反而在脱氧状态下，与另一个血红蛋白β链的Phe85和Leu88发生<strong>疏水相互作用</strong>。</li>
+<li><strong>PyMOL可视化</strong>：<ol>
+<li>在脱氧HbS结构（如2HBS）中，选择Val6及其周围的残基。</li>
+<li>使用 <code>show sticks, resi 6+85+88</code> 并上色。</li>
+<li>测量它们之间的距离：<code>distance mut_int, resi 6, resi 85</code>。你会发现它们紧密接触，驱动了异常的多聚化。</li>
+</ol>
+</li>
+</ul>
+<p><strong>c) 诱导整体构象变化与功能丧失</strong></p>
+<ul>
+<li><strong>专业概念</strong>：这种异常的疏水相互作用作为“成核点”，驱动血红蛋白形成长的、不溶的纤维，最终导致红细胞扭曲成镰刀形。</li>
+<li><strong>PyMOL可视化</strong>：<ol>
+<li>叠合野生型和突变体的整体结构：<code>align wild_type, mutant</code>。</li>
+<li>观察RMSD值，量化整体结构的偏移。</li>
+<li>重点关注突变位点局部区域的主链和侧链的显著位移。</li>
+</ol>
+</li>
+</ul>
+<h3 id="总结：当预测遇见解释-1"><a href="#总结：当预测遇见解释-1" class="headerlink" title="总结：当预测遇见解释"></a><strong>总结：当预测遇见解释</strong></h3><ul>
+<li><strong>分子对接</strong>是我们的<strong>预测工具</strong>。通过计算模拟，我们可以预测一个新设计的抑制剂如何与野生型或突变型靶标结合，从而指导<strong>基于结构的药物设计</strong>。</li>
+<li><strong>突变的结构分析</strong>是我们的<strong>解释工具</strong>。它让我们能从原子层面理解疾病的分子病因，并解释为什么对野生型有效的药物可能对突变体失效（<strong>耐药性</strong>）。</li>
+</ul>
+<p><strong>PyMOL</strong>在其中扮演了不可或-缺的“翻译官”角色，它将抽象的序列信息、计算数据和能量术语，翻译成我们肉眼可见的、直观的3D结构图像。通过将计算（对接）与实验（突变体结构）在PyMOL中进行比对和验证，我们才能真正将生物信息学、计算化学和结构生物学融会贯通，推动生命科学的前沿发展。</p>
+<script type="module"> import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';	mermaid.initialize({startOnLoad: true, flowchart: {curve: 'linear'}}); </script>]]></content>
+      <categories>
+        <category>蛋白互作</category>
+        <category>PyMOL</category>
+      </categories>
+  </entry>
+  <entry>
     <title>根据SNP位点进行快速引物设计</title>
     <url>/2025/07/03/kuai-su-yin-wu-she-ji/</url>
     <content><![CDATA[<h1 id="根据SNP位点进行快速引物设计"><a href="#根据SNP位点进行快速引物设计" class="headerlink" title="根据SNP位点进行快速引物设计"></a>根据SNP位点进行快速引物设计</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>这是一个基于Python Tkinter开发的图形化界面工具，专门用于基因突变位点的引物设计。通过输入基因序列和突变位点信息，工具能够自动定位目标碱基并设计出合适的PCR引物对。</p>
@@ -7225,227 +7446,6 @@ TTGTATTAATCAACAAATAACATTTCATTTTGATTAAATT"""</span>
 ]]></content>
       <categories>
         <category>Linux</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>从基因到结构：用PyMOL可视化理解分子对接与突变效应</title>
-    <url>/2025/11/09/fen-zi-dui-jie/</url>
-    <content><![CDATA[<h2 id="从基因到结构：用PyMOL可视化理解分子对接与突变效应"><a href="#从基因到结构：用PyMOL可视化理解分子对接与突变效应" class="headerlink" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应"></a><strong>从基因到结构：用PyMOL可视化理解分子对接与突变效应</strong></h2><p>亲爱的同学们，当我们谈论“结构生物学”或“计算药物设计”时，分子对接和蛋白质突变是两个核心概念。它们一个关乎<strong>预测</strong>，一个关乎<strong>解释</strong>。今天，我们将不仅从原理上理解它们，更将借助强大的分子可视化软件<strong>PyMOL</strong>，将抽象的概念转化为可见的3D结构。</p>
-<h3 id="第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”"><a href="#第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”" class="headerlink" title="第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”"></a><strong>第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”</strong></h3><p>分子对接的本质是<strong>在原子层面预测小分子（配体）与其靶标生物大分子（受体）之间的最优结合模式</strong>。传统的流程我们比作“钥匙配锁”，但现在，我们迎来了一位强大的AI助手——<strong>AlphaFold</strong>——它能为许多我们不知道精确结构的“锁”生成高精度的3D模型。</p>
-<p><strong>现代分子对接的增强版流程如下：</strong></p>
-<p><strong>1. 结构准备与预处理：获取“锁”和“钥匙”的3D蓝图</strong></p>
-<p>这是所有计算的基石。蛋白质受体的三维结构是分子对接的起点。其来源主要分为实验解析和计算预测两大类。</p>
-<ul>
-<li><strong>a) 传统路径（实验结构）</strong>：从PDB数据库下载通过X射线晶体学、冷冻电镜或核磁共振等技术解析的结构。这是<strong>金标准</strong>，精度最高。然而，并非所有蛋白质，特别是某些膜蛋白或大型复合物，都能被轻易解析出结构。</li>
-<li><strong>b) 计算预测路径（当实验结构缺失时）</strong>：在AlphaFold之前，这是一个充满挑战的领域，主要依赖以下方法，其演进历程如下图所示：</li>
-</ul>
-<pre class="mermaid">graph LR
-    A[蛋白质序列] --&gt; B[“同源建模<br>（1990s-）<br>寻找已知结构的同源蛋白”]
-    B --&gt; C[“ threading<br>（1990s-）<br>在结构折叠库中匹配”]
-    A --&gt; D[“Ab initio折叠<br>（2000s-）<br>基于物理力场从头计算”]
-    C &amp; D --&gt; E[“集成方法<br>（如Rosetta<br>将多种方法结合）”]
-    E --&gt; F[“AI革命<br>（AlphaFold2等<br>2020s-）”]
-    F --&gt; G[精度接近实验水平]</pre>
-
-<pre class="mermaid">flowchart TD
-    A[蛋白质序列] --&gt; B[同源建模]
-    A --&gt; C[Threading]
-    A --&gt; D[Ab initio折叠]
-    
-    B --&gt; E[集成方法]
-    C --&gt; E
-    D --&gt; E
-    E --&gt; F[AI革命 AlphaFold2]
-    F --&gt; G[精度接近实验水平]
-    
-    style B fill:#e1f5fe
-    style C fill:#f3e5f5
-    style D fill:#e8f5e8
-    style F fill:#fff3e0
-    style G fill:#ffebee</pre>
-
-<ul>
-<li><p><strong>i) 同源建模</strong>：</p>
-<ul>
-<li><strong>原理</strong>：这是AlphaFold之前<strong>最成功、应用最广</strong>的方法。其核心假设是：序列相似的蛋白质，结构也相似。该方法需要一个与目标序列相似度较高（通常&gt;30%）的模板蛋白（已知结构）。</li>
-<li><strong>流程</strong>：将目标序列与模板结构进行比对，保守区域直接沿用模板骨架，对于可变区域（尤其是环区）则需要进行建模和优化。</li>
-<li><strong>经典工具</strong>：SWISS-MODEL、Modeller。</li>
-<li><strong>局限性</strong>：高度依赖于一个高质量的、高相似度的模板。当没有合适模板时，预测结果很差。</li>
-</ul>
-</li>
-<li><p><strong>ii) Threading（折叠识别）</strong>：</p>
-<ul>
-<li><strong>原理</strong>：当目标序列与任何已知结构的蛋白质相似度都很低时，Threading方法尝试判断目标序列是否可能适配某个已知的蛋白质折叠模式（即“折叠模板”）。</li>
-<li><strong>流程</strong>：将目标序列“穿”到不同的结构模板上，通过一个打分函数来评估其兼容性，选择最合适的模板。</li>
-<li><strong>经典工具</strong>：I-TASSER（在其流程中整合了Threading）。</li>
-<li><strong>局限性</strong>：仍然依赖于已知的折叠库，无法预测全新的折叠类型。</li>
-</ul>
-</li>
-<li><p><strong>iii) Ab initio（从头计算）折叠</strong>：</p>
-<ul>
-<li><strong>原理</strong>：这是最理想也最困难的方法。它<strong>不依赖任何已知模板</strong>，仅从蛋白质的氨基酸序列出发，基于物理力场（分子力学）和能量最小化原理，通过计算模拟蛋白质的折叠过程。</li>
-<li><strong>经典工具</strong>：Rosetta的一个核心功能。</li>
-<li><strong>局限性</strong>：计算量极其巨大，且通常只对很小的蛋白质域（&lt;100个氨基酸）有较好的预测效果，精度有限。</li>
-</ul>
-</li>
-<li><p><strong>iv) 集成工具（如I-TASSER, Rosetta）</strong>：</p>
-<ul>
-<li>在实际应用中，顶尖的预测工具（如CASP竞赛中的佼佼者）通常会将上述多种方法集成起来，取长补短，以产生更可靠的结果。</li>
-</ul>
-</li>
-<li><p><strong>v) AI革命路径（以AlphaFold2为代表）</strong>：</p>
-<ul>
-<li><strong>原理</strong>：基于深度学习的Transformer架构，AlphaFold2的核心突破在于它能从多序列比对中极其高效地学习氨基酸残基间的空间几何约束，并直接生成精确的原子坐标。它<strong>不是传统意义上的同源建模或ab initio</strong>，而是一种全新的、数据驱动的方法。</li>
-<li><strong>变革</strong>：其预测精度<strong>首次达到甚至部分超越实验水平</strong>，解决了困扰生物学界长达半个世纪的“蛋白质结构预测”难题，极大地扩展了分子对接的靶点空间。</li>
-</ul>
-</li>
-</ul>
-<p><strong>PyMOL可视化</strong>：在PyMOL中，你可以加载来自任何来源的结构——实验的、同源建模的或AI预测的。对于预测模型，务必注意其置信度指标（如AlphaFold的pLDDT），并批判性地看待低置信度区域。</p>
-<ul>
-<li><strong>专业预处理</strong>：无论结构来源如何，后续预处理都至关重要。需要使用专业工具（如AutoDock Tools, Schrödinger Maestro）为结构<strong>添加氢原子</strong>、<strong>分配Gasteiger电荷</strong>、<strong>设定可旋转键</strong>。这是因为实验结构和AI预测模型通常不包含氢原子，而氢原子和电荷对于计算分子间相互作用力至关重要。</li>
-</ul>
-<p><strong>2. 格点计算与结合位点定义：划定“锁眼”</strong></p>
-<p>计算机需要知道在哪里进行“搜索”。</p>
-<ul>
-<li><strong>专业概念</strong>：对接程序会在结合位点周围生成一个三维的“能量格点”。这个格点图预先计算了受体在不同位置的特性（如疏水性、静电势、氢键受体/供体倾向）。</li>
-<li><strong>PyMOL可视化</strong>：我们可以将对接软件（如AutoDock）生成的格点文件（.grd）在PyMOL中可视化为一个网格框。这个框直观地定义了构象搜索的空间范围。对于AI预测的结构，尤其需要确保这个网格框覆盖了pLDDT置信度高的潜在活性口袋。</li>
-</ul>
-<p><strong>3. 构象搜索与优化：疯狂尝试</strong></p>
-<p>这是对接的计算核心。</p>
-<ul>
-<li><strong>专业概念</strong>：算法（如拉马克遗传算法、遗传算法）会在定义的网格内，对配体进行<strong>平移</strong>、<strong>旋转</strong>和<strong>内部可旋转键的扭转</strong>，生成成千上万个可能的“姿势”。</li>
-<li><strong>目标</strong>：寻找与受体形状和化学性质<strong>互补性最佳</strong>的构象。</li>
-</ul>
-<p><strong>4. 打分函数排名：评分</strong></p>
-<p>如何判断哪个姿势是最好的？</p>
-<ul>
-<li><strong>专业概念</strong>：打分函数是一个数学函数，用于估算结合亲和力。它综合评估：<ul>
-<li><strong>范德华力</strong>（形状互补性）</li>
-<li><strong>静电相互作用</strong></li>
-<li><strong>氢键</strong></li>
-<li><strong>疏水效应</strong></li>
-</ul>
-</li>
-<li>最终，所有生成的构象会按打分值排序，得分越低（在力场中通常代表能量越低）或越高（在经验打分函数中代表概率越高）的构象越优。</li>
-</ul>
-<p><strong>5. 结果分析与PyMOL验证：宣布结果</strong></p>
-<p>这是将计算结果与结构生物学洞察相结合的关键一步。</p>
-<ul>
-<li><strong>PyMOL操作</strong>：将排名第一的对接构象与原始的晶体结构中的配体（如果有）或AI预测的结构进行叠合。<ul>
-<li>命令：<code>align docking_pose, crystal_ligand</code></li>
-</ul>
-</li>
-<li><strong>专业分析</strong>：我们需要仔细检查计算预测的结合模式是否重现了实验观察到的或理论上合理的<strong>关键相互作用</strong>，例如：<ul>
-<li><strong>氢键</strong>：<code>distance hb1, resi X and chain A, resi Y and chain B</code></li>
-<li><strong>疏水空腔的填充</strong></li>
-</ul>
-</li>
-<li><strong>特别关注（对于AI结构）</strong>：当使用<strong>AlphaFold预测的结构</strong>进行对接时，需要特别小心。结合位点区域的pLDDT置信度是否足够高？低置信度环区的构象可能不可靠。同时，AI预测的是<strong>天然状态</strong>，而配体结合可能引起局部构象变化（“诱导契合”），刚性对接可能无法捕捉这一点。</li>
-</ul>
-<p><strong>总结：AI如何改变了分子对接？</strong><br><strong>AlphaFold等工具极大地扩展了分子对接的应用边界。</strong> 过去，对于没有实验结构的靶点，我们往往束手无策。现在，我们可以利用AI生成高质量的结构模型，使得针对这些“难以捉摸”的靶点进行<strong>虚拟筛选</strong>和<strong>理性药物设计</strong>成为可能。这标志着计算结构生物学和药物发现进入了一个全新的时代。</p>
-<hr>
-<h3 id="第二部分：氨基酸突变如何改变构象——从序列到功能的因果链"><a href="#第二部分：氨基酸突变如何改变构象——从序列到功能的因果链" class="headerlink" title="第二部分：氨基酸突变如何改变构象——从序列到功能的因果链"></a><strong>第二部分：氨基酸突变如何改变构象——从序列到功能的因果链</strong></h3><p>一个点突变如何通过改变一个氨基酸，最终影响整个蛋白质的功能？让我们从结构的角度来剖析。</p>
-<p><strong>1. 突变类型的结构后果</strong></p>
-<ul>
-<li><strong>同义突变</strong>：通常 silent，不改变氨基酸，对结构无影响。</li>
-<li><strong>无义突变</strong>：产生截短的蛋白，通常完全破坏结构。</li>
-<li><strong>错义突变</strong>：这是影响构象的<strong>主战场</strong>，其效应取决于突变位点和性质。</li>
-</ul>
-<p><strong>2. 错义突变的结构效应机制（PyMOL视角）</strong></p>
-<p>让我们以著名的<strong>镰刀型细胞贫血症</strong>为例（HbS β链 Glu6Val）。</p>
-<p><strong>a) 侧链物理化学性质的剧变</strong></p>
-<ul>
-<li><strong>专业概念</strong>：从带负电荷的<strong>谷氨酸</strong> 突变为非极性的<strong>缬氨酸</strong>。<ul>
-<li><strong>电荷丢失</strong>：失去了一个可形成强盐桥的带负电侧链。</li>
-<li><strong>疏水性增加</strong>：引入了一个疏水的“粘性贴片”。</li>
-</ul>
-</li>
-<li><strong>PyMOL可视化</strong>：<ol>
-<li>加载野生型血红蛋白（如2HHB）和突变体结构。</li>
-<li>使用 <code>show sticks, resi 6</code> 显示第6位残基。</li>
-<li>对比 <code>Glu6</code> 的长侧链和 <code>Val6</code> 的短小疏水侧链，直观感受其化学性质的巨大差异。</li>
-</ol>
-</li>
-</ul>
-<p><strong>b) 破坏关键相互作用并诱导新相互作用</strong></p>
-<ul>
-<li><strong>专业概念</strong>：Val6的疏水侧链无法与Lys82形成盐桥，反而在脱氧状态下，与另一个血红蛋白β链的Phe85和Leu88发生<strong>疏水相互作用</strong>。</li>
-<li><strong>PyMOL可视化</strong>：<ol>
-<li>在脱氧HbS结构（如2HBS）中，使用 <code>show sticks, resi 6+85+88</code> 并上色。</li>
-<li>测量它们之间的距离：<code>distance mut_int, resi 6, resi 85</code>。你会发现它们紧密接触，驱动了异常的多聚化。</li>
-</ol>
-</li>
-</ul>
-<p><strong>c) 诱导整体构象变化与功能丧失</strong></p>
-<ul>
-<li><strong>专业概念</strong>：这种异常的疏水相互作用作为“成核点”，驱动血红蛋白形成长的、不溶的纤维，最终导致红细胞扭曲成镰刀形。</li>
-<li><strong>PyMOL可视化</strong>：<ol>
-<li>叠合野生型和突变体的整体结构：<code>align wild_type, mutant</code>。</li>
-<li>观察RMSD值，量化整体结构的偏移。</li>
-<li>重点关注突变位点局部区域的主链和侧链的显著位移。</li>
-</ol>
-</li>
-</ul>
-<h3 id="总结：当预测遇见解释"><a href="#总结：当预测遇见解释" class="headerlink" title="总结：当预测遇见解释"></a><strong>总结：当预测遇见解释</strong></h3><ul>
-<li><strong>分子对接</strong>是我们的<strong>预测工具</strong>。通过计算模拟，我们可以预测一个新设计的抑制剂如何与野生型或突变型靶标结合，从而指导<strong>基于结构的药物设计（SBDD）</strong>。AI结构预测的加入，使这把“锁”的获取从未如此便捷。</li>
-<li><strong>突变的结构分析</strong>是我们的<strong>解释工具</strong>。它让我们能从原子层面理解疾病的分子病因，并解释为什么对野生型有效的药物可能对突变体失效（<strong>耐药性</strong>）。</li>
-</ul>
-<p><strong>PyMOL</strong>在其中扮演了不可或缺的“翻译官”角色，它将抽象的序列信息、计算数据和能量术语，翻译成我们肉眼可见的、直观的3D结构图像。通过将计算（对接）与实验（突变体结构）在PyMOL中进行比对和验证，我们才能真正将生物信息学、计算化学和结构生物学融会贯通，推动生命科学的前沿发展。</p>
-<p>希望这次结合PyMOL的讲解，能帮助大家建立起更立体、更专业的认知！</p>
-<hr>
-<h3 id="第二部分：氨基酸突变如何改变构象——从序列到功能的因果链-1"><a href="#第二部分：氨基酸突变如何改变构象——从序列到功能的因果链-1" class="headerlink" title="第二部分：氨基酸突变如何改变构象——从序列到功能的因果链"></a><strong>第二部分：氨基酸突变如何改变构象——从序列到功能的因果链</strong></h3><p>一个点突变如何通过改变一个氨基酸，最终影响整个蛋白质的功能？让我们从结构的角度来剖析。</p>
-<p><strong>1. 突变类型的结构后果</strong></p>
-<ul>
-<li><strong>同义突变</strong>：通常 silent，不改变氨基酸，对结构无影响。</li>
-<li><strong>无义突变</strong>：产生截短的蛋白，通常完全破坏结构。</li>
-<li><strong>错义突变</strong>：这是影响构象的<strong>主战场</strong>，其效应取决于突变位点和性质。</li>
-</ul>
-<p><strong>2. 错义突变的结构效应机制（PyMOL视角）</strong></p>
-<p>让我们以著名的<strong>镰刀型细胞贫血症</strong>为例（HbS β链 Glu6Val）。</p>
-<p><strong>a) 侧链物理化学性质的剧变</strong></p>
-<ul>
-<li><strong>专业概念</strong>：从带负电荷的<strong>谷氨酸</strong> 突变为非极性的<strong>缬氨酸</strong>。<ul>
-<li><strong>电荷丢失</strong>：失去了一个可形成强盐桥（与对侧β链的Lys82）的带负电侧链。</li>
-<li><strong>疏水性增加</strong>：引入了一个疏水的“粘性贴片”。</li>
-</ul>
-</li>
-<li><strong>PyMOL可视化</strong>：<ol>
-<li>加载野生型血红蛋白（如2HHB）和突变体结构。</li>
-<li>使用 <code>show sticks, resi 6</code> 显示第6位残基。</li>
-<li>对比 <code>Glu6</code> 的长侧链和 <code>Val6</code> 的短小疏水侧链，直观感受其化学性质的巨大差异。</li>
-<li>使用 <code>show surface</code> 观察疏水表面的变化。</li>
-</ol>
-</li>
-</ul>
-<p><strong>b) 破坏关键相互作用并诱导新相互作用</strong></p>
-<ul>
-<li><strong>专业概念</strong>：Val6的疏水侧链无法与Lys82形成盐桥，反而在脱氧状态下，与另一个血红蛋白β链的Phe85和Leu88发生<strong>疏水相互作用</strong>。</li>
-<li><strong>PyMOL可视化</strong>：<ol>
-<li>在脱氧HbS结构（如2HBS）中，选择Val6及其周围的残基。</li>
-<li>使用 <code>show sticks, resi 6+85+88</code> 并上色。</li>
-<li>测量它们之间的距离：<code>distance mut_int, resi 6, resi 85</code>。你会发现它们紧密接触，驱动了异常的多聚化。</li>
-</ol>
-</li>
-</ul>
-<p><strong>c) 诱导整体构象变化与功能丧失</strong></p>
-<ul>
-<li><strong>专业概念</strong>：这种异常的疏水相互作用作为“成核点”，驱动血红蛋白形成长的、不溶的纤维，最终导致红细胞扭曲成镰刀形。</li>
-<li><strong>PyMOL可视化</strong>：<ol>
-<li>叠合野生型和突变体的整体结构：<code>align wild_type, mutant</code>。</li>
-<li>观察RMSD值，量化整体结构的偏移。</li>
-<li>重点关注突变位点局部区域的主链和侧链的显著位移。</li>
-</ol>
-</li>
-</ul>
-<h3 id="总结：当预测遇见解释-1"><a href="#总结：当预测遇见解释-1" class="headerlink" title="总结：当预测遇见解释"></a><strong>总结：当预测遇见解释</strong></h3><ul>
-<li><strong>分子对接</strong>是我们的<strong>预测工具</strong>。通过计算模拟，我们可以预测一个新设计的抑制剂如何与野生型或突变型靶标结合，从而指导<strong>基于结构的药物设计</strong>。</li>
-<li><strong>突变的结构分析</strong>是我们的<strong>解释工具</strong>。它让我们能从原子层面理解疾病的分子病因，并解释为什么对野生型有效的药物可能对突变体失效（<strong>耐药性</strong>）。</li>
-</ul>
-<p><strong>PyMOL</strong>在其中扮演了不可或-缺的“翻译官”角色，它将抽象的序列信息、计算数据和能量术语，翻译成我们肉眼可见的、直观的3D结构图像。通过将计算（对接）与实验（突变体结构）在PyMOL中进行比对和验证，我们才能真正将生物信息学、计算化学和结构生物学融会贯通，推动生命科学的前沿发展。</p>
-<script type="module"> import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';	mermaid.initialize({startOnLoad: true, flowchart: {curve: 'linear'}}); </script>]]></content>
-      <categories>
-        <category>蛋白互作</category>
-        <category>PyMOL</category>
       </categories>
   </entry>
   <entry>
