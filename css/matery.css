@@ -10,3 +10,9 @@
     border-radius: 0.35rem;
     tab-size: 4;
 }
+
+/*mermaid*/
+.mermaid {
+  background: transparent!important;
+  opacity: 0.9;
+ }
