@@ -10,29 +10,3 @@
     border-radius: 0.35rem;
     tab-size: 4;
 }
-
-/* ����Mermaidͼ��ͨ���޸� */
-.mermaid {
-  background-color: white !important;
-  text-align: center;
-  margin: 20px auto;
-  padding: 20px;
-  border-radius: 8px;
-  display: block;
-  overflow: auto;
-}
-
-.mermaid svg {
-  background-color: white !important;
-  margin: 0 auto !important;
-  display: block !important;
-  max-width: 100%;
-  height: auto;
-}
-
-/* �޸����ܵ������ͻ */
-pre.mermaid {
-  background: white !important;
-  text-align: center;
-  border: 1px solid #e0e0e0;
-}
