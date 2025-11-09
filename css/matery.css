@@ -11,25 +11,28 @@
     tab-size: 4;
 }
 
-/* Mermaidͼ����ʽ */
+/* ����Mermaidͼ��ͨ���޸� */
 .mermaid {
   background-color: white !important;
   text-align: center;
   margin: 20px auto;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* ȷ��ͼ������ */
-.mermaid svg {
   display: block;
-  margin: 0 auto;
-  max-width: 100%;
+  overflow: auto;
 }
 
-/* ������ɫ���� */
-.mermaid .label {
-  color: #333 !important;
-  font-family: inherit;
+.mermaid svg {
+  background-color: white !important;
+  margin: 0 auto !important;
+  display: block !important;
+  max-width: 100%;
+  height: auto;
+}
+
+/* �޸����ܵ������ͻ */
+pre.mermaid {
+  background: white !important;
+  text-align: center;
+  border: 1px solid #e0e0e0;
 }
