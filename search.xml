@@ -1282,6 +1282,142 @@ SHOW GRANTS FOR <span class="token string">'phpmyadmin'</span>@<span class="toke
       </categories>
   </entry>
   <entry>
+    <title>基因结构</title>
+    <url>/2025/09/17/55/</url>
+    <content><![CDATA[<h2 id="结构图"><a href="#结构图" class="headerlink" title="结构图"></a>结构图</h2><p>!!!</p>
+<pre><code>    flowchart TD
+    A["一个完整的真核生物基因（DNA模板链）"]
+    
+    subgraph A_Sub[基因结构]
+        direction LR
+        Promoter[启动子 Promoter]
+        Exon1[外显子1 Exon 1]
+        Intron[内含子 Intron]
+        Exon2[外显子2 Exon 2]
+        Terminator[终止子 Terminator]
+    end
+    
+    A --&gt; A_Sub
+    
+    subgraph Transcription[第一步：转录]
+        direction TB
+        B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
+    end
+    
+    A_Sub --转录--&gt; Transcription
+    
+    subgraph Splicing[第二步：加工（剪切与拼接）]
+        direction TB
+        C["切除内含子并将外显子连接起来"]
+    end
+    
+    Transcription --加工--&gt; Splicing
+    
+    subgraph Final_mRNA[第三步：成熟mRNA]
+        direction LR
+        D["5' 帽子"]
+        E["5' UTR"]
+        F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
+        G["3' UTR"]
+        H["多聚A尾巴"]
+    end
+    
+    Splicing --"拼接后形成"--&gt; Final_mRNA
+    
+    %% 定义关系
+    Exon1 --包含--&gt; UTR1[5' UTR部分]
+    Exon1 --包含--&gt; CDS_Part1[CDS部分]
+    Exon2 --包含--&gt; CDS_Part2[CDS部分]
+    Exon2 --包含--&gt; UTR2[3' UTR部分]
+    
+    UTR1 --最终成为--&gt; E
+    CDS_Part1 --最终成为--&gt; F
+    CDS_Part2 --最终成为--&gt; F
+    UTR2 --最终成为--&gt; G
+    
+    Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
+    F --&gt; I
+    
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
+    classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
+    classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
+    
+    class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
+    class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
+    class Transcription,Splicing process;
+</code></pre>
+<p>!!!</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+
+<p>下面是代码</p>
+<pre class="mermaid">flowchart TD
+A["一个完整的真核生物基因（DNA模板链）"]
+
+subgraph A_Sub[基因结构]
+    direction LR
+    Promoter[启动子 Promoter]
+    Exon1[外显子1 Exon 1]
+    Intron[内含子 Intron]
+    Exon2[外显子2 Exon 2]
+    Terminator[终止子 Terminator]
+end
+
+A --&gt; A_Sub
+
+subgraph Transcription[第一步：转录]
+    direction TB
+    B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
+end
+
+A_Sub --转录--&gt; Transcription
+
+subgraph Splicing[第二步：加工（剪切与拼接）]
+    direction TB
+    C["切除内含子并将外显子连接起来"]
+end
+
+Transcription --加工--&gt; Splicing
+
+subgraph Final_mRNA[第三步：成熟mRNA]
+    direction LR
+    D["5' 帽子"]
+    E["5' UTR"]
+    F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
+    G["3' UTR"]
+    H["多聚A尾巴"]
+end
+
+Splicing --"拼接后形成"--&gt; Final_mRNA
+
+%% 定义关系
+Exon1 --包含--&gt; UTR1[5' UTR部分]
+Exon1 --包含--&gt; CDS_Part1[CDS部分]
+Exon2 --包含--&gt; CDS_Part2[CDS部分]
+Exon2 --包含--&gt; UTR2[3' UTR部分]
+
+UTR1 --最终成为--&gt; E
+CDS_Part1 --最终成为--&gt; F
+CDS_Part2 --最终成为--&gt; F
+UTR2 --最终成为--&gt; G
+
+Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
+F --&gt; I
+
+classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
+classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
+classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
+classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
+
+class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
+class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
+class Transcription,Splicing process;</pre>]]></content>
+      <categories>
+        <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
     <title>ANNOVAR | 变异注释</title>
     <url>/2025/09/16/53/</url>
     <content><![CDATA[<h2 id="一、简介"><a href="#一、简介" class="headerlink" title="一、简介"></a>一、简介</h2><p>会得到一系列变异数据，这些变异数据只是告诉我们在基因组的某个位置发生了一段序列的改变，至于这个改变会不会影响生物学功能，我们并不清楚。而注释就是将基因组的序列变异数据转化为我们更关心的生物学功能变化的信息。</p>
@@ -1563,142 +1699,6 @@ perl retrieve_seq_from_fasta.pl --format refGene --seqfile Arabidopsis_thaliana.
 <p>ANNOVAR注释变异VCF结果说明<br><a href="https://www.omicsclass.com/article/464">https://www.omicsclass.com/article/464</a><br><a href="https://www.omicsclass.com/article/804">https://www.omicsclass.com/article/804</a><br><a href="http://blog.sina.com.cn/s/blog_71df25810102ybtt.html">http://blog.sina.com.cn/s/blog_71df25810102ybtt.html</a></p>
 <p>Hui Y, Kai W. Genomic variant annotation and prioritization with ANNOVAR and wANNOVAR[J]. Nature Protocols, 2015, 10(10).</p>
 ]]></content>
-      <categories>
-        <category>重测序</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>基因结构</title>
-    <url>/2025/09/17/55/</url>
-    <content><![CDATA[<h2 id="结构图"><a href="#结构图" class="headerlink" title="结构图"></a>结构图</h2><p>!!!</p>
-<pre><code>    flowchart TD
-    A["一个完整的真核生物基因（DNA模板链）"]
-    
-    subgraph A_Sub[基因结构]
-        direction LR
-        Promoter[启动子 Promoter]
-        Exon1[外显子1 Exon 1]
-        Intron[内含子 Intron]
-        Exon2[外显子2 Exon 2]
-        Terminator[终止子 Terminator]
-    end
-    
-    A --&gt; A_Sub
-    
-    subgraph Transcription[第一步：转录]
-        direction TB
-        B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
-    end
-    
-    A_Sub --转录--&gt; Transcription
-    
-    subgraph Splicing[第二步：加工（剪切与拼接）]
-        direction TB
-        C["切除内含子并将外显子连接起来"]
-    end
-    
-    Transcription --加工--&gt; Splicing
-    
-    subgraph Final_mRNA[第三步：成熟mRNA]
-        direction LR
-        D["5' 帽子"]
-        E["5' UTR"]
-        F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
-        G["3' UTR"]
-        H["多聚A尾巴"]
-    end
-    
-    Splicing --"拼接后形成"--&gt; Final_mRNA
-    
-    %% 定义关系
-    Exon1 --包含--&gt; UTR1[5' UTR部分]
-    Exon1 --包含--&gt; CDS_Part1[CDS部分]
-    Exon2 --包含--&gt; CDS_Part2[CDS部分]
-    Exon2 --包含--&gt; UTR2[3' UTR部分]
-    
-    UTR1 --最终成为--&gt; E
-    CDS_Part1 --最终成为--&gt; F
-    CDS_Part2 --最终成为--&gt; F
-    UTR2 --最终成为--&gt; G
-    
-    Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
-    F --&gt; I
-    
-    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
-    classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
-    classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
-    
-    class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
-    class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
-    class Transcription,Splicing process;
-</code></pre>
-<p>!!!</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-
-<p>下面是代码</p>
-<pre class="mermaid">flowchart TD
-A["一个完整的真核生物基因（DNA模板链）"]
-
-subgraph A_Sub[基因结构]
-    direction LR
-    Promoter[启动子 Promoter]
-    Exon1[外显子1 Exon 1]
-    Intron[内含子 Intron]
-    Exon2[外显子2 Exon 2]
-    Terminator[终止子 Terminator]
-end
-
-A --&gt; A_Sub
-
-subgraph Transcription[第一步：转录]
-    direction TB
-    B["初级mRNA转录本（Pre-mRNA, 包含所有序列）"]
-end
-
-A_Sub --转录--&gt; Transcription
-
-subgraph Splicing[第二步：加工（剪切与拼接）]
-    direction TB
-    C["切除内含子并将外显子连接起来"]
-end
-
-Transcription --加工--&gt; Splicing
-
-subgraph Final_mRNA[第三步：成熟mRNA]
-    direction LR
-    D["5' 帽子"]
-    E["5' UTR"]
-    F["CDS (编码序列)起始密码子AUG -&gt; 终止密码子UAA/UAG/UGA"]
-    G["3' UTR"]
-    H["多聚A尾巴"]
-end
-
-Splicing --"拼接后形成"--&gt; Final_mRNA
-
-%% 定义关系
-Exon1 --包含--&gt; UTR1[5' UTR部分]
-Exon1 --包含--&gt; CDS_Part1[CDS部分]
-Exon2 --包含--&gt; CDS_Part2[CDS部分]
-Exon2 --包含--&gt; UTR2[3' UTR部分]
-
-UTR1 --最终成为--&gt; E
-CDS_Part1 --最终成为--&gt; F
-CDS_Part2 --最终成为--&gt; F
-UTR2 --最终成为--&gt; G
-
-Final_mRNA --"进入细胞质进行翻译（核糖体）"--&gt; I["合成的蛋白质"]
-F --&gt; I
-
-classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
-classDef coding fill:#e6f7ff,stroke:#333,stroke-width:1px;
-classDef noncoding fill:#fff5e6,stroke:#333,stroke-width:1px;
-classDef process fill:#f0f8ff,stroke:#2266ff,stroke-width:2px;
-
-class Exon1,Exon2,CDS_Part1,CDS_Part2,F coding;
-class Promoter,Intron,Terminator,UTR1,UTR2,E,G noncoding;
-class Transcription,Splicing process;</pre>]]></content>
       <categories>
         <category>重测序</category>
       </categories>
