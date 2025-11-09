@@ -452,6 +452,293 @@ gene2go$GO
       </categories>
   </entry>
   <entry>
+    <title>6.筛选组内一致率90%，组间有差异的SNP位点</title>
+    <url>/2025/09/03/48/</url>
+    <content><![CDATA[<p><strong>分析需求：</strong> </p>
+<blockquote>
+<p>请分析查找组间差异SNP &amp; Indel。需要找组内一致，组间具有差异的突变位点，样本一致率卡90%，即在大于90%的样本中突变型一致就认为是组内一致的突变。</p>
+</blockquote>
+<p><strong>关键技术要求</strong>：</p>
+<ul>
+<li><strong>组内一致性</strong>：在&gt;90%的样本中突变型一致即认为组内一致</li>
+<li><strong>组间差异性</strong>：不同群体间基因型存在明显分化</li>
+<li><strong>质量控制</strong>：确保结果的统计学可靠性</li>
+</ul>
+<hr>
+<h2 id="🎯-分析目标与生物学意义"><a href="#🎯-分析目标与生物学意义" class="headerlink" title="🎯 分析目标与生物学意义"></a>🎯 分析目标与生物学意义</h2><p>在群体遗传学和分子育种研究中，识别群体特异性变异位点是理解物种分化、适应性进化以及关键性状遗传基础的核心任务。本次分析旨在：</p>
+<ul>
+<li><strong>揭示群体分化标记</strong>：找到在不同群体间固定差异的SNP位点</li>
+<li><strong>定位候选基因区域</strong>：为后续的功能验证提供可靠的候选位点</li>
+<li><strong>支撑分子标记开发</strong>：为育种标记辅助选择提供理论基础</li>
+</ul>
+<h2 id="🔧-1-筛选流程设计与实现"><a href="#🔧-1-筛选流程设计与实现" class="headerlink" title="🔧 1. 筛选流程设计与实现"></a>🔧 1. 筛选流程设计与实现</h2><h3 id="核心算法逻辑"><a href="#核心算法逻辑" class="headerlink" title="核心算法逻辑"></a>核心算法逻辑</h3><pre class="mermaid">graph TD
+    A[原始基因型数据] --&gt; B[群体分组统计]
+    B --&gt; C{组内一致性检验}
+    C --&gt;|通过| D{组间差异性检验}
+    C --&gt;|不通过| E[过滤掉]
+    D --&gt;|有差异| F[输出结果]
+    D --&gt;|无差异| E</pre>
+
+<h3 id="筛选命令详解"><a href="#筛选命令详解" class="headerlink" title="筛选命令详解"></a>筛选命令详解</h3><pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash">#!/bin/bash
+# filename: filter_variants_integrated.sh
+# Usage: ./filter_variants_integrated.sh [threshold] [input_file] [output_file] [include_het] [diff_mode]
+
+show_help() {
+    cat  "$OUTPUT_FILE"
+
+# ------------------ 主体处理 ------------------
+START_TIME=$(date +%s)
+log "INFO" "开始处理位点..."
+
+awk -v threshold="$THRESHOLD" \
+    -v bm_start="$BM_START" \
+    -v bm_end="$BM_END" \
+    -v wm_start="$WM_START" \
+    -v wm_end="$WM_END" \
+    -v total_variants="$TOTAL_VARIANTS" \
+    -v log_file="$LOG_FILE" \
+    -v include_het="$INCLUDE_HET" \
+    -v diff_mode="$DIFF_MODE" '
+BEGIN {
+    OFS="\t"
+    processed = 0
+    passed = 0
+    start_time = systime()
+    print strftime("[%Y-%m-%d %H:%M:%S]") " [INFO] AWK processor started" &gt;&gt; log_file
+}
+
+NR==1 {next}  # 跳过表头
+
+{
+    processed++
+
+    bm_ref=0; bm_alt=0; bm_het=0; bm_total=0
+    wm_ref=0; wm_alt=0; wm_het=0; wm_total=0
+
+    # BM
+    for (i=bm_start; i 0) ? bm_alt / bm_total : 0
+    bm_het_ratio = (bm_total &gt; 0) ? bm_het / bm_total : 0
+    
+    wm_ref_ratio = (wm_total &gt; 0) ? wm_ref / wm_total : 0
+    wm_alt_ratio = (wm_total &gt; 0) ? wm_alt / wm_total : 0
+    wm_het_ratio = (wm_total &gt; 0) ? wm_het / wm_total : 0
+
+    bm_gt = "MIXED"
+    wm_gt = "MIXED"
+
+    if (bm_total &gt;= 20) {
+        if (bm_ref_ratio &gt;= threshold) bm_gt="REF"
+        else if (bm_alt_ratio &gt;= threshold) bm_gt="ALT"
+        else if (!include_het &amp;&amp; (bm_het/bm_total &gt;= threshold)) bm_gt="HET"
+    }
+    if (wm_total &gt;= 20) {
+        if (wm_ref_ratio &gt;= threshold) wm_gt="REF"
+        else if (wm_alt_ratio &gt;= threshold) wm_gt="ALT"
+        else if (!include_het &amp;&amp; (wm_het/wm_total &gt;= threshold)) wm_gt="HET"
+    }
+
+    diff = 0
+    if (bm_gt != "MIXED" &amp;&amp; wm_gt != "MIXED") {
+        if (diff_mode=="simple") {
+            if (bm_gt=="REF" &amp;&amp; wm_gt=="ALT") diff=1
+            else if (bm_gt=="ALT" &amp;&amp; wm_gt=="REF") diff=1
+        } else if (diff_mode=="strict") {
+            if (bm_gt != wm_gt) diff=1
+        }
+    }
+
+    if (diff==1) {
+        print $0, bm_ref, bm_alt, bm_het, bm_total, bm_ref_ratio, bm_alt_ratio, bm_het_ratio, bm_gt, wm_ref, wm_alt, wm_het, wm_total, wm_ref_ratio, wm_alt_ratio, wm_het_ratio, wm_gt
+        passed++
+    }
+}
+
+END {
+    end_time = systime()
+    duration = end_time - start_time
+    minutes = int(duration / 60)
+    seconds = duration % 60
+    print strftime("[%Y-%m-%d %H:%M:%S]") " [INFO] Processed: " processed ", Passed: " passed &gt;&gt; log_file
+    print strftime("[%Y-%m-%d %H:%M:%S]") " [INFO] Pass rate: " (passed/processed)*100 "%" &gt;&gt; log_file
+}
+' "$INPUT_FILE" &gt;&gt; "$OUTPUT_FILE"
+
+# ------------------ 结果汇总 ------------------
+RESULT_COUNT=$(($(wc -l &lt; "$OUTPUT_FILE") - 1))
+log "INFO" "分析完成！ 筛选通过: $RESULT_COUNT"
+echo "结果输出到: $OUTPUT_FILE"
+echo "日志文件: $LOG_FILE"<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="筛选命令的输入输出说明"><a href="#筛选命令的输入输出说明" class="headerlink" title="筛选命令的输入输出说明"></a>筛选命令的输入输出说明</h3><h4 id="输入文件格式要求："><a href="#输入文件格式要求：" class="headerlink" title="输入文件格式要求："></a>输入文件格式要求：</h4><pre class="line-numbers language-none"><code class="language-none"># 输入文件应该是制表符分隔的文本文件，包含以下列：
+# CHROM  POS     REF     ALT     Sample1 Sample2 Sample3 ... SampleN
+# 1      1000    A       G       0/1     1/1     0/0     ... 0/1
+# 1      2000    C       T       1/1     0/1     1/1     ... 0/0
+
+# 基因型编码说明：
+# 0/0: 纯合参考型
+# 1/1: 纯合突变型  
+# 0/1: 杂合型
+# ./.: 缺失数据<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="输出结果内容："><a href="#输出结果内容：" class="headerlink" title="输出结果内容："></a>输出结果内容：</h4><pre class="line-numbers language-none"><code class="language-none"># 输出文件在原文件基础上添加以下统计列：
+# bm_ref    bm_alt    bm_het    bm_total  bm_ref_ratio  bm_alt_ratio  bm_het_ratio  bm_gt
+# wm_ref    wm_alt    wm_het    wm_total  wm_ref_ratio  wm_alt_ratio  wm_het_ratio  wm_gt
+
+# 输出示例：
+# CHROM  POS   REF  ALT  ...  bm_ref  bm_alt  bm_gt  wm_ref  wm_alt  wm_gt
+# 1      1000  A    G    ...  18      2       REF    2       18      ALT
+# 这表示：BM组18个样本为REF型，WM组18个样本为ALT型，符合组间差异条件<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="关键输出解读："><a href="#关键输出解读：" class="headerlink" title="关键输出解读："></a>关键输出解读：</h4><ul>
+<li><strong>bm_gt/wm_gt</strong>: 群体基因型判定（REF/ALT/HET/MIXED）</li>
+<li>***_ratio**: 各类基因型在群体中的比例</li>
+<li><strong>筛选逻辑</strong>: BM组和WM组基因型相反且各自组内一致率&gt;90%的位点</li>
+</ul>
+<h2 id="📊-2-结果可视化与质控"><a href="#📊-2-结果可视化与质控" class="headerlink" title="📊 2. 结果可视化与质控"></a>📊 2. 结果可视化与质控</h2><h3 id="可视化代码实现"><a href="#可视化代码实现" class="headerlink" title="可视化代码实现"></a>可视化代码实现</h3><pre class="line-numbers language-R" data-language="R"><code class="language-R">library(tidyverse)
+library(vcfR)
+library(data.table)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+
+# 先读取数据（不自动解析列名）
+snp_data %
+  layout(
+    title = list(text = "SNP Genotype Heatmap", y = 0.98),
+    xaxis = list(
+      title = "Genomic Position",
+      rangeslider = list(visible = TRUE),
+      type = "category",
+      tickangle = 45
+    ),
+    yaxis = list(
+      title = list(text = "Sample", standoff = 30),
+      tickfont = list(size = 10),
+      automargin = TRUE,
+      tickmode = "array",
+      tickvals = rownames(heatmap_matrix),  # 直接使用样本名
+      ticktext = rownames(heatmap_matrix)
+    ),
+    margin = list(l = left_margin, r = 50, b = 100, t = 100)
+  )
+
+# 7. 输出结果 ------------------------------------------------
+fig  # 在RStudio中查看
+
+# 可选：保存为HTML
+# htmlwidgets::saveWidget(fig, "snp_heatmap.html", selfcontained = TRUE)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="可视化代码的输入输出说明"><a href="#可视化代码的输入输出说明" class="headerlink" title="可视化代码的输入输出说明"></a>可视化代码的输入输出说明</h3><h4 id="输入数据格式："><a href="#输入数据格式：" class="headerlink" title="输入数据格式："></a>输入数据格式：</h4><pre class="line-numbers language-none"><code class="language-none"># 输入数据应为数据框格式，包含以下列：
+# CHROM  POS     Sample1 Sample2 Sample3 ... SampleN
+# 1      1000    0/1     1/1     0/0     ... 0/1
+# 1      2000    1/1     0/1     1/1     ... 0/0
+
+# 或者从VCF文件直接读取：
+# vcf &lt;- read.vcfR("input.vcf")
+# snp_data &lt;- vcfR2tidy(vcf)$fix<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="输出可视化结果："><a href="#输出可视化结果：" class="headerlink" title="输出可视化结果："></a>输出可视化结果：</h4><pre class="line-numbers language-none"><code class="language-none"># 1. 交互式热图 - 在RStudio中显示或保存为HTML
+#    - X轴: 基因组位置
+#    - Y轴: 样本名称  
+#    - 颜色: 蓝色(0/0), 红色(1/1), 黄色(0/1), 灰色(缺失)
+
+# 2. 控制台输出的统计信息：
+#    - 总位点数: 1500
+#    - 总样本数: 96  
+#    - 基因型统计: REF=45%, ALT=40%, HET=12%, MISSING=3%
+
+# 3. 热图特性：
+#    - 支持缩放和拖动查看细节
+#    - 鼠标悬停显示具体基因型信息
+#    - 自适应布局，适合发表级图片输出<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="可视化价值："><a href="#可视化价值：" class="headerlink" title="可视化价值："></a>可视化价值：</h4><ul>
+<li><strong>快速质控</strong>: 一眼识别数据质量问题</li>
+<li><strong>模式识别</strong>: 直观看到群体分层和基因型分布模式</li>
+<li><strong>结果验证</strong>: 确认筛选出的差异位点确实显示预期模式</li>
+<li><strong>报告展示</strong>: 生成可用于发表的高质量图表</li>
+</ul>
+<h2 id="💡-技术要点与注意事项"><a href="#💡-技术要点与注意事项" class="headerlink" title="💡 技术要点与注意事项"></a>💡 技术要点与注意事项</h2><h3 id="参数选择策略"><a href="#参数选择策略" class="headerlink" title="参数选择策略"></a>参数选择策略</h3><ol>
+<li><p><strong>一致率阈值（90%）</strong>：</p>
+<ul>
+<li>平衡了统计严格性和生物学现实性</li>
+<li>允许少量个体变异或测序错误</li>
+<li>可根据样本量调整：样本量越大，阈值可适当提高</li>
+</ul>
+</li>
+<li><p><strong>样本量要求</strong>：</p>
+<ul>
+<li>每组至少20个有效样本确保统计可靠性</li>
+<li>小样本群体建议调整阈值或使用其他统计方法</li>
+</ul>
+</li>
+<li><p><strong>杂合位点处理</strong>：</p>
+<ul>
+<li>默认排除杂合型作为”一致”基因型</li>
+<li>对于异交物种可考虑包含杂合型</li>
+</ul>
+</li>
+</ol>
+<h3 id="常见问题排查"><a href="#常见问题排查" class="headerlink" title="常见问题排查"></a>常见问题排查</h3><ol>
+<li><p><strong>结果位点过少</strong>：</p>
+<ul>
+<li>检查群体间真实分化程度</li>
+<li>验证一致率阈值是否过高</li>
+<li>确认样本分组是否正确</li>
+</ul>
+</li>
+<li><p><strong>热图显示异常</strong>：</p>
+<ul>
+<li>检查基因型编码格式</li>
+<li>确认染色体坐标系统一</li>
+<li>验证样本名称一致性</li>
+</ul>
+</li>
+<li><p><strong>性能优化建议</strong>：</p>
+<ul>
+<li>大文件使用<code>data.table</code>替代<code>data.frame</code></li>
+<li>分染色体并行处理</li>
+<li>预处理时过滤低质量位点</li>
+</ul>
+</li>
+</ol>
+<h2 id="🚀-下游分析方向"><a href="#🚀-下游分析方向" class="headerlink" title="🚀 下游分析方向"></a>🚀 下游分析方向</h2><p>筛选得到的差异位点可用于：</p>
+<ol>
+<li><p><strong>基因组扫描分析</strong>：</p>
+<ul>
+<li>识别选择扫荡区域</li>
+<li>定位群体分化热点</li>
+</ul>
+</li>
+<li><p><strong>功能注释</strong>：</p>
+<ul>
+<li>基因本体富集分析</li>
+<li>通路分析</li>
+</ul>
+</li>
+<li><p><strong>育种应用</strong>：</p>
+<ul>
+<li>开发群体特异性分子标记</li>
+<li>辅助亲本选配</li>
+</ul>
+</li>
+<li><p><strong>进化研究</strong>：</p>
+<ul>
+<li>构建系统发育树</li>
+<li>群体结构分析</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><strong>总结</strong>：本流程提供了一个完整的从原始基因型数据到高质量差异位点筛选的解决方案，结合严格的统计标准和直观的可视化验证，确保结果的生物学可靠性和技术可重复性。</p>
+]]></content>
+      <categories>
+        <category>默认分类</category>
+        <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
     <title>4.提取重测序数据中黑白肌痕组中各SNP的位点信息及基因型频率</title>
     <url>/2025/08/03/32/</url>
     <content><![CDATA[<p>相关的sh文件内容如下：</p>
@@ -930,293 +1217,6 @@ htmlwidgets::saveWidget(
       </categories>
   </entry>
   <entry>
-    <title>6.筛选组内一致率90%，组间有差异的SNP位点</title>
-    <url>/2025/09/03/48/</url>
-    <content><![CDATA[<p><strong>分析需求：</strong> </p>
-<blockquote>
-<p>请分析查找组间差异SNP &amp; Indel。需要找组内一致，组间具有差异的突变位点，样本一致率卡90%，即在大于90%的样本中突变型一致就认为是组内一致的突变。</p>
-</blockquote>
-<p><strong>关键技术要求</strong>：</p>
-<ul>
-<li><strong>组内一致性</strong>：在&gt;90%的样本中突变型一致即认为组内一致</li>
-<li><strong>组间差异性</strong>：不同群体间基因型存在明显分化</li>
-<li><strong>质量控制</strong>：确保结果的统计学可靠性</li>
-</ul>
-<hr>
-<h2 id="🎯-分析目标与生物学意义"><a href="#🎯-分析目标与生物学意义" class="headerlink" title="🎯 分析目标与生物学意义"></a>🎯 分析目标与生物学意义</h2><p>在群体遗传学和分子育种研究中，识别群体特异性变异位点是理解物种分化、适应性进化以及关键性状遗传基础的核心任务。本次分析旨在：</p>
-<ul>
-<li><strong>揭示群体分化标记</strong>：找到在不同群体间固定差异的SNP位点</li>
-<li><strong>定位候选基因区域</strong>：为后续的功能验证提供可靠的候选位点</li>
-<li><strong>支撑分子标记开发</strong>：为育种标记辅助选择提供理论基础</li>
-</ul>
-<h2 id="🔧-1-筛选流程设计与实现"><a href="#🔧-1-筛选流程设计与实现" class="headerlink" title="🔧 1. 筛选流程设计与实现"></a>🔧 1. 筛选流程设计与实现</h2><h3 id="核心算法逻辑"><a href="#核心算法逻辑" class="headerlink" title="核心算法逻辑"></a>核心算法逻辑</h3><pre class="mermaid">graph TD
-    A[原始基因型数据] --&gt; B[群体分组统计]
-    B --&gt; C{组内一致性检验}
-    C --&gt;|通过| D{组间差异性检验}
-    C --&gt;|不通过| E[过滤掉]
-    D --&gt;|有差异| F[输出结果]
-    D --&gt;|无差异| E</pre>
-
-<h3 id="筛选命令详解"><a href="#筛选命令详解" class="headerlink" title="筛选命令详解"></a>筛选命令详解</h3><pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash">#!/bin/bash
-# filename: filter_variants_integrated.sh
-# Usage: ./filter_variants_integrated.sh [threshold] [input_file] [output_file] [include_het] [diff_mode]
-
-show_help() {
-    cat  "$OUTPUT_FILE"
-
-# ------------------ 主体处理 ------------------
-START_TIME=$(date +%s)
-log "INFO" "开始处理位点..."
-
-awk -v threshold="$THRESHOLD" \
-    -v bm_start="$BM_START" \
-    -v bm_end="$BM_END" \
-    -v wm_start="$WM_START" \
-    -v wm_end="$WM_END" \
-    -v total_variants="$TOTAL_VARIANTS" \
-    -v log_file="$LOG_FILE" \
-    -v include_het="$INCLUDE_HET" \
-    -v diff_mode="$DIFF_MODE" '
-BEGIN {
-    OFS="\t"
-    processed = 0
-    passed = 0
-    start_time = systime()
-    print strftime("[%Y-%m-%d %H:%M:%S]") " [INFO] AWK processor started" &gt;&gt; log_file
-}
-
-NR==1 {next}  # 跳过表头
-
-{
-    processed++
-
-    bm_ref=0; bm_alt=0; bm_het=0; bm_total=0
-    wm_ref=0; wm_alt=0; wm_het=0; wm_total=0
-
-    # BM
-    for (i=bm_start; i 0) ? bm_alt / bm_total : 0
-    bm_het_ratio = (bm_total &gt; 0) ? bm_het / bm_total : 0
-    
-    wm_ref_ratio = (wm_total &gt; 0) ? wm_ref / wm_total : 0
-    wm_alt_ratio = (wm_total &gt; 0) ? wm_alt / wm_total : 0
-    wm_het_ratio = (wm_total &gt; 0) ? wm_het / wm_total : 0
-
-    bm_gt = "MIXED"
-    wm_gt = "MIXED"
-
-    if (bm_total &gt;= 20) {
-        if (bm_ref_ratio &gt;= threshold) bm_gt="REF"
-        else if (bm_alt_ratio &gt;= threshold) bm_gt="ALT"
-        else if (!include_het &amp;&amp; (bm_het/bm_total &gt;= threshold)) bm_gt="HET"
-    }
-    if (wm_total &gt;= 20) {
-        if (wm_ref_ratio &gt;= threshold) wm_gt="REF"
-        else if (wm_alt_ratio &gt;= threshold) wm_gt="ALT"
-        else if (!include_het &amp;&amp; (wm_het/wm_total &gt;= threshold)) wm_gt="HET"
-    }
-
-    diff = 0
-    if (bm_gt != "MIXED" &amp;&amp; wm_gt != "MIXED") {
-        if (diff_mode=="simple") {
-            if (bm_gt=="REF" &amp;&amp; wm_gt=="ALT") diff=1
-            else if (bm_gt=="ALT" &amp;&amp; wm_gt=="REF") diff=1
-        } else if (diff_mode=="strict") {
-            if (bm_gt != wm_gt) diff=1
-        }
-    }
-
-    if (diff==1) {
-        print $0, bm_ref, bm_alt, bm_het, bm_total, bm_ref_ratio, bm_alt_ratio, bm_het_ratio, bm_gt, wm_ref, wm_alt, wm_het, wm_total, wm_ref_ratio, wm_alt_ratio, wm_het_ratio, wm_gt
-        passed++
-    }
-}
-
-END {
-    end_time = systime()
-    duration = end_time - start_time
-    minutes = int(duration / 60)
-    seconds = duration % 60
-    print strftime("[%Y-%m-%d %H:%M:%S]") " [INFO] Processed: " processed ", Passed: " passed &gt;&gt; log_file
-    print strftime("[%Y-%m-%d %H:%M:%S]") " [INFO] Pass rate: " (passed/processed)*100 "%" &gt;&gt; log_file
-}
-' "$INPUT_FILE" &gt;&gt; "$OUTPUT_FILE"
-
-# ------------------ 结果汇总 ------------------
-RESULT_COUNT=$(($(wc -l &lt; "$OUTPUT_FILE") - 1))
-log "INFO" "分析完成！ 筛选通过: $RESULT_COUNT"
-echo "结果输出到: $OUTPUT_FILE"
-echo "日志文件: $LOG_FILE"<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="筛选命令的输入输出说明"><a href="#筛选命令的输入输出说明" class="headerlink" title="筛选命令的输入输出说明"></a>筛选命令的输入输出说明</h3><h4 id="输入文件格式要求："><a href="#输入文件格式要求：" class="headerlink" title="输入文件格式要求："></a>输入文件格式要求：</h4><pre class="line-numbers language-none"><code class="language-none"># 输入文件应该是制表符分隔的文本文件，包含以下列：
-# CHROM  POS     REF     ALT     Sample1 Sample2 Sample3 ... SampleN
-# 1      1000    A       G       0/1     1/1     0/0     ... 0/1
-# 1      2000    C       T       1/1     0/1     1/1     ... 0/0
-
-# 基因型编码说明：
-# 0/0: 纯合参考型
-# 1/1: 纯合突变型  
-# 0/1: 杂合型
-# ./.: 缺失数据<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="输出结果内容："><a href="#输出结果内容：" class="headerlink" title="输出结果内容："></a>输出结果内容：</h4><pre class="line-numbers language-none"><code class="language-none"># 输出文件在原文件基础上添加以下统计列：
-# bm_ref    bm_alt    bm_het    bm_total  bm_ref_ratio  bm_alt_ratio  bm_het_ratio  bm_gt
-# wm_ref    wm_alt    wm_het    wm_total  wm_ref_ratio  wm_alt_ratio  wm_het_ratio  wm_gt
-
-# 输出示例：
-# CHROM  POS   REF  ALT  ...  bm_ref  bm_alt  bm_gt  wm_ref  wm_alt  wm_gt
-# 1      1000  A    G    ...  18      2       REF    2       18      ALT
-# 这表示：BM组18个样本为REF型，WM组18个样本为ALT型，符合组间差异条件<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="关键输出解读："><a href="#关键输出解读：" class="headerlink" title="关键输出解读："></a>关键输出解读：</h4><ul>
-<li><strong>bm_gt/wm_gt</strong>: 群体基因型判定（REF/ALT/HET/MIXED）</li>
-<li>***_ratio**: 各类基因型在群体中的比例</li>
-<li><strong>筛选逻辑</strong>: BM组和WM组基因型相反且各自组内一致率&gt;90%的位点</li>
-</ul>
-<h2 id="📊-2-结果可视化与质控"><a href="#📊-2-结果可视化与质控" class="headerlink" title="📊 2. 结果可视化与质控"></a>📊 2. 结果可视化与质控</h2><h3 id="可视化代码实现"><a href="#可视化代码实现" class="headerlink" title="可视化代码实现"></a>可视化代码实现</h3><pre class="line-numbers language-R" data-language="R"><code class="language-R">library(tidyverse)
-library(vcfR)
-library(data.table)
-library(ggplot2)
-library(dplyr)
-library(tidyr)
-
-
-# 先读取数据（不自动解析列名）
-snp_data %
-  layout(
-    title = list(text = "SNP Genotype Heatmap", y = 0.98),
-    xaxis = list(
-      title = "Genomic Position",
-      rangeslider = list(visible = TRUE),
-      type = "category",
-      tickangle = 45
-    ),
-    yaxis = list(
-      title = list(text = "Sample", standoff = 30),
-      tickfont = list(size = 10),
-      automargin = TRUE,
-      tickmode = "array",
-      tickvals = rownames(heatmap_matrix),  # 直接使用样本名
-      ticktext = rownames(heatmap_matrix)
-    ),
-    margin = list(l = left_margin, r = 50, b = 100, t = 100)
-  )
-
-# 7. 输出结果 ------------------------------------------------
-fig  # 在RStudio中查看
-
-# 可选：保存为HTML
-# htmlwidgets::saveWidget(fig, "snp_heatmap.html", selfcontained = TRUE)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="可视化代码的输入输出说明"><a href="#可视化代码的输入输出说明" class="headerlink" title="可视化代码的输入输出说明"></a>可视化代码的输入输出说明</h3><h4 id="输入数据格式："><a href="#输入数据格式：" class="headerlink" title="输入数据格式："></a>输入数据格式：</h4><pre class="line-numbers language-none"><code class="language-none"># 输入数据应为数据框格式，包含以下列：
-# CHROM  POS     Sample1 Sample2 Sample3 ... SampleN
-# 1      1000    0/1     1/1     0/0     ... 0/1
-# 1      2000    1/1     0/1     1/1     ... 0/0
-
-# 或者从VCF文件直接读取：
-# vcf &lt;- read.vcfR("input.vcf")
-# snp_data &lt;- vcfR2tidy(vcf)$fix<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="输出可视化结果："><a href="#输出可视化结果：" class="headerlink" title="输出可视化结果："></a>输出可视化结果：</h4><pre class="line-numbers language-none"><code class="language-none"># 1. 交互式热图 - 在RStudio中显示或保存为HTML
-#    - X轴: 基因组位置
-#    - Y轴: 样本名称  
-#    - 颜色: 蓝色(0/0), 红色(1/1), 黄色(0/1), 灰色(缺失)
-
-# 2. 控制台输出的统计信息：
-#    - 总位点数: 1500
-#    - 总样本数: 96  
-#    - 基因型统计: REF=45%, ALT=40%, HET=12%, MISSING=3%
-
-# 3. 热图特性：
-#    - 支持缩放和拖动查看细节
-#    - 鼠标悬停显示具体基因型信息
-#    - 自适应布局，适合发表级图片输出<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="可视化价值："><a href="#可视化价值：" class="headerlink" title="可视化价值："></a>可视化价值：</h4><ul>
-<li><strong>快速质控</strong>: 一眼识别数据质量问题</li>
-<li><strong>模式识别</strong>: 直观看到群体分层和基因型分布模式</li>
-<li><strong>结果验证</strong>: 确认筛选出的差异位点确实显示预期模式</li>
-<li><strong>报告展示</strong>: 生成可用于发表的高质量图表</li>
-</ul>
-<h2 id="💡-技术要点与注意事项"><a href="#💡-技术要点与注意事项" class="headerlink" title="💡 技术要点与注意事项"></a>💡 技术要点与注意事项</h2><h3 id="参数选择策略"><a href="#参数选择策略" class="headerlink" title="参数选择策略"></a>参数选择策略</h3><ol>
-<li><p><strong>一致率阈值（90%）</strong>：</p>
-<ul>
-<li>平衡了统计严格性和生物学现实性</li>
-<li>允许少量个体变异或测序错误</li>
-<li>可根据样本量调整：样本量越大，阈值可适当提高</li>
-</ul>
-</li>
-<li><p><strong>样本量要求</strong>：</p>
-<ul>
-<li>每组至少20个有效样本确保统计可靠性</li>
-<li>小样本群体建议调整阈值或使用其他统计方法</li>
-</ul>
-</li>
-<li><p><strong>杂合位点处理</strong>：</p>
-<ul>
-<li>默认排除杂合型作为”一致”基因型</li>
-<li>对于异交物种可考虑包含杂合型</li>
-</ul>
-</li>
-</ol>
-<h3 id="常见问题排查"><a href="#常见问题排查" class="headerlink" title="常见问题排查"></a>常见问题排查</h3><ol>
-<li><p><strong>结果位点过少</strong>：</p>
-<ul>
-<li>检查群体间真实分化程度</li>
-<li>验证一致率阈值是否过高</li>
-<li>确认样本分组是否正确</li>
-</ul>
-</li>
-<li><p><strong>热图显示异常</strong>：</p>
-<ul>
-<li>检查基因型编码格式</li>
-<li>确认染色体坐标系统一</li>
-<li>验证样本名称一致性</li>
-</ul>
-</li>
-<li><p><strong>性能优化建议</strong>：</p>
-<ul>
-<li>大文件使用<code>data.table</code>替代<code>data.frame</code></li>
-<li>分染色体并行处理</li>
-<li>预处理时过滤低质量位点</li>
-</ul>
-</li>
-</ol>
-<h2 id="🚀-下游分析方向"><a href="#🚀-下游分析方向" class="headerlink" title="🚀 下游分析方向"></a>🚀 下游分析方向</h2><p>筛选得到的差异位点可用于：</p>
-<ol>
-<li><p><strong>基因组扫描分析</strong>：</p>
-<ul>
-<li>识别选择扫荡区域</li>
-<li>定位群体分化热点</li>
-</ul>
-</li>
-<li><p><strong>功能注释</strong>：</p>
-<ul>
-<li>基因本体富集分析</li>
-<li>通路分析</li>
-</ul>
-</li>
-<li><p><strong>育种应用</strong>：</p>
-<ul>
-<li>开发群体特异性分子标记</li>
-<li>辅助亲本选配</li>
-</ul>
-</li>
-<li><p><strong>进化研究</strong>：</p>
-<ul>
-<li>构建系统发育树</li>
-<li>群体结构分析</li>
-</ul>
-</li>
-</ol>
-<hr>
-<p><strong>总结</strong>：本流程提供了一个完整的从原始基因型数据到高质量差异位点筛选的解决方案，结合严格的统计标准和直观的可视化验证，确保结果的生物学可靠性和技术可重复性。</p>
-]]></content>
-      <categories>
-        <category>默认分类</category>
-        <category>重测序</category>
-      </categories>
-  </entry>
-  <entry>
     <title>内网穿透</title>
     <url>/2024/11/21/5/</url>
     <content><![CDATA[<p>前言<br>对于在本地搭建需求公网的服务，比如nas，游戏联机等。但是又没有公网，这种时候就需要用到内网穿透工具，通过端口转发实现公网访问。市面上的映射基本都是限制流量，要么就是带宽只有1m。</p>
@@ -1354,6 +1354,146 @@ SHOW GRANTS FOR <span class="token string">'phpmyadmin'</span>@<span class="toke
 ]]></content>
       <categories>
         <category>WIFI</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>openipc goke7205v200</title>
+    <url>/2024/12/03/7/</url>
+    <content><![CDATA[<h1 id="保存原始固件"><a href="#保存原始固件" class="headerlink" title="保存原始固件"></a>保存原始固件</h1><hr>
+<h2 id="备份您的原始固件，请不要跳过这个步骤！"><a href="#备份您的原始固件，请不要跳过这个步骤！" class="headerlink" title="备份您的原始固件，请不要跳过这个步骤！"></a>备份您的原始固件，请不要跳过这个步骤！</h2><p>OpenIPC U-Boot 会覆盖原始的加密分区，因此无法恢复为出厂固件，除非您拥有此特定摄像机的完整闪存备份！要创建完整的固件备份，请启动 TFTP 服务器并在引导加载程序 shell 中执行这些命令。</p>
+<blockquote>
+<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python"> # Enter commands line by line! Do not copy and paste multiple lines at once!
+setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105
+mw.b 0x42000000 0xff 0x1000000
+sf probe 0; sf read 0x42000000 0x0 0x1000000
+tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
+# if there is no tftpput but tftp then run this instead
+ tftp 0x42000000 backup-gk7205v200-nor16m.bin 0x1000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<p>有关详细信息，请参阅项目 wiki 中的安装说明。</p>
+<h1 id="烧录完整的-OpenIPC-固件"><a href="#烧录完整的-OpenIPC-固件" class="headerlink" title="烧录完整的 OpenIPC 固件"></a>烧录完整的 OpenIPC 固件</h1><h2 id="下载-OpenIPC-固件-Ultimate"><a href="#下载-OpenIPC-固件-Ultimate" class="headerlink" title="下载 OpenIPC 固件 (Ultimate)"></a>下载 OpenIPC 固件 (Ultimate)</h2><p>for Goke GK7205V200 with 16MB NOR flash</p>
+<p>完整的固件由引导加载程序、内核和根文件系统组成，也适用于使用编程器烧写闪存芯片。 请注意，完整固件不包含预设环境。你还需要添加自己的MAC地址、IP地址等设置。</p>
+<blockquote>
+<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105<br>mw.b 0x42000000 0xff 0x1000000<br>tftpboot 0x42000000 openipc-gk7205v200-ultimate-16mb.bin</p>
+<h1 id="if-there-is-no-tftpboot-but-tftp-then-run-this-instead"><a href="#if-there-is-no-tftpboot-but-tftp-then-run-this-instead" class="headerlink" title="if there is no tftpboot but tftp then run this instead"></a>if there is no tftpboot but tftp then run this instead</h1><p>tftp 0x42000000 openipc-gk7205v200-ultimate-16mb.bin<br>sf probe 0; sf lock 0;<br>sf erase 0x0 0x1000000; sf write 0x42000000 0x0 0x1000000<br>reset</p>
+</blockquote>
+<p>摄像机将自动重启并使用全新的引导加载程序启动。</p>
+<p>注意准备中断并进入引导程序的命令行。 在引导加载程序的命令行中，根据您的闪存大小和类型重新映射 ROM 分区。</p>
+<blockquote>
+<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>run setnor16m</p>
+</blockquote>
+<h1 id="恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。"><a href="#恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。" class="headerlink" title="恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。"></a>恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。</h1><p>在端口 85 ( <a href="http://192.168.15.169:85/">http://192.168.15.169:85/</a> ) 上打开摄像机的 Web 界面并使用登录root和密码12345登录。登录后将要求您设置自己的安全密码。通过以下方式访问摄像机ssh 或 UART 使用与上述相同的登录名和密码。</p>
+<hr>
+<p>打开web界面后，更新固件，更新完后调整majestic、sensor与设备型号对应。</p>
+<h1 id="majestic"><a href="#majestic" class="headerlink" title="majestic"></a>majestic</h1><p>openipc未开源部分。</p>
+]]></content>
+      <categories>
+        <category>折腾</category>
+      </categories>
+      <tags>
+        <tag>openipc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GPT 学术优化</title>
+    <url>/2024/12/06/8/</url>
+    <content><![CDATA[<h1 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h1><p>安装方法：直接运行 (Windows, Linux or MacOS)<br>下载项目</p>
+<blockquote>
+<p>git clone –depth=1 <a href="https://github.com/binary-husky/gpt_academic.git">https://github.com/binary-husky/gpt_academic.git</a><br>cd gpt_academic<br>配置API_KEY等变量</p>
+</blockquote>
+<p>在config.py中，配置API KEY等变量。特殊网络环境设置方法、Wiki-项目配置说明。</p>
+<p>「 程序会优先检查是否存在名为config_private.py的私密配置文件，并用其中的配置覆盖config.py的同名配置。如您能理解以上读取逻辑，我们强烈建议您在config.py同路径下创建一个名为config_private.py的新配置文件，并使用config_private.py配置项目，从而确保自动更新时不会丢失配置 」。</p>
+<p>「 支持通过环境变量配置项目，环境变量的书写格式参考docker-compose.yml文件或者我们的Wiki页面。配置读取优先级: 环境变量 &gt; config_private.py &gt; config.py 」。</p>
+<p>安装依赖</p>
+<h4 id="（选择I-如熟悉python-python推荐版本-3-9-3-11）"><a href="#（选择I-如熟悉python-python推荐版本-3-9-3-11）" class="headerlink" title="（选择I: 如熟悉python, python推荐版本 3.9 ~ 3.11）"></a>（选择I: 如熟悉python, python推荐版本 3.9 ~ 3.11）</h4><p>备注：使用官方pip源或者阿里pip源, 临时换源方法：</p>
+<blockquote>
+<p>python -m pip install -r requirements.txt -i <a href="https://mirrors.aliyun.com/pypi/simple/">https://mirrors.aliyun.com/pypi/simple/</a></p>
+</blockquote>
+<blockquote>
+<p>python -m pip install -r requirements.txt</p>
+</blockquote>
+<h4 id="（选择II-使用Anaconda）步骤也是类似的-https-www-bilibili-com-video-BV1rc411W7Dr-："><a href="#（选择II-使用Anaconda）步骤也是类似的-https-www-bilibili-com-video-BV1rc411W7Dr-：" class="headerlink" title="（选择II: 使用Anaconda）步骤也是类似的 (https://www.bilibili.com/video/BV1rc411W7Dr)："></a>（选择II: 使用Anaconda）步骤也是类似的 (<a href="https://www.bilibili.com/video/BV1rc411W7Dr)%EF%BC%9A">https://www.bilibili.com/video/BV1rc411W7Dr)：</a></h4><blockquote>
+<p>conda create -n gptac_venv python=3.11    # 创建anaconda环境<br>conda activate gptac_venv                 # 激活anaconda环境</p>
+</blockquote>
+<blockquote>
+<p>python -m pip install -r requirements.txt # 这个步骤和pip安装一样的步骤</p>
+</blockquote>
+<p>如果需要支持清华ChatGLM2/复旦MOSS/RWKV作为后端，请点击展开此处<br>运行</p>
+<blockquote>
+<p>python main.py</p>
+</blockquote>
+<p>使用第三方API、Azure等、文心一言、星火等，见Wiki页面</p>
+<p>云服务器远程部署避坑指南。 请访问云服务器远程部署wiki</p>
+<p>在其他平台部署&amp;二级网址部署</p>
+<p>使用Sealos一键部署。<br>使用WSL2（Windows Subsystem for Linux 子系统）。请访问部署wiki-2<br>如何在二级网址（如<a href="http://localhost/subpath%EF%BC%89%E4%B8%8B%E8%BF%90%E8%A1%8C%E3%80%82%E8%AF%B7%E8%AE%BF%E9%97%AEFastAPI%E8%BF%90%E8%A1%8C%E8%AF%B4%E6%98%8E">http://localhost/subpath）下运行。请访问FastAPI运行说明</a></p>
+<p>Advanced Usage<br>I：自定义新的便捷按钮（学术快捷键）<br>现在已可以通过UI中的界面外观菜单中的自定义菜单添加新的便捷按钮。如果需要在代码中定义，请使用任意文本编辑器打开core_functional.py，添加如下条目即可：</p>
+<p>“超级英译中”: {<br>    # 前缀，会被加在你的输入之前。例如，用来描述你的要求，例如翻译、解释代码、润色等等<br>    “Prefix”: “请翻译把下面一段内容成中文，然后用一个markdown表格逐一解释文中出现的专有名词：\n\n”,</p>
+<pre><code># 后缀，会被加在你的输入之后。例如，配合前缀可以把你的输入内容用引号圈起来。
+"Suffix": "",
+</code></pre>
+<p>},</p>
+<p>II：自定义函数插件<br>编写强大的函数插件来执行任何你想得到的和想不到的任务。 本项目的插件编写、调试难度很低，只要您具备一定的python基础知识，就可以仿照我们提供的模板实现自己的插件功能。 详情请参考函数插件指南。</p>
+<p>⭐Latex/Arxiv论文翻译功能⭐<br> ===&gt;<br>虚空终端（从自然语言输入中，理解用户意图+自动调用其他插件）<br>步骤一：输入 “ 请调用插件翻译PDF论文，地址为<a href="https://openreview.net/pdf?id=rJl0r3R9KX">https://openreview.net/pdf?id=rJl0r3R9KX</a> ”<br>步骤二：点击“虚空终端”</p>
+<p>模块化功能设计，简单的接口却能支持强大的功能</p>
+<p>译解其他开源项目</p>
+<p>装饰live2d的小功能（默认关闭，需要修改config.py）</p>
+<p>OpenAI图像生成</p>
+<p>基于mermaid的流图、脑图绘制</p>
+<p>已知问题<br>某些浏览器翻译插件干扰此软件前端的运行<br>官方Gradio目前有很多兼容性问题，请务必使用requirement.txt安装Gradio</p>
+<p>III：主题<br>可以通过修改THEME选项（config.py）变更主题</p>
+<p>Chuanhu-Small-and-Beautiful 网址</p>
+<p>访问GPT-Academic的在线服务并支持我们<br>V：参考与学习<br>代码中参考了很多其他优秀项目中的设计，顺序不分先后：</p>
+<h1 id="清华ChatGLM2-6B"><a href="#清华ChatGLM2-6B" class="headerlink" title="清华ChatGLM2-6B:"></a>清华ChatGLM2-6B:</h1><p><a href="https://github.com/THUDM/ChatGLM2-6B">https://github.com/THUDM/ChatGLM2-6B</a></p>
+<h1 id="清华JittorLLMs"><a href="#清华JittorLLMs" class="headerlink" title="清华JittorLLMs:"></a>清华JittorLLMs:</h1><p><a href="https://github.com/Jittor/JittorLLMs">https://github.com/Jittor/JittorLLMs</a></p>
+<h1 id="ChatPaper"><a href="#ChatPaper" class="headerlink" title="ChatPaper:"></a>ChatPaper:</h1><p><a href="https://github.com/kaixindelele/ChatPaper">https://github.com/kaixindelele/ChatPaper</a></p>
+<h1 id="Edge-GPT"><a href="#Edge-GPT" class="headerlink" title="Edge-GPT:"></a>Edge-GPT:</h1><p><a href="https://github.com/acheong08/EdgeGPT">https://github.com/acheong08/EdgeGPT</a></p>
+<h1 id="ChuanhuChatGPT"><a href="#ChuanhuChatGPT" class="headerlink" title="ChuanhuChatGPT:"></a>ChuanhuChatGPT:</h1><p><a href="https://github.com/GaiZhenbiao/ChuanhuChatGPT">https://github.com/GaiZhenbiao/ChuanhuChatGPT</a></p>
+<h1 id="Oobabooga-one-click-installer"><a href="#Oobabooga-one-click-installer" class="headerlink" title="Oobabooga one-click installer:"></a>Oobabooga one-click installer:</h1><p><a href="https://github.com/oobabooga/one-click-installers">https://github.com/oobabooga/one-click-installers</a></p>
+<h1 id="More："><a href="#More：" class="headerlink" title="More："></a>More：</h1><p><a href="https://github.com/gradio-app/gradio">https://github.com/gradio-app/gradio</a><br><a href="https://github.com/fghrsh/live2d_demo">https://github.com/fghrsh/live2d_demo</a></p>
+<p>下载项目<br>git命令下载</p>
+<blockquote>
+<p>git clone <a href="https://github.com/binary-husky/chatgpt_academic.git">https://github.com/binary-husky/chatgpt_academic.git</a></p>
+</blockquote>
+<p>github下载 download zip<br>ChatGPT学术优化项目地址:<a href="https://github.com/binary-husky/chatgpt_academic">https://github.com/binary-husky/chatgpt_academic</a></p>
+<p>安装项目环境<br>这里是通过Anaconda Prompt创建环境</p>
+<p>创建环境</p>
+<blockquote>
+<p>conda create -n chatgpt-academic python=3.11.0</p>
+</blockquote>
+<p>输入y，回车安装！</p>
+<p>进入环境</p>
+<blockquote>
+<p>conda activate chatgpt-academic</p>
+</blockquote>
+<p>安装依赖<br>先进入到项目的根目录</p>
+<blockquote>
+<p>python -m pip install -r requirements.txt</p>
+</blockquote>
+<p>PS：我这里是可以正常安装的，因为项目要求gradio&gt;= <strong>3.23</strong> ，有些可能报错。需要先下载python的whl文件再进行安装。地址<a href="https://pypi.org/project/gradio/#files">https://pypi.org/project/gradio/#files</a></p>
+<p>下载保存到你的项目根目录，在通过</p>
+<blockquote>
+<p>pip install gradio-3.24.1-py3-none-any.whl</p>
+</blockquote>
+<p>当我们安装好gradio之后，把requirements.txt文件中gradio注释</p>
+<p>重新运行</p>
+<blockquote>
+<p>python -m pip install -r requirements.txt</p>
+</blockquote>
+<p>此致项目需要的环境就安装完成了！</p>
+<p>打开解压的项目<br>这里以Vscode为例，配置config.py文件</p>
+<p>配置API_KEY<br>打开你的科学上网助手，我这里使用是Clash是可以的（个人感觉路线选择美国的代理更好）<br>进入<a href="https://platform.openai.com/account/api-keys">https://platform.openai.com/account/api-keys</a></p>
+<p>将创建的秘钥复制到config.py文件的API_KEY变量，秘钥配置完成！</p>
+<p>配置代理网络的地址<br>第一步：进入网址<a href="https://ipapi.co/json/">https://ipapi.co/json/</a><br>第二步：打开开发者工具（Google浏览器快捷键Ctrl+Shift+i）,点击网络，按一下Ctrl+r，可以看到一个json文件</p>
+<p>第三步：点击json文件</p>
+<p>第四步：将这个地址复制到config.py文件中的proxies</p>
+<p>运行项目<br>项目所需的环境、秘钥、代理全部配置好就可以运行项目了</p>
+<blockquote>
+<p>python main.py</p>
+</blockquote>
+<p>浏览器输入Running on local URL</p>
+]]></content>
+      <categories>
+        <category>默认分类</category>
       </categories>
   </entry>
   <entry>
@@ -1846,146 +1986,6 @@ echo none &gt; /sys/class/leds/blue\:wifi/trigger
 echo none &gt; /sys/class/leds/green\:internet/trigger<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>]]></content>
       <categories>
         <category>WIFI</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>openipc goke7205v200</title>
-    <url>/2024/12/03/7/</url>
-    <content><![CDATA[<h1 id="保存原始固件"><a href="#保存原始固件" class="headerlink" title="保存原始固件"></a>保存原始固件</h1><hr>
-<h2 id="备份您的原始固件，请不要跳过这个步骤！"><a href="#备份您的原始固件，请不要跳过这个步骤！" class="headerlink" title="备份您的原始固件，请不要跳过这个步骤！"></a>备份您的原始固件，请不要跳过这个步骤！</h2><p>OpenIPC U-Boot 会覆盖原始的加密分区，因此无法恢复为出厂固件，除非您拥有此特定摄像机的完整闪存备份！要创建完整的固件备份，请启动 TFTP 服务器并在引导加载程序 shell 中执行这些命令。</p>
-<blockquote>
-<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python"> # Enter commands line by line! Do not copy and paste multiple lines at once!
-setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105
-mw.b 0x42000000 0xff 0x1000000
-sf probe 0; sf read 0x42000000 0x0 0x1000000
-tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
-# if there is no tftpput but tftp then run this instead
- tftp 0x42000000 backup-gk7205v200-nor16m.bin 0x1000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</blockquote>
-<p>有关详细信息，请参阅项目 wiki 中的安装说明。</p>
-<h1 id="烧录完整的-OpenIPC-固件"><a href="#烧录完整的-OpenIPC-固件" class="headerlink" title="烧录完整的 OpenIPC 固件"></a>烧录完整的 OpenIPC 固件</h1><h2 id="下载-OpenIPC-固件-Ultimate"><a href="#下载-OpenIPC-固件-Ultimate" class="headerlink" title="下载 OpenIPC 固件 (Ultimate)"></a>下载 OpenIPC 固件 (Ultimate)</h2><p>for Goke GK7205V200 with 16MB NOR flash</p>
-<p>完整的固件由引导加载程序、内核和根文件系统组成，也适用于使用编程器烧写闪存芯片。 请注意，完整固件不包含预设环境。你还需要添加自己的MAC地址、IP地址等设置。</p>
-<blockquote>
-<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105<br>mw.b 0x42000000 0xff 0x1000000<br>tftpboot 0x42000000 openipc-gk7205v200-ultimate-16mb.bin</p>
-<h1 id="if-there-is-no-tftpboot-but-tftp-then-run-this-instead"><a href="#if-there-is-no-tftpboot-but-tftp-then-run-this-instead" class="headerlink" title="if there is no tftpboot but tftp then run this instead"></a>if there is no tftpboot but tftp then run this instead</h1><p>tftp 0x42000000 openipc-gk7205v200-ultimate-16mb.bin<br>sf probe 0; sf lock 0;<br>sf erase 0x0 0x1000000; sf write 0x42000000 0x0 0x1000000<br>reset</p>
-</blockquote>
-<p>摄像机将自动重启并使用全新的引导加载程序启动。</p>
-<p>注意准备中断并进入引导程序的命令行。 在引导加载程序的命令行中，根据您的闪存大小和类型重新映射 ROM 分区。</p>
-<blockquote>
-<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>run setnor16m</p>
-</blockquote>
-<h1 id="恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。"><a href="#恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。" class="headerlink" title="恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。"></a>恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。</h1><p>在端口 85 ( <a href="http://192.168.15.169:85/">http://192.168.15.169:85/</a> ) 上打开摄像机的 Web 界面并使用登录root和密码12345登录。登录后将要求您设置自己的安全密码。通过以下方式访问摄像机ssh 或 UART 使用与上述相同的登录名和密码。</p>
-<hr>
-<p>打开web界面后，更新固件，更新完后调整majestic、sensor与设备型号对应。</p>
-<h1 id="majestic"><a href="#majestic" class="headerlink" title="majestic"></a>majestic</h1><p>openipc未开源部分。</p>
-]]></content>
-      <categories>
-        <category>折腾</category>
-      </categories>
-      <tags>
-        <tag>openipc</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>GPT 学术优化</title>
-    <url>/2024/12/06/8/</url>
-    <content><![CDATA[<h1 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h1><p>安装方法：直接运行 (Windows, Linux or MacOS)<br>下载项目</p>
-<blockquote>
-<p>git clone –depth=1 <a href="https://github.com/binary-husky/gpt_academic.git">https://github.com/binary-husky/gpt_academic.git</a><br>cd gpt_academic<br>配置API_KEY等变量</p>
-</blockquote>
-<p>在config.py中，配置API KEY等变量。特殊网络环境设置方法、Wiki-项目配置说明。</p>
-<p>「 程序会优先检查是否存在名为config_private.py的私密配置文件，并用其中的配置覆盖config.py的同名配置。如您能理解以上读取逻辑，我们强烈建议您在config.py同路径下创建一个名为config_private.py的新配置文件，并使用config_private.py配置项目，从而确保自动更新时不会丢失配置 」。</p>
-<p>「 支持通过环境变量配置项目，环境变量的书写格式参考docker-compose.yml文件或者我们的Wiki页面。配置读取优先级: 环境变量 &gt; config_private.py &gt; config.py 」。</p>
-<p>安装依赖</p>
-<h4 id="（选择I-如熟悉python-python推荐版本-3-9-3-11）"><a href="#（选择I-如熟悉python-python推荐版本-3-9-3-11）" class="headerlink" title="（选择I: 如熟悉python, python推荐版本 3.9 ~ 3.11）"></a>（选择I: 如熟悉python, python推荐版本 3.9 ~ 3.11）</h4><p>备注：使用官方pip源或者阿里pip源, 临时换源方法：</p>
-<blockquote>
-<p>python -m pip install -r requirements.txt -i <a href="https://mirrors.aliyun.com/pypi/simple/">https://mirrors.aliyun.com/pypi/simple/</a></p>
-</blockquote>
-<blockquote>
-<p>python -m pip install -r requirements.txt</p>
-</blockquote>
-<h4 id="（选择II-使用Anaconda）步骤也是类似的-https-www-bilibili-com-video-BV1rc411W7Dr-："><a href="#（选择II-使用Anaconda）步骤也是类似的-https-www-bilibili-com-video-BV1rc411W7Dr-：" class="headerlink" title="（选择II: 使用Anaconda）步骤也是类似的 (https://www.bilibili.com/video/BV1rc411W7Dr)："></a>（选择II: 使用Anaconda）步骤也是类似的 (<a href="https://www.bilibili.com/video/BV1rc411W7Dr)%EF%BC%9A">https://www.bilibili.com/video/BV1rc411W7Dr)：</a></h4><blockquote>
-<p>conda create -n gptac_venv python=3.11    # 创建anaconda环境<br>conda activate gptac_venv                 # 激活anaconda环境</p>
-</blockquote>
-<blockquote>
-<p>python -m pip install -r requirements.txt # 这个步骤和pip安装一样的步骤</p>
-</blockquote>
-<p>如果需要支持清华ChatGLM2/复旦MOSS/RWKV作为后端，请点击展开此处<br>运行</p>
-<blockquote>
-<p>python main.py</p>
-</blockquote>
-<p>使用第三方API、Azure等、文心一言、星火等，见Wiki页面</p>
-<p>云服务器远程部署避坑指南。 请访问云服务器远程部署wiki</p>
-<p>在其他平台部署&amp;二级网址部署</p>
-<p>使用Sealos一键部署。<br>使用WSL2（Windows Subsystem for Linux 子系统）。请访问部署wiki-2<br>如何在二级网址（如<a href="http://localhost/subpath%EF%BC%89%E4%B8%8B%E8%BF%90%E8%A1%8C%E3%80%82%E8%AF%B7%E8%AE%BF%E9%97%AEFastAPI%E8%BF%90%E8%A1%8C%E8%AF%B4%E6%98%8E">http://localhost/subpath）下运行。请访问FastAPI运行说明</a></p>
-<p>Advanced Usage<br>I：自定义新的便捷按钮（学术快捷键）<br>现在已可以通过UI中的界面外观菜单中的自定义菜单添加新的便捷按钮。如果需要在代码中定义，请使用任意文本编辑器打开core_functional.py，添加如下条目即可：</p>
-<p>“超级英译中”: {<br>    # 前缀，会被加在你的输入之前。例如，用来描述你的要求，例如翻译、解释代码、润色等等<br>    “Prefix”: “请翻译把下面一段内容成中文，然后用一个markdown表格逐一解释文中出现的专有名词：\n\n”,</p>
-<pre><code># 后缀，会被加在你的输入之后。例如，配合前缀可以把你的输入内容用引号圈起来。
-"Suffix": "",
-</code></pre>
-<p>},</p>
-<p>II：自定义函数插件<br>编写强大的函数插件来执行任何你想得到的和想不到的任务。 本项目的插件编写、调试难度很低，只要您具备一定的python基础知识，就可以仿照我们提供的模板实现自己的插件功能。 详情请参考函数插件指南。</p>
-<p>⭐Latex/Arxiv论文翻译功能⭐<br> ===&gt;<br>虚空终端（从自然语言输入中，理解用户意图+自动调用其他插件）<br>步骤一：输入 “ 请调用插件翻译PDF论文，地址为<a href="https://openreview.net/pdf?id=rJl0r3R9KX">https://openreview.net/pdf?id=rJl0r3R9KX</a> ”<br>步骤二：点击“虚空终端”</p>
-<p>模块化功能设计，简单的接口却能支持强大的功能</p>
-<p>译解其他开源项目</p>
-<p>装饰live2d的小功能（默认关闭，需要修改config.py）</p>
-<p>OpenAI图像生成</p>
-<p>基于mermaid的流图、脑图绘制</p>
-<p>已知问题<br>某些浏览器翻译插件干扰此软件前端的运行<br>官方Gradio目前有很多兼容性问题，请务必使用requirement.txt安装Gradio</p>
-<p>III：主题<br>可以通过修改THEME选项（config.py）变更主题</p>
-<p>Chuanhu-Small-and-Beautiful 网址</p>
-<p>访问GPT-Academic的在线服务并支持我们<br>V：参考与学习<br>代码中参考了很多其他优秀项目中的设计，顺序不分先后：</p>
-<h1 id="清华ChatGLM2-6B"><a href="#清华ChatGLM2-6B" class="headerlink" title="清华ChatGLM2-6B:"></a>清华ChatGLM2-6B:</h1><p><a href="https://github.com/THUDM/ChatGLM2-6B">https://github.com/THUDM/ChatGLM2-6B</a></p>
-<h1 id="清华JittorLLMs"><a href="#清华JittorLLMs" class="headerlink" title="清华JittorLLMs:"></a>清华JittorLLMs:</h1><p><a href="https://github.com/Jittor/JittorLLMs">https://github.com/Jittor/JittorLLMs</a></p>
-<h1 id="ChatPaper"><a href="#ChatPaper" class="headerlink" title="ChatPaper:"></a>ChatPaper:</h1><p><a href="https://github.com/kaixindelele/ChatPaper">https://github.com/kaixindelele/ChatPaper</a></p>
-<h1 id="Edge-GPT"><a href="#Edge-GPT" class="headerlink" title="Edge-GPT:"></a>Edge-GPT:</h1><p><a href="https://github.com/acheong08/EdgeGPT">https://github.com/acheong08/EdgeGPT</a></p>
-<h1 id="ChuanhuChatGPT"><a href="#ChuanhuChatGPT" class="headerlink" title="ChuanhuChatGPT:"></a>ChuanhuChatGPT:</h1><p><a href="https://github.com/GaiZhenbiao/ChuanhuChatGPT">https://github.com/GaiZhenbiao/ChuanhuChatGPT</a></p>
-<h1 id="Oobabooga-one-click-installer"><a href="#Oobabooga-one-click-installer" class="headerlink" title="Oobabooga one-click installer:"></a>Oobabooga one-click installer:</h1><p><a href="https://github.com/oobabooga/one-click-installers">https://github.com/oobabooga/one-click-installers</a></p>
-<h1 id="More："><a href="#More：" class="headerlink" title="More："></a>More：</h1><p><a href="https://github.com/gradio-app/gradio">https://github.com/gradio-app/gradio</a><br><a href="https://github.com/fghrsh/live2d_demo">https://github.com/fghrsh/live2d_demo</a></p>
-<p>下载项目<br>git命令下载</p>
-<blockquote>
-<p>git clone <a href="https://github.com/binary-husky/chatgpt_academic.git">https://github.com/binary-husky/chatgpt_academic.git</a></p>
-</blockquote>
-<p>github下载 download zip<br>ChatGPT学术优化项目地址:<a href="https://github.com/binary-husky/chatgpt_academic">https://github.com/binary-husky/chatgpt_academic</a></p>
-<p>安装项目环境<br>这里是通过Anaconda Prompt创建环境</p>
-<p>创建环境</p>
-<blockquote>
-<p>conda create -n chatgpt-academic python=3.11.0</p>
-</blockquote>
-<p>输入y，回车安装！</p>
-<p>进入环境</p>
-<blockquote>
-<p>conda activate chatgpt-academic</p>
-</blockquote>
-<p>安装依赖<br>先进入到项目的根目录</p>
-<blockquote>
-<p>python -m pip install -r requirements.txt</p>
-</blockquote>
-<p>PS：我这里是可以正常安装的，因为项目要求gradio&gt;= <strong>3.23</strong> ，有些可能报错。需要先下载python的whl文件再进行安装。地址<a href="https://pypi.org/project/gradio/#files">https://pypi.org/project/gradio/#files</a></p>
-<p>下载保存到你的项目根目录，在通过</p>
-<blockquote>
-<p>pip install gradio-3.24.1-py3-none-any.whl</p>
-</blockquote>
-<p>当我们安装好gradio之后，把requirements.txt文件中gradio注释</p>
-<p>重新运行</p>
-<blockquote>
-<p>python -m pip install -r requirements.txt</p>
-</blockquote>
-<p>此致项目需要的环境就安装完成了！</p>
-<p>打开解压的项目<br>这里以Vscode为例，配置config.py文件</p>
-<p>配置API_KEY<br>打开你的科学上网助手，我这里使用是Clash是可以的（个人感觉路线选择美国的代理更好）<br>进入<a href="https://platform.openai.com/account/api-keys">https://platform.openai.com/account/api-keys</a></p>
-<p>将创建的秘钥复制到config.py文件的API_KEY变量，秘钥配置完成！</p>
-<p>配置代理网络的地址<br>第一步：进入网址<a href="https://ipapi.co/json/">https://ipapi.co/json/</a><br>第二步：打开开发者工具（Google浏览器快捷键Ctrl+Shift+i）,点击网络，按一下Ctrl+r，可以看到一个json文件</p>
-<p>第三步：点击json文件</p>
-<p>第四步：将这个地址复制到config.py文件中的proxies</p>
-<p>运行项目<br>项目所需的环境、秘钥、代理全部配置好就可以运行项目了</p>
-<blockquote>
-<p>python main.py</p>
-</blockquote>
-<p>浏览器输入Running on local URL</p>
-]]></content>
-      <categories>
-        <category>默认分类</category>
       </categories>
   </entry>
   <entry>
