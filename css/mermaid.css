@@ -1,16 +1,17 @@
 /* 所有Mermaid图表通用修复 */
 .mermaid {
-  background-color: white !important;
+  background-color: transparent !important;  /* 改为透明 */
   text-align: center;
   margin: 20px auto;
   padding: 20px;
   border-radius: 8px;
   display: block;
   overflow: auto;
+  border: none !important;  /* 去掉边框 */
 }
 
 .mermaid svg {
-  background-color: white !important;
+  background-color: transparent !important;  /* 改为透明 */
   margin: 0 auto !important;
   display: block !important;
   max-width: 100%;
@@ -19,7 +20,7 @@
 
 /* 修复可能的主题冲突 */
 pre.mermaid {
-  background: white !important;
+  background: transparent !important;  /* 改为透明 */
   text-align: center;
-  border: 1px solid #e0e0e0;
+  border: none !important;  /* 去掉边框 */
 }
