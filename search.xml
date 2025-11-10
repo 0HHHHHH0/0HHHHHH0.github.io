@@ -1,6 +1,1340 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>爬取正方教务系统课程表</title>
+    <url>/2021/07/04/006-ke-cheng-biao/</url>
+    <content><![CDATA[<p>被一个学长布置下的任务…….有些地方可能不够完整…&nbsp;</p>
+<p>思路：&nbsp; 首先你需要完成登录操作：&nbsp;</p>
+<p>（1） 首先根据教务系统网站的审查元素， 发现了一个验证码的网址：<a href="http://210.40.2.253:8888/(fw5xjvfovnf3f4zg1ikero2a)/CheckCode.aspx">http://210.40.2.253:8888/(fw5xjvfovnf3f4zg1ikero2a)/CheckCode.aspx</a>&nbsp;进去后你会发现，这里面的验证码是会随着时间的变化而变化的，那这样子该怎么办呢？（果断百度一波！！）然后巴拉巴拉….. 大概就是说验证码的核对是与你的cookies有关的，那么这个东西要怎么获得呢，&nbsp;request第三方库中提供了一个session ， 这个就是相当于代码中的一个浏览器，在你请求http的时候会自动帮你保存你的cookies的值，这样子就可以完成验证码的匹配操作了 。&nbsp;具体一点：&nbsp;先创建一个session对象&nbsp;然后向验证码页面发送get请求（这时你的cookies就有了）&nbsp;然后向教务系统页面发送post请求（提交账号密码验证码）&nbsp;这时，你就登录成功了（前提是提交的东西要正确= =）</p>
+<p>（2） 爬取课程表&nbsp;登录进去后，我们继续我们的审查元素，在其中找到了向课程表页面发送post请求的地址：<a href="http://210.40.2.253:8888/xskbcx.aspx?xh=1717000113&amp;xm=%D6%A3%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD&amp;gnmkdm=N121603">http://210.40.2.253:8888/xskbcx.aspx?xh=1717000113&amp;xm=%D6%A3%BC%CE%F3%DE&amp;gnmkdm=N121603</a>&nbsp;其中 xh 是 学号 ， xm 是学生姓名的url编码 ， gnmkdm是课程表页面的代码&nbsp;&nbsp;这些信息是获得课表页面的学生信息，会显示出你是哪里的学生，学号是什么，专业是什么等等之类的这些东西我们需要想办法获得，也就是说，只有得到了这些信息，我们才能方便向课表页面发送post请求&nbsp;那么应该怎么获得？</p>
+<p>（1） 先发送一个get请求 <a href="http://210.40.2.253:8888/xskbcx.aspx?xh=%22+">http://210.40.2.253:8888/xskbcx.aspx?xh="+</a> user_name+ “&amp;gnmkdm=N121603&nbsp;</p>
+<p>（2） 然后运用bs4库去提取http网页中的学生信息（参考代码）&nbsp;</p>
+<p>（3）得到后向课表页面发送post请求（哪一年第几学期）</p>
+<p>（4） 然后便得到了我们的课程表页面， 接下来就可以进行信息提取了&nbsp;其实只要登录进去了，里面的成绩，课表，选课什么的都是可以以一种模拟人的办法进行操作</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> requests
+
+<span class="token keyword">from</span> bs4 <span class="token keyword">import</span> BeautifulSoup
+
+session <span class="token operator">=</span> <span class="token boolean">None</span>
+
+checkcodePath <span class="token operator">=</span> <span class="token string">'./code.png'</span>  <span class="token comment">#验证码保存路径</span>
+
+res <span class="token operator">=</span> requests<span class="token punctuation">.</span>Session<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+Origin_url <span class="token operator">=</span> <span class="token string">"http://210.40.2.253:8888/(fw5xjvfovnf3f4zg1ikero2a)/"</span> <span class="token comment"># 教务系统网址</span>
+
+url <span class="token operator">=</span> <span class="token string">"http://210.40.2.253:8888/default2.aspx"</span>
+
+checkcodeURL <span class="token operator">=</span> Origin_url<span class="token operator">+</span><span class="token string">'CheckCode.aspx'</span>  <span class="token comment">#验证码网址</span>
+
+head <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"User-Agent"</span><span class="token punctuation">:</span> <span class="token string">"Mozilla/5.0 (Windows NT 10.0; WOW64; rv:63.0) Gecko/20100101 Firefox/63.0"</span><span class="token punctuation">,</span><span class="token string">"Connection"</span><span class="token punctuation">:</span> <span class="token string">"keep-alive"</span><span class="token punctuation">,</span>   <span class="token string">"Referer"</span><span class="token punctuation">:</span><span class="token string">"http://210.40.2.253:8888/default2.aspx"</span><span class="token punctuation">}</span>
+
+post_data <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"__VIEWSTATE"</span><span class="token punctuation">:</span><span class="token string">"dDwtNTE2MjI4MTQ7Oz4I55DQ6KPcVdzTLmjGjlJPRWgYUQ=="</span><span class="token punctuation">,</span><span class="token string">"Textbox1"</span> <span class="token punctuation">:</span> <span class="token string">""</span> <span class="token punctuation">,</span><span class="token string">"txtSecretCode"</span><span class="token punctuation">:</span><span class="token string">""</span><span class="token punctuation">,</span><span class="token string">"RadioButtonList1"</span><span class="token punctuation">:</span><span class="token string">"%D1%A7%C9%FA"</span><span class="token punctuation">,</span><span class="token string">"Button1"</span><span class="token punctuation">:</span><span class="token string">""</span><span class="token punctuation">,</span><span class="token string">"lbLanguage"</span><span class="token punctuation">:</span><span class="token string">""</span><span class="token punctuation">,</span><span class="token string">"hidPdrs"</span><span class="token punctuation">:</span><span class="token string">""</span><span class="token punctuation">,</span><span class="token string">"hidsc"</span><span class="token punctuation">:</span><span class="token string">""</span><span class="token punctuation">}</span>
+
+<span class="token keyword">def</span> get_photo<span class="token punctuation">(</span>URL<span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+    checkcode <span class="token operator">=</span> res<span class="token punctuation">.</span>get<span class="token punctuation">(</span>checkcodeURL<span class="token punctuation">,</span> headers<span class="token operator">=</span>head<span class="token punctuation">)</span>
+
+    <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span>checkcodePath<span class="token punctuation">,</span> <span class="token string">'wb'</span><span class="token punctuation">)</span> <span class="token keyword">as</span> fp<span class="token punctuation">:</span>  <span class="token comment">#保存验证码图片</span>
+
+         fp<span class="token punctuation">.</span>write<span class="token punctuation">(</span>checkcode<span class="token punctuation">.</span>content<span class="token punctuation">)</span>
+
+    post_data<span class="token punctuation">[</span><span class="token string">'txtSecretCode'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token builtin">input</span><span class="token punctuation">(</span><span class="token string">"请输入图片中的验证码: （验证码图片保存在同级文件夹）"</span><span class="token punctuation">)</span>  
+
+
+<span class="token keyword">def</span> login<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+    user_name <span class="token operator">=</span> <span class="token builtin">input</span><span class="token punctuation">(</span><span class="token string">"请输入您的学号："</span><span class="token punctuation">)</span>
+
+    user_password <span class="token operator">=</span> <span class="token builtin">input</span><span class="token punctuation">(</span><span class="token string">"请输入您的密码："</span><span class="token punctuation">)</span>
+
+    post_data<span class="token punctuation">[</span><span class="token string">"txtUserName"</span><span class="token punctuation">]</span> <span class="token operator">=</span> user_name
+
+    post_data<span class="token punctuation">[</span><span class="token string">"TextBox2"</span><span class="token punctuation">]</span><span class="token operator">=</span>  user_password 
+
+    login_page_url <span class="token operator">=</span> Origin_url <span class="token operator">+</span> <span class="token string">"default2.aspx"</span>
+
+    head<span class="token punctuation">[</span><span class="token string">'Referer'</span><span class="token punctuation">]</span> <span class="token operator">=</span> login_page_url
+
+    get_photo<span class="token punctuation">(</span>url<span class="token punctuation">)</span>
+
+    homePage <span class="token operator">=</span> res<span class="token punctuation">.</span>post<span class="token punctuation">(</span>login_page_url<span class="token punctuation">,</span> data<span class="token operator">=</span>post_data<span class="token punctuation">,</span> headers<span class="token operator">=</span>head<span class="token punctuation">)</span>  <span class="token comment">#在这里得到了主页面</span>
+
+    <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span><span class="token string">'text1.html'</span><span class="token punctuation">,</span><span class="token string">'w'</span> <span class="token punctuation">,</span> encoding <span class="token operator">=</span> <span class="token string">'gb2312'</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f <span class="token punctuation">:</span>
+
+           f<span class="token punctuation">.</span>write<span class="token punctuation">(</span>homePage<span class="token punctuation">.</span>text<span class="token punctuation">)</span>
+
+    <span class="token comment">#更改数据</span>
+
+    <span class="token comment">#head["Referer"]="http://210.40.2.253:8888/(fw5xjvfovnf3f4zg1ikero2a)/default2.aspx"</span>
+
+    exit_sys <span class="token operator">=</span> <span class="token string">"what should i do "</span>
+
+    URL <span class="token operator">=</span> <span class="token string">"http://210.40.2.253:8888/xskbcx.aspx?xh="</span><span class="token operator">+</span> user_name<span class="token operator">+</span> <span class="token string">"&amp;gnmkdm=N121603"</span>
+
+    <span class="token comment">#URL = "http://210.40.2.253:8888/xskbcx.aspx?xh=1717000113&amp;xm=%D6%A3%BC%CE%F3%DE&amp;gnmkdm=N121603</span>
+
+    head<span class="token punctuation">[</span><span class="token string">"Referer"</span><span class="token punctuation">]</span><span class="token operator">=</span> URL
+
+
+    page_home <span class="token operator">=</span> res<span class="token punctuation">.</span>get<span class="token punctuation">(</span>URL <span class="token punctuation">,</span> headers <span class="token operator">=</span> head<span class="token punctuation">)</span> 
+
+    post_data<span class="token punctuation">[</span><span class="token string">"__VIEWSTATE"</span><span class="token punctuation">]</span> <span class="token operator">=</span> BeautifulSoup<span class="token punctuation">(</span>page_home<span class="token punctuation">.</span>text<span class="token punctuation">,</span> <span class="token string">'html.parser'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>find_all<span class="token punctuation">(</span><span class="token string">'input'</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'value'</span><span class="token punctuation">)</span>
+
+    <span class="token comment">#xm = BeautifulSoup(res.get(URL , headers = head).text, 'html.parser').find_all('form')[0].get('action')</span>
+
+    post_data<span class="token punctuation">[</span><span class="token string">"__EVENTTARGET"</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"xqd"</span>
+
+    <span class="token keyword">while</span> exit_sys <span class="token operator">!=</span> <span class="token string">"q"</span><span class="token punctuation">:</span>
+
+        query_years <span class="token operator">=</span> <span class="token builtin">input</span><span class="token punctuation">(</span><span class="token string">"请输入您要查询课表的年份：（2017-2018）"</span><span class="token punctuation">)</span>
+
+        query_how <span class="token operator">=</span> <span class="token builtin">input</span><span class="token punctuation">(</span><span class="token string">"请输入您要查询第几学期的课表："</span><span class="token punctuation">)</span> 
+
+
+        <span class="token comment">#URL = "http://210.40.2.253:8888/" + xm</span>
+
+        <span class="token comment">#print(URL)</span>
+
+        post_data<span class="token punctuation">[</span><span class="token string">"xnd"</span><span class="token punctuation">]</span><span class="token operator">=</span> query_years
+
+        post_data<span class="token punctuation">[</span><span class="token string">"xqd"</span><span class="token punctuation">]</span><span class="token operator">=</span>query_how
+
+
+        learning <span class="token operator">=</span> res<span class="token punctuation">.</span>post<span class="token punctuation">(</span>URL <span class="token punctuation">,</span> data <span class="token operator">=</span> post_data <span class="token punctuation">,</span> headers <span class="token operator">=</span> head<span class="token punctuation">)</span>
+
+        <span class="token keyword">print</span><span class="token punctuation">(</span>URL<span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> query_years <span class="token operator">==</span> <span class="token string">"2018-2019"</span> <span class="token keyword">and</span> query_how <span class="token operator">==</span> <span class="token string">"1"</span> <span class="token punctuation">:</span>
+
+                <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span> query_years <span class="token operator">+</span> <span class="token string">'-'</span><span class="token operator">+</span> query_how <span class="token operator">+</span> <span class="token string">'.html'</span>  <span class="token punctuation">,</span><span class="token string">'w'</span> <span class="token punctuation">,</span> encoding <span class="token operator">=</span> <span class="token string">"gb2312"</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f <span class="token punctuation">:</span>
+
+                   f<span class="token punctuation">.</span>write<span class="token punctuation">(</span>page_home<span class="token punctuation">.</span>text<span class="token punctuation">)</span>
+
+        <span class="token keyword">else</span> <span class="token punctuation">:</span> 
+
+                <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span> query_years <span class="token operator">+</span> <span class="token string">'-'</span><span class="token operator">+</span> query_how <span class="token operator">+</span> <span class="token string">'.html'</span>  <span class="token punctuation">,</span><span class="token string">'w'</span> <span class="token punctuation">,</span> encoding <span class="token operator">=</span> <span class="token string">"gb2312"</span> <span class="token punctuation">,</span> errors <span class="token operator">=</span> <span class="token string">"ignore"</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f <span class="token punctuation">:</span>
+
+                   f<span class="token punctuation">.</span>write<span class="token punctuation">(</span> learning<span class="token punctuation">.</span>text<span class="token punctuation">)</span>
+
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"您的课表已经保存为html的形式！"</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"按q退出 按c继续"</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">while</span> <span class="token number">1</span> <span class="token punctuation">:</span>
+
+            exit_sys <span class="token operator">=</span> <span class="token builtin">input</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+            <span class="token keyword">if</span> exit_sys <span class="token operator">==</span> <span class="token string">"c"</span> <span class="token keyword">or</span> exit_sys <span class="token operator">==</span> <span class="token string">'q'</span> <span class="token punctuation">:</span>
+
+                <span class="token keyword">break</span>
+
+            <span class="token keyword">else</span><span class="token punctuation">:</span>
+
+                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"无效操作！"</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> learning
+
+<span class="token keyword">def</span> class_table<span class="token punctuation">(</span>table_html<span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+      <span class="token keyword">pass</span> 
+
+
+<span class="token keyword">def</span> main<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+    res <span class="token operator">=</span> login<span class="token punctuation">(</span><span class="token punctuation">)</span> 
+
+    class_table<span class="token punctuation">(</span>res<span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
+
+    main<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
+      <categories>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>爬虫</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>表达数据挖掘</title>
+    <url>/2022/07/22/014-biao-da-shu-ju-wa-jue/</url>
+    <content><![CDATA[<h1 id="第一步、关键基因和关键样本"><a href="#第一步、关键基因和关键样本" class="headerlink" title="第一步、关键基因和关键样本"></a>第一步、关键基因和关键样本</h1><h3 id="一、差异表达分析"><a href="#一、差异表达分析" class="headerlink" title="一、差异表达分析"></a>一、差异表达分析</h3><p>Sig genes：火山图</p>
+<p>Sig genes：heatmap</p>
+<h3 id="二、PCA分析"><a href="#二、PCA分析" class="headerlink" title="二、PCA分析"></a>二、PCA分析</h3><p>hub PC：biplot</p>
+<p>hub PC：表型关联</p>
+<p>hub genes：loadings plot</p>
+<h3 id="三、聚类分析-WGCNA分析"><a href="#三、聚类分析-WGCNA分析" class="headerlink" title="三、聚类分析/WGCNA分析"></a>三、聚类分析/WGCNA分析</h3><p>hub modules</p>
+<p>hub genes</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-06%2015-05-14_20220806070914044671.png"></p>
+<h1 id="第二步、功能分析"><a href="#第二步、功能分析" class="headerlink" title="第二步、功能分析"></a>第二步、功能分析</h1><h3 id="一、富集分析"><a href="#一、富集分析" class="headerlink" title="一、富集分析"></a>一、富集分析</h3><p>barplot</p>
+<p>cnetplot</p>
+<h3 id="二、蛋白互作网络分析（PPI"><a href="#二、蛋白互作网络分析（PPI" class="headerlink" title="二、蛋白互作网络分析（PPI)"></a>二、蛋白互作网络分析（PPI)</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-06%2015-05-37_20220806070837589137.png"></p>
+<h1 id="第三步、表达验证"><a href="#第三步、表达验证" class="headerlink" title="第三步、表达验证"></a>第三步、表达验证</h1><h3 id="一、实验"><a href="#一、实验" class="headerlink" title="一、实验"></a>一、实验</h3><p>qPCR</p>
+<h3 id="二、信息"><a href="#二、信息" class="headerlink" title="二、信息"></a>二、信息</h3><p>TCGA、GTEx、GEPIA2</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-06%2015-06-40_20220806070811424163.png"></p>
+<h1 id="第四步、功能验证"><a href="#第四步、功能验证" class="headerlink" title="第四步、功能验证"></a>第四步、功能验证</h1><h3 id="一、实验-1"><a href="#一、实验-1" class="headerlink" title="一、实验"></a>一、实验</h3><p>敲减</p>
+<p>过表达</p>
+<h3 id="二、信息-1"><a href="#二、信息-1" class="headerlink" title="二、信息"></a>二、信息</h3><p>生存分析</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-06%2015-07-02_20220806070734328208.png"></p>
+<h1 id="第五步、分子机制"><a href="#第五步、分子机制" class="headerlink" title="第五步、分子机制"></a>第五步、分子机制</h1><h3 id="一、序列变异"><a href="#一、序列变异" class="headerlink" title="一、序列变异"></a>一、序列变异</h3><h3 id="二、表观遗传"><a href="#二、表观遗传" class="headerlink" title="二、表观遗传"></a>二、表观遗传</h3><h3 id="三、转录调控"><a href="#三、转录调控" class="headerlink" title="三、转录调控"></a>三、转录调控</h3><p><em>TCGA等多组学关联分析</em></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/%E6%88%AA%E5%B1%8F2022-07-22%2023.45.39_20220722154924866564.png" alt="不会缩放"></p>
+]]></content>
+      <categories>
+        <category>转录组</category>
+      </categories>
+      <tags>
+        <tag>R</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>OPPO R11 Plus 刷MIUI12.5</title>
+    <url>/2022/07/23/015-oppo-r11-plus/</url>
+    <content><![CDATA[<h1 id="一、刷入售后工程包，解锁BL"><a href="#一、刷入售后工程包，解锁BL" class="headerlink" title="一、刷入售后工程包，解锁BL"></a>一、刷入售后工程包，解锁BL</h1><h1 id="二、刷入TWRP，重启到REC"><a href="#二、刷入TWRP，重启到REC" class="headerlink" title="二、刷入TWRP，重启到REC"></a>二、刷入TWRP，重启到REC</h1><h1 id="三、刷入MIUI底层框架，重启到REC"><a href="#三、刷入MIUI底层框架，重启到REC" class="headerlink" title="三、刷入MIUI底层框架，重启到REC"></a>三、刷入MIUI底层框架，重启到REC</h1><p><em>安装带ROOT安卓8.1版本刷8.1框架</em></p>
+<h1 id="四、刷入MIUI-12-5，重启到REC"><a href="#四、刷入MIUI-12-5，重启到REC" class="headerlink" title="四、刷入MIUI 12.5，重启到REC"></a>四、刷入MIUI 12.5，重启到REC</h1><p><em>刷入安卓8.1</em></p>
+<h1 id="五、刷入Magisk-25-2-zip-重启到REC"><a href="#五、刷入Magisk-25-2-zip-重启到REC" class="headerlink" title="五、刷入Magisk_25.2.zip,重启到REC"></a>五、刷入Magisk_25.2.zip,重启到REC</h1><h1 id="六、刷入Xposed-zip-重启到系统"><a href="#六、刷入Xposed-zip-重启到系统" class="headerlink" title="六、刷入Xposed.zip,重启到系统"></a>六、刷入Xposed.zip,重启到系统</h1><h1 id="七、安装对应版本Magisk-Manager应用，Xposed等"><a href="#七、安装对应版本Magisk-Manager应用，Xposed等" class="headerlink" title="七、安装对应版本Magisk Manager应用，Xposed等"></a>七、安装对应版本Magisk Manager应用，Xposed等</h1>]]></content>
+      <categories>
+        <category>刷机</category>
+      </categories>
+      <tags>
+        <tag>MIUI</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>海洋所科研人员绘制完成牡蛎全基因组序列图谱</title>
+    <url>/2022/07/27/016-mu-li-quan-ji-yin-zu-tu-pu/</url>
+    <content><![CDATA[<p>近日，牡蛎基因组计划（Oyster Genome Project，OGP）项目组宣布，历时两年的牡蛎基因组序列图谱终于绘制完成。这是世界上第一张养殖贝类的全基因组序列图谱，标志着基于短序列的高杂合度基因组拼接和组装技术获得了重大突破。据悉，目前的基因组图谱已达到国际领先的基因组图谱标准。</p>
+<p>近年来，我国的海水养殖业取得了长足发展。根据资料显示，2007年全国水产养殖总产量已达到3490万吨，占世界水产养殖产量的70%，其中海水养殖产量为1384万吨，占到我国水产养殖产量的41%。我国海水养殖产量75%以上是贝类，贝类养殖产业规模和产量均居世界首位。而牡蛎作为贝类的“模式种”，一直受到科学家们的广泛关注。</p>
+<p>鉴于国家海洋经济发展战略和现代生物学科的发展需求、牡蛎优越的经济价值及其潜在的基础研究价值，2008年5月，中国科学院海洋研究所研究员张国范博士和美国新泽西州立大学教授郭希明博士联合发起了牡蛎基因组计划，并以深圳华大基因研究院为首选科技合作伙伴，组成了一支以中国科学院海洋研究所为核心的国际牡蛎基因组研究团队。牡蛎基因组计划在科技部和大连獐子岛渔业集团股份有限公司的大力支持下完成。</p>
+<h4 id="牡蛎——贝类的“模式种”"><a href="#牡蛎——贝类的“模式种”" class="headerlink" title="牡蛎——贝类的“模式种”"></a>牡蛎——贝类的“模式种”</h4><p>牡蛎俗称海蛎子、蚝等,隶属软体动物门，双壳纲，珍珠贝目，是世界上第一大养殖贝类，是人类可利用的重要海洋生物资源之一，为全球性分布种类。除了可食用外，牡蛎也是海洋生态系统的重要成员，对内湾和近海水域藻华的调控具有重要作用。此外，牡蛎在动物系统演化中还具有举足轻重的地位，是形态各异的冠轮动物的代表。作为海洋养殖年产量最大的动物类群，世界牡蛎年产量约为400多万吨。由于其分布广、经济和生态价值高，牡蛎受到广泛的关注，是研究最为充分的贝类，是贝类的“模式种”。</p>
+<p>中国拥有丰富的牡蛎资源，是牡蛎的故乡，拥有利用牡蛎的悠久历史，早在两千多年前，中国南方沿海一些地区的居民就掌握了牡蛎养殖技术。目前，渤海、黄海、东海、南海均有牡蛎生产基地, 其主要产地为福建、广东、山东、广西、辽宁、浙江等。其中长牡蛎是最重要的养殖物种。</p>
+<p>据了解，牡蛎在广东、福建称蚝或蚵，江浙称蛎黄，山东以北称蛎子或海蛎子。牡蛎不仅肉鲜味美、营养丰富, 而且具有独特的保健功能和药用价值，是一种营养价值很高的海产珍品，鲜蚝汤素有“海中牛奶”之称。牡蛎的含锌量居人类食物之首。古今中外均认为牡蛎有治虚弱、解丹毒、降血压、滋阴壮阳的功能。沿海居民对牡蛎具有深厚感情，很多沿海国家和地区都举办自己的牡蛎节，形成了独特的牡蛎文化。</p>
+<p>随着牡蛎养殖产量的迅速增加，解决“如何高效利用牡蛎资源进行高值化开发利用，为人类提供理想的海洋食品及海洋药物”、“如何以细胞工程、基因工程和酶工程为手段进一步加强海洋生物技术的应用”、“如何开发海洋生物基因工程药物和细胞工程药物等相关产业的发展”等问题，对推动我国海洋产业的迅速发展具有极其重要的现实意义。</p>
+<h4 id="一个物种基因组计划的完成，就意味着这一物种学科和产业发展的新开端"><a href="#一个物种基因组计划的完成，就意味着这一物种学科和产业发展的新开端" class="headerlink" title="一个物种基因组计划的完成，就意味着这一物种学科和产业发展的新开端"></a>一个物种基因组计划的完成，就意味着这一物种学科和产业发展的新开端</h4><p>基因是一种资源，而且是一种有限的战略性资源。因此，开发基因资源已成为发达国家之间激烈竞争的焦点之一。基因工程研究的基本任务是开发人们有特殊需要的基因产物，这样的基因统称为目的基因。具有优良性状的基因理所当然是目的基因，而致病基因在特定情况下同样可作为目的基因，具有很高的开发价值。即使是那些今天尚不清楚功能的基因，随着研究的深入，以后也都有可能成为具有高开发价值的目的基因。</p>
+<p>21世纪是基因的世纪。随着科学技术的高速发展以及DNA内部结构和遗传机制的秘密一点一点呈现在人们眼前，生物学家不再仅仅满足于探索、揭示生物遗传的秘密，而是开始跃跃欲试，设想在分子的水平上去干预生物的遗传特性。以上种种又与基因组计划密不可分。</p>
+<p>一个物种基因组的完成就意味着对这一物种生命密码天书进行人工编辑时代的到来。在现代分子生物学的定义中，基因组是生物体所携带的遗传信息总和。包括单倍体细胞核、细胞器或病毒粒子所含的全部DNA分子或RNA分子。基因组包含了DNA的基因区和非编码序列，是具有遗传效应的DNA分子片段，能够传递给下一代。人类基因组由30亿个碱基对组成，于2000年6月完成，是全人类的共同财富。国内外专家普遍认为，基因组序列图首次在分子层面上为人类提供了一份生命“说明书”，不仅奠定了人类认识自我的基石，推动了生命与医学科学的革命性进展，而且为全人类的健康带来了福音。2000年人类基因组草图完成时，仅42个物种完成了全基因组测序，但是，随着全基因组测序技术的快速发展以及全基因组测序对生物科学研究重大影响的推动，全世界的基因组测序计划数量快速增加。至2009年已增加至1100个，每年平均增加118个物种。2009年9月份统计的在测基因组项目达到4543个<a href="http://www.genomesonline.org/" title="*基因组在线数据库*"><em>基因组在线数据库</em></a>。</p>
+<p>“一个物种基因组计划的完成，就意味着这一物种学科和产业发展的新开端”。经过多年奋斗，中国已是基因组研究的大国，华大基因作为人类基因组计划中国部分（1％）的主要完成者，先后独立完成了水稻、家蚕、家鸡等重要经济种类的基因组测序，并成为中国在国际基因组学领域的代表。</p>
+<h4 id="新策略解决高杂合度基因组的序列拼接和组装"><a href="#新策略解决高杂合度基因组的序列拼接和组装" class="headerlink" title="新策略解决高杂合度基因组的序列拼接和组装"></a>新策略解决高杂合度基因组的序列拼接和组装</h4><p>蔚蓝色的海洋意味着博大，意味着深邃，但同样也意味着未知。</p>
+<p>随着人类和模式生物基因组计划的实施，世界各国已经瞄准了这片神秘的蔚蓝，瞄准了海洋生物基因资源。目前多个海洋生物基因组计划的启动，为全面了解海洋生物基因、深入开发海洋生物基因资源奠定了良好的基础。</p>
+<p>对于基因组测序来讲，牡蛎是一个全新的物种，没有相近物种的参考序列。牡蛎基因组测序选取的研究对象是染色体数目较少（2n=20）、基因组较小（约为800 M）的长牡蛎，这是目前测序物种中杂合度最高、拼接难度最大的物种。在研究之初，重重难题便摆在了项目组研究人员面前。测序利用的是4代近交纯化个体，理论上能降低60%以上的杂合度，但其杂合度之高还是项目组始料未及的。考虑到大熊猫基因组也是基于短序列高通量测序技术完成，而且牡蛎基因组远远小于大熊猫的基因组（大熊猫的基因组是2.4G，接近牡蛎基因组的3倍），牡蛎基因组项目启动时，曾计划借鉴大熊猫的测序和拼接策略，但是，在具体实施过程中，项目组发现牡蛎基因组的高杂合度导致仅仅依靠大熊猫的测序策略根本不能完成拼接工作，这使得项目曾一度停滞不前。</p>
+<p>柔绳断木，水滴穿石。在项目组的共同坚持和努力下，研究人员针对牡蛎基因组的高杂合度问题，及时调整了项目整体思路，特别是华大基因科研团队为此开发了针对高杂合度基因组的短序列片段拼接新算法，开辟了分级组装新手段，使难题最终得到圆满解决。这也为正在进行和将来要开展的高杂合度物种的基因组测序提供了全新的方法和技术。</p>
+<h4 id="基因组数据全面提供解析牡蛎典型性状的组学基础"><a href="#基因组数据全面提供解析牡蛎典型性状的组学基础" class="headerlink" title="基因组数据全面提供解析牡蛎典型性状的组学基础"></a>基因组数据全面提供解析牡蛎典型性状的组学基础</h4><p>牡蛎基因组由8亿个碱基对组成，大约包含2万个基因。从初步分析来看，基因组数据支持了海洋低等生物具有高度遗传多样性的结论。</p>
+<p>此外，目前已验证的109种锌指蛋白结构域在牡蛎基因组中均有发现，并且在整个基因组中所占的比例远远超过人类。这为解释牡蛎含锌量高的特点提供了基因组水平的线索。然而，这仅是对基因组进行初步探索的发现，随着研究的一步步深入，将会有更多的科学发现展现在世人眼前。</p>
+<p>随着牡蛎基因组数据的深入发掘，有可能为有效改变牡蛎的生活习性，使其能够更好地为人类所利用提供更广阔的技术思路。例如，自然状态下的牡蛎会固着在船舶和管道表面，造成船舶阻力增加、管道堵塞等，这种特性使牡蛎被列为海洋污损生物之一。通过搜寻牡蛎基因组有望能够发现牡蛎附着变态调控通路中的关键受体，寻找经济有效的药物，诱导牡蛎幼虫跳过附着过程，直接发生变态而成为单体牡蛎，这个问题便迎刃而解。该问题的解决，将极大地有利于我们的经济和国防。</p>
+<p>牡蛎是海洋潮起潮落中的王者。一般分布在潮间带和潮下带水深不超过10米的范围内。牡蛎还是抗逆性最强的水生动物之一，2亿年来潮间带多变的环境练就了牡蛎对温度、盐度、露空和海区常见病原极强的抵抗能力，在落潮露出水面时，能够耐受夏天酷热干燥的天气，同时也能够成功适应冬天冰冻天气，在离水露空条件下可存活1~2周，甚至1个月的时间。牡蛎高超的生存能力源于其内在的修为——完善的免疫防御机制，这些生物学特性在研究物种抗逆机理方面具有极高价值。</p>
+<p>作为软体动物门的典型物种，在生物进化的大树上远远比天上的飞鸟，陆地的爬虫和徜徉海底漂亮的热带鱼类低等得多，但为什么牡蛎却能适应复杂多变的潮间带生活环境呢？</p>
+<p>虽然没有进化出高等动物那样完善的获得性免疫，但牡蛎将天然免疫的功效发挥到极致，种类繁多，数量扩张的模式识别受体能够针对不同病原的保守位点作出准确的反应并通过信号级联放大对效应分子进行总动员，进而将病原挡在门外。谷胱甘肽氧化酶、糖原磷酸化酶、金属硫蛋白、热激蛋白等硕大的防御相关基因数目更是确保了牡蛎在对温度、盐度和氧气浓度的广谱耐受性。尽管拥有着高效的防御系统，养殖牡蛎因病原侵染造成大面积死亡的现象也并不鲜见，研究牡蛎的免疫防御机制也为养殖牡蛎的病害防治提供理论基础。另一方面，有些牡蛎对病原和重金属有较强的耐受能力，但是能够富集这些病原和物质，这种牡蛎被人类食用后便会引发疾病，广为人知的诺如病毒感染性腹泻便是由富集在牡蛎体内的诺如病毒引起的。牡蛎基因组的测序给广大科研工作者提供了一个从基因组水平上解析牡蛎免疫防御机制的平台，也为人类的饮食健康和食品安全提供了保障。</p>
+<p>牡蛎的性别反转是令人非常感兴趣的科学问题。在自然群体中，大多数牡蛎个体属于雌雄异体，小部分为雌雄同体，牡蛎还可以自发“变性”，同一个个体在不同年份或不同的环境条件下，表现出不同的性别。牡蛎的性别决定调控机制是最令世界各国科学家感兴趣的课题之一，已有研究发现这可能和某个主效基因有关，雄性个体表现为异型配子形式，牡蛎基因组图谱的完成，有望为找到这个基因提供有力线索。此外，在某一海域，如江苏南通、福建厦门等海区，经常有许多不同种类的牡蛎生活在一起，它们的繁殖季节存在交叠，但是不同牡蛎之间一般不会发生杂交，牡蛎如何保证自己的精子和卵子细胞相互“专一”识别？研究发现牡蛎精子结合素蛋白Bindin可能与精卵的特异性识别有关，借助基因组数据对Bindin的种内和种间多态性和卵膜受体进行深入研究，可以阐明不同牡蛎生殖隔离的作用机制。</p>
+<p>牡蛎超强的繁殖能力也是人们津津乐道的一个话题。据统计，一只雌性牡蛎在一个繁殖季节可以生产出高达4亿的卵细胞，而牡蛎的性腺只在繁殖季节才充分发育，牡蛎也仅仅依靠海洋中的微型海藻和有机碎屑为食，牡蛎为什么有如此令人称奇的生殖能力，这和牡蛎基因组的高度杂合有哪些潜在的关系，通过全基因组序列测定和分析或许可以为科研工作者深入探索这个科学问题提供线索。</p>
+<p>随着牡蛎基因组的进一步注释，结合牡蛎转录组、小RNA、表观遗传学和系统生物学的研究，使科研工作者可以建立一个窗口，“从内向外”地观察牡蛎的各种生物学性状及其与环境的互作，全面解析牡蛎高繁殖力、高耐受力、高杂合性等生物学特性，研究杂种优势、物种分化和性别决定、高突变率及高遗传负荷、附着变态等组学机制，搭建基因组育种理论研究和技术平台，提升贝类和海洋基因组学研究水平，促进贝类养殖产业健康和可持续发展。</p>
+<p>国际牡蛎基因组研究团队有关负责人表示，牡蛎全基因组序列图谱的绘制完成，将有力地推进基因组应用技术的发展。</p>
+<p>李宁院士指出：“未来农业生物育种就将是基因组育种”。传统的育种主要依赖于表型性状进行定向选择。这种育种方式为人类提供了大量食物，是当前育种的最常规途径。但常规育种存在着周期长、准确性低、材料维护困难等问题，这些问题是一直困扰着育种学家的难题，且常规育种难以满足未来差异化市场发展的需求。随着分子生物学技术的发展，近些年又发展出了分子标记辅助育种，从技术上得到新的进步。然而由于可用的有效标记数太少，所以育种效率很低，至今仍很少见到有实际应用的报道。全基因组序列图谱的绘制完成，将使这些问题得到有效的解决。</p>
+<p>国际牡蛎基因组研究团队有关负责人介绍说，由于有了全基因组序列，科研工作者可以通过数以万记的SNP直接对基因进行选择，将大大提高选择效率；由于有了全基因组序列，可以更加有效地研究不同性状的调控通路，为科研工作者对这些性状进行有效操控提供了理论支持和技术可能；由于有了全基因组序列，使科研工作者有可能在分子水平对生物的目标性状进行预先设计。</p>
+<h4 id="政企研结合共推基因组计划发展"><a href="#政企研结合共推基因组计划发展" class="headerlink" title="政企研结合共推基因组计划发展"></a>政企研结合共推基因组计划发展</h4><p>牡蛎基因组计划瞄准海洋生物领域的关键科学和技术问题，具有前瞻性、创新性和重要的现实意义，是一个系统的科学工程，内容多、任务重、投入大，需要政企研的通力合作。在牡蛎全基因组序列图谱绘制完成的过程中，国际牡蛎基因组研究团队得到了科技部、中国科学院和獐子岛渔业集团的大力支持，是政企研合作的又一杰出成果。</p>
+<p>獐子岛渔业集团是一家以海水增养殖为主的，集海珍品育苗、增养殖、加工、贸易、海上运输于一体的综合性海洋食品企业。作为农业产业化龙头企业，集团一直致力于科技创新，倡导并实践了“政府+ 科研机构+公司”的合作模式，与中国科学院海洋研究所建立了长期稳定的战略合作关系。多年来，双方强强联合，开展院地合作，取得了一个又一个丰硕的成果。</p>
+<p>牡蛎基因组测序的完成开启了海洋贝类基因资源发掘之门，对产业的长期可持续发展具有重要作用。獐子岛渔业集团有关负责人表示，在发展的过程中，集团深刻认识到科技对产业发展的巨大推动作用和基因资源对于产业可持续发展的重要性。獐子岛渔业集团重资支持牡蛎基因组的研究，是集团从国家需求、产业发展的高度，从自身战略发展需求的角度作出的重要决定。集团对牡蛎基因组计划的后续研究与未来的产品研发充满了信心。</p>
+<p>一个研究成果的诞生离不开团队，更离不开团队身后的庞大力量。牡蛎全基因组序列图谱的成功绘制，倾注着众多科研工作者的共同心血。</p>
+<p>牡蛎基因组计划得到了唐启升院士、朱作言院士、杨焕明院士、徐洵院士、向仲怀院士、李宁院士、刘瑞玉院士、张福绥院士以及相建海研究员、王清印研究员等专家的关心与指点，得到了大连獐子岛渔业集团吴厚刚董事长和王诗欢总经理的热心支持。</p>
+<p>华大基因研究院所展现出的科研攻关精神与技术创新能力，在克服重重困难最终完成高杂合度牡蛎基因组的成功组装中，发挥了关键作用，为项目取得突破性进展提供了重要的技术保障，得到了以中国科学院海洋研究所为核心的国际牡蛎基因组研究团队的高度评价与一致赞赏。</p>
+<p>正是聚集了这些支持与帮助，汇八方之力，牡蛎基因组计划迎来了更快的发展。</p>
+<h4 id="基因引领未来"><a href="#基因引领未来" class="headerlink" title="基因引领未来"></a>基因引领未来</h4><p>基因资源是国家战略资源。当前各国在生物产业链方面的意识空前提高，通过整合产业资源、完善产业链条、抢占产业上游的龙头，以谋求对产业链的掌控和垄断。因此，谁能够抢占了上游的龙头——基因资源，谁就将在生物产业竞争中占有主导地位。</p>
+<p>人类基因组计划的完成，极大地鼓舞了世界各国的生物专家，并为其他生物的研究提供了强大的技术支持。牡蛎全基因组序列图谱绘制的完成，也将极大地推动科学家对以牡蛎为代表的贝类乃至其他水产动物，特别是海产无脊椎动物基因资源的有效开发和深度利用研究。总之，牡蛎全基因组测序图谱的绘制完成为海洋贝类基因开发和应用铺设了坚实的道路。</p>
+<h4 id="随着水产基因组时代的到来，我国的科研工作者在对基因资源的深度发掘和利用应集中在以下几个方面。"><a href="#随着水产基因组时代的到来，我国的科研工作者在对基因资源的深度发掘和利用应集中在以下几个方面。" class="headerlink" title="随着水产基因组时代的到来，我国的科研工作者在对基因资源的深度发掘和利用应集中在以下几个方面。"></a>随着水产基因组时代的到来，我国的科研工作者在对基因资源的深度发掘和利用应集中在以下几个方面。</h4><p>一是基于牡蛎全基因组序列图谱，结合比较基因组学研究，对基因组进行深度解析，了解牡蛎等贝类基因组结构和功能特征。</p>
+<p>二是批量发掘生长、发育、生殖、性控、贝壳形成和抗逆性等重要性状相关功能基因，为深入开展贝类生物学基础研究提供基因资源。</p>
+<p>三是对重要经济性状进行基因解析，筛选和验证生长、发育、抗性等关键基因，研究其作用机理和调控网络，明确基因型与表型关联性，为性状改良和品种培育提供理论基础。</p>
+<p>四是研究分子设计育种的理论和方法，分析基因、调控网络对环境的反应，建立G-P链接模型和数据库，开发生长和抗性性状的复合/聚合技术，构建模拟育种技术平台。</p>
+<p>五是开发编码具有特殊营养或应用价值的多肽和蛋白基因，筛选水产动物特有的具有自主知识产权的药物功能基因或药物合成相关的功能基因，为批量生产功能多肽和蛋白及研制开发新型海洋药物奠定基础。</p>
+<p>2009年，胡锦涛总书记视察山东时指出，要大力发展海洋经济，科学开发海洋资源，培育海洋优势产业，打造山东半岛蓝色经济区。这是胡锦涛总书记站在全局高度作出的重大战略部署。进入新的世纪，在陆地资源日益枯竭的今天，人类社会在空间、资源、环境、技术、产业等方面，对海洋提出了新的要求，谁抢占了海洋科技的制高点，谁就率先占领了海洋空间，谁就控制了未来的战略资源，占地球表面积71%的海洋成为了新的经济增长点，也成为了人类新的生存空间。</p>
+<p>大风起兮云飞扬，千帆竞过浪潮涌。以牡蛎基因组计划为契机的海洋基因资源研发必将成为蓝色经济发展的强大引擎，引领蓝色经济走向更加辉煌的明天！</p>
+<hr>
+<p><img src="/images/W020100802375780882489.jpg" alt="图片"></p>
+<p>牡蛎基因组部分序列及其分析</p>
+<p><img src="/images/W020100802375780896821.jpg" alt="图片"></p>
+<p>牡蛎基因组计划（OGP）团队成员在深圳华大基因研究院讨论项目</p>
+<p><img src="/images/W020100802375780899202.jpg" alt="图片"></p>
+<p>牡蛎是产量最大的海水养殖动物</p>
+<p><img src="/images/W020100802375780907541.jpg" alt="图片"></p>
+<p>牡蛎养殖</p>
+<p><a href="http://www.cas.cn/ky/kyjz/201008/t20100802_2916092.shtml#:~:text=%E7%89%A1%E8%9B%8E%E5%9F%BA%E5%9B%A0%E7%BB%84%E7%94%B18%E4%BA%BF%E4%B8%AA%E7%A2%B1%E5%9F%BA%E5%AF%B9%E7%BB%84%E6%88%90%EF%BC%8C%E5%A4%A7%E7%BA%A6%E5%8C%85%E5%90%AB2%E4%B8%87%E4%B8%AA%E5%9F%BA%E5%9B%A0%E3%80%82,%E4%BB%8E%E5%88%9D%E6%AD%A5%E5%88%86%E6%9E%90%E6%9D%A5%E7%9C%8B%EF%BC%8C%E5%9F%BA%E5%9B%A0%E7%BB%84%E6%95%B0%E6%8D%AE%E6%94%AF%E6%8C%81%E4%BA%86%E6%B5%B7%E6%B4%8B%E4%BD%8E%E7%AD%89%E7%94%9F%E7%89%A9%E5%85%B7%E6%9C%89%E9%AB%98%E5%BA%A6%E9%81%97%E4%BC%A0%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%BB%93%E8%AE%BA%E3%80%82%20%E6%AD%A4%E5%A4%96%EF%BC%8C%E7%9B%AE%E5%89%8D%E5%B7%B2%E9%AA%8C%E8%AF%81%E7%9A%84109%E7%A7%8D%E9%94%8C%E6%8C%87%E8%9B%8B%E7%99%BD%E7%BB%93%E6%9E%84%E5%9F%9F%E5%9C%A8%E7%89%A1%E8%9B%8E%E5%9F%BA%E5%9B%A0%E7%BB%84%E4%B8%AD%E5%9D%87%E6%9C%89%E5%8F%91%E7%8E%B0%EF%BC%8C%E5%B9%B6%E4%B8%94%E5%9C%A8%E6%95%B4%E4%B8%AA%E5%9F%BA%E5%9B%A0%E7%BB%84%E4%B8%AD%E6%89%80%E5%8D%A0%E7%9A%84%E6%AF%94%E4%BE%8B%E8%BF%9C%E8%BF%9C%E8%B6%85%E8%BF%87%E4%BA%BA%E7%B1%BB%E3%80%82" title="海洋所科研人员绘制完成牡蛎全基因组序列图谱">原文链接</a></p>
+]]></content>
+      <categories>
+        <category>基因组</category>
+      </categories>
+      <tags>
+        <tag>转载</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>中国科学院海洋所在牡蛎基因组编辑方面获进展</title>
+    <url>/2022/07/27/017-mu-li-ji-yin-zu-bian-ji/</url>
+    <content><![CDATA[<p>近日，中国科学院海洋研究所实验海洋生物学重点实验室张琳琳团队在牡蛎基因组编辑方面获新进展。相关研究成果发表在Frontiers in Marine Science（<em>DOI：10.3389/fmars.2022.912409</em>）上。</p>
+<p>随着高品质动物蛋白需求的增长，水产养殖正成为人类食用海产品的主要来源。与许多成熟的陆生牲畜和作物系统相比，多数水产养殖物种育种仍处于驯化的早期阶段。传统的育种方式如选择、杂交和标记辅助育种系统，推进了水产养殖物种经济性状（包括抗病性、营养价值和生长质量等）的遗传改良。基因组编辑技术是近年来探索基因功能和解析性状直接有效的方法，其中CRISPR/Cas9基因编辑技术具有操作简单、靶点选择广、成本低、效率高等优点，为重要水产物种经济性状的遗传解析和良种培育提供了有力工具。</p>
+<p>牡蛎为世界大宗水产养殖贝类，而与水产鱼类相比，基因组编辑育种技术在牡蛎中应用尚处于起步阶段。针对牡蛎卵径小（~50 μm）、显微操作难、幼虫死亡率高、间接发育时间时间长以及在获得可遗传纯系方面难度大、成本高、耗时长的难题，张琳琳团队经过长期研究攻关，搭建了一套基于电穿孔的Cas9/sgRNA复合物高通量递送和突变体快速检测的技术平台，实现了对牡蛎（Crassostrea gigas angulate）基因组中标记基因（β-tubulin）的高效编辑。</p>
+<p>研究采用前期研发的“长片段缺失镶嵌性突变技术”（Zhang L., et al, 2016, Nature Communications；Zhang L., et al., 2017, PNAS）。通过同时电穿孔多个靶基因sgRNAs，研究在长牡蛎靶向基因中检测到超过300 bp的长片段缺失突变，使研究可以使用PCR和常规琼脂糖凝胶电泳对突变体进行快速筛选和基因分型。这种同时传递两个以上sgRNAs以获得长片段缺失的策略是显著的改进，简化了基因组编辑基因型检测的工作流程。此外，利用原位杂交和行为学分析等表型检测手段，研究在牡蛎G0代幼虫中观察到表型的镶嵌型突变（纤毛的缩短、缺失）和运动能力下降。这种镶嵌型突变有利于探究在G0代个体中对突变表型进行快速鉴别，同时能规避目标基因完全缺失导致的胚胎致死性。该研究在海洋经济贝类牡蛎中建立了基于电穿孔和长片段缺失镶嵌性突变的CRISPR/Cas9基因编辑平台，可为今后基于CRISPR/Cas9基因组编辑技术在海洋贝类中开展基因功能研究提供有益参考，并为牡蛎以及其他水产养殖物种的基因组编辑育种提供有力工具。</p>
+<p>研究工作得到山东省“海洋生命资源绿色发展技术与应用”工作站、中科院战略性先导科技专项（B类）和国家海外引才计划青年项目等的支持。</p>
+<p><img src="/images/d27d-57c56013d6da46ab3efa7677ad2a23e4.jpg"></p>
+<h6 id="基于电穿孔的CRISPR-Cas9基因编辑系统和突变表型快速检测平台示意图"><a href="#基于电穿孔的CRISPR-Cas9基因编辑系统和突变表型快速检测平台示意图" class="headerlink" title="基于电穿孔的CRISPR/Cas9基因编辑系统和突变表型快速检测平台示意图"></a>基于电穿孔的CRISPR/Cas9基因编辑系统和突变表型快速检测平台示意图</h6><p><img src="/images/81fc-c9162d7a30bb36507fe92895fd487c6a.jpg"></p>
+<h6 id="CRISPR-Cas9系统介导的长牡蛎β-tubulin基因的长片段缺失"><a href="#CRISPR-Cas9系统介导的长牡蛎β-tubulin基因的长片段缺失" class="headerlink" title="CRISPR/Cas9系统介导的长牡蛎β-tubulin基因的长片段缺失"></a>CRISPR/Cas9系统介导的长牡蛎β-tubulin基因的长片段缺失</h6><p><img src="/images/496b-f945c0b86bdd8b0e977fedc24b8624ca.jpg"></p>
+<h6 id="CRISPR-Cas9系统介导的长牡蛎镶嵌型突变的纤毛表型"><a href="#CRISPR-Cas9系统介导的长牡蛎镶嵌型突变的纤毛表型" class="headerlink" title="CRISPR/Cas9系统介导的长牡蛎镶嵌型突变的纤毛表型"></a>CRISPR/Cas9系统介导的长牡蛎镶嵌型突变的纤毛表型</h6><p><a href="https://www.cas.cn/syky/202206/t20220606_4836984.shtml" title="中国科学院海洋所在牡蛎基因组编辑方面获进展">阅读原文</a></p>
+]]></content>
+      <categories>
+        <category>基因组</category>
+      </categories>
+      <tags>
+        <tag>转载</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>中国科学院海洋所构建完成长牡蛎染色体水平基因组和变异图谱</title>
+    <url>/2022/07/27/018-chang-mu-li-bian-yi-tu-pu/</url>
+    <content><![CDATA[<p>近日，由中科院海洋所张国范研究组独立完成的论文“Construction of a chromosome-level genome and variation map for the Pacific oyster Crassostrea gigas（长牡蛎染色体水平基因组和变异图谱构建）”在国际学术期刊Molecular Ecology Resources（《分子生态资源》）在线发表。该研究首次构建了长牡蛎染色体水平基因组和贝类中第一张包含SNP、INDEL和CNV的综合序列变异图谱，发现长牡蛎基因组中存在高比例的长片段重复序列，CNV结构变异可导致个体间平均21%的区域差异，更新了长牡蛎基因组资源和对基因组复杂性的认知。 </p>
+<p>　　长牡蛎(Crassostrea gigas)，俗称太平洋牡蛎，是世界重要的养殖贝类，具有重要的经济和生态价值。张国范研究组长期从事贝类养殖和育种相关工作，并一直致力于牡蛎基因资源挖掘和分子育种研究。2012年在Nature发表的牡蛎第一张基因组图谱得到广泛应用，引领并开启了水产物种基因组学相关研究。张国范研究组之后一直对牡蛎基因资源进行维护和更新。随着新一代测序技术的普及和对长牡蛎染色体水平基因组需求的增加，研究组于2019年正式启动长牡蛎染色体水平基因组构建工作。 </p>
+<p>　　本研究利用高覆盖第三代测序(PacBio，~200×)结合HIC技术，并利用遗传连锁图谱进行辅助，对一个中国青岛的长牡蛎进行从头组装，获得基因组总长度为587M，包含10条染色体水平scaffold序列，ContigN50达到3.1M，ScaffoldN50达到60M，组装完整性和连续性均有较大提高。发现基因组中高比例的长片段重复在基因进化中发挥了重要作用，同时也是导致之前基于二代测序技术组装的长牡蛎基因组碎片化的主要原因。基于495个野生长牡蛎的重测序数据分析，构建了长牡蛎综合变异图谱，包含480万个高质量SNP，60万个INDEL和4.9万个CNV。这些新的数据资源对牡蛎比较基因组学、分子育种和适应进化等研究具有重要意义。美国南加州大学Dennis Hedgecock教授团队成员Xiaoshen Yin博士对该基因组进行了分析，发现和连锁图谱一致性达到90%以上，明显的组装错误不到0.1%，肯定了其较高的组装质量(Yin et al, 2020)。</p>
+<p><img src="/images/W020210406579193394680.png"></p>
+<h6 id="长牡蛎基因组序列图谱"><a href="#长牡蛎基因组序列图谱" class="headerlink" title="长牡蛎基因组序列图谱"></a>长牡蛎基因组序列图谱</h6><p><img src="/images/W020210406579193775681.png"></p>
+<h6 id="长牡蛎基因组变异图谱"><a href="#长牡蛎基因组变异图谱" class="headerlink" title="长牡蛎基因组变异图谱"></a>长牡蛎基因组变异图谱</h6><p>　　本研究得到国家自然科学基金、山东省科技创新重大专项、中科院海洋大科学研究中心重点部署项目、国家贝类产业技术体系专项基金等资助。中科院海洋所高性能计算中心对部分生物信息分析提供了技术支持。亓海刚副研究员为论文第一作者，李莉研究员和张国范研究员为通讯作者。 </p>
+<p>　　论文链接：<a href="http://onlinelibrary.wiley.com/doi/abs/10.1111/1755-0998.13368" title="onlinelibrary.wiley.com/doi/abs/10.1111/1755-0998.13368">onlinelibrary.wiley.com/doi/abs/10.1111/1755-0998.13368</a>。</p>
+]]></content>
+      <categories>
+        <category>基因组</category>
+      </categories>
+      <tags>
+        <tag>转载</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基因组组装</title>
+    <url>/2022/07/27/019-ji-yin-zu-zu-zhuang/</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>基因组组装(Genome assembly)是生物信息学领域的核心问题，基因组组装就是把序列测序产生的读取片段reads经过序列拼接组装，生成基因组的碱基序列。基因组组装软件可根据得到的所有读长组装成基因组。基因组组装这个步骤对于基因组分析是十分关键的，因为目前二代测序技术获得的测序序列一般都较短，需要组装拼接成较长的完整的序列用于进一步分析，例如长序列能提高物种注释分析的准确性。</p>
+<p>宏观来说，基因组组装可以分为从头组装(De novo assembly) 和映射比对组装(mapping assembly), 从头组装是指不需要依靠任何已知的基因组信息，反过来，映射比对组装就是需要把测序序列和参考基因组来比对，找到序列的对应位置再进行组装，本文主要讲解的从头组装。 当然两种都有各个的用处，映射比对组装也有一些算法例如BWT算法。</p>
+<p>由于目前组装技术的限制和实际情况的复杂性，最终组装得到的序列与真实基因组序列之间仍可能存在差异，甚至只能得到若干条无法进一步连接起来的序列。对组装效果的评价主要依由于据组装序列的连续性、完整性和准确性。连续性要求组装得到的（多条）序列长度尽可能长；完整性要求组装序列的总长度占基因组序列长度的比例尽可能大；准确性要求组装序列与真实序列尽可能符合。</p>
+<p>目前基因组组装一般有基于OLC(Overlap-Layout-Consensus, 先重叠后扩展)和基于De Brujin Graph(DBG)两种组装算法，基于OLC的组装方法适合长序列组装，运行依赖的数据结构需要消耗大量的内存，且运行速度比较慢，错误率高，而DBG组装方法内存消耗相对较低，运算速度快，且准确率高。目前主流的基因组装算法都是基于后者改进设计的。</p>
+<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>在开始之前，有几个名词需要说明下：</p>
+<p>reads：就是我们测序产生的短读序列，通常一代和三代的reads读长在几千到几万bp之间，二代的相对较短，平均是几十到几百bp。</p>
+<p>contig：中文叫做重叠群，就是不同reads之间的overlap交叠区，拼接成的序列就是contig</p>
+<p>scaffold:这是比contig还要长的序列，获得contig之后还需要构建paired-end或者mate-pair库，从而获得一定片段的两端序列，这些序列可以确定contig的顺序关系和位置关系，最后contig按照一定顺序和方向组成scaffold，其中形成scaffold过程中还需要填补contig之间的空缺。</p>
+<p><img src="/images/v2-f9a1759747a90750e705354ea59d57f5_720w.jpg"></p>
+<h3 id="基于OLC算法"><a href="#基于OLC算法" class="headerlink" title="基于OLC算法"></a>基于OLC算法</h3><p>OLC组装算法主要这么对一代和三代测序序列因为他们的reads读长相对较长。OLC算法的整体步骤可以分为三步：</p>
+<p>Overlap：对所有reads进行两两比对，找到片段间的重叠信息，一般在比对之前会将reads做下索引，减少计算量。这里需要设定最小重叠长度，如果两个read的最小重叠长度低于一定阈值，那么可以认为两段序列顺序性较差。</p>
+<p>Layout：根据得到的重叠信息将存在的重叠片段建立一种组合关系，形成重叠群，即Contig。Contig进一步排列，生成多个较长的scaffold.</p>
+<p>根据构成Contig的片段的原始质量数据，在重叠群中寻找一条质量最重的序列路径，并获得与路径对应的序列，即Consensus。通过Consensus的多序列比对算法，就可以获得最终的基因组序列。</p>
+<p><img src="/images/v2-6bca24193c62ea94ae4e7c463594d52e_720w.jpg"></p>
+<h3 id="基于DBG算法"><a href="#基于DBG算法" class="headerlink" title="基于DBG算法"></a>基于DBG算法</h3><p>基于DBG基因组装算法原理图如下：</p>
+<p>详细的步骤如下：</p>
+<p><img src="/images/v2-cf3419bfff19b276137e4712ab31f7cc_720w.jpg"></p>
+<p>序列k-mer化：对需要测序的片段等大小拆分，即将reads 逐个碱基切分为长度为K的子序列。例如我们的K取3，那么序列ACGTCGA就会被拆分成5个子序列分别是：ACG, CGT, GTC, TCC, CGA。</p>
+<p>de Brujin图构建：de Brujin图是一种有向图，我们将k-mers得到的子序列作为图的节点，如果两个节点有 K-1个共同重叠子集，就把两个节点连接在一起，这样一定程度上已经能够展现出序列的顺序信息了，例如：</p>
+<p><img src="/images/v2-d657a68af27007b1ee2582658e03550d_720w.jpg"></p>
+<p>从上面的两个序列得到的de Brujin图可以知道，红色部分为高频的子序列，而绿色的为相对低频的子序列。</p>
+<ol>
+<li><p>图结构简化：这里主要简化结构的以下方面:</p>
+</li>
+<li><p>去除低频和低覆盖率的k-mer</p>
+</li>
+<li><p>将小的重复对解开，让每个节点的入度和出度都为1</p>
+</li>
+<li><p>将相似性较高的k-mers合并，也就是bubbles合并成单链</p>
+</li>
+</ol>
+<p><img src="/images/v2-27278ef2a316eace4f8bb906c55882c8_720w.png"></p>
+<p>网上有个小哥总结这几个还是不错的</p>
+<p>测序错误产生的分支：</p>
+<p><img src="/images/v2-616058a6aa3e1eb9bafd5e8213e7097b_720w.jpg"></p>
+<p>SNP导致的bubble结构：</p>
+<p><img src="/images/v2-46069f53a4842707a871fcb6d7ef855e_720w.jpg"></p>
+<p>reads序列重复导致的bubble：</p>
+<p><img src="/images/v2-10de4293e4c302091cf47ad0d68b11ab_720w.jpg"></p>
+<p>contigs拆分：通过read的配对末端（pair-end）和环化配对（mate-pair）信息去除一些环结构，最后把一些无法合并的分叉结构再次拆分成多个contigs：</p>
+<p><img src="/images/v2-a5c9cad0cb03114e2f598ed791b99a7a_720w.jpg"></p>
+<p>scaffold构建：这个过程和OLC的比较类似，也是通过contig两端的pair的序列信息，将多个contig连接成scaffold.同时将contig之间的GAP填充，补充方式是通过已经组装的contigs之间的覆盖关系来补充，形成多个没有空缺的scaffold。</p>
+<p>最终组装：最终是把多个scaffold组装成无GAP的基因组序列。</p>
+]]></content>
+      <categories>
+        <category>基因组</category>
+      </categories>
+      <tags>
+        <tag>转载</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python爬取bing主页壁纸</title>
+    <url>/2022/08/01/020-python-pa-qu-bing-zhu-ye-bi-zhi/</url>
+    <content><![CDATA[<h3 id="一、爬取代码"><a href="#一、爬取代码" class="headerlink" title="一、爬取代码"></a>一、爬取代码</h3><h6 id="突然想给博客换个轮播图"><a href="#突然想给博客换个轮播图" class="headerlink" title="突然想给博客换个轮播图"></a>突然想给博客换个轮播图</h6><h6 id="百度搞起-smile"><a href="#百度搞起-smile" class="headerlink" title="百度搞起:smile:"></a>百度搞起<span class="github-emoji"><span>😄</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></h6><pre class="line-numbers language-none"><code class="language-none">import requests
+
+import json
+
+
+def Get_picUrl():
+
+url = "https://cn.bing.com/HPImageArchive.aspx?format=js&amp;idx=0&amp;n=1"
+
+con = requests.get(url=url)
+
+content = json.loads(con.text)
+
+imgUrl = 'https://cn.bing.com' + content['images'][0]['url']
+
+response = requests.get(imgUrl)
+
+if str(response) != '':
+
+imgUrl = '../static/img/temp/lunbo3.jpg'
+
+return imgUrl
+
+
+i = Get_picUrl()
+
+imgUrl = ''''
+
+print(imgUrl)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h5 id="根据需要自己修改"><a href="#根据需要自己修改" class="headerlink" title="根据需要自己修改"></a>根据需要自己修改</h5><h3 id="二、遇到的问题"><a href="#二、遇到的问题" class="headerlink" title="二、遇到的问题"></a>二、遇到的问题</h3><h6 id="lxml中etree找不到，暂时未解决"><a href="#lxml中etree找不到，暂时未解决" class="headerlink" title="lxml中etree找不到，暂时未解决"></a>lxml中etree找不到，暂时未解决</h6><h3 id="三、加入到Django中"><a href="#三、加入到Django中" class="headerlink" title="三、加入到Django中"></a>三、加入到Django中</h3><h5 id="1-django中的render"><a href="#1-django中的render" class="headerlink" title="1. django中的render"></a>1. django中的render</h5><h6 id="context在Django里表现为-Context-类，在-django-template-模块里。-它的构造函数带有一个可选的参数："><a href="#context在Django里表现为-Context-类，在-django-template-模块里。-它的构造函数带有一个可选的参数：" class="headerlink" title="context在Django里表现为 Context 类，在 django.template 模块里。 它的构造函数带有一个可选的参数："></a>context在Django里表现为 Context 类，在 django.template 模块里。 它的构造函数带有一个可选的参数：</h6><h6 id="一个字典映射变量和它们的值。-调用-Template-对象-的-render-方法并传递context来填充模板："><a href="#一个字典映射变量和它们的值。-调用-Template-对象-的-render-方法并传递context来填充模板：" class="headerlink" title="一个字典映射变量和它们的值。 调用 Template 对象 的 render() 方法并传递context来填充模板："></a>一个字典映射变量和它们的值。 调用 Template 对象 的 render() 方法并传递context来填充模板：</h6><pre class="line-numbers language-none"><code class="language-none">from django.template import Context, Template 
+
+t = Template('My name is {{ name }}.') 
+
+c = Context({'name': 'Stephane'}) 
+
+t.render(c) <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p> u’My name is Stephane.’</p>
+<h6 id="在views-py中"><a href="#在views-py中" class="headerlink" title="在views.py中:"></a>在views.py中:</h6><p> <code>return render(request, 'blog_add.html', {'blog': blog, 'form': form, 'id': id, 'tag': tag})</code></p>
+<h5 id="2-django中的render-to-response"><a href="#2-django中的render-to-response" class="headerlink" title="2. django中的render_to_response"></a>2. django中的render_to_response</h5><p> <code>return render_to_response('blog_add.html', {'blog': blog, 'form': form, 'id': id, 'tag': tag})</code></p>
+<h6 id="很明显，如果使用render-to-response就省去了render里传递的request。"><a href="#很明显，如果使用render-to-response就省去了render里传递的request。" class="headerlink" title="很明显，如果使用render_to_response就省去了render里传递的request。"></a>很明显，如果使用render_to_response就省去了render里传递的request。</h6><h6 id="3-locals-用法：locals-可以直接将函数中所有的变量全部传给模板。当然这可能会传递一些多余的参数，有点浪费内存的嫌疑。"><a href="#3-locals-用法：locals-可以直接将函数中所有的变量全部传给模板。当然这可能会传递一些多余的参数，有点浪费内存的嫌疑。" class="headerlink" title="3.locals()用法：locals()可以直接将函数中所有的变量全部传给模板。当然这可能会传递一些多余的参数，有点浪费内存的嫌疑。"></a>3.locals()用法：locals()可以直接将函数中所有的变量全部传给模板。当然这可能会传递一些多余的参数，有点浪费内存的嫌疑。</h6>]]></content>
+      <categories>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>爬虫</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基因组组装（二）</title>
+    <url>/2022/08/04/021-ji-yin-zu-zu-zhuang-er/</url>
+    <content><![CDATA[<h1 id="二代测序基因组组装"><a href="#二代测序基因组组装" class="headerlink" title="二代测序基因组组装"></a>二代测序基因组组装</h1><h2 id="一、数据下载"><a href="#一、数据下载" class="headerlink" title="一、数据下载"></a>一、数据下载</h2><h3 id="1-两种数据格式"><a href="#1-两种数据格式" class="headerlink" title="1.两种数据格式"></a>1.两种数据格式</h3><p>1.frag_x.fastq –&gt; 不超过100bp</p>
+<p>2.shortjump_x.fastq –&gt; 不超过37bp</p>
+<h6 id="raw-data"><a href="#raw-data" class="headerlink" title="==> raw_data"></a>==&gt; raw_data</h6><h2 id="二、数据质控"><a href="#二、数据质控" class="headerlink" title="二、数据质控"></a>二、数据质控</h2><h3 id="1-低质量reads过滤及去除接头"><a href="#1-低质量reads过滤及去除接头" class="headerlink" title="1.低质量reads过滤及去除接头"></a>1.低质量reads过滤及去除接头</h3><p><code>fastp -i data/frag_1.fastq.gz -I data/frag_2.fastq.gz -o frag_1.fq.gz -O frag_2.fq.gz</code></p>
+<h3 id="2-错误碱基修正"><a href="#2-错误碱基修正" class="headerlink" title="2.错误碱基修正"></a>2.错误碱基修正</h3><p> bfc -s 3m -t 6 data/frag_1.fastq.gz | gzip -1 &gt; clean-data/corrected_1.fq.gz</p>
+<p> bfc -s 3m -t 6 data/frag_2.fastq.gz | gzip -1 &gt; clean-data/corrected_2.fq.gz</p>
+<h6 id="clean-data"><a href="#clean-data" class="headerlink" title="==> clean_data"></a>==&gt; clean_data</h6><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-04%2021-24-57_20220804132913665132.png"></p>
+<h2 id="三、基因组组装"><a href="#三、基因组组装" class="headerlink" title="三、基因组组装"></a>三、基因组组装</h2><h3 id="1-SOAPdenovo"><a href="#1-SOAPdenovo" class="headerlink" title="1.SOAPdenovo"></a>1.SOAPdenovo</h3><p> SOAPdenovo是由华大基因开发的SOAP软件包的一部分，SOAPdenovo主要用于短序列reads拼接，尤其是illumina测序数据。从小的细菌基因组到大的动植物基因组，人基因组都适用。已经成功应用于大熊猫基因组，黄瓜基因组等众多基因组的拼接中。</p>
+<p> SOAPdenovo的一个优点是使用起来比较简单，但是却拥有很好的拼接效果，尤其在基因组构建Scaffold方面，效果很好。对于内存控制的也比较好。通常只要给软件输入测序的数据，即可拼接出很好的全基因组。</p>
+<p>下面简单介绍一下SOAPdenovo组装的一般过程：</p>
+<p><img src="/images/soapdenovo.jpg"></p>
+<p> 原理：</p>
+<p> A.随即打散基因组，进行双端测序：扩增长度在150–500bp之间的短克隆，并直接测序</p>
+<p> B.将未处理（或者未经纠正的）reads读入到内存中，并且用deBruijin图数据结构来表示reads间的Overlap</p>
+<p> C.通过移除错误的连接，解决微小的重复来简化图：</p>
+<p> a.剪去短末端</p>
+<p> b.移除低覆盖度的边</p>
+<p> c.解决reads路径中得微小重复</p>
+<p> d.合并茎环：可能由于重复或者二倍体染色体组的混杂造成</p>
+<p> D.在简化图的基础上，我们在重复边界上打断连接，输出明确的序列作为contigs</p>
+<p> E.我们重新用reads和contigs进行比对，使用双端信息来把单一的单一的contigs连接成scaffolds</p>
+<p> F.最后，我们使用配对双端resds来填补scaffolds内部可能是由重复序列所造成的Gap。</p>
+<p><code>SOAPdenovo-63mer all -K 31 -p 6 -s example.config -o soapdenovo_asm</code></p>
+<p>得到一系列soapdenovo_asm开头的文件，重要的只有*.contig和*.scafSeq两个文件，分别是组装好的contig和scafSeq的文件</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-04%2021-52-52_20220804135516335414.png"></p>
+<p>*.contig</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-04%2021-54-08_20220804135631259376.png"></p>
+<p>*.scafSeq</p>
+<h3 id="2-abyss"><a href="#2-abyss" class="headerlink" title="2.abyss"></a>2.abyss</h3><h3 id="3-velvet"><a href="#3-velvet" class="headerlink" title="3.velvet"></a>3.velvet</h3><h3 id="4-SPAdes"><a href="#4-SPAdes" class="headerlink" title="4.SPAdes"></a>4.SPAdes</h3><h3 id="5-SGA"><a href="#5-SGA" class="headerlink" title="5.SGA"></a>5.SGA</h3><h6 id="contig和-scafSeq-代表soapdenovo-asm"><a href="#contig和-scafSeq-代表soapdenovo-asm" class="headerlink" title="==> *.contig和*.scafSeq ( * 代表soapdenovo_asm)"></a>==&gt; *.contig和*.scafSeq ( * 代表soapdenovo_asm)</h6><h2 id="四、修补Gaps"><a href="#四、修补Gaps" class="headerlink" title="四、修补Gaps"></a>四、修补Gaps</h2><p><code>GapCloser -b example.config -a soapdenovo_asm.scafSeq -o genome.scf2.fasta -t 6 -p 31</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-04%2021-59-55_20220804140036163421.png"></p>
+<p>genome.scf2.fasta</p>
+<h6 id="genome-scf2-fasta"><a href="#genome-scf2-fasta" class="headerlink" title="==> genome.scf2.fasta"></a>==&gt; genome.scf2.fasta</h6><h2 id="五、基因组组装评估"><a href="#五、基因组组装评估" class="headerlink" title="五、基因组组装评估"></a>五、基因组组装评估</h2><p><code>quast.py genome.scf2.fasta -o quast_out/quast-report</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-04%2022-04-00_20220804140716496576.png"></p>
+<p>Cumulative length</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-04%2022-04-30_20220804140750968335.png"></p>
+<p>Nx</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-04%2022-04-49_20220804140820854349.png"></p>
+<p>GC content</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-04%2022-05-48_20220804140838005000.png"></p>
+<p>Contig size viewer</p>
+<h6 id="quast-out-quast-report文件夹"><a href="#quast-out-quast-report文件夹" class="headerlink" title="==> quast_out/quast-report文件夹"></a>==&gt; quast_out/quast-report文件夹</h6><h2 id="六、基因组数据可视化"><a href="#六、基因组数据可视化" class="headerlink" title="六、基因组数据可视化"></a>六、基因组数据可视化</h2><h3 id="1-IGV"><a href="#1-IGV" class="headerlink" title="1.IGV"></a>1.IGV</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-04%2022-39-08_20220804144423539261.png"></p>
+<p>Sequence</p>
+<h3 id="2-UCSC-genome-browser"><a href="#2-UCSC-genome-browser" class="headerlink" title="2.UCSC genome browser"></a>2.UCSC genome browser</h3><h3 id="3-Snap-Gene-Viewer"><a href="#3-Snap-Gene-Viewer" class="headerlink" title="3.Snap Gene Viewer"></a>3.Snap Gene Viewer</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-04%2023-05-19_20220804150858152084.png"></p>
+<p>Map</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-04%2023-05-49_20220804150911918373.png"></p>
+<p>Sequence</p>
+<h6 id="genome-scf2文件夹"><a href="#genome-scf2文件夹" class="headerlink" title="==> genome.scf2文件夹"></a>==&gt; genome.scf2文件夹</h6>]]></content>
+      <categories>
+        <category>基因组</category>
+      </categories>
+      <tags>
+        <tag>组装</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>分子生物学（一）</title>
+    <url>/2022/08/05/022-fen-zi-sheng-wu-xue-yi/</url>
+    <content><![CDATA[<h2 id="分子生物学的研究层次和基本任务"><a href="#分子生物学的研究层次和基本任务" class="headerlink" title="分子生物学的研究层次和基本任务"></a>分子生物学的研究层次和基本任务</h2><h3 id="两个研究层次：核酸和蛋白质"><a href="#两个研究层次：核酸和蛋白质" class="headerlink" title="两个研究层次：核酸和蛋白质"></a>两个研究层次：核酸和蛋白质</h3><h3 id="四个基本任务：定性、定位、定量和相互作用"><a href="#四个基本任务：定性、定位、定量和相互作用" class="headerlink" title="四个基本任务：定性、定位、定量和相互作用"></a>四个基本任务：定性、定位、定量和相互作用</h3><h5 id="定性：PCR、测序、生物信息学分析、原核表达"><a href="#定性：PCR、测序、生物信息学分析、原核表达" class="headerlink" title="定性：PCR、测序、生物信息学分析、原核表达"></a>定性：PCR、测序、生物信息学分析、原核表达</h5><h5 id="定量：原位杂交、免疫组化、荧光融合蛋白、Northern-Blot、Western-Blot"><a href="#定量：原位杂交、免疫组化、荧光融合蛋白、Northern-Blot、Western-Blot" class="headerlink" title="定量：原位杂交、免疫组化、荧光融合蛋白、Northern Blot、Western Blot"></a>定量：原位杂交、免疫组化、荧光融合蛋白、Northern Blot、Western Blot</h5><h5 id="定量：qPCR、ddPCR、Microarray、高通量测序、Northern-Blot、Western-Blot"><a href="#定量：qPCR、ddPCR、Microarray、高通量测序、Northern-Blot、Western-Blot" class="headerlink" title="定量：qPCR、ddPCR、Microarray、高通量测序、Northern Blot、Western Blot"></a>定量：qPCR、ddPCR、Microarray、高通量测序、Northern Blot、Western Blot</h5><h5 id="相互作用：酵母双杂交、免疫共沉淀、Pull-Down、荧光共定位、FRET、BiFC、Chip-seq"><a href="#相互作用：酵母双杂交、免疫共沉淀、Pull-Down、荧光共定位、FRET、BiFC、Chip-seq" class="headerlink" title="相互作用：酵母双杂交、免疫共沉淀、Pull Down、荧光共定位、FRET、BiFC、Chip-seq"></a>相互作用：酵母双杂交、免疫共沉淀、Pull Down、荧光共定位、FRET、BiFC、Chip-seq</h5><h2 id="实验中常见的浓度单位："><a href="#实验中常见的浓度单位：" class="headerlink" title="实验中常见的浓度单位："></a>实验中常见的浓度单位：</h2><p>| 浓度 | 单位 | 注释 |</p>
+<p>| —- | —- | — |</p>
+<p>| 1M NaCl | 物质的量浓度 | 溶质的物质的量/溶液的体积 |</p>
+<p>| 98% 硫酸 | 质量分数 | 溶质的质量/溶液的质量 |</p>
+<p>| 75% 乙醇 | 体积分数 | 溶质的体积/溶液的体积 |</p>
+<p>| 10% SDS | 质量体积分数 | 溶质的质量/溶液的体积 |</p>
+<p>| 10N NaOH | 当量浓度 | 碱的分子量/碱中所含氢氧根数 |</p>
+<h6 id="一般情况下：溶质-溶液，所以溶液需要定容，单位对应关系是kg对应L，g对应ml"><a href="#一般情况下：溶质-溶液，所以溶液需要定容，单位对应关系是kg对应L，g对应ml" class="headerlink" title="一般情况下：溶质/溶液，所以溶液需要定容，单位对应关系是kg对应L，g对应ml"></a>一般情况下：溶质/溶液，所以溶液需要定容，单位对应关系是kg对应L，g对应ml</h6><h2 id="十字交叉法"><a href="#十字交叉法" class="headerlink" title="十字交叉法"></a>十字交叉法</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-05%2020-18-28_20220805121901110639.png"></p>
+]]></content>
+      <categories>
+        <category>分子生物学</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>一个简单的基因家族分析</title>
+    <url>/2022/08/05/023-ji-yin-jia-zu-fen-xi/</url>
+    <content><![CDATA[<h1 id="基因家族分析"><a href="#基因家族分析" class="headerlink" title="基因家族分析"></a>基因家族分析</h1><p>以拟南芥为例，重现一个描述芝麻 大豆、拟南芥中一个与油脂合成相关的基因的进化关系以及拷贝数差异的图</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-06%2009-09-17_20220806010943489989.png"></p>
+<h2 id="一、准备参考基因序列"><a href="#一、准备参考基因序列" class="headerlink" title="一、准备参考基因序列"></a>一、准备参考基因序列</h2><p>拟南芥中FAD4-like基因有三条：At1g62190、At2g22890、At4g27030</p>
+<h5 id="拟南芥蛋白序列文件：atha-fasta"><a href="#拟南芥蛋白序列文件：atha-fasta" class="headerlink" title="拟南芥蛋白序列文件：atha.fasta"></a>拟南芥蛋白序列文件：atha.fasta</h5><h5 id="找出以上三个序列，拷贝放进query-fasta文件"><a href="#找出以上三个序列，拷贝放进query-fasta文件" class="headerlink" title="找出以上三个序列，拷贝放进query.fasta文件"></a>找出以上三个序列，拷贝放进query.fasta文件</h5><h2 id="二、准备大豆和芝麻的蛋白序列"><a href="#二、准备大豆和芝麻的蛋白序列" class="headerlink" title="二、准备大豆和芝麻的蛋白序列"></a>二、准备大豆和芝麻的蛋白序列</h2><h5 id="芝麻蛋白序列文件：sind-fasta"><a href="#芝麻蛋白序列文件：sind-fasta" class="headerlink" title="芝麻蛋白序列文件：sind.fasta"></a>芝麻蛋白序列文件：sind.fasta</h5><h5 id="大豆蛋白序列文件：gmax-fasta"><a href="#大豆蛋白序列文件：gmax-fasta" class="headerlink" title="大豆蛋白序列文件：gmax.fasta"></a>大豆蛋白序列文件：gmax.fasta</h5><p>######合并芝麻、大豆、拟南芥的蛋白序列文件</p>
+<p><code>cat atha.fasta gmax.fasta sind.fasta &gt; all.fasta</code></p>
+<h2 id="三、Blast（局部比对软件）"><a href="#三、Blast（局部比对软件）" class="headerlink" title="三、Blast（局部比对软件）"></a>三、Blast（局部比对软件）</h2><h3 id="1-比对数据库构建"><a href="#1-比对数据库构建" class="headerlink" title="1.比对数据库构建"></a>1.比对数据库构建</h3><p><code>makeblastdb -dbtype prot -in all.fasta -out all</code></p>
+<h6 id="得到一系列以all为名的数据库文件"><a href="#得到一系列以all为名的数据库文件" class="headerlink" title="==> 得到一系列以all为名的数据库文件"></a>==&gt; 得到一系列以all为名的数据库文件</h6><h3 id="3-blast比对"><a href="#3-blast比对" class="headerlink" title="3.blast比对"></a>3.blast比对</h3><p><del>blastp -query query.fasta -db all -out blast.out -evalue 1e-10</del></p>
+<p>==&gt; 结果太详细，-outfmt 第七种，表格带注释形式</p>
+<p><code>blastp -query query.fasta -db all -out blast.out -evalue 1e-10 -outfmt 7</code></p>
+<p>要求alignment length足够长80/100，identity足够高，evalue足够小，score足够高 -&gt; 结果好</p>
+<h6 id="blast-out"><a href="#blast-out" class="headerlink" title="==> blast.out"></a>==&gt; blast.out</h6><h2 id="四、提取Blast结果中比对上的序列的ID"><a href="#四、提取Blast结果中比对上的序列的ID" class="headerlink" title="四、提取Blast结果中比对上的序列的ID"></a>四、提取Blast结果中比对上的序列的ID</h2><h6 id="过滤结果"><a href="#过滤结果" class="headerlink" title="过滤结果"></a>过滤结果</h6><p><code>grep -v "#" blast.out | awk '$3&gt;40 &amp;&amp; $11 protein_ids.txt</code></p>
+<p> -v：反向选择</p>
+<p> sort：排序</p>
+<p> uniq：去除相邻的重复</p>
+<h6 id="protein-ids-txt"><a href="#protein-ids-txt" class="headerlink" title="==> protein_ids.txt"></a>==&gt; protein_ids.txt</h6><h2 id="五、根据ID提取序列"><a href="#五、根据ID提取序列" class="headerlink" title="五、根据ID提取序列"></a>五、根据ID提取序列</h2><h6 id="大佬lh写的程序seqtk"><a href="#大佬lh写的程序seqtk" class="headerlink" title="大佬lh写的程序seqtk"></a>大佬lh写的程序seqtk</h6><p><code>seqtk subseq all.fasta protein_ids.txt &gt; result.fasta</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-06%2010-07-49_20220806020821747787.png"></p>
+<h6 id="result-fasta"><a href="#result-fasta" class="headerlink" title="==> result.fasta"></a>==&gt; result.fasta</h6><h2 id="六、根据序列构建进化树"><a href="#六、根据序列构建进化树" class="headerlink" title="六、根据序列构建进化树"></a>六、根据序列构建进化树</h2><p>利用mega建树</p>
+]]></content>
+      <categories>
+        <category>基因家族分析</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>转录组标准分析</title>
+    <url>/2022/08/05/024-zhuan-lu-zu-biao-zhun-fen-xi/</url>
+    <content><![CDATA[<h2 id="如何获得表达矩阵？"><a href="#如何获得表达矩阵？" class="headerlink" title="如何获得表达矩阵？"></a>如何获得表达矩阵？</h2><h3 id="1-Microarray"><a href="#1-Microarray" class="headerlink" title="1.Microarray"></a>1.Microarray</h3><h3 id="2-RNA-Seq"><a href="#2-RNA-Seq" class="headerlink" title="2.RNA-Seq"></a>2.RNA-Seq</h3><h6 id="短reads"><a href="#短reads" class="headerlink" title="==> 短reads"></a>==&gt; 短reads</h6><h2 id="一、比对Spliced-alignment"><a href="#一、比对Spliced-alignment" class="headerlink" title="一、比对Spliced alignment"></a>一、比对Spliced alignment</h2><h3 id="1-比对到基因组"><a href="#1-比对到基因组" class="headerlink" title="1.比对到基因组"></a>1.比对到基因组</h3><p>Hisat2<br>STAR</p>
+<h3 id="2-比对到转录组"><a href="#2-比对到转录组" class="headerlink" title="2.比对到转录组"></a>2.比对到转录组</h3><p>Bowtie2</p>
+<h2 id="二、表达定量Quantification"><a href="#二、表达定量Quantification" class="headerlink" title="二、表达定量Quantification"></a>二、表达定量Quantification</h2><h2 id="三、标准化Normalization"><a href="#三、标准化Normalization" class="headerlink" title="三、标准化Normalization"></a>三、标准化Normalization</h2><p>RPKM<br>TPM</p>
+<h2 id="表达数据挖掘"><a href="#表达数据挖掘" class="headerlink" title="表达数据挖掘"></a>表达数据挖掘</h2><h2 id="差异表达"><a href="#差异表达" class="headerlink" title="差异表达"></a>差异表达</h2><h2 id="富集分析"><a href="#富集分析" class="headerlink" title="富集分析"></a>富集分析</h2><h2 id="样本聚类分析"><a href="#样本聚类分析" class="headerlink" title="样本聚类分析"></a>样本聚类分析</h2><h2 id="相关系数"><a href="#相关系数" class="headerlink" title="相关系数"></a>相关系数</h2><h2 id="聚类分析和WGCNA"><a href="#聚类分析和WGCNA" class="headerlink" title="聚类分析和WGCNA"></a>聚类分析和WGCNA</h2><h2 id="从聚类分析到主成分分析"><a href="#从聚类分析到主成分分析" class="headerlink" title="从聚类分析到主成分分析"></a>从聚类分析到主成分分析</h2>]]></content>
+      <categories>
+        <category>转录组</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>将测序数据比对到参考基因组</title>
+    <url>/2022/08/06/025-bi-dui/</url>
+    <content><![CDATA[<h2 id="一项目设计"><a href="#一项目设计" class="headerlink" title="一项目设计"></a>一项目设计</h2><h3 id="1-取样"><a href="#1-取样" class="headerlink" title="1.取样"></a>1.取样</h3><p>S1:7.16</p>
+<p>S2:8.07</p>
+<p>S3:8.26</p>
+<p>S4:9.14</p>
+<p>三个生物学重复，共二十四个样本</p>
+<h3 id="2-建库"><a href="#2-建库" class="headerlink" title="2.建库"></a>2.建库</h3><p>试剂盒：NEBNexi</p>
+<h3 id="3-测序"><a href="#3-测序" class="headerlink" title="3.测序"></a>3.测序</h3><p>模式：Single-end</p>
+<p>读长：101bp</p>
+<p>测序仪：Hiseq2000</p>
+<h2 id="二、将测序数据比对到参考基因组-测序数据量"><a href="#二、将测序数据比对到参考基因组-测序数据量" class="headerlink" title="二、将测序数据比对到参考基因组 ==> 测序数据量"></a>二、将测序数据比对到参考基因组 ==&gt; 测序数据量</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-06%2023-10-05_20220806151210236124.png"></p>
+<h2 id="三、特异表达分析"><a href="#三、特异表达分析" class="headerlink" title="三、特异表达分析"></a>三、特异表达分析</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-06%2023-11-38_20220806151402533026.png"></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>转录组分析</title>
+    <url>/2022/08/06/026-zhuan-lu-zu-fen-xi/</url>
+    <content><![CDATA[<h1 id="转录组分析"><a href="#转录组分析" class="headerlink" title="转录组分析"></a>转录组分析</h1><h2 id="一、准备数据"><a href="#一、准备数据" class="headerlink" title="一、准备数据"></a>一、准备数据</h2><h3 id="1-测序数据-fastq"><a href="#1-测序数据-fastq" class="headerlink" title="1.测序数据 fastq"></a>1.测序数据 fastq</h3><h4 id="A-测序公司"><a href="#A-测序公司" class="headerlink" title="A.测序公司"></a>A.测序公司</h4><h4 id="B-下载数据"><a href="#B-下载数据" class="headerlink" title="B.下载数据"></a>B.下载数据</h4><p>NCBI下载SRA，苹果有24个</p>
+<p>下载list文件SSR.txt，利用sratools中prefetch下载</p>
+<h5 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h5><p><code>awk '{print "prefetch "$1" &amp;"}' SSR.txt &gt;run_prefetch.sh</code></p>
+<p>运行后得到SRRxxxxxxx.sra</p>
+<p>利用 <code>fastq-dump --split-3 SSR2176358.sra</code>转化为fastq文件</p>
+<p>转换gff格式为gtf</p>
+<p><code>gffread -T -o genes.gtf HFTH.genes.gff</code></p>
+<h3 id="2-数据信息表-samples-txt"><a href="#2-数据信息表-samples-txt" class="headerlink" title="2.数据信息表 samples.txt"></a>2.数据信息表 samples.txt</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-07%2010-54-55_20220807025530240811.png"></p>
+<h3 id="3-参考基因组"><a href="#3-参考基因组" class="headerlink" title="3.参考基因组"></a>3.参考基因组</h3><p>基因组序列 genome.fasta</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-07%2011-12-28_20220807031257352599.png"></p>
+<p>基因注释 genes.gtf</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-07%2011-14-39_20220807031507759775.png"></p>
+<h2 id="二、比对到参考基因组"><a href="#二、比对到参考基因组" class="headerlink" title="二、比对到参考基因组"></a>二、比对到参考基因组</h2><h3 id="1-输入"><a href="#1-输入" class="headerlink" title="1.输入"></a>1.输入</h3><p>基因组序列 genome.fasta</p>
+<p>测序数据 fastq</p>
+<h3 id="2-步骤"><a href="#2-步骤" class="headerlink" title="2.步骤"></a>2.步骤</h3><p>一个测序数据的处理</p>
+<h4 id="①构建参考基因组"><a href="#①构建参考基因组" class="headerlink" title="①构建参考基因组"></a>①构建参考基因组</h4><h5 id="脚本文件-step1-hisat-build-sh"><a href="#脚本文件-step1-hisat-build-sh" class="headerlink" title="脚本文件 step1.hisat_build.sh"></a>脚本文件 step1.hisat_build.sh</h5><h5 id="内容："><a href="#内容：" class="headerlink" title="内容："></a>内容：</h5><p><code>hisat2-build ../ref/genome.fasta ../ref/genome 1&gt;hisat2-build.log 2&gt;&amp;1</code></p>
+<p> 0 表示stdin标准输入</p>
+<p> 1 表示stdout标准输出</p>
+<p> 2 表示stderr标准错误</p>
+<h6 id="意思是将1和2日志存入build-log"><a href="#意思是将1和2日志存入build-log" class="headerlink" title="意思是将1和2日志存入build.log"></a>意思是将1和2日志存入build.log</h6><h5 id="运行命令："><a href="#运行命令：" class="headerlink" title="运行命令："></a>运行命令：</h5><p><code>nohup sh step1.hisat_build.sh &amp;</code></p>
+<p><em>（过程需要几个小时，八九十G内存，个人电脑搞不定）</em></p>
+<h6 id="ref-genome-ht2"><a href="#ref-genome-ht2" class="headerlink" title="###### ==> ../ref/genome.*.ht2"></a>###### ==&gt; ../ref/genome.*.ht2</h6><h4 id="②比对"><a href="#②比对" class="headerlink" title="②比对"></a>②比对</h4><h5 id="脚本文件-step2-run-hisat-sh"><a href="#脚本文件-step2-run-hisat-sh" class="headerlink" title="脚本文件 step2.run_hisat.sh"></a>脚本文件 step2.run_hisat.sh</h5><h5 id="内容：-1"><a href="#内容：-1" class="headerlink" title="内容："></a>内容：</h5><p><code>hisat2 --new-summary -p 6 -x ../ref/genome -U /home/ywh/workspace/rnaseq-apple-training/RNASeq-ref/data/BLO_S1_LD1.fq.gz -S BLO_S1_LD3.sam --rna-strandness R 1&gt;BLO_S1_LD1.log 2&gt;&amp;1</code></p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">
+-p：线程数
+
+-x：参考基因组路径
+
+-U：单末端测序
+
+-S：输出文件路径
+
+-ran-strandness：数据为链特异性文库（R：单末端测序、RF：双末端测序）
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<h5 id="运行命令：-1"><a href="#运行命令：-1" class="headerlink" title="运行命令："></a>运行命令：</h5><p><code>nohup sh step1.hisat_build.sh &amp;</code></p>
+<h6 id="sam"><a href="#sam" class="headerlink" title="==> *.sam"></a>==&gt; *.sam</h6><h4 id="③压缩和排序"><a href="#③压缩和排序" class="headerlink" title="③压缩和排序"></a>③压缩和排序</h4><p><em>转换为bam格式，源文件可以删除</em></p>
+<h5 id="脚本文件-step3-sam2bamall-sh"><a href="#脚本文件-step3-sam2bamall-sh" class="headerlink" title="脚本文件 step3.sam2bamall.sh"></a>脚本文件 step3.sam2bamall.sh</h5><p><code>samtools sort -o BLO_S1_LD1.bam BLO_S1_LD1.sam </code></p>
+<h5 id="运行命令"><a href="#运行命令" class="headerlink" title="运行命令"></a>运行命令</h5><p>直接运行</p>
+<h6 id="bam"><a href="#bam" class="headerlink" title="==> *.bam"></a>==&gt; *.bam</h6><h4 id="④给bam构建index"><a href="#④给bam构建index" class="headerlink" title="④给bam构建index"></a>④给bam构建index</h4><h5 id="脚本文件-step4-bamindex-sh"><a href="#脚本文件-step4-bamindex-sh" class="headerlink" title="脚本文件 step4.bamindex.sh"></a>脚本文件 step4.bamindex.sh</h5><p><em>用于IGV使用</em></p>
+<p><code>samtools index BLO_S1_LD1.bam</code></p>
+<h5 id="运行命令-1"><a href="#运行命令-1" class="headerlink" title="运行命令"></a>运行命令</h5><p>直接运行</p>
+<h6 id="bam-bai"><a href="#bam-bai" class="headerlink" title="==> *.bam.bai"></a>==&gt; *.bam.bai</h6><p><strong>一共24个测序文件，利用Linux命令一键生成脚本</strong></p>
+<h5 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h5><p>②</p>
+<p><code>awk '{print "hisat2 --new-summary -p 10 -x ../ref/genome -U "$3" -S "$2".sam --rna-strandness R 1&gt;"$2".log 2&gt;&amp;1 &amp;"}' ../data/samples.txt</code></p>
+<p><em>注意路径</em></p>
+<h5 id="脚本文件-step2-run-hisat2-sh"><a href="#脚本文件-step2-run-hisat2-sh" class="headerlink" title="脚本文件 step2.run_hisat2.sh"></a>脚本文件 step2.run_hisat2.sh</h5><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-07%2011-40-34_20220807034141107976.png"></p>
+<p>③</p>
+<p><code>awk '{print "samtools sort -o "$2".bam "$2".sam"}' ../data/samples.txt &gt;step3.sam2bamall.sh </code></p>
+<h5 id="脚本文件-step3-sam2bamall-sh-1"><a href="#脚本文件-step3-sam2bamall-sh-1" class="headerlink" title="脚本文件 step3.sam2bamall.sh"></a>脚本文件 step3.sam2bamall.sh</h5><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-07%2012-01-31_20220807040148997519.png"></p>
+<p>④</p>
+<p><code>awk '{print "samtools index "$2".bam"}' ../data/samples.txt &gt;step4.bamindexall.sh</code></p>
+<h5 id="脚本文件-step4-bamindexall-sh"><a href="#脚本文件-step4-bamindexall-sh" class="headerlink" title="脚本文件 step4.bamindexall.sh"></a>脚本文件 step4.bamindexall.sh</h5><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-07%2012-02-24_20220807040243847988.png"></p>
+<h3 id="3-输出"><a href="#3-输出" class="headerlink" title="3.输出"></a>3.输出</h3><p>比对结果 bam</p>
+<p><strong>可利用IGV进行比对结果可视化，检验比对结果</strong></p>
+<h2 id="三、表达定量"><a href="#三、表达定量" class="headerlink" title="三、表达定量"></a>三、表达定量</h2><h3 id="1-输入-1"><a href="#1-输入-1" class="headerlink" title="1.输入"></a>1.输入</h3><p>比对结果 bam</p>
+<p>基因注释 genes.gtf</p>
+<h3 id="2-软件"><a href="#2-软件" class="headerlink" title="2.软件"></a>2.软件</h3><p>htseq -&gt; htseq-count</p>
+<p>subread(subread) -&gt; featureCounts</p>
+<h3 id="3-步骤"><a href="#3-步骤" class="headerlink" title="3.步骤"></a>3.步骤</h3><h4 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h4><p>run-featurecounts.R</p>
+<p>批量生成脚本</p>
+<p><code>awk '{print "Rscript script/run-featurecounts.R -b ../1.Mapping/"$2".bam -g ../ref/genes.gtf -o "$2}' ../data/samples.txt &gt;run_Quantification.sh</code></p>
+<p>run_Quantification.sh</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-07%2013-56-07_20220807055624241191.png"></p>
+<p>t</p>
+<h3 id="4-结果"><a href="#4-结果" class="headerlink" title="4.结果"></a>4.结果</h3><p>定量结果 *.count</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-07%2014-04-03_20220807060424862295.png"></p>
+<h2 id="四、合并成矩阵"><a href="#四、合并成矩阵" class="headerlink" title="四、合并成矩阵"></a>四、合并成矩阵</h2><h3 id="1-输入-2"><a href="#1-输入-2" class="headerlink" title="1.输入"></a>1.输入</h3><p>定量结果 count</p>
+<h3 id="2-步骤-1"><a href="#2-步骤-1" class="headerlink" title="2.步骤"></a>2.步骤</h3><p><code>ls ../2.Quantification/*.count &gt;genes.quant_files.txt</code></p>
+<p><code>perl script/abundance_estimates_to_matrix.pl --est_method featureCounts --quant_files genes.quant_files.txt --out_prefix genes</code></p>
+<h3 id="3-输出-1"><a href="#3-输出-1" class="headerlink" title="3.输出"></a>3.输出</h3><h4 id="①counts-矩阵"><a href="#①counts-矩阵" class="headerlink" title="①counts 矩阵"></a>①counts 矩阵</h4><p>genes.counts.matrix</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-07%2014-18-48_20220807061912982290.png"></p>
+<h4 id="②TPM-矩阵"><a href="#②TPM-矩阵" class="headerlink" title="②TPM 矩阵"></a>②TPM 矩阵</h4><p>genes.TPM.not_cross_norm</p>
+<h4 id="③TPM-TMM-矩阵"><a href="#③TPM-TMM-矩阵" class="headerlink" title="③TPM + TMM 矩阵"></a>③TPM + TMM 矩阵</h4><p>genes.TMM.EXPR.matrix</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-07%2014-14-21_20220807061445911230.png"></p>
+<h2 id="五、差异表达分析"><a href="#五、差异表达分析" class="headerlink" title="五、差异表达分析"></a>五、差异表达分析</h2><h3 id="1-输入-3"><a href="#1-输入-3" class="headerlink" title="1.输入"></a>1.输入</h3><p>counts 矩阵</p>
+<h3 id="2-软件-1"><a href="#2-软件-1" class="headerlink" title="2.软件"></a>2.软件</h3><p>DESeq2 / edgeR</p>
+<h3 id="3-步骤-1"><a href="#3-步骤-1" class="headerlink" title="3.步骤"></a>3.步骤</h3><h4 id="脚本文件-run-DE-sh"><a href="#脚本文件-run-DE-sh" class="headerlink" title="脚本文件 run_DE.sh"></a>脚本文件 run_DE.sh</h4><pre class="line-numbers language-perl" data-language="perl"><code class="language-perl">
+perl <span class="token operator">/</span>home<span class="token operator">/</span>ywh<span class="token operator">/</span>miniconda3<span class="token operator">/</span>envs<span class="token operator">/</span>r4<span class="token operator">/</span>opt<span class="token operator">/</span>trinity<span class="token operator">-</span><span class="token v-string string">2.1.1</span><span class="token operator">/</span>Analysis<span class="token operator">/</span>DifferentialExpression<span class="token operator">/</span>run_DE_analysis<span class="token operator">.</span>pl <span class="token operator">\</span>
+
+ <span class="token operator">--</span>matrix <span class="token operator">..</span><span class="token operator">/</span><span class="token number">3</span><span class="token operator">.</span>Merge_result<span class="token operator">/</span>genes<span class="token operator">.</span>counts<span class="token operator">.</span>matrix <span class="token operator">\</span>
+
+ <span class="token operator">--</span>method DESeq2 <span class="token operator">\</span>
+
+ <span class="token operator">--</span>samples_file <span class="token operator">..</span><span class="token operator">/</span>data<span class="token operator">/</span>samples<span class="token operator">.</span>txt <span class="token operator">\</span>
+
+ <span class="token operator">--</span>contrasts contrasts<span class="token operator">.</span>txt 
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-输出"><a href="#4-输出" class="headerlink" title="4.输出"></a>4.输出</h3><p>DESeq2.xxxxx.dir/genes.counts.matrix.KID_S1_vs_BLO_S1.DESeq2.Rscript</p>
+<p>为R的脚本文件</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-07%2014-22-44_20220807062315530638.png"></p>
+<p>DESeq2.xxxxx.dir/genes.counts.matrix.KID_S1_vs_BLO_S1.DESeq2.DE_results</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-07%2014-26-07_20220807062636232617.png"></p>
+<p>DESeq2.xxxxx.dir/genes.counts.matrix.KID_S1_vs_BLO_S1.DESeq2.DE_results.MA_n_Volcano.pdf</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-07%2014-29-15_20220807063029124955.png"></p>
+]]></content>
+      <categories>
+        <category>转录组</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>完整模型训练模型</title>
+    <url>/2022/08/21/028-wan-zheng-mo-xing-xun-lian-mo-xing/</url>
+    <content><![CDATA[<h2 id="一、准备数据集"><a href="#一、准备数据集" class="headerlink" title="一、准备数据集"></a>一、准备数据集</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">
+train_data <span class="token operator">=</span> torchvision<span class="token punctuation">.</span>datasets<span class="token punctuation">.</span>CIFAR10<span class="token punctuation">(</span>root<span class="token operator">=</span><span class="token string">"./dataset"</span><span class="token punctuation">,</span> train<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span> transform<span class="token operator">=</span>torchvision<span class="token punctuation">.</span>transforms<span class="token punctuation">.</span>ToTensor<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> download<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+
+test_data <span class="token operator">=</span> torchvision<span class="token punctuation">.</span>datasets<span class="token punctuation">.</span>CIFAR10<span class="token punctuation">(</span>root<span class="token operator">=</span><span class="token string">"./dataset"</span><span class="token punctuation">,</span> train<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span> transform<span class="token operator">=</span>torchvision<span class="token punctuation">.</span>transforms<span class="token punctuation">.</span>ToTensor<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> download<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="二、定义训练的设备"><a href="#二、定义训练的设备" class="headerlink" title="二、定义训练的设备"></a>二、定义训练的设备</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">
+<span class="token keyword">if</span> torch<span class="token punctuation">.</span>cuda<span class="token punctuation">.</span>is_available<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+ device <span class="token operator">=</span> torch<span class="token punctuation">.</span>device<span class="token punctuation">(</span><span class="token string">"cuda"</span><span class="token punctuation">)</span>
+
+<span class="token keyword">else</span><span class="token punctuation">:</span>
+
+ device <span class="token operator">=</span> torch<span class="token punctuation">.</span>device<span class="token punctuation">(</span><span class="token string">"cpu"</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="三、length-长度"><a href="#三、length-长度" class="headerlink" title="三、length 长度"></a>三、length 长度</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">
+train_data_size <span class="token operator">=</span> <span class="token builtin">len</span><span class="token punctuation">(</span>train_data<span class="token punctuation">)</span>
+
+test_data_size <span class="token operator">=</span> <span class="token builtin">len</span><span class="token punctuation">(</span>test_data<span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"训练数据集的长度：{}"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>train_data_size<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"测试数据集的长度：{}"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>test_data_size<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="四、利用Dataloader-来加载数据集"><a href="#四、利用Dataloader-来加载数据集" class="headerlink" title="四、利用Dataloader 来加载数据集"></a>四、利用Dataloader 来加载数据集</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">
+train_dataloader <span class="token operator">=</span> DataLoader<span class="token punctuation">(</span>train_data<span class="token punctuation">,</span> batch_size<span class="token operator">=</span><span class="token number">64</span><span class="token punctuation">)</span>
+
+test_dataloader <span class="token operator">=</span> DataLoader<span class="token punctuation">(</span>test_data<span class="token punctuation">,</span> batch_size<span class="token operator">=</span><span class="token number">64</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="五、搭建神经网络"><a href="#五、搭建神经网络" class="headerlink" title="五、搭建神经网络"></a>五、搭建神经网络</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">
+<span class="token keyword">class</span> <span class="token class-name">Tudui</span><span class="token punctuation">(</span>nn<span class="token punctuation">.</span>Module<span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+ <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+ <span class="token builtin">super</span><span class="token punctuation">(</span>Tudui<span class="token punctuation">,</span> self<span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+ self<span class="token punctuation">.</span>model1 <span class="token operator">=</span> nn<span class="token punctuation">.</span>Sequential<span class="token punctuation">(</span>
+
+ nn<span class="token punctuation">.</span>Conv2d<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">32</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> padding<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+ nn<span class="token punctuation">.</span>MaxPool2d<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+ nn<span class="token punctuation">.</span>Conv2d<span class="token punctuation">(</span><span class="token number">32</span><span class="token punctuation">,</span> <span class="token number">32</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> padding<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+ nn<span class="token punctuation">.</span>MaxPool2d<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+ nn<span class="token punctuation">.</span>Conv2d<span class="token punctuation">(</span><span class="token number">32</span><span class="token punctuation">,</span> <span class="token number">64</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> padding<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+ nn<span class="token punctuation">.</span>MaxPool2d<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+ nn<span class="token punctuation">.</span>Flatten<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+ nn<span class="token punctuation">.</span>Linear<span class="token punctuation">(</span><span class="token number">1024</span><span class="token punctuation">,</span> <span class="token number">64</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+ nn<span class="token punctuation">.</span>Linear<span class="token punctuation">(</span><span class="token number">64</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>
+
+ <span class="token punctuation">)</span>
+
+
+ <span class="token keyword">def</span> <span class="token function">forward</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> x<span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+ x <span class="token operator">=</span> self<span class="token punctuation">.</span>model1<span class="token punctuation">(</span>x<span class="token punctuation">)</span>
+
+ <span class="token keyword">return</span> x
+
+
+tudui <span class="token operator">=</span> Tudui<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># if torch.cuda.is_available():</span>
+
+<span class="token comment"># tudui = tudui.cuda()</span>
+
+tudui <span class="token operator">=</span> tudui<span class="token punctuation">.</span>to<span class="token punctuation">(</span>device<span class="token punctuation">)</span>
+
+
+<span class="token comment"># check</span>
+
+<span class="token comment"># input = torch.ones((64,3,32,32))</span>
+
+<span class="token comment"># output = tudui(input)</span>
+
+<span class="token comment"># print(output.shape)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="六、损失函数"><a href="#六、损失函数" class="headerlink" title="六、损失函数"></a>六、损失函数</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">
+loss_fn <span class="token operator">=</span> nn<span class="token punctuation">.</span>CrossEntropyLoss<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># if torch.cuda.is_available():</span>
+
+<span class="token comment"># loss_fn = loss_fn.cuda()</span>
+
+loss_fn <span class="token operator">=</span> loss_fn<span class="token punctuation">.</span>to<span class="token punctuation">(</span>device<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="七、优化器"><a href="#七、优化器" class="headerlink" title="七、优化器"></a>七、优化器</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">
+learning_rate <span class="token operator">=</span> <span class="token number">1e-2</span>
+
+optimizer <span class="token operator">=</span> torch<span class="token punctuation">.</span>optim<span class="token punctuation">.</span>SGD<span class="token punctuation">(</span>tudui<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> lr<span class="token operator">=</span>learning_rate<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="八、设置训练网络的一些参数"><a href="#八、设置训练网络的一些参数" class="headerlink" title="八、设置训练网络的一些参数"></a>八、设置训练网络的一些参数</h2><pre class="line-numbers language-python" data-language="python"><code class="language-python">
+<span class="token comment"># 记录训练的次数</span>
+
+total_train_step <span class="token operator">=</span> <span class="token number">0</span>
+
+<span class="token comment"># 记录测试的次数</span>
+
+total_test_step <span class="token operator">=</span> <span class="token number">0</span>
+
+<span class="token comment"># 训练的轮数</span>
+
+epoch <span class="token operator">=</span> <span class="token number">10</span>
+
+
+<span class="token comment"># 添加tensorboard</span>
+
+writer <span class="token operator">=</span> SummaryWriter<span class="token punctuation">(</span><span class="token string">"logs_train"</span><span class="token punctuation">)</span>
+
+start_time <span class="token operator">=</span> time<span class="token punctuation">.</span>time<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>epoch<span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+ <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"------第 {} 轮训练开始------"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+
+ <span class="token comment"># 训练步骤开始</span>
+
+ <span class="token keyword">for</span> data <span class="token keyword">in</span> train_dataloader<span class="token punctuation">:</span>
+
+ imgs<span class="token punctuation">,</span> targets <span class="token operator">=</span> data
+
+<span class="token comment"># if torch.cuda.is_available():</span>
+
+<span class="token comment"># imgs = imgs.cuda()</span>
+
+<span class="token comment"># targets = targets.cuda()</span>
+
+ imgs <span class="token operator">=</span> imgs<span class="token punctuation">.</span>to<span class="token punctuation">(</span>device<span class="token punctuation">)</span>
+
+ targets <span class="token operator">=</span> targets<span class="token punctuation">.</span>to<span class="token punctuation">(</span>device<span class="token punctuation">)</span>
+
+ outputs <span class="token operator">=</span> tudui<span class="token punctuation">(</span>imgs<span class="token punctuation">)</span>
+
+ loss <span class="token operator">=</span> loss_fn<span class="token punctuation">(</span>outputs<span class="token punctuation">,</span> targets<span class="token punctuation">)</span>
+
+
+ <span class="token comment"># 优化器优化模型</span>
+
+ optimizer<span class="token punctuation">.</span>zero_grad<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+ loss<span class="token punctuation">.</span>backward<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+ optimizer<span class="token punctuation">.</span>step<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+ total_train_step <span class="token operator">=</span> total_train_step <span class="token operator">+</span> <span class="token number">1</span>
+
+ <span class="token keyword">if</span> total_train_step <span class="token operator">%</span> <span class="token number">100</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span>
+
+ end_time <span class="token operator">=</span> time<span class="token punctuation">.</span>time<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+ <span class="token keyword">print</span><span class="token punctuation">(</span>end_time <span class="token operator">-</span> start_time<span class="token punctuation">)</span>
+
+ <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"训练次数：{}, Loss:{}"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>total_train_step<span class="token punctuation">,</span> loss<span class="token punctuation">.</span>item<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+ writer<span class="token punctuation">.</span>add_scalar<span class="token punctuation">(</span><span class="token string">"train_loss"</span><span class="token punctuation">,</span> loss<span class="token punctuation">.</span>item<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> total_train_step<span class="token punctuation">)</span>
+
+ <span class="token comment"># 测试步骤开始</span>
+
+ total_test_loss <span class="token operator">=</span> <span class="token number">0</span>
+
+ total_accuracy <span class="token operator">=</span> <span class="token number">0</span>
+
+ <span class="token keyword">with</span> torch<span class="token punctuation">.</span>no_grad<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+ <span class="token keyword">for</span> data <span class="token keyword">in</span> test_dataloader<span class="token punctuation">:</span>
+
+ imgs<span class="token punctuation">,</span> targets <span class="token operator">=</span> data
+
+<span class="token comment"># if torch.cuda.is_available():</span>
+
+<span class="token comment"># imgs = imgs.cuda()</span>
+
+<span class="token comment"># targets = targets.cuda()</span>
+
+ imgs <span class="token operator">=</span> imgs<span class="token punctuation">.</span>to<span class="token punctuation">(</span>device<span class="token punctuation">)</span>
+
+ targets <span class="token operator">=</span> targets<span class="token punctuation">.</span>to<span class="token punctuation">(</span>device<span class="token punctuation">)</span>
+
+ outputs <span class="token operator">=</span> tudui<span class="token punctuation">(</span>imgs<span class="token punctuation">)</span>
+
+ loss <span class="token operator">=</span> loss_fn<span class="token punctuation">(</span>outputs<span class="token punctuation">,</span> targets<span class="token punctuation">)</span>
+
+ total_test_loss <span class="token operator">=</span> total_test_loss <span class="token operator">+</span> loss<span class="token punctuation">.</span>item<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+ accuracy <span class="token operator">=</span> <span class="token punctuation">(</span>outputs<span class="token punctuation">.</span>argmax<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">==</span> targets<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token builtin">sum</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+ total_accuracy <span class="token operator">+=</span> accuracy
+
+
+ <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"整体测试集上的Loss：{}"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>total_test_loss<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+ <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"整体测试集上的正确率：{}"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>total_accuracy<span class="token operator">/</span>test_data_size<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+
+ writer<span class="token punctuation">.</span>add_scalar<span class="token punctuation">(</span><span class="token string">"test_loss"</span><span class="token punctuation">,</span> total_test_loss<span class="token punctuation">,</span> total_test_step<span class="token punctuation">)</span>
+
+ writer<span class="token punctuation">.</span>add_scalar<span class="token punctuation">(</span><span class="token string">"test_accuracy"</span><span class="token punctuation">,</span> total_accuracy<span class="token punctuation">,</span> total_test_step<span class="token punctuation">)</span>
+
+ total_test_step <span class="token operator">+=</span> <span class="token number">1</span>
+
+
+ torch<span class="token punctuation">.</span>save<span class="token punctuation">(</span>tudui<span class="token punctuation">,</span> <span class="token string">"tudui_{}.pth"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+ <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"模型已保存"</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
+      <categories>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>深度学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Western blot 原理和详细操作步骤</title>
+    <url>/2022/11/04/029-western-blot/</url>
+    <content><![CDATA[<h2 id="Western-blot-原理"><a href="#Western-blot-原理" class="headerlink" title="Western blot 原理"></a>Western blot 原理</h2><p><img src="/images/v2-d6d9839833ec998ef6f250fe7a4dbc5b_720w.webp"></p>
+<blockquote>
+<p>Western blot（也称为蛋白质免疫印迹）是一种常用于研究中分离和鉴定蛋白质的技术。它利用 SDS-聚丙烯酰胺凝胶电泳 (SDS-PAGE) 来分离指定样品中包含的各种蛋白质，然后将分离的蛋白质转移到硝酸纤维素或 PVDF 膜上，接下来将膜与对感目标蛋白质的特异抗体一起孵育。在洗膜过程中，未结合的抗体被洗掉，只留下与目标蛋白质结合的抗体，最后通过显影胶片或荧光扫描来检测结合的抗体。</p>
+</blockquote>
+<blockquote>
+<p>由于抗体仅与目标蛋白质结合，因此一般只能看到一条清晰的带，条带的粗细对应于蛋白质量。通过分析特定反应的位置和强度，可以获得目标蛋白在给定细胞或组织匀浆中的表达信息。由于凝胶电泳的高分辨率和免疫的强特异性和高灵敏度，Western印迹分析可检测低至1ng的靶蛋白。该方法广泛应用于分子生物学、生物化学、免疫遗传学等分子生物学领域。</p>
+</blockquote>
+<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><h3 id="一、准备样品"><a href="#一、准备样品" class="headerlink" title="一、准备样品"></a>一、准备样品</h3><ol>
+<li><p>制冰，准备冰盒。</p>
+</li>
+<li><p>配制细胞裂解液：根据细胞数量确定所需裂解液：50ul/六孔板一孔 。</p>
+</li>
+</ol>
+<p> 裂解液配方：100ul碧云天裂解液+1ul蛋白酶抑制剂混合物+1ul PMSF</p>
+<ol start="3">
+<li><p>按实验需要准备好细胞：去掉培养基，1×PBS洗3次（去掉培养基中的血清），每个孔（6孔板）加入适量的裂解液。迅速用细胞刮刮下细胞并转移至1.5ml管中，置于冰上20min，振荡混合后，再置冰上10min。</p>
+</li>
+<li><p>12,000g，4℃离心15min，收集上清至另一1.5ml管。</p>
+</li>
+<li><p>取2.5ul样品加22.5ul三蒸水稀释，用于BCA法测蛋白浓度。</p>
+</li>
+<li><p>其余样品加5×Loading Buffer（按2.5mlBuffer/10ml蛋白）用95℃煮10分钟，期间振荡一次。</p>
+</li>
+<li><p>直接上样跑胶或者分装-80°C长期保存。</p>
+</li>
+</ol>
+<h3 id="二、SDS-PAGE聚丙烯酰胺凝胶电泳"><a href="#二、SDS-PAGE聚丙烯酰胺凝胶电泳" class="headerlink" title="二、SDS-PAGE聚丙烯酰胺凝胶电泳"></a>二、SDS-PAGE聚丙烯酰胺凝胶电泳</h3><ol>
+<li>制备分离胶（10%）</li>
+</ol>
+<p> <em>注：不同的分离胶配方可参见《分子克隆》p1716表A8-9</em></p>
+<ol start="2">
+<li><p>小心注入分离胶，留2 cm左右的空间（制胶架绿色或白色边框下缘）给浓缩胶，顶层覆盖无水乙醇。静置约30分钟。</p>
+</li>
+<li><p>制备浓缩胶（5%）</p>
+</li>
+<li><p>倒掉无水乙醇，用吸水纸吸去残留无水乙醇，然后将浓缩胶注入分离胶上端，注意避免气泡。</p>
+</li>
+<li><p>插入梳子，待浓缩胶凝固（胶与梳子之间有明显的分界，加上分离胶的凝固时间要大于2h），<del>用超纯水水将孔洗净，去除凝胶碎片，然后用滤纸吸干水</del>。</p>
+</li>
+<li><p>将胶放入电泳槽，上下槽均加入1×电泳缓冲液（反复使用不要超过3次）。</p>
+</li>
+<li><p>上样：marker孔中取5ul prestained marker<del>加入适量1×上样Buffer,使得总体积与sample孔一样</del>。Sample上样量一般为15－25μl，先用heating block 100℃煮5-10分钟，期间振荡一次，然后快速离心再上样跑胶；<del>在没有load sample的孔中加入等体积的1×上样Buffer</del>。</p>
+</li>
+<li><p>电泳：开始为恒压60-80V，当跑过浓缩胶后，将电流加大到100-120V，电泳时间根据目标蛋白的大小及marker的位置确定，一般为目标蛋白跑到分离胶的三分之二的位置即可。</p>
+</li>
+</ol>
+<h3 id="三、转膜"><a href="#三、转膜" class="headerlink" title="三、转膜"></a>三、转膜</h3><p><img src="/images/v2-4655ee5889e0b74ffeaf44a5927c9cfb_720w.webp"></p>
+<ol>
+<li><p>切胶，按Marker指示和目的条带的位置切胶(注意将胶切角做记号)，将洗脱的胶浸入转膜缓冲液中15分钟。</p>
+</li>
+<li><p>PVDF膜做好记号后先浸入甲醇中1分钟，再连同4张3mm滤纸和海绵浸入转移缓冲液中15分钟。</p>
+</li>
+<li><p>制备“夹心饼”：</p>
+</li>
+</ol>
+<p> 依次按如下顺序：纤维垫–滤纸—PVDF膜—凝胶—滤纸–纤维垫。</p>
+<p> 注意：每加一种物品都要对齐，确保没有气泡。</p>
+<ol start="4">
+<li>转膜：转膜时间根据1.确定。（60min）</li>
+</ol>
+<p> PVDF膜一边接正极（红色），凝胶一边接负极（黑色）。</p>
+<h3 id="四、封闭和抗体孵育"><a href="#四、封闭和抗体孵育" class="headerlink" title="四、封闭和抗体孵育"></a>四、封闭和抗体孵育</h3><p><img src="/images/v2-579f20046a8c0c8ed195c58cfce73423_720w.webp"></p>
+<ol>
+<li><p>转膜以后，<del>用10ml的1×TBS室温洗膜10分钟</del>。</p>
+</li>
+<li><p>15ml奶粉封闭液室温孵育<strong>2h</strong>或者4℃平缓摇动过夜。由于奶粉较为难溶，因此要<strong>提前至少1h配置</strong>。</p>
+</li>
+<li><p>10ml的TBS/T洗膜<del>3</del>5次，每次5分钟。</p>
+</li>
+<li><p>加入15ml一抗稀释缓冲液（抗体根据说明稀释），室温2 hrs或者4℃平缓摇动过夜，回收一抗，<del>按5ul/ml一抗液加入叠氮钠（可抑制细菌生长）4℃保存（不常用的抗体可-20℃长期保存），可重复使用！</del></p>
+</li>
+</ol>
+<p><em>如果用辣根过氧化物酶(HRP)检测系统，封闭液不应加叠氮钠(NaN3)，因为叠氮钠对辣根过氧化物酶（HRP）有灭活作用</em></p>
+<ol start="5">
+<li><p>10ml的TBS/T洗膜<del>3</del>5次，每次5分钟。</p>
+</li>
+<li><p>加入二抗（一般为1：2000稀释），室温平缓摇动1h。</p>
+</li>
+<li><p>10ml的TBS/T洗膜<del>3</del>5次，每次5分钟。</p>
+</li>
+</ol>
+<p><img src="/images/v2-787bb84a8e567620a49e3f0df4b365bf_720w.webp"></p>
+<h3 id="五、显影"><a href="#五、显影" class="headerlink" title="五、显影"></a>五、显影</h3><p><img src="/images/v2-87069acd533b8a41b7a4296c72786b0b_720w.webp"></p>
+<ol>
+<li><p>显色步骤：先铺保鲜膜，在吸水纸上再铺上保鲜膜；分别将水、显影液（颜色变深则不能用）和定影液倒入各自的盘中。2.5ml ECL-A 和2.5ml ECL-B混合,避光。将ECL混合液、膜等拿入暗房。关好门，反锁，拉回布。ECL混合液倒入小盒中，膜用吸水纸稍微吸干放入ECL混合液中室温摇动5min（使得ECL均匀的铺过膜），吸水纸吸干后置于保鲜膜上，膜面朝下包好置于夹子上，剪好X-film（注意手只能拿X-film的边缘）放于膜上，剪角一边为marker(注意：取胶片时要把灯光调到最小，且不要对着灯光，应背着灯光。)，根据条带的亮度来调整曝光时间，一般可先曝光2min，观察条带的深度，再确定最佳的曝光时间。</p>
+</li>
+<li><p>显影，定影: 取出X-film置于显影液中一定时间后(视目的条带强度与背景而定)，水洗一次再置于定影液中定影5min以上。</p>
+</li>
+</ol>
+<p> <em>（当然，随着时代的进步，现在很多实验室很少用古老的胶片显影定影。用在最后的发光二抗孵育后，直接扫描。这类仪器很多，操作方法看不同实验室的配置）</em></p>
+]]></content>
+      <categories>
+        <category>蛋白组</category>
+      </categories>
+      <tags>
+        <tag>实验</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SDS-PAGE（聚丙烯酰胺）蛋白电泳原理详解</title>
+    <url>/2022/11/04/030-sds-page/</url>
+    <content><![CDATA[<h2 id="WB流程"><a href="#WB流程" class="headerlink" title="WB流程"></a>WB流程</h2><blockquote>
+<p>首先通过SDS-PAGE聚丙烯酰胺凝胶电泳使蛋白质样本分离，再将凝胶上的蛋白电泳转移到固相载体上（NC膜或者PVDF膜），方便后续印迹显影操作，然后使用封闭液将封闭非特异位点，以避免抗体的非特异性吸附，这样固定的蛋白质即可与特异性的多克隆或单克隆抗体相互作用。最后通过化学发光法或荧光方法进行蛋白条带显影。</p>
+</blockquote>
+<blockquote>
+<p>其中SDS聚丙烯酰胺凝胶电泳条件是关系到蛋白条带是否均一、整齐、干净的关键步骤。</p>
+</blockquote>
+<h2 id="SDS-PAGE聚丙烯酰胺凝胶电泳的原理和步骤"><a href="#SDS-PAGE聚丙烯酰胺凝胶电泳的原理和步骤" class="headerlink" title="SDS-PAGE聚丙烯酰胺凝胶电泳的原理和步骤"></a>SDS-PAGE聚丙烯酰胺凝胶电泳的原理和步骤</h2><p><strong>SDS-PAGE</strong> （十二烷基硫酸钠–聚丙烯酰胺，sodium dodecyl sulfate – polyacrylamide gel electrophoresis）凝胶电泳是一种可以根据蛋白质的分子量分离样本中蛋白的技术。在电荷的影响下分离大分子称为电泳（electrophoresis）。在SDS-PAGE中使用的凝胶是聚丙烯酰胺（polyacrylamide），使蛋白质呈线性化的试剂是SDS。 因此得名SDS-PAGE。</p>
+<h3 id="一、SDS-PAGE的原理"><a href="#一、SDS-PAGE的原理" class="headerlink" title="一、SDS-PAGE的原理:"></a>一、SDS-PAGE的原理:</h3><p>首先准备一套蛋白电泳设备，蛋白质样品和marker上样到凝胶孔中，设置电压，启动电泳程序。通常样本中会添加一种还原剂，如巯基乙醇或二硫苏糖醇(DTT)(在洗涤剂的存在下，如SDS），可以打开折叠蛋白质的二硫键；而样本中加入的SDS洗涤剂可以给所有蛋白质加上负电荷，从而将它们线性化成多肽。聚丙烯酰胺则是多肽电泳分离的介质。多肽在电场的作用下向阳极方向泳动。</p>
+<p>蛋白电泳的迁移率与一下三个因素有关：</p>
+<p>①　形状—所有的蛋白质在用还原剂处理后都处于一级结构中。 因此，形状不影响蛋白质的分离。</p>
+<p>②　电荷—经过SDS处理后，所有的蛋白质都是负电荷， 因此，电荷不影响分离。</p>
+<p>③　大小—蛋白质的分离完全与它们的分子量大小有关。</p>
+<p>在电泳中，分子量越小的多肽移动得越快，因为它们遇到的阻力更小。分子量越大的多肽移动得更慢，因为它们遇到的阻力更大。因此蛋白质完全是因为分子量大小的不同而分开（如图1）。</p>
+<p><img src="/images/v2-26a9bacb485bfc577ab19e732af15c7b_720w.webp"></p>
+<h3 id="二、SDS-PAGE电泳中各主要试剂的作用："><a href="#二、SDS-PAGE电泳中各主要试剂的作用：" class="headerlink" title="二、SDS-PAGE电泳中各主要试剂的作用："></a>二、SDS-PAGE电泳中各主要试剂的作用：</h3><h5 id="1-β-巯基乙醇-二硫苏糖醇（DTT）"><a href="#1-β-巯基乙醇-二硫苏糖醇（DTT）" class="headerlink" title="1. β-巯基乙醇/二硫苏糖醇（DTT）"></a>1. β-巯基乙醇/二硫苏糖醇（DTT）</h5><p>β-巯基乙醇或二硫苏糖醇（DTT）做为还原剂添加入样品中，可以还原（分解）存在于蛋白质的肽链上半胱氨酸残基之间的二硫键(S-S键)。S-S键使蛋白质折叠形成二级结构。因为蛋白的构象会干扰电泳的迁移率。所以，当电泳时，消除蛋白构象对迁移率的干扰非常重要。β-巯基乙醇还原蛋白的二硫键为游离的-SH，样本中所有的蛋白都变成线性的一级结构，使其电泳迁移率只与蛋白分子量有关（图1）。</p>
+<h5 id="2-十二烷基硫酸钠-SDS"><a href="#2-十二烷基硫酸钠-SDS" class="headerlink" title="2. 十二烷基硫酸钠 (SDS)"></a>2. 十二烷基硫酸钠 (SDS)</h5><p>在制备SDS-PAGE样品时，将SDS混合在样品缓冲液中。 蛋白样本用β-巯基乙醇处理后解聚成单一线性；用SDS处理后，所有蛋白质均只带负电荷。 SDS可以使所有的蛋白质分子均匀的带上负电荷(图01)。 因此，当施加电压时，所有的蛋白质都向凝胶的正极迁移。 因为，不同大小的蛋白质得到的负电荷与其分子量成正比，它们只因为分子量大小的不同而分离开，而不是因为带电荷的多少或者蛋白构象。 在凝胶中也存在SDS，这是为了确保所有的蛋白质在整个凝胶中保持荷载负电荷。</p>
+<h5 id="3-溴酚蓝-BPB"><a href="#3-溴酚蓝-BPB" class="headerlink" title="3. 溴酚蓝 (BPB)"></a>3. 溴酚蓝 (BPB)</h5><p>溴酚蓝是电泳中的示踪染料，用于监测各个蛋白分子电泳过程的进展。 BPB与样品蛋白混合后上样，当电泳开始时，BPB与蛋白质一起迁移，但速度更快，会比样品中的任何蛋白质更快到达凝胶的末端，甚至缓冲液中的甘氨酸分子也在BPB之后到达末端。 BPB带有轻微的负电荷，这就是为什么它可以向阳极迁移，同时又可以作为蛋白质分子的示踪染料。</p>
+<h5 id="4-聚丙烯酰胺凝胶"><a href="#4-聚丙烯酰胺凝胶" class="headerlink" title="4. 聚丙烯酰胺凝胶"></a>4. 聚丙烯酰胺凝胶</h5><p>聚丙烯酰胺凝胶是通过使用少量的交联剂（如N，N‘-亚甲基双丙烯酰胺）使单体丙烯酰胺在水中的聚合而成。因此，丙烯酰胺（Acrylamide）和双丙烯酰胺(Bis-acrylamide)共聚形成了丙烯酰胺的直链与双丙烯酰胺的相互联结形成三维网络结构。</p>
+<p><img src="/images/v2-54f1bccefd52213e7ecf9d969972e929_b.jpg"></p>
+<p>有其他的交联剂可以代替双丙烯酰胺（bisacrylamide），如：</p>
+<p>² 哌嗪二丙烯酸酯 (PDA) –-可以用于降低SDS-PAGE胶的银染背景；</p>
+<p>² N,N’- 酒石酸双丙烯铣胺 (DATD) –一种可以破坏交联剂而使凝胶可溶的试剂；</p>
+<p>丙烯酰胺和双丙烯酰胺的比例决定了凝胶的孔径。 因此，在不连续凝胶体系中，会有不同浓度和pH的浓缩胶和分离胶。</p>
+<h3 id="三、那么，浓缩胶是如何工作的呢？"><a href="#三、那么，浓缩胶是如何工作的呢？" class="headerlink" title="三、那么，浓缩胶是如何工作的呢？"></a>三、那么，浓缩胶是如何工作的呢？</h3><p>浓缩胶的目的是将需要分离的蛋白质混合物聚集在浓缩胶和分离胶的分界线上。 因此，所有的蛋白质首先被压缩累积在分界线上，然后，在大约同一时间进入分离凝胶，无论蛋白质的大小是多少。</p>
+<p>2种分子与此有关：</p>
+<p>①　紧随其后的来自Tris-Gly电泳缓冲液的甘氨酸分子</p>
+<p>②　具备牵引作用的来自Tris-HCL 电泳缓冲液的氯化物离子</p>
+<p>当施加电压后，甘氨酸分子（最简单的氨基酸）和Cl-开始通过凝胶向正极迁移。 由于甘氨酸分子在浓缩胶中以两性离子的形式存在，其电泳迁移速率非常慢。 氯离子比甘氨酸分子迁移得更快，产生了不平衡的正反离子区域，从而在氯离子和甘氨酸离子之间形成了很大的电压梯度。 在甘氨酸分子（最慢的)和氯离子(最快的）之间存在样本混合物中的所有蛋白质（图03）。样品分子在氯化物和甘氨酸之间中间迁移，逐渐被压缩成非常薄而清晰的蛋白层，方便后面更好的蛋白分离。</p>
+<p>在这个阶段，样本蛋白分子处于两种离子（后面的甘氨酸和前面的氯离子Cl-）之间，在浓缩胶和分离胶之间形成薄薄的一层。</p>
+<p><img src="/images/v2-6c85facd823b6328166fe18f1ffe34d2_720w.webp"></p>
+<p>当蛋白分子到达分离胶界面时发生了什么？</p>
+<p>当到达分离胶时，pH值增大，孔径急剧减小。在更高的pH值下，甘氨酸分子不再以两性离子的形式存在，它们在这个阶段就会电离，并开始比在浓缩胶中时迁移得更快。 氯离子Cl-很快就会向阳极迁移。 因此，一旦蛋白质不堆积，甘氨酸分子很快难以束缚样品蛋白质分子，蛋白质分子开始在电流的作用下按照分子量大小自由的分离(图4)。</p>
+<p><img src="/images/v2-de6189d4cd377cffe335c8f9117c453d_720w.webp"></p>
+<p>| | 浓缩胶 | 分离胶 |</p>
+<p>| :————: | :————: | :————: |</p>
+<p>| 聚丙烯酰胺浓度 | 低 | 高 |</p>
+<p>| 孔径大小 | 更大| 更小|</p>
+<p>| Tris-HCl 的pH值 | 6.8 | 8.8|</p>
+<p>| 目的 | 使多肽链积聚在浓缩胶和分离胶的界线上 | 根据分子量大小分离多肽分子 |</p>
+<p><strong>过硫酸铵（APS）和TEMED</strong></p>
+<p>凝胶的聚合是通过自由基机制发生的。 TEMED(N，N，N，N-四甲基乙二胺)作为催化剂，生成硫酸盐自由基。过硫酸铵是提供形成自由基的硫酸盐基团的。 这些用于自由基生成的硫酸盐由过硫酸铵提供，如图02所示。</p>
+<h3 id="四、SDS-PAGE凝胶电泳的主要步骤："><a href="#四、SDS-PAGE凝胶电泳的主要步骤：" class="headerlink" title="四、SDS-PAGE凝胶电泳的主要步骤："></a>四、SDS-PAGE凝胶电泳的主要步骤：</h3><h5 id="1-先制备和灌注分离胶"><a href="#1-先制备和灌注分离胶" class="headerlink" title="1. 先制备和灌注分离胶:"></a>1. 先制备和灌注分离胶:</h5><p>制备分离胶需要两块玻璃板，一个短板，一个长板，将两块玻璃板夹在制胶架上（图5），灌胶完成后，加异丙醇赶走凝胶上面的气泡。关于灌胶的高度，这可以通过放置梳子确定，一般大约梳子下1cm,用笔标记制胶的高度，开始灌胶，加异丙醇封胶。等待胶凝固后，倒掉上层异丙醇，用吸水纸吸干异丙醇。</p>
+<p><img src="/images/v2-2d20b9a30f6ac4b7bf76264825c6580b_720w.webp"></p>
+<h5 id="2-再制备和灌注浓缩胶"><a href="#2-再制备和灌注浓缩胶" class="headerlink" title="2. 再制备和灌注浓缩胶:"></a>2. 再制备和灌注浓缩胶:</h5><p>当下层的分离胶凝固后，就可以开始直接加积层胶至玻璃最上层，然后插入梳子。等待积层胶凝固后，小心拔出梳子，避免用力过猛破坏了凝胶上样孔。</p>
+<h5 id="3-点样至凝胶孔中："><a href="#3-点样至凝胶孔中：" class="headerlink" title="3. 点样至凝胶孔中："></a>3. 点样至凝胶孔中：</h5><p>用微量移液器向凝胶孔中依次加入蛋白marker和样本，蛋白marker是已知蛋白条带分子量的预染蛋白，可作为标定蛋白大小的标尺参考。然后依次点入其他样本至凝胶孔中。每孔的样本上样量保持一致（主要是质量一致），加样时要小心，确保不损坏加样孔的尺寸或不将样品溢出孔外，更不能把样本加到孔外。 在这个阶段，蛋白质的样品是蓝色的，因为在制备样品时使用了电泳指示剂染料–溴酚蓝</p>
+<p><img src="/images/v2-4c63a7a570cd2369994aff563d2963dc_720w.webp"></p>
+<h5 id="4-设定电泳条件，启动电泳："><a href="#4-设定电泳条件，启动电泳：" class="headerlink" title="4. 设定电泳条件，启动电泳："></a>4. 设定电泳条件，启动电泳：</h5><p>将凝胶和玻璃板浸入电泳缓冲液中后，就可以开始设定电压和时间，开始电泳了。 当示踪染料到达或穿过凝胶时，停止电泳。</p>
+<h5 id="5-分析蛋白条带"><a href="#5-分析蛋白条带" class="headerlink" title="5. 分析蛋白条带"></a>5. 分析蛋白条带</h5><p>考马斯亮蓝染色或者进行蛋白转膜以进行后续的免疫印迹实验；</p>
+<p>用去离子水冲洗凝胶3-5次，以去除SDS和缓冲液。 它可能会阻碍染料（0.1%考马斯蓝）与蛋白质的结合。 然后将凝胶浸泡在考马斯蓝染液中染色，室温，摇床孵育。 一般蛋白质条带会在几分钟内开始出现，但完全染色大约需要1小时（图06）</p>
+]]></content>
+      <categories>
+        <category>蛋白组</category>
+      </categories>
+      <tags>
+        <tag>实验</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PCR实验最常见的9个问题及解决方案</title>
+    <url>/2022/11/08/031-pcr-shi-yan/</url>
+    <content><![CDATA[<h2 id="1-如何有效设计引物"><a href="#1-如何有效设计引物" class="headerlink" title="1. 如何有效设计引物"></a>1. 如何有效设计引物</h2><ol>
+<li><p>使用Oligo或Primer设计引物，</p>
+</li>
+<li><p>在保守区内设计</p>
+</li>
+<li><p>长度一般在18-27bp</p>
+</li>
+<li><p>上下游引物Tm值最好是60-75℃</p>
+</li>
+<li><p>GC含量=40%-60%</p>
+</li>
+<li><p>引物自身及引物之间不应存在互补序列，避免发夹结构</p>
+</li>
+</ol>
+<h2 id="2-PCR电泳无扩增条带"><a href="#2-PCR电泳无扩增条带" class="headerlink" title="2. PCR电泳无扩增条带"></a>2. PCR电泳无扩增条带</h2><ol>
+<li><p>酶失活或在反应体系中未加入酶。TaqDNA聚合酶因保存或运输不当而失活，往往通过更换新酶或用另一来源的酶以获得满意的结果。</p>
+</li>
+<li><p>模板含有杂质。特别是对甲醛固定及石蜡包埋的组织常含甲酸，造成DNA脱嘌呤而影响PCR的结果。</p>
+</li>
+<li><p>变性温度是否准确：PCR仪指示温度与实际温度是否相符，过高酶在前几个循环就迅速失活；过低则模板变性不彻底。</p>
+</li>
+<li><p>反应系统中污染了蛋白酶及核酸酶，应在未加Taq酶以前，将反应体系95℃加热5-10分钟。</p>
+</li>
+<li><p>引物变质失效。人工合成的引物是否正确。是否纯化，或因储存条件不当而失活。</p>
+</li>
+<li><p>引物错误。利用BLAST检查引物特异性或重新设计引物。</p>
+</li>
+<li><p>DNA凝胶电泳时加入阳性对照，确保不是DNA凝胶和PCR程序的问题。</p>
+</li>
+</ol>
+<h2 id="3-PCR产物量过少"><a href="#3-PCR产物量过少" class="headerlink" title="3. PCR产物量过少"></a>3. PCR产物量过少</h2><ol>
+<li><p>退火温度不合适。以2度为梯度设计梯度PCR反应优化退火温度。</p>
+</li>
+<li><p>DNA模板量太少。增加DNA模板量。</p>
+</li>
+<li><p>PCR循环数不足。增加反应循环数。</p>
+</li>
+<li><p>引物量不足。增加体系中引物含量。</p>
+</li>
+<li><p>延伸时间太短。以1kb/分钟的原则设置延伸时间。</p>
+</li>
+<li><p>变性时间过长。变性时间过长会导致DNA聚合酶失活。</p>
+</li>
+<li><p>DNA模板中存在抑制剂。确保DNA模板干净</p>
+</li>
+</ol>
+<h2 id="4-扩增产物在凝胶中涂布或成片状条带弥散"><a href="#4-扩增产物在凝胶中涂布或成片状条带弥散" class="headerlink" title="4. 扩增产物在凝胶中涂布或成片状条带弥散"></a>4. 扩增产物在凝胶中涂布或成片状条带弥散</h2><ol>
+<li><p>酶量过高。减少酶量；酶的质量差，调换另一来源的酶。</p>
+</li>
+<li><p>dNTP浓度过高。减少dNTP的浓度。</p>
+</li>
+<li><p>MgCl2浓度过高。可适当降低其用量。</p>
+</li>
+<li><p>模板量过多。质粒DNA的用量应&lt;50ng，而基因组DNA则应&lt;200ng。</p>
+</li>
+<li><p>引物浓度不够优化。对引物进行梯度稀释重复PCR反应。</p>
+</li>
+<li><p>循环次数过多；增加模板量减少循环次数至30，缩短退火时间及延伸时间，或改用二种温度的PCR循环。</p>
+</li>
+<li><p>退火温度过低。</p>
+</li>
+<li><p>电泳体系有问题：</p>
+</li>
+</ol>
+<p> ①凝胶中缓冲液和电泳缓冲液浓度相差太大；</p>
+<p> ②凝胶没有凝固好；</p>
+<p> ③琼脂糖质量差。</p>
+<ol start="9">
+<li>若为PCR试剂盒则可能：</li>
+</ol>
+<p> ①由于运输储存不当引起试剂盒失效；</p>
+<p> ②试剂盒本身质量有问题，如引物选择、循环参数等选择不当。</p>
+<ol start="10">
+<li>降解的陈旧模板扩增也易产生涂布。</li>
+</ol>
+<h2 id="5-扩增产物出现多条带（杂带）"><a href="#5-扩增产物出现多条带（杂带）" class="headerlink" title="5. 扩增产物出现多条带（杂带）"></a>5. 扩增产物出现多条带（杂带）</h2><ol>
+<li><p><strong>引物用量偏大</strong>，<strong>引物的特异性不高</strong>。应调换引物或降低引物的使用量。</p>
+</li>
+<li><p>循环的次数过多。适当增加模板的量，减少循环次数。</p>
+</li>
+<li><p>酶的用量偏高或酶的质量不好，应降低酶量或调换另一来源的酶。</p>
+</li>
+<li><p>退火温度偏低，退火及延伸时间偏长。应提高退火温度，减少变性与延伸时间，也可采用二种温度的PCR扩增。以2度为梯度设计梯度PCR反应优化退火温度。</p>
+</li>
+<li><p>样品处理不当。</p>
+</li>
+<li><p>Mg2+浓度偏高，因适当调整Mg2+使用浓度。</p>
+</li>
+<li><p>若为PCR试剂盒，也可能时试剂盒本身质量有问题。</p>
+</li>
+<li><p>复制提前终止。使用非热启动的聚合酶时常有发生。冰上准备反应体系或采用热启动聚合酶。</p>
+</li>
+<li><p>反应缓冲液未完全融化或未充分混匀。确保反应缓冲液融化完全并彻底混匀。</p>
+</li>
+<li><p>引物特异性差。利用BLAST检查引物特异性或重新设计引物。</p>
+</li>
+<li><p>引物量过多。减少反应体系中引物的用量。</p>
+</li>
+<li><p>模板量过多。质粒DNA的用量应&lt;50ng，而基因组DNA则应&lt;200ng</p>
+</li>
+<li><p>外源DNA污染。确保操作的洁净</p>
+</li>
+</ol>
+<h2 id="6-阴性对照出现条带"><a href="#6-阴性对照出现条带" class="headerlink" title="6. 阴性对照出现条带"></a>6. 阴性对照出现条带</h2><ol>
+<li>试剂，枪头，工作台污染。使用全新的试剂和枪头，对工作台进行清洁</li>
+</ol>
+<h2 id="7-条带大小与理论不符"><a href="#7-条带大小与理论不符" class="headerlink" title="7. 条带大小与理论不符"></a>7. 条带大小与理论不符</h2><ol>
+<li><p>污染。使用全新的试剂和枪头，对工作台进行清洁。</p>
+</li>
+<li><p>模板或引物使用错误。查看引物是否会扩增部分条带和模板是否正确。</p>
+</li>
+<li><p>基因亚型。对研究的基因进行序列分析和BLAST研究</p>
+</li>
+</ol>
+<h2 id="8-持续出现假性条带"><a href="#8-持续出现假性条带" class="headerlink" title="8. 持续出现假性条带"></a>8. 持续出现假性条带</h2><ol>
+<li>起始退火温度太低，或目的扩增产物和非目的产物的T值相差不大。可尝试适当提高PCR温度或者设置降落PCR，降低循环数</li>
+</ol>
+<h2 id="9-菌落PCR检测有条带，接种大摇后无条带"><a href="#9-菌落PCR检测有条带，接种大摇后无条带" class="headerlink" title="9. 菌落PCR检测有条带，接种大摇后无条带"></a>9. 菌落PCR检测有条带，接种大摇后无条带</h2><ol>
+<li>可重新以菌落和菌液为模板进行PCR对照检测，因为菌落PCR的<strong>假阳性</strong>概率还是比较高。如果仍出现上述结果，推测可能是平板上连接液中的<strong>未连接载体的扩增</strong>引起的目的条带，进一步质粒PCR检测，可证明目的片段是否真正连接成功。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>PCR</category>
+      </categories>
+      <tags>
+        <tag>实验</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>免疫共沉淀（Co-IP）</title>
+    <url>/2022/11/15/033-mian-yi-gong-chen-dian-co-ip/</url>
+    <content><![CDATA[<blockquote>
+<p>蛋白间相互作用是细胞各种基本功能的主要完成者，参与几乎所有的重要生命活动。因此，蛋白-蛋白相互作用研究以及建立相互作用的关系网络图，具有十分重要的意义，也是目前蛋白质研究领域的热点。</p>
+</blockquote>
+<blockquote>
+<p>Co-IP（免疫共沉淀，co-inmunoprecipitation）是经典的利用抗体从样品中捕获靶蛋白及其互作蛋白、复合体的一项技术，能够特异性富集所研究的目的蛋白。由于过程中采用了非变性条件，保留了互作及复合体的细胞内状态。相对于酵母双杂交、pull down等方法，其特色之一便是捕获的蛋白互作发生在所研究的特定组织细胞内，保存了互作蛋白及复合体的“内源”状态。</p>
+</blockquote>
+<h2 id="一、Co-IP实验原理："><a href="#一、Co-IP实验原理：" class="headerlink" title="一、Co-IP实验原理："></a>一、Co-IP实验原理：</h2><p>以抗体和抗原之间的专一性作用为基础的用于研究蛋白质相互作用的经典方法，是确定两种蛋白质在完整细胞内生理性相互作用的有效方法。</p>
+<p>当细胞在非变性条件下被裂解时，完整细胞内存在的许多蛋白质－蛋白质间的相互作用被保留了下来。如果用蛋白质X的抗体免疫沉淀X，那么与X在体内结合的蛋白质Y也能沉淀下来。</p>
+<p><img src="/images/v2-f747d49a139b7809315b0237a7db2437_720w.webp"></p>
+<h2 id="二、Co-IP实验优势："><a href="#二、Co-IP实验优势：" class="headerlink" title="二、Co-IP实验优势："></a>二、Co-IP实验优势：</h2><p>a) 取材可以选择该目的蛋白所在物种、特定组织、细胞，因此CoIP能够反应该蛋白在天然组织细胞状态下存在的互作关系蛋白；</p>
+<p>b) 找出整个复合体中直接/间接互作的多个蛋白，研究复合体组成；</p>
+<p>c) 通过与质谱鉴定连用可以初筛到一系列未知蛋白，再通过其他技术进一步验证。</p>
+<h2 id="三、Co-IP实验注意事项"><a href="#三、Co-IP实验注意事项" class="headerlink" title="三、Co-IP实验注意事项"></a>三、Co-IP实验注意事项</h2><p>a)需要特异性IP级别诱饵蛋白抗体（重点）；</p>
+<p>b)如果没有特异性抗体，则需要考虑构建重组标签质粒，用标签抗体进行CoIP实验；</p>
+<p>c)样品种类实验风险：过表达细胞样品 IP全称是immunoprecipitation，即免疫沉淀，这一步主要是为了纯化目的蛋白。</p>
+<blockquote>
+<p>IB全称是immunoblotting，即免疫印迹，也就是常规的Western Blotting，用于显示目的蛋白。</p>
+</blockquote>
+<blockquote>
+<p>WCL全称是whole cell lysates，即整个细胞的裂解成分。</p>
+</blockquote>
+<blockquote>
+<p>HC全称是heavy chain，即重链，</p>
+</blockquote>
+<blockquote>
+<p>LC全称是light chain，即轻链。</p>
+</blockquote>
+<h3 id="现在将图分为三部分，先看第一部分，即上面的部分，“-”表示含有这种蛋白，“-”表示没有，这个实验一共做了四组，从左到右分别为："><a href="#现在将图分为三部分，先看第一部分，即上面的部分，“-”表示含有这种蛋白，“-”表示没有，这个实验一共做了四组，从左到右分别为：" class="headerlink" title="现在将图分为三部分，先看第一部分，即上面的部分，“+”表示含有这种蛋白，“-”表示没有，这个实验一共做了四组，从左到右分别为："></a>现在将图分为三部分，先看第一部分，即上面的部分，“+”表示含有这种蛋白，“-”表示没有，这个实验一共做了四组，从左到右分别为：</h3><p>（1）只表达HA-cGAS的293T细胞；</p>
+<p>（2）共同表达HA-cGAS与NRLP14-FL的293T细胞；</p>
+<p>（3）只表达STING-HA的293T细胞；</p>
+<p>（4）共同表达STING-HA与与NRLP14-FL的293T细胞，如下所示：</p>
+<p><img src="/images/v2-8b2f8f638a7e7e242fd995311a0538fd_720w.webp"></p>
+<h3 id="再看第二部分WB的图，WB的图就是使用含有FLAG抗体的珠子拉下来的蛋白做的，使用拉下来的这些蛋白再做WB，它的原理前面已经描述过了。使用FLAG抗体的珠子拉下来的蛋白使用HA抗体来进行检测，其结果如下："><a href="#再看第二部分WB的图，WB的图就是使用含有FLAG抗体的珠子拉下来的蛋白做的，使用拉下来的这些蛋白再做WB，它的原理前面已经描述过了。使用FLAG抗体的珠子拉下来的蛋白使用HA抗体来进行检测，其结果如下：" class="headerlink" title="再看第二部分WB的图，WB的图就是使用含有FLAG抗体的珠子拉下来的蛋白做的，使用拉下来的这些蛋白再做WB，它的原理前面已经描述过了。使用FLAG抗体的珠子拉下来的蛋白使用HA抗体来进行检测，其结果如下："></a>再看第二部分WB的图，WB的图就是使用含有FLAG抗体的珠子拉下来的蛋白做的，使用拉下来的这些蛋白再做WB，它的原理前面已经描述过了。使用FLAG抗体的珠子拉下来的蛋白使用HA抗体来进行检测，其结果如下：</h3><p><img src="/images/v2-1c5b5a85f1e2c9775ca481d37e799833_720w.webp"></p>
+<p>从上面的图像可以看出以下信息：</p>
+<p>第一，HC与LC条带都非常明显，之所以出现这个条件是因为，在WB之前进行的蛋白变性这一步，由于加样缓冲液中含有巯基乙醇，巯基乙醇会把抗体的重链和轻链之间的二硫键破坏，从而使的抗体变成<strong>重链分子55KD</strong>和<strong>轻链分子25KD</strong>，因此会在结果中呈现两个条带。</p>
+<p>第二，第一组（只表达HA-cGAS的293T细胞）中没有条带，第二组（共同表达HA-cGAS与NRLP14-FL的293T细胞）没有条带，第三组（只表达STING-HA的293T细胞）有一点点条带，第四组（共同表达STING-HA与与NRLP14-FL的293T细胞）条带明显，这<strong>说明NLRP14与STING有相互作用</strong>，为什么说有相互作用呢？因为我们是用FLAG抗体来拉的蛋白，从理论上讲，我们只能拉下FLAG标记的NLRP14，也就是NLRP14-FL（FL就是FLAG），但是，从拉下的蛋白中用HA进行检测，居然检测出来了HA标记的STING，这就说明，使用FLAG拉NLRP14-FL时，这个蛋白复合物中含有STING-HA。</p>
+<h3 id="再看图的第三部分，也就是下面的这一部分，是用FLAG抗体和HA抗体来进行检测整个细胞的裂解液，是作为阳性对照（有的文献中会标明input组），如下所示："><a href="#再看图的第三部分，也就是下面的这一部分，是用FLAG抗体和HA抗体来进行检测整个细胞的裂解液，是作为阳性对照（有的文献中会标明input组），如下所示：" class="headerlink" title="再看图的第三部分，也就是下面的这一部分，是用FLAG抗体和HA抗体来进行检测整个细胞的裂解液，是作为阳性对照（有的文献中会标明input组），如下所示："></a>再看图的第三部分，也就是下面的这一部分，是用FLAG抗体和HA抗体来进行检测整个细胞的裂解液，是作为阳性对照（有的文献中会标明input组），如下所示：</h3><p><img src="/images/v2-7cadfdc3010f33836517b7861138245c_720w.webp"></p>
+<p>其中右侧的WCL表示的是整个细胞的裂解液，也就是还没有使用FLAG抗体的珠子去拉的时候的样本，也就是说直接裂解了293T细胞后的样本，从这个结果中可以得到以下信息：</p>
+<p>第一，在使用FLAG抗体进行检测全蛋白时，相当于阳性对照。</p>
+<p>第一组（只表达HA-cGAS的293T细胞）中没有条带，因为这种293T细胞中只有HA标记的cGAS，</p>
+<p>第二组（共同表达HA-cGAS与NLRP14-FL的293T细胞）有条带，因为FLAG抗体能检测出使用了FLAG标记的NLRP14，NLRP14的蛋白分子量大概是125kD，</p>
+<p>第三组（只表达STING-HA的293T细胞）没有条带，因此这种293T细胞只表达HA标记的STING；</p>
+<p>第四组（共同表达STING-HA与与NLRP14-FL的293T细胞）条带明显，因为这个细胞中含有FLAG标记的NLRP14。</p>
+<p>第二，使用HA抗体检测全蛋白，这是阳性对照，是说明细胞中含有相应的蛋白。</p>
+<p>我们可以发现，</p>
+<p>第一组（只表达HA-cGAS的293T细胞）在27kD附近没有条件，在50kD部分有条带，这说明，全蛋白中含有HA标记的cGAS（cGAS的蛋白分子量是62kD，多数蛋白标签的分子量很少，基本可以忽略），做这个实验主要是作为阳性对照；</p>
+<p>第二组（共同表达HA-cGAS与NLRP14-FL的293T细胞）在37kD附近没有条带，在50kD附近有条带；结合前面的结果来看，就说明这个细胞中含有HA标记的cGAS（因为它的分子量大概是50kD），还含有FALG标记的NLRP14（因为NLRP14的蛋白分子量大概是125kD）；</p>
+<p>第三组（只表达STING-HA的293T细胞）在37kD处有条带，这说明细胞中含有HA标记的STING（因为STING的分子量大概是35kD）；</p>
+<p>第四组（共同表达STING-HA与与NLRP14-FL的293T细胞）在110kD处有条带，在37kD处也有条带，这说明这种细胞中含有NLRP14与STING。</p>
+<p>从上面的图片可以知道，<strong>在做Co-IP实验时，需要设立阳性对照组来证明你的细胞中有某个蛋白A与B，再使用抗蛋白A的抗体来拉A蛋白，再使用抗蛋白B的抗体来检测拉下来的蛋白，如果检测到了蛋白B，就说明蛋白A与蛋白B有相互作用。</strong></p>
+]]></content>
+      <categories>
+        <category>蛋白组</category>
+      </categories>
+      <tags>
+        <tag>实验</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>酵母双杂交</title>
+    <url>/2022/11/12/032-xiao-mu-shuang-za-jiao/</url>
+    <content><![CDATA[<blockquote>
+<p>酵母双杂交系统是在真核模式生物酵母中进行的，研究活细胞内蛋白质相互作用，对蛋白质之间微弱的、瞬间的作用也能够通过报告基因的表达产物敏感地检测得到，它是一种具有很高灵敏度的研究蛋白质之间关系的技术。大量的研究文献表明，酵母双杂交技术既可以用来研究哺乳动物基因组编码的蛋白质之间的互作，也可以用来研究高等植物基因组编码的蛋白质之间的互作。</p>
+</blockquote>
+<p><img src="/images/v2-cd616c9fbb17b42a5605d03c4462f5af_720w.webp"></p>
+<h2 id="一、实验目的："><a href="#一、实验目的：" class="headerlink" title="一、实验目的："></a>一、实验目的：</h2><p>验证PGBKT7-A与PGADT7-B是否为相互作用的关系</p>
+<h2 id="二、实验原理："><a href="#二、实验原理：" class="headerlink" title="二、实验原理："></a>二、实验原理：</h2><p>Y2H的建立是基于对真核生物调控转录起始过程的认识，细胞起始基因转录需要有反式转录激活因子的参与;酵母转录因子 GAL4在结构上是组件式的，往往由功能上相互独立的结构域构成，其中有DNA结合功能域（DNA binding domain,DNA-BD）和转录激活结构域（activation domain，DNA-AD）;这两个结合域分开时仍分别具有功能，但不能激活转录。只有当被分开的两者通过适当的途径在空间上较为接近时，才能重新呈现完整的GAL4转录因子活性，使启动子下游基因得到转录。</p>
+<blockquote>
+<p>GAL4是酵母（Saccharomyces cerevisiae）转录激活蛋白Gal4的基因。Gal4能识别基因启动子的上游激活序列（UASg）的17bp长的一段序列：5’-CGGRNNRCYNYNYNCNCCG-3’（R表示嘌呤，Y表示嘧啶，N表示任意脱氧核苷酸）。GAL4与GAL80作用，GAL80可结合半乳糖代谢产物。</p>
+</blockquote>
+<p><img src="/images/Yeast-Two-Hybrid-yl.jpg"></p>
+<h2 id="三、实验方法："><a href="#三、实验方法：" class="headerlink" title="三、实验方法："></a>三、实验方法：</h2><p>Clontech酵母双杂交系统</p>
+<h2 id="四、实验设计："><a href="#四、实验设计：" class="headerlink" title="四、实验设计："></a>四、实验设计：</h2><p><img src="/images/v2-c766f5bfe1fbd4fc3d8505ddc9d3af8c_720w.webp"></p>
+<p>常用AD质粒</p>
+<p><img src="/images/v2-acf736e7b4e93b741c860a045a1de9f4_720w.webp"></p>
+<p>常用AD质粒</p>
+<p>【实验方案】</p>
+<ol>
+<li><p>构建bait protein到BD载体上，构建正确后转入酵母菌株。</p>
+</li>
+<li><p>构建prey protein到AD载体上。</p>
+</li>
+<li><p>通过检测bait protein在SD-Trp/-His/-Ade来检测Bait自激活情况。当存在轻微自激活时，改用全部报告基因检测条件，检测自激活情况。无自激活现象可继续实验；有自激活现象中止实验。</p>
+</li>
+<li><p>通过检测prey protein在SD-Leu/-His/-Ade来检测Prey自激活情况。当存在轻微自激活时，改用全部报告基因检测条件，检测自激活情况。无自激活现象可继续实验；有自激活现象中止实验。</p>
+</li>
+<li><p>通过检测BD-Bait与AD-空载体杂交菌株在SD-Trp/ -Leu/-His/ -Ade培养基上的生长情况，判断bait protein是否存在与DNA激活域的直接互作。有互作中止实验，无直接互作可继续实验。</p>
+</li>
+<li><p>通过检测AD-Prey与BD-空载体杂交菌株在SD-Trp/ -Leu/-His/ -Ade培养基上的生长情况，判断诱饵蛋白是否存在于DNA结合域的直接互作。有互作中止实验，无直接互作可继续实验。</p>
+</li>
+<li><p>杂交。</p>
+</li>
+<li><p>涂布SD-Trp/ -Leu获得杂交菌株。</p>
+</li>
+<li><p>涂布SD-Trp/ -Leu/-His/ -Ade验证互作情况。</p>
+</li>
+<li><p>酵母作图。</p>
+</li>
+<li><p>实验结束。</p>
+</li>
+</ol>
+<p>|Reaction| AD plasmid | BD plasmid | 涂板种类 | 备注 |</p>
+<p>| :———— | :———— | :———— | :———— | :———— |</p>
+<p>| 1 | pGADT7-largeT | pGBKT7-p53 | SD-TL | 阳性对照 |</p>
+<p>| 2 | pGADT7-largeT | pGBKT7-laminC | SD-TL |阴性对照 |</p>
+<p>| 3 | pGADT7-B | pGBKT7-A | SD-TL| 实验组 |</p>
+<p>| 4 | pGADT7-B | pGBKT7 | SD-TL | 自激活检测 |</p>
+<p>| 5 | pGADT7 | pGBKT7-A | SD-TL| 自激活检测 |</p>
+<p>▼</p>
+<p>|Reaction| AD plasmid | BD plasmid | 涂板种类 | 备注 |</p>
+<p>| :———— | :———— | :———— | :———— | :———— |</p>
+<p>| 1 | Empty-AD | Empty-BD | SD-TL | 阳性对照 |</p>
+<p>| 2 | pGADT7-largeT | pGBKT7-laminC | SD-TL |阴性对照 |</p>
+<p>| 3 | D10-BD | JNK-AD | SD-TL| 实验组 |</p>
+<p>| 4 | D10-AD | JNK-BD | SD-TL| 实验组 |</p>
+<p>| 5 | D10-BD | Empty-AD | SD-TL | 自激活检测 |</p>
+<p>| 6 | Empty-BD | JNK-AD | SD-TL| 自激活检测 |</p>
+<p>| 7 | JNK-BD | Empty-AD | SD-TL | 自激活检测 |</p>
+<p>| 8 | Empty-BD | D10-AD | SD-TL| 自激活检测 |</p>
+<h2 id="五、结果展示："><a href="#五、结果展示：" class="headerlink" title="五、结果展示："></a>五、结果展示：</h2><p><img src="/images/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1"></p>
+<p>自激活检测&amp;互作检测结果</p>
+<p>pGADT7-largeT/ pGBKT7-p53为阳性对照</p>
+<p>pGADT7-largeT/pGBKT7-laminC为阴性对照</p>
+<p>对照菌株在SD-TL缺陷平板上都能正常生长，而仅有阳性对照可在SD-TLHA缺陷平板生长。pGBKT7-A+ pGADT7、pGBKT7+ pGADT7-B转化子中随机挑选的菌落在SD-TLHA缺陷平板上不能生长，生长状态同阴性对照，因此不存在自激活。</p>
+<h2 id="六、结论："><a href="#六、结论：" class="headerlink" title="六、结论："></a>六、结论：</h2><p>pGBKT7-A+ pGADT7-B在SD-TL、SD-TLHA缺陷平板上都能生长，证明这两个基因具有相互作用。</p>
+<h2 id="七、其他"><a href="#七、其他" class="headerlink" title="七、其他"></a>七、其他</h2><h3 id="1-为什么选择酵母作为双杂交系统的报道株？"><a href="#1-为什么选择酵母作为双杂交系统的报道株？" class="headerlink" title="1.为什么选择酵母作为双杂交系统的报道株？"></a>1.为什么选择酵母作为双杂交系统的报道株？</h3><p>酵母作为酵母双杂交系统的报道株，它具有诸多优点：易于转化、回收扩增质粒；具有可直接进行选择的标记基因和特征性报道基因；酵母内源性蛋白不易同来源于哺乳动物的蛋白结合。</p>
+<h3 id="2-酵母双杂交系统应用"><a href="#2-酵母双杂交系统应用" class="headerlink" title="2.酵母双杂交系统应用"></a>2.酵母双杂交系统应用</h3><p>检验一对已知蛋白间的相互作用；</p>
+<p>用已知功能的蛋白基因筛选双杂交cDNA文库，以研究蛋白质之间相互作用的传递途径；</p>
+<p>通过对待测蛋白做点突变或缺失突变处理，研究一对蛋白间发生相互作用所必需的结构域；</p>
+<p>分析新基因的生物学功能。即以功能未知的新基因去筛选文库，然后根据钓到的已知基因的功能推测该新基因的功能。</p>
+<h3 id="3-酵母双杂交系统优势"><a href="#3-酵母双杂交系统优势" class="headerlink" title="3.酵母双杂交系统优势"></a>3.酵母双杂交系统优势</h3><p>利用酵母双杂交系统可以直接、快速的研究蛋白-蛋白之间的相互作用，具有敏感性高、操作简便等优点</p>
+<p>敏感性高：检测结果是基因表达产物的积累效应，如酵母的表型，因而可检测存在于蛋白之间微弱或暂时的相互作用</p>
+<p>操作简便：与其它检测方法相比，酵母双杂交实验不需要进行蛋白纯化，省去了纯化蛋白质的繁琐步骤</p>
+<p>真实性好：相互作用的验证在细胞内进行，能真实的反应蛋白间的相互作用</p>
+<p>酵母双杂交系统 免疫共沉淀（Co-IP）</p>
+<p>检测瞬时相互作用 是 否</p>
+<p>检测弱相互作用 是 否</p>
+<p>验证方式 体内相互作用检测 体内相互作用检测</p>
+<p>是否需要蛋白纯化 否 是</p>
+<p>是否需要抗体 否 是</p>
+<p>表1：酵母双杂交与免疫共沉淀对比</p>
+<h3 id="4-酵母双杂交系统局限性"><a href="#4-酵母双杂交系统局限性" class="headerlink" title="4.酵母双杂交系统局限性"></a>4.酵母双杂交系统局限性</h3><h5 id="①假阳性"><a href="#①假阳性" class="headerlink" title="①假阳性"></a>①假阳性</h5><p>假阳性是酵母双杂交实验常遇到的问题，假阳性是指两待测蛋白没有相互作用但依然显示出了阳性结果。产生假阳性的原因很多，如某些蛋白质本身具有激活转录功能或在酵母内表达时发挥转录激活作用，使DNA结合结构域杂交蛋白（BD-bait）在无特异激活结构域的情况下可激活转录。另外有些蛋白质表面有对其它蛋白质的低亲和力区，容易形成蛋白体复合物，能够引起报告基因表达，产生假阳性结果。</p>
+<p>为了降低假阳性需要设计正确的对照，应对诱饵蛋白和靶蛋白能否单独激活报告基因做验证。使用两个或两个以上的报告基因也可以降低假阳性，利用两个以上报告基因，只有同时具有两种以上相应表型才是真阳性结果。另外， 将报告基因整合到染色体上，可以使基因表达水平稳定，消除了由于质粒拷贝数变化引起基因表达水平波动而造成的假阳性。</p>
+<h5 id="②不能检测某些在核外蛋白之间的相互作用"><a href="#②不能检测某些在核外蛋白之间的相互作用" class="headerlink" title="②不能检测某些在核外蛋白之间的相互作用"></a>②不能检测某些在核外蛋白之间的相互作用</h5><p>酵母双杂交分析相互作用的蛋白必须定于核内才能激活报告基因，但是很多蛋白质的相互作用依赖于翻译后加工，如二硫键的形成等，而此过程需要在包浆内完成，这样有多种蛋白质不适用此方法。</p>
+<p>为了解决这一问题，人们对酵母双杂交技术进行改进，发展了核外双杂交技术（见下文）。</p>
+<h3 id="5-酵母双择交技术的新发展"><a href="#5-酵母双择交技术的新发展" class="headerlink" title="5.酵母双择交技术的新发展"></a>5.酵母双择交技术的新发展</h3><p>在传统酵母双杂交系统的基础上，发展了多种改型的双杂交技术以适应不同目的需要。</p>
+<h3 id="6-反向双杂交技术"><a href="#6-反向双杂交技术" class="headerlink" title="6.反向双杂交技术"></a>6.反向双杂交技术</h3><p>反向杂交技术（也成反式双杂交技术）主要用于在确定蛋白质之间相互作用后，进一步研究其结构和功能的关系，确定蛋白质间作用的关键位点或起决定作用的个别氨基酸、特定结构等。这项技术的特点是采取了反选择筛选策略，其关键是报道基因的表达产物对细胞生长有抑制作用。这样当诱饵蛋白与靶蛋白存在相互作用时，表达出有毒性的报道蛋白，细胞不能生长。</p>
+<p>例如Vidal等采用了反式选择性的报告基因URA3，其编码的酶使细胞不能在5一氟乳清酸存在的情况下下生长。如果融合蛋白的相互作用被阻断， URA3则不表达，酵母菌表现对5一氟乳清酸的抗性。因此，采用反式双杂交系统可以很容易地检验出与某一蛋白相互作用的蛋白的突变体。对突变体进行研究，即可找出影响蛋白质间相互作用的关键位点。</p>
+<h3 id="7-酵母三杂交系统"><a href="#7-酵母三杂交系统" class="headerlink" title="7.酵母三杂交系统"></a>7.酵母三杂交系统</h3><p>酵母三杂交系统</p>
+<p>酵母三杂交系统可以用于检测蛋白质-核酸之间的相互作用。三杂交系统的本质与双杂交是相同的，只是需通过第三个分子的介导把两个杂交蛋白带到一起。它的基本原理是将一个已知与RNA结合的蛋白与BD构建第一个融合蛋白，将待测蛋白质与AD构建第二个融合蛋白，同时构建一条含有两个不同结合位点的融合RNA，当RNA与两个融合蛋白相结合时，可激活报道基因的表达。除了蛋白质-核酸之间的相互作用，酵母三杂交系统也可用于检测检测蛋白质与肽配体、蛋白质与有机小配体、蛋白质与蛋白激酶间的相互作用。</p>
+<p>核外双杂交技术</p>
+<p>在传统的酵母双杂交系统中，蛋白之间的相互作用是在细胞核内发生的。因此，它不能检测某些在核外蛋白之间的相互作用。为了克服这种局限性，发展出了核外双杂交技术。该技术以SRS 和 USPS两种系统为代表。</p>
+<p>SRS 也称 Sos 蛋白召集系统 （Sos RecruitmentSystem） 。它的基本原理是分别将待测蛋白X与哺乳动物细胞的一种鸟苷交换因子（ EGF） Sos蛋白融合;将Y蛋白与锚定在酵母细胞膜上的Src肉豆寇烯化信号蛋白融合 ，并使它们共表达于一个cdc25-2基因温度敏感型突变的酵母菌株内。由于该菌株中cdc25-2基因编码的 EGF 蛋白在 36 ℃条件下不能激活细胞膜上的Ras蛋白，Ras途径不通。所以细胞无法在36 ℃条件下生存。但如果待测蛋白X与Y之间发生相互作用就能把Sos蛋白带到细胞膜上并激活附近的Ras蛋白，从而打通Ras途径，使该菌株获得在36℃条件下生存的能力。</p>
+<p>USPS也称为基于遍在蛋白的裂解蛋白感受器。它的设计是根据这样一个事实，即真核细胞中遍在蛋白与某一蛋白之间新生成的融合会被遍在蛋白特异的蛋白酶（UBPs） 迅速切开，但这种切割只有当遍在蛋白正确折叠时才会发生。研究发现，遍在蛋白基因的N端和C端这两部分即使分离，只要共表达与同一个细胞内，它们仍能正确折叠。将待测蛋白X与带有点突变的遍在蛋白N端片段融合，将待测蛋白Y与下游接有报告蛋白的正常遍在蛋白C端片段融合，并使它们共表达与同一个细胞内。因遍在蛋白N端片段内含有点突变，它与C端片段之间不能自然形成正确的折叠。只有当蛋白X和Y之间发生相互作用时才能克服点突变的影响，使遍在蛋白的两端形成正确折叠，从而引来UBPs切除与C端片段连接的报告蛋白。此技术建立之初是通过Western blot检测有无被切下的报告蛋白来判断待测蛋白之间是否发生了相互作用的，所以操作比较繁琐，不便于推广。最近有人对它作了改进 ，以一种融合的转录激活因子PLV作为报告蛋白。PLV一旦被从遍在蛋白C端片段上切下，它就会进入细胞核内激活特定的报告基因 ，如LacZ和HIS3等。这样就可以根据转化细胞是否生长及显色来判断待测蛋白之间有无相互作用。因此极大地简化了操作步骤，提高了筛选效率。</p>
+]]></content>
+      <categories>
+        <category>蛋白组</category>
+      </categories>
+      <tags>
+        <tag>实验</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>1.NPC内网穿透——Linux</title>
     <url>/2025/07/24/18/</url>
     <content><![CDATA[<blockquote>
@@ -930,6 +2264,42 @@ htmlwidgets::saveWidget(
       </categories>
   </entry>
   <entry>
+    <title>内网穿透</title>
+    <url>/2024/11/21/5/</url>
+    <content><![CDATA[<p>前言<br>对于在本地搭建需求公网的服务，比如nas，游戏联机等。但是又没有公网，这种时候就需要用到内网穿透工具，通过端口转发实现公网访问。市面上的映射基本都是限制流量，要么就是带宽只有1m。</p>
+<p>经过我的不断寻找，终于是找到了一款不限制流量，且基础带宽高的内网穿透工具。以下是他的基本信息：</p>
+<p>免费带宽：国内8m，国外32m（这是我能找到的唯一一款国内国外单独计带宽的映射）<br>免费隧道：4条<br>流量：不限制<br>并发：不限制<br>除此之外访问地址并不会强制变化<br>官网链接</p>
+<blockquote>
+<p><a href="https://www.chmlfrp.cn/">https://www.chmlfrp.cn</a></p>
+</blockquote>
+<p>使用教程<br>这款映射是基于开源软件frp实现的端口映射功能，所以实际使用方法和frp的使用方法一致，复制它生成的配置文件然后运行即可。</p>
+<p>注册/登录<br>没有帐户的首先前往chmlfrp官网注册账户，登录进首页之后是这样的页面：</p>
+<p>创建隧道<br>随后通过菜单前往 “隧道管理 -&gt; 隧道列表” ，然后点击右上角的添加隧道按钮（我已经创建了一个隧道）</p>
+<p>然后选择符合你要求的节点（一般选择离你近，且节点负载较低的节点。节点负载可以在 “隧道管理 -&gt; 节点状态” 查看所有节点的具体负载）</p>
+<p>然后填写相应隧道信息，如果没有特殊需求，一般只需要填写端口类型及内网端口。</p>
+<p>随后点击确定即可成功创建隧道</p>
+<p>启动隧道<br>前往 “隧道管理 -&gt; 软件下载” 页面，下载对应你系统的软件。</p>
+<p>下载好后解压压缩包，一般来讲只需要这三个文件，其他文件可以删除，也可以选择保留。</p>
+<p>随后进入网站的 “隧道管理 -&gt; 配置文件” 页面，在此页面选择你创建隧道的节点，就可以获取到相应的配置文件。将获取的配置文件覆盖到文件夹的frpc.ini中：</p>
+<p>随后保存文件，然后在此文件夹创建一个 “启动.txt” 的文本档案，然后将.txt后缀改为.bat。（注意！此方法仅windows可用，且需要打开显示文件扩展名）</p>
+<p>右键 “启动.bat” ，点击编辑，输入以下代码：</p>
+<p> <code>&nbsp;./frpc -c frpc.ini</code> </p>
+<p>接下来是设置开机后台自启</p>
+<p>新建一个启动服务</p>
+<p>编辑该服务</p>
+<p>重新加载</p>
+<p>启动服务</p>
+<p>开始服务</p>
+<p>查看服务状态</p>
+<p>重启</p>
+<p>在弹出的cmd窗口中直接输入frpc即可启动</p>
+]]></content>
+      <categories>
+        <category>折腾</category>
+        <category>WIFI</category>
+      </categories>
+  </entry>
+  <entry>
     <title>6.筛选组内一致率90%，组间有差异的SNP位点</title>
     <url>/2025/09/03/48/</url>
     <content><![CDATA[<p><strong>分析需求：</strong> </p>
@@ -1214,42 +2584,6 @@ fig  # 在RStudio中查看
       <categories>
         <category>默认分类</category>
         <category>重测序</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>内网穿透</title>
-    <url>/2024/11/21/5/</url>
-    <content><![CDATA[<p>前言<br>对于在本地搭建需求公网的服务，比如nas，游戏联机等。但是又没有公网，这种时候就需要用到内网穿透工具，通过端口转发实现公网访问。市面上的映射基本都是限制流量，要么就是带宽只有1m。</p>
-<p>经过我的不断寻找，终于是找到了一款不限制流量，且基础带宽高的内网穿透工具。以下是他的基本信息：</p>
-<p>免费带宽：国内8m，国外32m（这是我能找到的唯一一款国内国外单独计带宽的映射）<br>免费隧道：4条<br>流量：不限制<br>并发：不限制<br>除此之外访问地址并不会强制变化<br>官网链接</p>
-<blockquote>
-<p><a href="https://www.chmlfrp.cn/">https://www.chmlfrp.cn</a></p>
-</blockquote>
-<p>使用教程<br>这款映射是基于开源软件frp实现的端口映射功能，所以实际使用方法和frp的使用方法一致，复制它生成的配置文件然后运行即可。</p>
-<p>注册/登录<br>没有帐户的首先前往chmlfrp官网注册账户，登录进首页之后是这样的页面：</p>
-<p>创建隧道<br>随后通过菜单前往 “隧道管理 -&gt; 隧道列表” ，然后点击右上角的添加隧道按钮（我已经创建了一个隧道）</p>
-<p>然后选择符合你要求的节点（一般选择离你近，且节点负载较低的节点。节点负载可以在 “隧道管理 -&gt; 节点状态” 查看所有节点的具体负载）</p>
-<p>然后填写相应隧道信息，如果没有特殊需求，一般只需要填写端口类型及内网端口。</p>
-<p>随后点击确定即可成功创建隧道</p>
-<p>启动隧道<br>前往 “隧道管理 -&gt; 软件下载” 页面，下载对应你系统的软件。</p>
-<p>下载好后解压压缩包，一般来讲只需要这三个文件，其他文件可以删除，也可以选择保留。</p>
-<p>随后进入网站的 “隧道管理 -&gt; 配置文件” 页面，在此页面选择你创建隧道的节点，就可以获取到相应的配置文件。将获取的配置文件覆盖到文件夹的frpc.ini中：</p>
-<p>随后保存文件，然后在此文件夹创建一个 “启动.txt” 的文本档案，然后将.txt后缀改为.bat。（注意！此方法仅windows可用，且需要打开显示文件扩展名）</p>
-<p>右键 “启动.bat” ，点击编辑，输入以下代码：</p>
-<p> <code>&nbsp;./frpc -c frpc.ini</code> </p>
-<p>接下来是设置开机后台自启</p>
-<p>新建一个启动服务</p>
-<p>编辑该服务</p>
-<p>重新加载</p>
-<p>启动服务</p>
-<p>开始服务</p>
-<p>查看服务状态</p>
-<p>重启</p>
-<p>在弹出的cmd窗口中直接输入frpc即可启动</p>
-]]></content>
-      <categories>
-        <category>折腾</category>
-        <category>WIFI</category>
       </categories>
   </entry>
   <entry>
@@ -1851,44 +3185,6 @@ echo none &gt; /sys/class/leds/green\:internet/trigger<span aria-hidden="true" c
       </categories>
   </entry>
   <entry>
-    <title>openipc goke7205v200</title>
-    <url>/2024/12/03/7/</url>
-    <content><![CDATA[<h1 id="保存原始固件"><a href="#保存原始固件" class="headerlink" title="保存原始固件"></a>保存原始固件</h1><hr>
-<h2 id="备份您的原始固件，请不要跳过这个步骤！"><a href="#备份您的原始固件，请不要跳过这个步骤！" class="headerlink" title="备份您的原始固件，请不要跳过这个步骤！"></a>备份您的原始固件，请不要跳过这个步骤！</h2><p>OpenIPC U-Boot 会覆盖原始的加密分区，因此无法恢复为出厂固件，除非您拥有此特定摄像机的完整闪存备份！要创建完整的固件备份，请启动 TFTP 服务器并在引导加载程序 shell 中执行这些命令。</p>
-<blockquote>
-<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python"> # Enter commands line by line! Do not copy and paste multiple lines at once!
-setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105
-mw.b 0x42000000 0xff 0x1000000
-sf probe 0; sf read 0x42000000 0x0 0x1000000
-tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
-# if there is no tftpput but tftp then run this instead
- tftp 0x42000000 backup-gk7205v200-nor16m.bin 0x1000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</blockquote>
-<p>有关详细信息，请参阅项目 wiki 中的安装说明。</p>
-<h1 id="烧录完整的-OpenIPC-固件"><a href="#烧录完整的-OpenIPC-固件" class="headerlink" title="烧录完整的 OpenIPC 固件"></a>烧录完整的 OpenIPC 固件</h1><h2 id="下载-OpenIPC-固件-Ultimate"><a href="#下载-OpenIPC-固件-Ultimate" class="headerlink" title="下载 OpenIPC 固件 (Ultimate)"></a>下载 OpenIPC 固件 (Ultimate)</h2><p>for Goke GK7205V200 with 16MB NOR flash</p>
-<p>完整的固件由引导加载程序、内核和根文件系统组成，也适用于使用编程器烧写闪存芯片。 请注意，完整固件不包含预设环境。你还需要添加自己的MAC地址、IP地址等设置。</p>
-<blockquote>
-<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105<br>mw.b 0x42000000 0xff 0x1000000<br>tftpboot 0x42000000 openipc-gk7205v200-ultimate-16mb.bin</p>
-<h1 id="if-there-is-no-tftpboot-but-tftp-then-run-this-instead"><a href="#if-there-is-no-tftpboot-but-tftp-then-run-this-instead" class="headerlink" title="if there is no tftpboot but tftp then run this instead"></a>if there is no tftpboot but tftp then run this instead</h1><p>tftp 0x42000000 openipc-gk7205v200-ultimate-16mb.bin<br>sf probe 0; sf lock 0;<br>sf erase 0x0 0x1000000; sf write 0x42000000 0x0 0x1000000<br>reset</p>
-</blockquote>
-<p>摄像机将自动重启并使用全新的引导加载程序启动。</p>
-<p>注意准备中断并进入引导程序的命令行。 在引导加载程序的命令行中，根据您的闪存大小和类型重新映射 ROM 分区。</p>
-<blockquote>
-<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>run setnor16m</p>
-</blockquote>
-<h1 id="恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。"><a href="#恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。" class="headerlink" title="恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。"></a>恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。</h1><p>在端口 85 ( <a href="http://192.168.15.169:85/">http://192.168.15.169:85/</a> ) 上打开摄像机的 Web 界面并使用登录root和密码12345登录。登录后将要求您设置自己的安全密码。通过以下方式访问摄像机ssh 或 UART 使用与上述相同的登录名和密码。</p>
-<hr>
-<p>打开web界面后，更新固件，更新完后调整majestic、sensor与设备型号对应。</p>
-<h1 id="majestic"><a href="#majestic" class="headerlink" title="majestic"></a>majestic</h1><p>openipc未开源部分。</p>
-]]></content>
-      <categories>
-        <category>折腾</category>
-      </categories>
-      <tags>
-        <tag>openipc</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>GPT 学术优化</title>
     <url>/2024/12/06/8/</url>
     <content><![CDATA[<h1 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h1><p>安装方法：直接运行 (Windows, Linux or MacOS)<br>下载项目</p>
@@ -1989,6 +3285,44 @@ tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
       <categories>
         <category>默认分类</category>
       </categories>
+  </entry>
+  <entry>
+    <title>openipc goke7205v200</title>
+    <url>/2024/12/03/7/</url>
+    <content><![CDATA[<h1 id="保存原始固件"><a href="#保存原始固件" class="headerlink" title="保存原始固件"></a>保存原始固件</h1><hr>
+<h2 id="备份您的原始固件，请不要跳过这个步骤！"><a href="#备份您的原始固件，请不要跳过这个步骤！" class="headerlink" title="备份您的原始固件，请不要跳过这个步骤！"></a>备份您的原始固件，请不要跳过这个步骤！</h2><p>OpenIPC U-Boot 会覆盖原始的加密分区，因此无法恢复为出厂固件，除非您拥有此特定摄像机的完整闪存备份！要创建完整的固件备份，请启动 TFTP 服务器并在引导加载程序 shell 中执行这些命令。</p>
+<blockquote>
+<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python"> # Enter commands line by line! Do not copy and paste multiple lines at once!
+setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105
+mw.b 0x42000000 0xff 0x1000000
+sf probe 0; sf read 0x42000000 0x0 0x1000000
+tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
+# if there is no tftpput but tftp then run this instead
+ tftp 0x42000000 backup-gk7205v200-nor16m.bin 0x1000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<p>有关详细信息，请参阅项目 wiki 中的安装说明。</p>
+<h1 id="烧录完整的-OpenIPC-固件"><a href="#烧录完整的-OpenIPC-固件" class="headerlink" title="烧录完整的 OpenIPC 固件"></a>烧录完整的 OpenIPC 固件</h1><h2 id="下载-OpenIPC-固件-Ultimate"><a href="#下载-OpenIPC-固件-Ultimate" class="headerlink" title="下载 OpenIPC 固件 (Ultimate)"></a>下载 OpenIPC 固件 (Ultimate)</h2><p>for Goke GK7205V200 with 16MB NOR flash</p>
+<p>完整的固件由引导加载程序、内核和根文件系统组成，也适用于使用编程器烧写闪存芯片。 请注意，完整固件不包含预设环境。你还需要添加自己的MAC地址、IP地址等设置。</p>
+<blockquote>
+<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105<br>mw.b 0x42000000 0xff 0x1000000<br>tftpboot 0x42000000 openipc-gk7205v200-ultimate-16mb.bin</p>
+<h1 id="if-there-is-no-tftpboot-but-tftp-then-run-this-instead"><a href="#if-there-is-no-tftpboot-but-tftp-then-run-this-instead" class="headerlink" title="if there is no tftpboot but tftp then run this instead"></a>if there is no tftpboot but tftp then run this instead</h1><p>tftp 0x42000000 openipc-gk7205v200-ultimate-16mb.bin<br>sf probe 0; sf lock 0;<br>sf erase 0x0 0x1000000; sf write 0x42000000 0x0 0x1000000<br>reset</p>
+</blockquote>
+<p>摄像机将自动重启并使用全新的引导加载程序启动。</p>
+<p>注意准备中断并进入引导程序的命令行。 在引导加载程序的命令行中，根据您的闪存大小和类型重新映射 ROM 分区。</p>
+<blockquote>
+<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>run setnor16m</p>
+</blockquote>
+<h1 id="恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。"><a href="#恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。" class="headerlink" title="恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。"></a>恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。</h1><p>在端口 85 ( <a href="http://192.168.15.169:85/">http://192.168.15.169:85/</a> ) 上打开摄像机的 Web 界面并使用登录root和密码12345登录。登录后将要求您设置自己的安全密码。通过以下方式访问摄像机ssh 或 UART 使用与上述相同的登录名和密码。</p>
+<hr>
+<p>打开web界面后，更新固件，更新完后调整majestic、sensor与设备型号对应。</p>
+<h1 id="majestic"><a href="#majestic" class="headerlink" title="majestic"></a>majestic</h1><p>openipc未开源部分。</p>
+]]></content>
+      <categories>
+        <category>折腾</category>
+      </categories>
+      <tags>
+        <tag>openipc</tag>
+      </tags>
   </entry>
   <entry>
     <title>记一次清空SMART修复群晖报故障的硬盘</title>
