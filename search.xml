@@ -188,19 +188,6 @@ post_data <span class="token operator">=</span> <span class="token punctuation">
       </tags>
   </entry>
   <entry>
-    <title>OPPO R11 Plus 刷MIUI12.5</title>
-    <url>/2022/07/23/015-oppo-r11-plus/</url>
-    <content><![CDATA[<h1 id="一、刷入售后工程包，解锁BL"><a href="#一、刷入售后工程包，解锁BL" class="headerlink" title="一、刷入售后工程包，解锁BL"></a>一、刷入售后工程包，解锁BL</h1><h1 id="二、刷入TWRP，重启到REC"><a href="#二、刷入TWRP，重启到REC" class="headerlink" title="二、刷入TWRP，重启到REC"></a>二、刷入TWRP，重启到REC</h1><h1 id="三、刷入MIUI底层框架，重启到REC"><a href="#三、刷入MIUI底层框架，重启到REC" class="headerlink" title="三、刷入MIUI底层框架，重启到REC"></a>三、刷入MIUI底层框架，重启到REC</h1><p><em>安装带ROOT安卓8.1版本刷8.1框架</em></p>
-<h1 id="四、刷入MIUI-12-5，重启到REC"><a href="#四、刷入MIUI-12-5，重启到REC" class="headerlink" title="四、刷入MIUI 12.5，重启到REC"></a>四、刷入MIUI 12.5，重启到REC</h1><p><em>刷入安卓8.1</em></p>
-<h1 id="五、刷入Magisk-25-2-zip-重启到REC"><a href="#五、刷入Magisk-25-2-zip-重启到REC" class="headerlink" title="五、刷入Magisk_25.2.zip,重启到REC"></a>五、刷入Magisk_25.2.zip,重启到REC</h1><h1 id="六、刷入Xposed-zip-重启到系统"><a href="#六、刷入Xposed-zip-重启到系统" class="headerlink" title="六、刷入Xposed.zip,重启到系统"></a>六、刷入Xposed.zip,重启到系统</h1><h1 id="七、安装对应版本Magisk-Manager应用，Xposed等"><a href="#七、安装对应版本Magisk-Manager应用，Xposed等" class="headerlink" title="七、安装对应版本Magisk Manager应用，Xposed等"></a>七、安装对应版本Magisk Manager应用，Xposed等</h1>]]></content>
-      <categories>
-        <category>刷机</category>
-      </categories>
-      <tags>
-        <tag>MIUI</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>海洋所科研人员绘制完成牡蛎全基因组序列图谱</title>
     <url>/2022/07/27/016-mu-li-quan-ji-yin-zu-tu-pu/</url>
     <content><![CDATA[<p>近日，牡蛎基因组计划（Oyster Genome Project，OGP）项目组宣布，历时两年的牡蛎基因组序列图谱终于绘制完成。这是世界上第一张养殖贝类的全基因组序列图谱，标志着基于短序列的高杂合度基因组拼接和组装技术获得了重大突破。据悉，目前的基因组图谱已达到国际领先的基因组图谱标准。</p>
@@ -247,14 +234,8 @@ post_data <span class="token operator">=</span> <span class="token punctuation">
 <p>2009年，胡锦涛总书记视察山东时指出，要大力发展海洋经济，科学开发海洋资源，培育海洋优势产业，打造山东半岛蓝色经济区。这是胡锦涛总书记站在全局高度作出的重大战略部署。进入新的世纪，在陆地资源日益枯竭的今天，人类社会在空间、资源、环境、技术、产业等方面，对海洋提出了新的要求，谁抢占了海洋科技的制高点，谁就率先占领了海洋空间，谁就控制了未来的战略资源，占地球表面积71%的海洋成为了新的经济增长点，也成为了人类新的生存空间。</p>
 <p>大风起兮云飞扬，千帆竞过浪潮涌。以牡蛎基因组计划为契机的海洋基因资源研发必将成为蓝色经济发展的强大引擎，引领蓝色经济走向更加辉煌的明天！</p>
 <hr>
-<p><img src="/images/W020100802375780882489.jpg" alt="图片"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/W020100802375780882489.jpg" alt="img"></p>
 <p>牡蛎基因组部分序列及其分析</p>
-<p><img src="/images/W020100802375780896821.jpg" alt="图片"></p>
-<p>牡蛎基因组计划（OGP）团队成员在深圳华大基因研究院讨论项目</p>
-<p><img src="/images/W020100802375780899202.jpg" alt="图片"></p>
-<p>牡蛎是产量最大的海水养殖动物</p>
-<p><img src="/images/W020100802375780907541.jpg" alt="图片"></p>
-<p>牡蛎养殖</p>
 <p><a href="http://www.cas.cn/ky/kyjz/201008/t20100802_2916092.shtml#:~:text=%E7%89%A1%E8%9B%8E%E5%9F%BA%E5%9B%A0%E7%BB%84%E7%94%B18%E4%BA%BF%E4%B8%AA%E7%A2%B1%E5%9F%BA%E5%AF%B9%E7%BB%84%E6%88%90%EF%BC%8C%E5%A4%A7%E7%BA%A6%E5%8C%85%E5%90%AB2%E4%B8%87%E4%B8%AA%E5%9F%BA%E5%9B%A0%E3%80%82,%E4%BB%8E%E5%88%9D%E6%AD%A5%E5%88%86%E6%9E%90%E6%9D%A5%E7%9C%8B%EF%BC%8C%E5%9F%BA%E5%9B%A0%E7%BB%84%E6%95%B0%E6%8D%AE%E6%94%AF%E6%8C%81%E4%BA%86%E6%B5%B7%E6%B4%8B%E4%BD%8E%E7%AD%89%E7%94%9F%E7%89%A9%E5%85%B7%E6%9C%89%E9%AB%98%E5%BA%A6%E9%81%97%E4%BC%A0%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%BB%93%E8%AE%BA%E3%80%82%20%E6%AD%A4%E5%A4%96%EF%BC%8C%E7%9B%AE%E5%89%8D%E5%B7%B2%E9%AA%8C%E8%AF%81%E7%9A%84109%E7%A7%8D%E9%94%8C%E6%8C%87%E8%9B%8B%E7%99%BD%E7%BB%93%E6%9E%84%E5%9F%9F%E5%9C%A8%E7%89%A1%E8%9B%8E%E5%9F%BA%E5%9B%A0%E7%BB%84%E4%B8%AD%E5%9D%87%E6%9C%89%E5%8F%91%E7%8E%B0%EF%BC%8C%E5%B9%B6%E4%B8%94%E5%9C%A8%E6%95%B4%E4%B8%AA%E5%9F%BA%E5%9B%A0%E7%BB%84%E4%B8%AD%E6%89%80%E5%8D%A0%E7%9A%84%E6%AF%94%E4%BE%8B%E8%BF%9C%E8%BF%9C%E8%B6%85%E8%BF%87%E4%BA%BA%E7%B1%BB%E3%80%82" title="海洋所科研人员绘制完成牡蛎全基因组序列图谱">原文链接</a></p>
 ]]></content>
       <categories>
@@ -272,9 +253,9 @@ post_data <span class="token operator">=</span> <span class="token punctuation">
 <p>牡蛎为世界大宗水产养殖贝类，而与水产鱼类相比，基因组编辑育种技术在牡蛎中应用尚处于起步阶段。针对牡蛎卵径小（~50 μm）、显微操作难、幼虫死亡率高、间接发育时间时间长以及在获得可遗传纯系方面难度大、成本高、耗时长的难题，张琳琳团队经过长期研究攻关，搭建了一套基于电穿孔的Cas9/sgRNA复合物高通量递送和突变体快速检测的技术平台，实现了对牡蛎（Crassostrea gigas angulate）基因组中标记基因（β-tubulin）的高效编辑。</p>
 <p>研究采用前期研发的“长片段缺失镶嵌性突变技术”（Zhang L., et al, 2016, Nature Communications；Zhang L., et al., 2017, PNAS）。通过同时电穿孔多个靶基因sgRNAs，研究在长牡蛎靶向基因中检测到超过300 bp的长片段缺失突变，使研究可以使用PCR和常规琼脂糖凝胶电泳对突变体进行快速筛选和基因分型。这种同时传递两个以上sgRNAs以获得长片段缺失的策略是显著的改进，简化了基因组编辑基因型检测的工作流程。此外，利用原位杂交和行为学分析等表型检测手段，研究在牡蛎G0代幼虫中观察到表型的镶嵌型突变（纤毛的缩短、缺失）和运动能力下降。这种镶嵌型突变有利于探究在G0代个体中对突变表型进行快速鉴别，同时能规避目标基因完全缺失导致的胚胎致死性。该研究在海洋经济贝类牡蛎中建立了基于电穿孔和长片段缺失镶嵌性突变的CRISPR/Cas9基因编辑平台，可为今后基于CRISPR/Cas9基因组编辑技术在海洋贝类中开展基因功能研究提供有益参考，并为牡蛎以及其他水产养殖物种的基因组编辑育种提供有力工具。</p>
 <p>研究工作得到山东省“海洋生命资源绿色发展技术与应用”工作站、中科院战略性先导科技专项（B类）和国家海外引才计划青年项目等的支持。</p>
-<p><img src="/images/d27d-57c56013d6da46ab3efa7677ad2a23e4.jpg"></p>
-<h6 id="基于电穿孔的CRISPR-Cas9基因编辑系统和突变表型快速检测平台示意图"><a href="#基于电穿孔的CRISPR-Cas9基因编辑系统和突变表型快速检测平台示意图" class="headerlink" title="基于电穿孔的CRISPR/Cas9基因编辑系统和突变表型快速检测平台示意图"></a>基于电穿孔的CRISPR/Cas9基因编辑系统和突变表型快速检测平台示意图</h6><p><img src="/images/81fc-c9162d7a30bb36507fe92895fd487c6a.jpg"></p>
-<h6 id="CRISPR-Cas9系统介导的长牡蛎β-tubulin基因的长片段缺失"><a href="#CRISPR-Cas9系统介导的长牡蛎β-tubulin基因的长片段缺失" class="headerlink" title="CRISPR/Cas9系统介导的长牡蛎β-tubulin基因的长片段缺失"></a>CRISPR/Cas9系统介导的长牡蛎β-tubulin基因的长片段缺失</h6><p><img src="/images/496b-f945c0b86bdd8b0e977fedc24b8624ca.jpg"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/W020220620393411496149.jpg" alt="img"></p>
+<h6 id="基于电穿孔的CRISPR-Cas9基因编辑系统和突变表型快速检测平台示意图"><a href="#基于电穿孔的CRISPR-Cas9基因编辑系统和突变表型快速检测平台示意图" class="headerlink" title="基于电穿孔的CRISPR/Cas9基因编辑系统和突变表型快速检测平台示意图"></a>基于电穿孔的CRISPR/Cas9基因编辑系统和突变表型快速检测平台示意图</h6><p><img src="https://www.cas.cn/syky/202206/W020220620393502040349.jpg" alt="img"></p>
+<h6 id="CRISPR-Cas9系统介导的长牡蛎β-tubulin基因的长片段缺失"><a href="#CRISPR-Cas9系统介导的长牡蛎β-tubulin基因的长片段缺失" class="headerlink" title="CRISPR/Cas9系统介导的长牡蛎β-tubulin基因的长片段缺失"></a>CRISPR/Cas9系统介导的长牡蛎β-tubulin基因的长片段缺失</h6><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/W020220620393578486192.jpg" alt="img"></p>
 <h6 id="CRISPR-Cas9系统介导的长牡蛎镶嵌型突变的纤毛表型"><a href="#CRISPR-Cas9系统介导的长牡蛎镶嵌型突变的纤毛表型" class="headerlink" title="CRISPR/Cas9系统介导的长牡蛎镶嵌型突变的纤毛表型"></a>CRISPR/Cas9系统介导的长牡蛎镶嵌型突变的纤毛表型</h6><p><a href="https://www.cas.cn/syky/202206/t20220606_4836984.shtml" title="中国科学院海洋所在牡蛎基因组编辑方面获进展">阅读原文</a></p>
 ]]></content>
       <categories>
@@ -290,8 +271,8 @@ post_data <span class="token operator">=</span> <span class="token punctuation">
     <content><![CDATA[<p>近日，由中科院海洋所张国范研究组独立完成的论文“Construction of a chromosome-level genome and variation map for the Pacific oyster Crassostrea gigas（长牡蛎染色体水平基因组和变异图谱构建）”在国际学术期刊Molecular Ecology Resources（《分子生态资源》）在线发表。该研究首次构建了长牡蛎染色体水平基因组和贝类中第一张包含SNP、INDEL和CNV的综合序列变异图谱，发现长牡蛎基因组中存在高比例的长片段重复序列，CNV结构变异可导致个体间平均21%的区域差异，更新了长牡蛎基因组资源和对基因组复杂性的认知。 </p>
 <p>　　长牡蛎(Crassostrea gigas)，俗称太平洋牡蛎，是世界重要的养殖贝类，具有重要的经济和生态价值。张国范研究组长期从事贝类养殖和育种相关工作，并一直致力于牡蛎基因资源挖掘和分子育种研究。2012年在Nature发表的牡蛎第一张基因组图谱得到广泛应用，引领并开启了水产物种基因组学相关研究。张国范研究组之后一直对牡蛎基因资源进行维护和更新。随着新一代测序技术的普及和对长牡蛎染色体水平基因组需求的增加，研究组于2019年正式启动长牡蛎染色体水平基因组构建工作。 </p>
 <p>　　本研究利用高覆盖第三代测序(PacBio，~200×)结合HIC技术，并利用遗传连锁图谱进行辅助，对一个中国青岛的长牡蛎进行从头组装，获得基因组总长度为587M，包含10条染色体水平scaffold序列，ContigN50达到3.1M，ScaffoldN50达到60M，组装完整性和连续性均有较大提高。发现基因组中高比例的长片段重复在基因进化中发挥了重要作用，同时也是导致之前基于二代测序技术组装的长牡蛎基因组碎片化的主要原因。基于495个野生长牡蛎的重测序数据分析，构建了长牡蛎综合变异图谱，包含480万个高质量SNP，60万个INDEL和4.9万个CNV。这些新的数据资源对牡蛎比较基因组学、分子育种和适应进化等研究具有重要意义。美国南加州大学Dennis Hedgecock教授团队成员Xiaoshen Yin博士对该基因组进行了分析，发现和连锁图谱一致性达到90%以上，明显的组装错误不到0.1%，肯定了其较高的组装质量(Yin et al, 2020)。</p>
-<p><img src="/images/W020210406579193394680.png"></p>
-<h6 id="长牡蛎基因组序列图谱"><a href="#长牡蛎基因组序列图谱" class="headerlink" title="长牡蛎基因组序列图谱"></a>长牡蛎基因组序列图谱</h6><p><img src="/images/W020210406579193775681.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/9d425ff3112e40209dec2f6d4402c1fd.png" alt="img"></p>
+<h6 id="长牡蛎基因组序列图谱"><a href="#长牡蛎基因组序列图谱" class="headerlink" title="长牡蛎基因组序列图谱"></a>长牡蛎基因组序列图谱</h6><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/99541f9189404b44a250c5bfe3313b6c.png" alt="img"></p>
 <h6 id="长牡蛎基因组变异图谱"><a href="#长牡蛎基因组变异图谱" class="headerlink" title="长牡蛎基因组变异图谱"></a>长牡蛎基因组变异图谱</h6><p>　　本研究得到国家自然科学基金、山东省科技创新重大专项、中科院海洋大科学研究中心重点部署项目、国家贝类产业技术体系专项基金等资助。中科院海洋所高性能计算中心对部分生物信息分析提供了技术支持。亓海刚副研究员为论文第一作者，李莉研究员和张国范研究员为通讯作者。 </p>
 <p>　　论文链接：<a href="http://onlinelibrary.wiley.com/doi/abs/10.1111/1755-0998.13368" title="onlinelibrary.wiley.com/doi/abs/10.1111/1755-0998.13368">onlinelibrary.wiley.com/doi/abs/10.1111/1755-0998.13368</a>。</p>
 ]]></content>
@@ -409,6 +390,19 @@ t.render(c) <span aria-hidden="true" class="line-numbers-rows"><span></span><spa
       </tags>
   </entry>
   <entry>
+    <title>OPPO R11 Plus 刷MIUI12.5</title>
+    <url>/2022/07/23/015-oppo-r11-plus/</url>
+    <content><![CDATA[<h1 id="一、刷入售后工程包，解锁BL"><a href="#一、刷入售后工程包，解锁BL" class="headerlink" title="一、刷入售后工程包，解锁BL"></a>一、刷入售后工程包，解锁BL</h1><h1 id="二、刷入TWRP，重启到REC"><a href="#二、刷入TWRP，重启到REC" class="headerlink" title="二、刷入TWRP，重启到REC"></a>二、刷入TWRP，重启到REC</h1><h1 id="三、刷入MIUI底层框架，重启到REC"><a href="#三、刷入MIUI底层框架，重启到REC" class="headerlink" title="三、刷入MIUI底层框架，重启到REC"></a>三、刷入MIUI底层框架，重启到REC</h1><p><em>安装带ROOT安卓8.1版本刷8.1框架</em></p>
+<h1 id="四、刷入MIUI-12-5，重启到REC"><a href="#四、刷入MIUI-12-5，重启到REC" class="headerlink" title="四、刷入MIUI 12.5，重启到REC"></a>四、刷入MIUI 12.5，重启到REC</h1><p><em>刷入安卓8.1</em></p>
+<h1 id="五、刷入Magisk-25-2-zip-重启到REC"><a href="#五、刷入Magisk-25-2-zip-重启到REC" class="headerlink" title="五、刷入Magisk_25.2.zip,重启到REC"></a>五、刷入Magisk_25.2.zip,重启到REC</h1><h1 id="六、刷入Xposed-zip-重启到系统"><a href="#六、刷入Xposed-zip-重启到系统" class="headerlink" title="六、刷入Xposed.zip,重启到系统"></a>六、刷入Xposed.zip,重启到系统</h1><h1 id="七、安装对应版本Magisk-Manager应用，Xposed等"><a href="#七、安装对应版本Magisk-Manager应用，Xposed等" class="headerlink" title="七、安装对应版本Magisk Manager应用，Xposed等"></a>七、安装对应版本Magisk Manager应用，Xposed等</h1>]]></content>
+      <categories>
+        <category>刷机</category>
+      </categories>
+      <tags>
+        <tag>MIUI</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>基因组组装（二）</title>
     <url>/2022/08/04/021-ji-yin-zu-zu-zhuang-er/</url>
     <content><![CDATA[<h1 id="二代测序基因组组装"><a href="#二代测序基因组组装" class="headerlink" title="二代测序基因组组装"></a>二代测序基因组组装</h1><h2 id="一、数据下载"><a href="#一、数据下载" class="headerlink" title="一、数据下载"></a>一、数据下载</h2><h3 id="1-两种数据格式"><a href="#1-两种数据格式" class="headerlink" title="1.两种数据格式"></a>1.两种数据格式</h3><p>1.frag_x.fastq –&gt; 不超过100bp</p>
@@ -420,7 +414,7 @@ t.render(c) <span aria-hidden="true" class="line-numbers-rows"><span></span><spa
 <h2 id="三、基因组组装"><a href="#三、基因组组装" class="headerlink" title="三、基因组组装"></a>三、基因组组装</h2><h3 id="1-SOAPdenovo"><a href="#1-SOAPdenovo" class="headerlink" title="1.SOAPdenovo"></a>1.SOAPdenovo</h3><p> SOAPdenovo是由华大基因开发的SOAP软件包的一部分，SOAPdenovo主要用于短序列reads拼接，尤其是illumina测序数据。从小的细菌基因组到大的动植物基因组，人基因组都适用。已经成功应用于大熊猫基因组，黄瓜基因组等众多基因组的拼接中。</p>
 <p> SOAPdenovo的一个优点是使用起来比较简单，但是却拥有很好的拼接效果，尤其在基因组构建Scaffold方面，效果很好。对于内存控制的也比较好。通常只要给软件输入测序的数据，即可拼接出很好的全基因组。</p>
 <p>下面简单介绍一下SOAPdenovo组装的一般过程：</p>
-<p><img src="/images/soapdenovo.jpg"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/19684072-c918d42c41db034c.png"></p>
 <p> 原理：</p>
 <p> A.随即打散基因组，进行双端测序：扩增长度在150–500bp之间的短克隆，并直接测序</p>
 <p> B.将未处理（或者未经纠正的）reads读入到内存中，并且用deBruijin图数据结构来表示reads间的Overlap</p>
@@ -524,22 +518,6 @@ t.render(c) <span aria-hidden="true" class="line-numbers-rows"><span></span><spa
       <tags>
         <tag>笔记</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>将测序数据比对到参考基因组</title>
-    <url>/2022/08/06/025-bi-dui/</url>
-    <content><![CDATA[<h2 id="一项目设计"><a href="#一项目设计" class="headerlink" title="一项目设计"></a>一项目设计</h2><h3 id="1-取样"><a href="#1-取样" class="headerlink" title="1.取样"></a>1.取样</h3><p>S1:7.16</p>
-<p>S2:8.07</p>
-<p>S3:8.26</p>
-<p>S4:9.14</p>
-<p>三个生物学重复，共二十四个样本</p>
-<h3 id="2-建库"><a href="#2-建库" class="headerlink" title="2.建库"></a>2.建库</h3><p>试剂盒：NEBNexi</p>
-<h3 id="3-测序"><a href="#3-测序" class="headerlink" title="3.测序"></a>3.测序</h3><p>模式：Single-end</p>
-<p>读长：101bp</p>
-<p>测序仪：Hiseq2000</p>
-<h2 id="二、将测序数据比对到参考基因组-测序数据量"><a href="#二、将测序数据比对到参考基因组-测序数据量" class="headerlink" title="二、将测序数据比对到参考基因组 ==> 测序数据量"></a>二、将测序数据比对到参考基因组 ==&gt; 测序数据量</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-06%2023-10-05_20220806151210236124.png"></p>
-<h2 id="三、特异表达分析"><a href="#三、特异表达分析" class="headerlink" title="三、特异表达分析"></a>三、特异表达分析</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-06%2023-11-38_20220806151402533026.png"></p>
-]]></content>
   </entry>
   <entry>
     <title>转录组分析</title>
@@ -880,7 +858,7 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
   <entry>
     <title>Western blot 原理和详细操作步骤</title>
     <url>/2022/11/04/029-western-blot/</url>
-    <content><![CDATA[<h2 id="Western-blot-原理"><a href="#Western-blot-原理" class="headerlink" title="Western blot 原理"></a>Western blot 原理</h2><p><img src="/images/v2-d6d9839833ec998ef6f250fe7a4dbc5b_720w.webp"></p>
+    <content><![CDATA[<h2 id="Western-blot-原理"><a href="#Western-blot-原理" class="headerlink" title="Western blot 原理"></a>Western blot 原理</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-d6d9839833ec998ef6f250fe7a4dbc5b_720w.webp"></p>
 <blockquote>
 <p>Western blot（也称为蛋白质免疫印迹）是一种常用于研究中分离和鉴定蛋白质的技术。它利用 SDS-聚丙烯酰胺凝胶电泳 (SDS-PAGE) 来分离指定样品中包含的各种蛋白质，然后将分离的蛋白质转移到硝酸纤维素或 PVDF 膜上，接下来将膜与对感目标蛋白质的特异抗体一起孵育。在洗膜过程中，未结合的抗体被洗掉，只留下与目标蛋白质结合的抗体，最后通过显影胶片或荧光扫描来检测结合的抗体。</p>
 </blockquote>
@@ -926,7 +904,7 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
 <li><p>电泳：开始为恒压60-80V，当跑过浓缩胶后，将电流加大到100-120V，电泳时间根据目标蛋白的大小及marker的位置确定，一般为目标蛋白跑到分离胶的三分之二的位置即可。</p>
 </li>
 </ol>
-<h3 id="三、转膜"><a href="#三、转膜" class="headerlink" title="三、转膜"></a>三、转膜</h3><p><img src="/images/v2-4655ee5889e0b74ffeaf44a5927c9cfb_720w.webp"></p>
+<h3 id="三、转膜"><a href="#三、转膜" class="headerlink" title="三、转膜"></a>三、转膜</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-4655ee5889e0b74ffeaf44a5927c9cfb_720w.webp"></p>
 <ol>
 <li><p>切胶，按Marker指示和目的条带的位置切胶(注意将胶切角做记号)，将洗脱的胶浸入转膜缓冲液中15分钟。</p>
 </li>
@@ -941,7 +919,7 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
 <li>转膜：转膜时间根据1.确定。（60min）</li>
 </ol>
 <p> PVDF膜一边接正极（红色），凝胶一边接负极（黑色）。</p>
-<h3 id="四、封闭和抗体孵育"><a href="#四、封闭和抗体孵育" class="headerlink" title="四、封闭和抗体孵育"></a>四、封闭和抗体孵育</h3><p><img src="/images/v2-579f20046a8c0c8ed195c58cfce73423_720w.webp"></p>
+<h3 id="四、封闭和抗体孵育"><a href="#四、封闭和抗体孵育" class="headerlink" title="四、封闭和抗体孵育"></a>四、封闭和抗体孵育</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-579f20046a8c0c8ed195c58cfce73423_720w.webp"></p>
 <ol>
 <li><p>转膜以后，<del>用10ml的1×TBS室温洗膜10分钟</del>。</p>
 </li>
@@ -961,8 +939,8 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
 <li><p>10ml的TBS/T洗膜<del>3</del>5次，每次5分钟。</p>
 </li>
 </ol>
-<p><img src="/images/v2-787bb84a8e567620a49e3f0df4b365bf_720w.webp"></p>
-<h3 id="五、显影"><a href="#五、显影" class="headerlink" title="五、显影"></a>五、显影</h3><p><img src="/images/v2-87069acd533b8a41b7a4296c72786b0b_720w.webp"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-787bb84a8e567620a49e3f0df4b365bf_720w.webp"></p>
+<h3 id="五、显影"><a href="#五、显影" class="headerlink" title="五、显影"></a>五、显影</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-87069acd533b8a41b7a4296c72786b0b_720w.webp"></p>
 <ol>
 <li><p>显色步骤：先铺保鲜膜，在吸水纸上再铺上保鲜膜；分别将水、显影液（颜色变深则不能用）和定影液倒入各自的盘中。2.5ml ECL-A 和2.5ml ECL-B混合,避光。将ECL混合液、膜等拿入暗房。关好门，反锁，拉回布。ECL混合液倒入小盒中，膜用吸水纸稍微吸干放入ECL混合液中室温摇动5min（使得ECL均匀的铺过膜），吸水纸吸干后置于保鲜膜上，膜面朝下包好置于夹子上，剪好X-film（注意手只能拿X-film的边缘）放于膜上，剪角一边为marker(注意：取胶片时要把灯光调到最小，且不要对着灯光，应背着灯光。)，根据条带的亮度来调整曝光时间，一般可先曝光2min，观察条带的深度，再确定最佳的曝光时间。</p>
 </li>
@@ -981,7 +959,8 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
   <entry>
     <title>SDS-PAGE（聚丙烯酰胺）蛋白电泳原理详解</title>
     <url>/2022/11/04/030-sds-page/</url>
-    <content><![CDATA[<h2 id="WB流程"><a href="#WB流程" class="headerlink" title="WB流程"></a>WB流程</h2><blockquote>
+    <content><![CDATA[<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-94435d28b337a80366f73f71e9d7fb14_1440w.jpg"></p>
+<h2 id="WB流程"><a href="#WB流程" class="headerlink" title="WB流程"></a>WB流程</h2><blockquote>
 <p>首先通过SDS-PAGE聚丙烯酰胺凝胶电泳使蛋白质样本分离，再将凝胶上的蛋白电泳转移到固相载体上（NC膜或者PVDF膜），方便后续印迹显影操作，然后使用封闭液将封闭非特异位点，以避免抗体的非特异性吸附，这样固定的蛋白质即可与特异性的多克隆或单克隆抗体相互作用。最后通过化学发光法或荧光方法进行蛋白条带显影。</p>
 </blockquote>
 <blockquote>
@@ -994,12 +973,12 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
 <p>②　电荷—经过SDS处理后，所有的蛋白质都是负电荷， 因此，电荷不影响分离。</p>
 <p>③　大小—蛋白质的分离完全与它们的分子量大小有关。</p>
 <p>在电泳中，分子量越小的多肽移动得越快，因为它们遇到的阻力更小。分子量越大的多肽移动得更慢，因为它们遇到的阻力更大。因此蛋白质完全是因为分子量大小的不同而分开（如图1）。</p>
-<p><img src="/images/v2-26a9bacb485bfc577ab19e732af15c7b_720w.webp"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-26a9bacb485bfc577ab19e732af15c7b_720w.webp"></p>
 <h3 id="二、SDS-PAGE电泳中各主要试剂的作用："><a href="#二、SDS-PAGE电泳中各主要试剂的作用：" class="headerlink" title="二、SDS-PAGE电泳中各主要试剂的作用："></a>二、SDS-PAGE电泳中各主要试剂的作用：</h3><h5 id="1-β-巯基乙醇-二硫苏糖醇（DTT）"><a href="#1-β-巯基乙醇-二硫苏糖醇（DTT）" class="headerlink" title="1. β-巯基乙醇/二硫苏糖醇（DTT）"></a>1. β-巯基乙醇/二硫苏糖醇（DTT）</h5><p>β-巯基乙醇或二硫苏糖醇（DTT）做为还原剂添加入样品中，可以还原（分解）存在于蛋白质的肽链上半胱氨酸残基之间的二硫键(S-S键)。S-S键使蛋白质折叠形成二级结构。因为蛋白的构象会干扰电泳的迁移率。所以，当电泳时，消除蛋白构象对迁移率的干扰非常重要。β-巯基乙醇还原蛋白的二硫键为游离的-SH，样本中所有的蛋白都变成线性的一级结构，使其电泳迁移率只与蛋白分子量有关（图1）。</p>
 <h5 id="2-十二烷基硫酸钠-SDS"><a href="#2-十二烷基硫酸钠-SDS" class="headerlink" title="2. 十二烷基硫酸钠 (SDS)"></a>2. 十二烷基硫酸钠 (SDS)</h5><p>在制备SDS-PAGE样品时，将SDS混合在样品缓冲液中。 蛋白样本用β-巯基乙醇处理后解聚成单一线性；用SDS处理后，所有蛋白质均只带负电荷。 SDS可以使所有的蛋白质分子均匀的带上负电荷(图01)。 因此，当施加电压时，所有的蛋白质都向凝胶的正极迁移。 因为，不同大小的蛋白质得到的负电荷与其分子量成正比，它们只因为分子量大小的不同而分离开，而不是因为带电荷的多少或者蛋白构象。 在凝胶中也存在SDS，这是为了确保所有的蛋白质在整个凝胶中保持荷载负电荷。</p>
 <h5 id="3-溴酚蓝-BPB"><a href="#3-溴酚蓝-BPB" class="headerlink" title="3. 溴酚蓝 (BPB)"></a>3. 溴酚蓝 (BPB)</h5><p>溴酚蓝是电泳中的示踪染料，用于监测各个蛋白分子电泳过程的进展。 BPB与样品蛋白混合后上样，当电泳开始时，BPB与蛋白质一起迁移，但速度更快，会比样品中的任何蛋白质更快到达凝胶的末端，甚至缓冲液中的甘氨酸分子也在BPB之后到达末端。 BPB带有轻微的负电荷，这就是为什么它可以向阳极迁移，同时又可以作为蛋白质分子的示踪染料。</p>
 <h5 id="4-聚丙烯酰胺凝胶"><a href="#4-聚丙烯酰胺凝胶" class="headerlink" title="4. 聚丙烯酰胺凝胶"></a>4. 聚丙烯酰胺凝胶</h5><p>聚丙烯酰胺凝胶是通过使用少量的交联剂（如N，N‘-亚甲基双丙烯酰胺）使单体丙烯酰胺在水中的聚合而成。因此，丙烯酰胺（Acrylamide）和双丙烯酰胺(Bis-acrylamide)共聚形成了丙烯酰胺的直链与双丙烯酰胺的相互联结形成三维网络结构。</p>
-<p><img src="/images/v2-54f1bccefd52213e7ecf9d969972e929_b.jpg"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-54f1bccefd52213e7ecf9d969972e929_b.jpg"></p>
 <p>有其他的交联剂可以代替双丙烯酰胺（bisacrylamide），如：</p>
 <p>² 哌嗪二丙烯酸酯 (PDA) –-可以用于降低SDS-PAGE胶的银染背景；</p>
 <p>² N,N’- 酒石酸双丙烯铣胺 (DATD) –一种可以破坏交联剂而使凝胶可溶的试剂；</p>
@@ -1010,23 +989,46 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
 <p>②　具备牵引作用的来自Tris-HCL 电泳缓冲液的氯化物离子</p>
 <p>当施加电压后，甘氨酸分子（最简单的氨基酸）和Cl-开始通过凝胶向正极迁移。 由于甘氨酸分子在浓缩胶中以两性离子的形式存在，其电泳迁移速率非常慢。 氯离子比甘氨酸分子迁移得更快，产生了不平衡的正反离子区域，从而在氯离子和甘氨酸离子之间形成了很大的电压梯度。 在甘氨酸分子（最慢的)和氯离子(最快的）之间存在样本混合物中的所有蛋白质（图03）。样品分子在氯化物和甘氨酸之间中间迁移，逐渐被压缩成非常薄而清晰的蛋白层，方便后面更好的蛋白分离。</p>
 <p>在这个阶段，样本蛋白分子处于两种离子（后面的甘氨酸和前面的氯离子Cl-）之间，在浓缩胶和分离胶之间形成薄薄的一层。</p>
-<p><img src="/images/v2-6c85facd823b6328166fe18f1ffe34d2_720w.webp"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-6c85facd823b6328166fe18f1ffe34d2_720w.webp"></p>
 <p>当蛋白分子到达分离胶界面时发生了什么？</p>
 <p>当到达分离胶时，pH值增大，孔径急剧减小。在更高的pH值下，甘氨酸分子不再以两性离子的形式存在，它们在这个阶段就会电离，并开始比在浓缩胶中时迁移得更快。 氯离子Cl-很快就会向阳极迁移。 因此，一旦蛋白质不堆积，甘氨酸分子很快难以束缚样品蛋白质分子，蛋白质分子开始在电流的作用下按照分子量大小自由的分离(图4)。</p>
-<p><img src="/images/v2-de6189d4cd377cffe335c8f9117c453d_720w.webp"></p>
-<p>| | 浓缩胶 | 分离胶 |</p>
-<p>| :————: | :————: | :————: |</p>
-<p>| 聚丙烯酰胺浓度 | 低 | 高 |</p>
-<p>| 孔径大小 | 更大| 更小|</p>
-<p>| Tris-HCl 的pH值 | 6.8 | 8.8|</p>
-<p>| 目的 | 使多肽链积聚在浓缩胶和分离胶的界线上 | 根据分子量大小分离多肽分子 |</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-de6189d4cd377cffe335c8f9117c453d_720w.webp"></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>浓缩胶</th>
+<th>分离胶</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>聚丙烯酰胺浓度</td>
+<td>低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>孔径大小</td>
+<td>更大</td>
+<td>更小</td>
+</tr>
+<tr>
+<td>Tris-HCl 的pH值</td>
+<td>6.8</td>
+<td>8.8</td>
+</tr>
+<tr>
+<td>目的</td>
+<td>使多肽链积聚在浓缩胶和分离胶的界线上</td>
+<td>根据分子量大小分离多肽分子</td>
+</tr>
+</tbody></table>
 <p><strong>过硫酸铵（APS）和TEMED</strong></p>
 <p>凝胶的聚合是通过自由基机制发生的。 TEMED(N，N，N，N-四甲基乙二胺)作为催化剂，生成硫酸盐自由基。过硫酸铵是提供形成自由基的硫酸盐基团的。 这些用于自由基生成的硫酸盐由过硫酸铵提供，如图02所示。</p>
 <h3 id="四、SDS-PAGE凝胶电泳的主要步骤："><a href="#四、SDS-PAGE凝胶电泳的主要步骤：" class="headerlink" title="四、SDS-PAGE凝胶电泳的主要步骤："></a>四、SDS-PAGE凝胶电泳的主要步骤：</h3><h5 id="1-先制备和灌注分离胶"><a href="#1-先制备和灌注分离胶" class="headerlink" title="1. 先制备和灌注分离胶:"></a>1. 先制备和灌注分离胶:</h5><p>制备分离胶需要两块玻璃板，一个短板，一个长板，将两块玻璃板夹在制胶架上（图5），灌胶完成后，加异丙醇赶走凝胶上面的气泡。关于灌胶的高度，这可以通过放置梳子确定，一般大约梳子下1cm,用笔标记制胶的高度，开始灌胶，加异丙醇封胶。等待胶凝固后，倒掉上层异丙醇，用吸水纸吸干异丙醇。</p>
-<p><img src="/images/v2-2d20b9a30f6ac4b7bf76264825c6580b_720w.webp"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-2d20b9a30f6ac4b7bf76264825c6580b_720w.webp"></p>
 <h5 id="2-再制备和灌注浓缩胶"><a href="#2-再制备和灌注浓缩胶" class="headerlink" title="2. 再制备和灌注浓缩胶:"></a>2. 再制备和灌注浓缩胶:</h5><p>当下层的分离胶凝固后，就可以开始直接加积层胶至玻璃最上层，然后插入梳子。等待积层胶凝固后，小心拔出梳子，避免用力过猛破坏了凝胶上样孔。</p>
 <h5 id="3-点样至凝胶孔中："><a href="#3-点样至凝胶孔中：" class="headerlink" title="3. 点样至凝胶孔中："></a>3. 点样至凝胶孔中：</h5><p>用微量移液器向凝胶孔中依次加入蛋白marker和样本，蛋白marker是已知蛋白条带分子量的预染蛋白，可作为标定蛋白大小的标尺参考。然后依次点入其他样本至凝胶孔中。每孔的样本上样量保持一致（主要是质量一致），加样时要小心，确保不损坏加样孔的尺寸或不将样品溢出孔外，更不能把样本加到孔外。 在这个阶段，蛋白质的样品是蓝色的，因为在制备样品时使用了电泳指示剂染料–溴酚蓝</p>
-<p><img src="/images/v2-4c63a7a570cd2369994aff563d2963dc_720w.webp"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-4c63a7a570cd2369994aff563d2963dc_720w.webp"></p>
 <h5 id="4-设定电泳条件，启动电泳："><a href="#4-设定电泳条件，启动电泳：" class="headerlink" title="4. 设定电泳条件，启动电泳："></a>4. 设定电泳条件，启动电泳：</h5><p>将凝胶和玻璃板浸入电泳缓冲液中后，就可以开始设定电压和时间，开始电泳了。 当示踪染料到达或穿过凝胶时，停止电泳。</p>
 <h5 id="5-分析蛋白条带"><a href="#5-分析蛋白条带" class="headerlink" title="5. 分析蛋白条带"></a>5. 分析蛋白条带</h5><p>考马斯亮蓝染色或者进行蛋白转膜以进行后续的免疫印迹实验；</p>
 <p>用去离子水冲洗凝胶3-5次，以去除SDS和缓冲液。 它可能会阻碍染料（0.1%考马斯蓝）与蛋白质的结合。 然后将凝胶浸泡在考马斯蓝染液中染色，室温，摇床孵育。 一般蛋白质条带会在几分钟内开始出现，但完全染色大约需要1小时（图06）</p>
@@ -1037,6 +1039,22 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
       <tags>
         <tag>实验</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>将测序数据比对到参考基因组</title>
+    <url>/2022/08/06/025-bi-dui/</url>
+    <content><![CDATA[<h2 id="一项目设计"><a href="#一项目设计" class="headerlink" title="一项目设计"></a>一项目设计</h2><h3 id="1-取样"><a href="#1-取样" class="headerlink" title="1.取样"></a>1.取样</h3><p>S1:7.16</p>
+<p>S2:8.07</p>
+<p>S3:8.26</p>
+<p>S4:9.14</p>
+<p>三个生物学重复，共二十四个样本</p>
+<h3 id="2-建库"><a href="#2-建库" class="headerlink" title="2.建库"></a>2.建库</h3><p>试剂盒：NEBNexi</p>
+<h3 id="3-测序"><a href="#3-测序" class="headerlink" title="3.测序"></a>3.测序</h3><p>模式：Single-end</p>
+<p>读长：101bp</p>
+<p>测序仪：Hiseq2000</p>
+<h2 id="二、将测序数据比对到参考基因组-测序数据量"><a href="#二、将测序数据比对到参考基因组-测序数据量" class="headerlink" title="二、将测序数据比对到参考基因组 ==> 测序数据量"></a>二、将测序数据比对到参考基因组 ==&gt; 测序数据量</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-06%2023-10-05_20220806151210236124.png"></p>
+<h2 id="三、特异表达分析"><a href="#三、特异表达分析" class="headerlink" title="三、特异表达分析"></a>三、特异表达分析</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-06%2023-11-38_20220806151402533026.png"></p>
+]]></content>
   </entry>
   <entry>
     <title>PCR实验最常见的9个问题及解决方案</title>
@@ -1170,83 +1188,22 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
       </tags>
   </entry>
   <entry>
-    <title>免疫共沉淀（Co-IP）</title>
-    <url>/2022/11/15/033-mian-yi-gong-chen-dian-co-ip/</url>
-    <content><![CDATA[<blockquote>
-<p>蛋白间相互作用是细胞各种基本功能的主要完成者，参与几乎所有的重要生命活动。因此，蛋白-蛋白相互作用研究以及建立相互作用的关系网络图，具有十分重要的意义，也是目前蛋白质研究领域的热点。</p>
-</blockquote>
-<blockquote>
-<p>Co-IP（免疫共沉淀，co-inmunoprecipitation）是经典的利用抗体从样品中捕获靶蛋白及其互作蛋白、复合体的一项技术，能够特异性富集所研究的目的蛋白。由于过程中采用了非变性条件，保留了互作及复合体的细胞内状态。相对于酵母双杂交、pull down等方法，其特色之一便是捕获的蛋白互作发生在所研究的特定组织细胞内，保存了互作蛋白及复合体的“内源”状态。</p>
-</blockquote>
-<h2 id="一、Co-IP实验原理："><a href="#一、Co-IP实验原理：" class="headerlink" title="一、Co-IP实验原理："></a>一、Co-IP实验原理：</h2><p>以抗体和抗原之间的专一性作用为基础的用于研究蛋白质相互作用的经典方法，是确定两种蛋白质在完整细胞内生理性相互作用的有效方法。</p>
-<p>当细胞在非变性条件下被裂解时，完整细胞内存在的许多蛋白质－蛋白质间的相互作用被保留了下来。如果用蛋白质X的抗体免疫沉淀X，那么与X在体内结合的蛋白质Y也能沉淀下来。</p>
-<p><img src="/images/v2-f747d49a139b7809315b0237a7db2437_720w.webp"></p>
-<h2 id="二、Co-IP实验优势："><a href="#二、Co-IP实验优势：" class="headerlink" title="二、Co-IP实验优势："></a>二、Co-IP实验优势：</h2><p>a) 取材可以选择该目的蛋白所在物种、特定组织、细胞，因此CoIP能够反应该蛋白在天然组织细胞状态下存在的互作关系蛋白；</p>
-<p>b) 找出整个复合体中直接/间接互作的多个蛋白，研究复合体组成；</p>
-<p>c) 通过与质谱鉴定连用可以初筛到一系列未知蛋白，再通过其他技术进一步验证。</p>
-<h2 id="三、Co-IP实验注意事项"><a href="#三、Co-IP实验注意事项" class="headerlink" title="三、Co-IP实验注意事项"></a>三、Co-IP实验注意事项</h2><p>a)需要特异性IP级别诱饵蛋白抗体（重点）；</p>
-<p>b)如果没有特异性抗体，则需要考虑构建重组标签质粒，用标签抗体进行CoIP实验；</p>
-<p>c)样品种类实验风险：过表达细胞样品 IP全称是immunoprecipitation，即免疫沉淀，这一步主要是为了纯化目的蛋白。</p>
-<blockquote>
-<p>IB全称是immunoblotting，即免疫印迹，也就是常规的Western Blotting，用于显示目的蛋白。</p>
-</blockquote>
-<blockquote>
-<p>WCL全称是whole cell lysates，即整个细胞的裂解成分。</p>
-</blockquote>
-<blockquote>
-<p>HC全称是heavy chain，即重链，</p>
-</blockquote>
-<blockquote>
-<p>LC全称是light chain，即轻链。</p>
-</blockquote>
-<h3 id="现在将图分为三部分，先看第一部分，即上面的部分，“-”表示含有这种蛋白，“-”表示没有，这个实验一共做了四组，从左到右分别为："><a href="#现在将图分为三部分，先看第一部分，即上面的部分，“-”表示含有这种蛋白，“-”表示没有，这个实验一共做了四组，从左到右分别为：" class="headerlink" title="现在将图分为三部分，先看第一部分，即上面的部分，“+”表示含有这种蛋白，“-”表示没有，这个实验一共做了四组，从左到右分别为："></a>现在将图分为三部分，先看第一部分，即上面的部分，“+”表示含有这种蛋白，“-”表示没有，这个实验一共做了四组，从左到右分别为：</h3><p>（1）只表达HA-cGAS的293T细胞；</p>
-<p>（2）共同表达HA-cGAS与NRLP14-FL的293T细胞；</p>
-<p>（3）只表达STING-HA的293T细胞；</p>
-<p>（4）共同表达STING-HA与与NRLP14-FL的293T细胞，如下所示：</p>
-<p><img src="/images/v2-8b2f8f638a7e7e242fd995311a0538fd_720w.webp"></p>
-<h3 id="再看第二部分WB的图，WB的图就是使用含有FLAG抗体的珠子拉下来的蛋白做的，使用拉下来的这些蛋白再做WB，它的原理前面已经描述过了。使用FLAG抗体的珠子拉下来的蛋白使用HA抗体来进行检测，其结果如下："><a href="#再看第二部分WB的图，WB的图就是使用含有FLAG抗体的珠子拉下来的蛋白做的，使用拉下来的这些蛋白再做WB，它的原理前面已经描述过了。使用FLAG抗体的珠子拉下来的蛋白使用HA抗体来进行检测，其结果如下：" class="headerlink" title="再看第二部分WB的图，WB的图就是使用含有FLAG抗体的珠子拉下来的蛋白做的，使用拉下来的这些蛋白再做WB，它的原理前面已经描述过了。使用FLAG抗体的珠子拉下来的蛋白使用HA抗体来进行检测，其结果如下："></a>再看第二部分WB的图，WB的图就是使用含有FLAG抗体的珠子拉下来的蛋白做的，使用拉下来的这些蛋白再做WB，它的原理前面已经描述过了。使用FLAG抗体的珠子拉下来的蛋白使用HA抗体来进行检测，其结果如下：</h3><p><img src="/images/v2-1c5b5a85f1e2c9775ca481d37e799833_720w.webp"></p>
-<p>从上面的图像可以看出以下信息：</p>
-<p>第一，HC与LC条带都非常明显，之所以出现这个条件是因为，在WB之前进行的蛋白变性这一步，由于加样缓冲液中含有巯基乙醇，巯基乙醇会把抗体的重链和轻链之间的二硫键破坏，从而使的抗体变成<strong>重链分子55KD</strong>和<strong>轻链分子25KD</strong>，因此会在结果中呈现两个条带。</p>
-<p>第二，第一组（只表达HA-cGAS的293T细胞）中没有条带，第二组（共同表达HA-cGAS与NRLP14-FL的293T细胞）没有条带，第三组（只表达STING-HA的293T细胞）有一点点条带，第四组（共同表达STING-HA与与NRLP14-FL的293T细胞）条带明显，这<strong>说明NLRP14与STING有相互作用</strong>，为什么说有相互作用呢？因为我们是用FLAG抗体来拉的蛋白，从理论上讲，我们只能拉下FLAG标记的NLRP14，也就是NLRP14-FL（FL就是FLAG），但是，从拉下的蛋白中用HA进行检测，居然检测出来了HA标记的STING，这就说明，使用FLAG拉NLRP14-FL时，这个蛋白复合物中含有STING-HA。</p>
-<h3 id="再看图的第三部分，也就是下面的这一部分，是用FLAG抗体和HA抗体来进行检测整个细胞的裂解液，是作为阳性对照（有的文献中会标明input组），如下所示："><a href="#再看图的第三部分，也就是下面的这一部分，是用FLAG抗体和HA抗体来进行检测整个细胞的裂解液，是作为阳性对照（有的文献中会标明input组），如下所示：" class="headerlink" title="再看图的第三部分，也就是下面的这一部分，是用FLAG抗体和HA抗体来进行检测整个细胞的裂解液，是作为阳性对照（有的文献中会标明input组），如下所示："></a>再看图的第三部分，也就是下面的这一部分，是用FLAG抗体和HA抗体来进行检测整个细胞的裂解液，是作为阳性对照（有的文献中会标明input组），如下所示：</h3><p><img src="/images/v2-7cadfdc3010f33836517b7861138245c_720w.webp"></p>
-<p>其中右侧的WCL表示的是整个细胞的裂解液，也就是还没有使用FLAG抗体的珠子去拉的时候的样本，也就是说直接裂解了293T细胞后的样本，从这个结果中可以得到以下信息：</p>
-<p>第一，在使用FLAG抗体进行检测全蛋白时，相当于阳性对照。</p>
-<p>第一组（只表达HA-cGAS的293T细胞）中没有条带，因为这种293T细胞中只有HA标记的cGAS，</p>
-<p>第二组（共同表达HA-cGAS与NLRP14-FL的293T细胞）有条带，因为FLAG抗体能检测出使用了FLAG标记的NLRP14，NLRP14的蛋白分子量大概是125kD，</p>
-<p>第三组（只表达STING-HA的293T细胞）没有条带，因此这种293T细胞只表达HA标记的STING；</p>
-<p>第四组（共同表达STING-HA与与NLRP14-FL的293T细胞）条带明显，因为这个细胞中含有FLAG标记的NLRP14。</p>
-<p>第二，使用HA抗体检测全蛋白，这是阳性对照，是说明细胞中含有相应的蛋白。</p>
-<p>我们可以发现，</p>
-<p>第一组（只表达HA-cGAS的293T细胞）在27kD附近没有条件，在50kD部分有条带，这说明，全蛋白中含有HA标记的cGAS（cGAS的蛋白分子量是62kD，多数蛋白标签的分子量很少，基本可以忽略），做这个实验主要是作为阳性对照；</p>
-<p>第二组（共同表达HA-cGAS与NLRP14-FL的293T细胞）在37kD附近没有条带，在50kD附近有条带；结合前面的结果来看，就说明这个细胞中含有HA标记的cGAS（因为它的分子量大概是50kD），还含有FALG标记的NLRP14（因为NLRP14的蛋白分子量大概是125kD）；</p>
-<p>第三组（只表达STING-HA的293T细胞）在37kD处有条带，这说明细胞中含有HA标记的STING（因为STING的分子量大概是35kD）；</p>
-<p>第四组（共同表达STING-HA与与NLRP14-FL的293T细胞）在110kD处有条带，在37kD处也有条带，这说明这种细胞中含有NLRP14与STING。</p>
-<p>从上面的图片可以知道，<strong>在做Co-IP实验时，需要设立阳性对照组来证明你的细胞中有某个蛋白A与B，再使用抗蛋白A的抗体来拉A蛋白，再使用抗蛋白B的抗体来检测拉下来的蛋白，如果检测到了蛋白B，就说明蛋白A与蛋白B有相互作用。</strong></p>
-]]></content>
-      <categories>
-        <category>蛋白组</category>
-      </categories>
-      <tags>
-        <tag>实验</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>酵母双杂交</title>
     <url>/2022/11/12/032-xiao-mu-shuang-za-jiao/</url>
     <content><![CDATA[<blockquote>
 <p>酵母双杂交系统是在真核模式生物酵母中进行的，研究活细胞内蛋白质相互作用，对蛋白质之间微弱的、瞬间的作用也能够通过报告基因的表达产物敏感地检测得到，它是一种具有很高灵敏度的研究蛋白质之间关系的技术。大量的研究文献表明，酵母双杂交技术既可以用来研究哺乳动物基因组编码的蛋白质之间的互作，也可以用来研究高等植物基因组编码的蛋白质之间的互作。</p>
 </blockquote>
-<p><img src="/images/v2-cd616c9fbb17b42a5605d03c4462f5af_720w.webp"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-cd616c9fbb17b42a5605d03c4462f5af_720w.webp"></p>
 <h2 id="一、实验目的："><a href="#一、实验目的：" class="headerlink" title="一、实验目的："></a>一、实验目的：</h2><p>验证PGBKT7-A与PGADT7-B是否为相互作用的关系</p>
 <h2 id="二、实验原理："><a href="#二、实验原理：" class="headerlink" title="二、实验原理："></a>二、实验原理：</h2><p>Y2H的建立是基于对真核生物调控转录起始过程的认识，细胞起始基因转录需要有反式转录激活因子的参与;酵母转录因子 GAL4在结构上是组件式的，往往由功能上相互独立的结构域构成，其中有DNA结合功能域（DNA binding domain,DNA-BD）和转录激活结构域（activation domain，DNA-AD）;这两个结合域分开时仍分别具有功能，但不能激活转录。只有当被分开的两者通过适当的途径在空间上较为接近时，才能重新呈现完整的GAL4转录因子活性，使启动子下游基因得到转录。</p>
 <blockquote>
 <p>GAL4是酵母（Saccharomyces cerevisiae）转录激活蛋白Gal4的基因。Gal4能识别基因启动子的上游激活序列（UASg）的17bp长的一段序列：5’-CGGRNNRCYNYNYNCNCCG-3’（R表示嘌呤，Y表示嘧啶，N表示任意脱氧核苷酸）。GAL4与GAL80作用，GAL80可结合半乳糖代谢产物。</p>
 </blockquote>
-<p><img src="/images/Yeast-Two-Hybrid-yl.jpg"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Yeast-Two-Hybrid-yl.jpg"></p>
 <h2 id="三、实验方法："><a href="#三、实验方法：" class="headerlink" title="三、实验方法："></a>三、实验方法：</h2><p>Clontech酵母双杂交系统</p>
-<h2 id="四、实验设计："><a href="#四、实验设计：" class="headerlink" title="四、实验设计："></a>四、实验设计：</h2><p><img src="/images/v2-c766f5bfe1fbd4fc3d8505ddc9d3af8c_720w.webp"></p>
+<h2 id="四、实验设计："><a href="#四、实验设计：" class="headerlink" title="四、实验设计："></a>四、实验设计：</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-c766f5bfe1fbd4fc3d8505ddc9d3af8c_720w.webp"></p>
 <p>常用AD质粒</p>
-<p><img src="/images/v2-acf736e7b4e93b741c860a045a1de9f4_720w.webp"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-acf736e7b4e93b741c860a045a1de9f4_720w.webp"></p>
 <p>常用AD质粒</p>
 <p>【实验方案】</p>
 <ol>
@@ -1273,25 +1230,121 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
 <li><p>实验结束。</p>
 </li>
 </ol>
-<p>|Reaction| AD plasmid | BD plasmid | 涂板种类 | 备注 |</p>
-<p>| :———— | :———— | :———— | :———— | :———— |</p>
-<p>| 1 | pGADT7-largeT | pGBKT7-p53 | SD-TL | 阳性对照 |</p>
-<p>| 2 | pGADT7-largeT | pGBKT7-laminC | SD-TL |阴性对照 |</p>
-<p>| 3 | pGADT7-B | pGBKT7-A | SD-TL| 实验组 |</p>
-<p>| 4 | pGADT7-B | pGBKT7 | SD-TL | 自激活检测 |</p>
-<p>| 5 | pGADT7 | pGBKT7-A | SD-TL| 自激活检测 |</p>
+<table>
+<thead>
+<tr>
+<th>Reaction</th>
+<th>AD plasmid</th>
+<th>BD plasmid</th>
+<th>涂板种类</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>pGADT7-largeT</td>
+<td>pGBKT7-p53</td>
+<td>SD-TL</td>
+<td>阳性对照</td>
+</tr>
+<tr>
+<td>2</td>
+<td>pGADT7-largeT</td>
+<td>pGBKT7-laminC</td>
+<td>SD-TL</td>
+<td>阴性对照</td>
+</tr>
+<tr>
+<td>3</td>
+<td>pGADT7-B</td>
+<td>pGBKT7-A</td>
+<td>SD-TL</td>
+<td>实验组</td>
+</tr>
+<tr>
+<td>4</td>
+<td>pGADT7-B</td>
+<td>pGBKT7</td>
+<td>SD-TL</td>
+<td>自激活检测</td>
+</tr>
+<tr>
+<td>5</td>
+<td>pGADT7</td>
+<td>pGBKT7-A</td>
+<td>SD-TL</td>
+<td>自激活检测</td>
+</tr>
+</tbody></table>
 <p>▼</p>
-<p>|Reaction| AD plasmid | BD plasmid | 涂板种类 | 备注 |</p>
-<p>| :———— | :———— | :———— | :———— | :———— |</p>
-<p>| 1 | Empty-AD | Empty-BD | SD-TL | 阳性对照 |</p>
-<p>| 2 | pGADT7-largeT | pGBKT7-laminC | SD-TL |阴性对照 |</p>
-<p>| 3 | D10-BD | JNK-AD | SD-TL| 实验组 |</p>
-<p>| 4 | D10-AD | JNK-BD | SD-TL| 实验组 |</p>
-<p>| 5 | D10-BD | Empty-AD | SD-TL | 自激活检测 |</p>
-<p>| 6 | Empty-BD | JNK-AD | SD-TL| 自激活检测 |</p>
-<p>| 7 | JNK-BD | Empty-AD | SD-TL | 自激活检测 |</p>
-<p>| 8 | Empty-BD | D10-AD | SD-TL| 自激活检测 |</p>
-<h2 id="五、结果展示："><a href="#五、结果展示：" class="headerlink" title="五、结果展示："></a>五、结果展示：</h2><p><img src="/images/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1"></p>
+<table>
+<thead>
+<tr>
+<th>Reaction</th>
+<th>AD plasmid</th>
+<th>BD plasmid</th>
+<th>涂板种类</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Empty-AD</td>
+<td>Empty-BD</td>
+<td>SD-TL</td>
+<td>阳性对照</td>
+</tr>
+<tr>
+<td>2</td>
+<td>pGADT7-largeT</td>
+<td>pGBKT7-laminC</td>
+<td>SD-TL</td>
+<td>阴性对照</td>
+</tr>
+<tr>
+<td>3</td>
+<td>D10-BD</td>
+<td>JNK-AD</td>
+<td>SD-TL</td>
+<td>实验组</td>
+</tr>
+<tr>
+<td>4</td>
+<td>D10-AD</td>
+<td>JNK-BD</td>
+<td>SD-TL</td>
+<td>实验组</td>
+</tr>
+<tr>
+<td>5</td>
+<td>D10-BD</td>
+<td>Empty-AD</td>
+<td>SD-TL</td>
+<td>自激活检测</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Empty-BD</td>
+<td>JNK-AD</td>
+<td>SD-TL</td>
+<td>自激活检测</td>
+</tr>
+<tr>
+<td>7</td>
+<td>JNK-BD</td>
+<td>Empty-AD</td>
+<td>SD-TL</td>
+<td>自激活检测</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Empty-BD</td>
+<td>D10-AD</td>
+<td>SD-TL</td>
+<td>自激活检测</td>
+</tr>
+</tbody></table>
+<h2 id="五、结果展示："><a href="#五、结果展示：" class="headerlink" title="五、结果展示："></a>五、结果展示：</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/640"></p>
 <p>自激活检测&amp;互作检测结果</p>
 <p>pGADT7-largeT/ pGBKT7-p53为阳性对照</p>
 <p>pGADT7-largeT/pGBKT7-laminC为阴性对照</p>
@@ -1326,6 +1379,67 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
 <p>在传统的酵母双杂交系统中，蛋白之间的相互作用是在细胞核内发生的。因此，它不能检测某些在核外蛋白之间的相互作用。为了克服这种局限性，发展出了核外双杂交技术。该技术以SRS 和 USPS两种系统为代表。</p>
 <p>SRS 也称 Sos 蛋白召集系统 （Sos RecruitmentSystem） 。它的基本原理是分别将待测蛋白X与哺乳动物细胞的一种鸟苷交换因子（ EGF） Sos蛋白融合;将Y蛋白与锚定在酵母细胞膜上的Src肉豆寇烯化信号蛋白融合 ，并使它们共表达于一个cdc25-2基因温度敏感型突变的酵母菌株内。由于该菌株中cdc25-2基因编码的 EGF 蛋白在 36 ℃条件下不能激活细胞膜上的Ras蛋白，Ras途径不通。所以细胞无法在36 ℃条件下生存。但如果待测蛋白X与Y之间发生相互作用就能把Sos蛋白带到细胞膜上并激活附近的Ras蛋白，从而打通Ras途径，使该菌株获得在36℃条件下生存的能力。</p>
 <p>USPS也称为基于遍在蛋白的裂解蛋白感受器。它的设计是根据这样一个事实，即真核细胞中遍在蛋白与某一蛋白之间新生成的融合会被遍在蛋白特异的蛋白酶（UBPs） 迅速切开，但这种切割只有当遍在蛋白正确折叠时才会发生。研究发现，遍在蛋白基因的N端和C端这两部分即使分离，只要共表达与同一个细胞内，它们仍能正确折叠。将待测蛋白X与带有点突变的遍在蛋白N端片段融合，将待测蛋白Y与下游接有报告蛋白的正常遍在蛋白C端片段融合，并使它们共表达与同一个细胞内。因遍在蛋白N端片段内含有点突变，它与C端片段之间不能自然形成正确的折叠。只有当蛋白X和Y之间发生相互作用时才能克服点突变的影响，使遍在蛋白的两端形成正确折叠，从而引来UBPs切除与C端片段连接的报告蛋白。此技术建立之初是通过Western blot检测有无被切下的报告蛋白来判断待测蛋白之间是否发生了相互作用的，所以操作比较繁琐，不便于推广。最近有人对它作了改进 ，以一种融合的转录激活因子PLV作为报告蛋白。PLV一旦被从遍在蛋白C端片段上切下，它就会进入细胞核内激活特定的报告基因 ，如LacZ和HIS3等。这样就可以根据转化细胞是否生长及显色来判断待测蛋白之间有无相互作用。因此极大地简化了操作步骤，提高了筛选效率。</p>
+]]></content>
+      <categories>
+        <category>蛋白组</category>
+      </categories>
+      <tags>
+        <tag>实验</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>免疫共沉淀（Co-IP）</title>
+    <url>/2022/11/15/033-mian-yi-gong-chen-dian-co-ip/</url>
+    <content><![CDATA[<blockquote>
+<p>蛋白间相互作用是细胞各种基本功能的主要完成者，参与几乎所有的重要生命活动。因此，蛋白-蛋白相互作用研究以及建立相互作用的关系网络图，具有十分重要的意义，也是目前蛋白质研究领域的热点。</p>
+</blockquote>
+<blockquote>
+<p>Co-IP（免疫共沉淀，co-inmunoprecipitation）是经典的利用抗体从样品中捕获靶蛋白及其互作蛋白、复合体的一项技术，能够特异性富集所研究的目的蛋白。由于过程中采用了非变性条件，保留了互作及复合体的细胞内状态。相对于酵母双杂交、pull down等方法，其特色之一便是捕获的蛋白互作发生在所研究的特定组织细胞内，保存了互作蛋白及复合体的“内源”状态。</p>
+</blockquote>
+<h2 id="一、Co-IP实验原理："><a href="#一、Co-IP实验原理：" class="headerlink" title="一、Co-IP实验原理："></a>一、Co-IP实验原理：</h2><p>以抗体和抗原之间的专一性作用为基础的用于研究蛋白质相互作用的经典方法，是确定两种蛋白质在完整细胞内生理性相互作用的有效方法。</p>
+<p>当细胞在非变性条件下被裂解时，完整细胞内存在的许多蛋白质－蛋白质间的相互作用被保留了下来。如果用蛋白质X的抗体免疫沉淀X，那么与X在体内结合的蛋白质Y也能沉淀下来。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-f747d49a139b7809315b0237a7db2437_720w.webp"></p>
+<h2 id="二、Co-IP实验优势："><a href="#二、Co-IP实验优势：" class="headerlink" title="二、Co-IP实验优势："></a>二、Co-IP实验优势：</h2><p>a) 取材可以选择该目的蛋白所在物种、特定组织、细胞，因此CoIP能够反应该蛋白在天然组织细胞状态下存在的互作关系蛋白；</p>
+<p>b) 找出整个复合体中直接/间接互作的多个蛋白，研究复合体组成；</p>
+<p>c) 通过与质谱鉴定连用可以初筛到一系列未知蛋白，再通过其他技术进一步验证。</p>
+<h2 id="三、Co-IP实验注意事项"><a href="#三、Co-IP实验注意事项" class="headerlink" title="三、Co-IP实验注意事项"></a>三、Co-IP实验注意事项</h2><p>a)需要特异性IP级别诱饵蛋白抗体（重点）；</p>
+<p>b)如果没有特异性抗体，则需要考虑构建重组标签质粒，用标签抗体进行CoIP实验；</p>
+<p>c)样品种类实验风险：过表达细胞样品 IP全称是immunoprecipitation，即免疫沉淀，这一步主要是为了纯化目的蛋白。</p>
+<blockquote>
+<p>IB全称是immunoblotting，即免疫印迹，也就是常规的Western Blotting，用于显示目的蛋白。</p>
+</blockquote>
+<blockquote>
+<p>WCL全称是whole cell lysates，即整个细胞的裂解成分。</p>
+</blockquote>
+<blockquote>
+<p>HC全称是heavy chain，即重链，</p>
+</blockquote>
+<blockquote>
+<p>LC全称是light chain，即轻链。</p>
+</blockquote>
+<h3 id="现在将图分为三部分，先看第一部分，即上面的部分，“-”表示含有这种蛋白，“-”表示没有，这个实验一共做了四组，从左到右分别为："><a href="#现在将图分为三部分，先看第一部分，即上面的部分，“-”表示含有这种蛋白，“-”表示没有，这个实验一共做了四组，从左到右分别为：" class="headerlink" title="现在将图分为三部分，先看第一部分，即上面的部分，“+”表示含有这种蛋白，“-”表示没有，这个实验一共做了四组，从左到右分别为："></a>现在将图分为三部分，先看第一部分，即上面的部分，“+”表示含有这种蛋白，“-”表示没有，这个实验一共做了四组，从左到右分别为：</h3><p>（1）只表达HA-cGAS的293T细胞；</p>
+<p>（2）共同表达HA-cGAS与NRLP14-FL的293T细胞；</p>
+<p>（3）只表达STING-HA的293T细胞；</p>
+<p>（4）共同表达STING-HA与与NRLP14-FL的293T细胞，如下所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-8b2f8f638a7e7e242fd995311a0538fd_720w.webp"></p>
+<h3 id="再看第二部分WB的图，WB的图就是使用含有FLAG抗体的珠子拉下来的蛋白做的，使用拉下来的这些蛋白再做WB，它的原理前面已经描述过了。使用FLAG抗体的珠子拉下来的蛋白使用HA抗体来进行检测，其结果如下："><a href="#再看第二部分WB的图，WB的图就是使用含有FLAG抗体的珠子拉下来的蛋白做的，使用拉下来的这些蛋白再做WB，它的原理前面已经描述过了。使用FLAG抗体的珠子拉下来的蛋白使用HA抗体来进行检测，其结果如下：" class="headerlink" title="再看第二部分WB的图，WB的图就是使用含有FLAG抗体的珠子拉下来的蛋白做的，使用拉下来的这些蛋白再做WB，它的原理前面已经描述过了。使用FLAG抗体的珠子拉下来的蛋白使用HA抗体来进行检测，其结果如下："></a>再看第二部分WB的图，WB的图就是使用含有FLAG抗体的珠子拉下来的蛋白做的，使用拉下来的这些蛋白再做WB，它的原理前面已经描述过了。使用FLAG抗体的珠子拉下来的蛋白使用HA抗体来进行检测，其结果如下：</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-1c5b5a85f1e2c9775ca481d37e799833_720w.webp"></p>
+<p>从上面的图像可以看出以下信息：</p>
+<p>第一，HC与LC条带都非常明显，之所以出现这个条件是因为，在WB之前进行的蛋白变性这一步，由于加样缓冲液中含有巯基乙醇，巯基乙醇会把抗体的重链和轻链之间的二硫键破坏，从而使的抗体变成<strong>重链分子55KD</strong>和<strong>轻链分子25KD</strong>，因此会在结果中呈现两个条带。</p>
+<p>第二，第一组（只表达HA-cGAS的293T细胞）中没有条带，第二组（共同表达HA-cGAS与NRLP14-FL的293T细胞）没有条带，第三组（只表达STING-HA的293T细胞）有一点点条带，第四组（共同表达STING-HA与与NRLP14-FL的293T细胞）条带明显，这<strong>说明NLRP14与STING有相互作用</strong>，为什么说有相互作用呢？因为我们是用FLAG抗体来拉的蛋白，从理论上讲，我们只能拉下FLAG标记的NLRP14，也就是NLRP14-FL（FL就是FLAG），但是，从拉下的蛋白中用HA进行检测，居然检测出来了HA标记的STING，这就说明，使用FLAG拉NLRP14-FL时，这个蛋白复合物中含有STING-HA。</p>
+<h3 id="再看图的第三部分，也就是下面的这一部分，是用FLAG抗体和HA抗体来进行检测整个细胞的裂解液，是作为阳性对照（有的文献中会标明input组），如下所示："><a href="#再看图的第三部分，也就是下面的这一部分，是用FLAG抗体和HA抗体来进行检测整个细胞的裂解液，是作为阳性对照（有的文献中会标明input组），如下所示：" class="headerlink" title="再看图的第三部分，也就是下面的这一部分，是用FLAG抗体和HA抗体来进行检测整个细胞的裂解液，是作为阳性对照（有的文献中会标明input组），如下所示："></a>再看图的第三部分，也就是下面的这一部分，是用FLAG抗体和HA抗体来进行检测整个细胞的裂解液，是作为阳性对照（有的文献中会标明input组），如下所示：</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-7cadfdc3010f33836517b7861138245c_720w.webp"></p>
+<p>其中右侧的WCL表示的是整个细胞的裂解液，也就是还没有使用FLAG抗体的珠子去拉的时候的样本，也就是说直接裂解了293T细胞后的样本，从这个结果中可以得到以下信息：</p>
+<p>第一，在使用FLAG抗体进行检测全蛋白时，相当于阳性对照。</p>
+<p>第一组（只表达HA-cGAS的293T细胞）中没有条带，因为这种293T细胞中只有HA标记的cGAS，</p>
+<p>第二组（共同表达HA-cGAS与NLRP14-FL的293T细胞）有条带，因为FLAG抗体能检测出使用了FLAG标记的NLRP14，NLRP14的蛋白分子量大概是125kD，</p>
+<p>第三组（只表达STING-HA的293T细胞）没有条带，因此这种293T细胞只表达HA标记的STING；</p>
+<p>第四组（共同表达STING-HA与与NLRP14-FL的293T细胞）条带明显，因为这个细胞中含有FLAG标记的NLRP14。</p>
+<p>第二，使用HA抗体检测全蛋白，这是阳性对照，是说明细胞中含有相应的蛋白。</p>
+<p>我们可以发现，</p>
+<p>第一组（只表达HA-cGAS的293T细胞）在27kD附近没有条件，在50kD部分有条带，这说明，全蛋白中含有HA标记的cGAS（cGAS的蛋白分子量是62kD，多数蛋白标签的分子量很少，基本可以忽略），做这个实验主要是作为阳性对照；</p>
+<p>第二组（共同表达HA-cGAS与NLRP14-FL的293T细胞）在37kD附近没有条带，在50kD附近有条带；结合前面的结果来看，就说明这个细胞中含有HA标记的cGAS（因为它的分子量大概是50kD），还含有FALG标记的NLRP14（因为NLRP14的蛋白分子量大概是125kD）；</p>
+<p>第三组（只表达STING-HA的293T细胞）在37kD处有条带，这说明细胞中含有HA标记的STING（因为STING的分子量大概是35kD）；</p>
+<p>第四组（共同表达STING-HA与与NLRP14-FL的293T细胞）在110kD处有条带，在37kD处也有条带，这说明这种细胞中含有NLRP14与STING。</p>
+<p>从上面的图片可以知道，<strong>在做Co-IP实验时，需要设立阳性对照组来证明你的细胞中有某个蛋白A与B，再使用抗蛋白A的抗体来拉A蛋白，再使用抗蛋白B的抗体来检测拉下来的蛋白，如果检测到了蛋白B，就说明蛋白A与蛋白B有相互作用。</strong></p>
 ]]></content>
       <categories>
         <category>蛋白组</category>
@@ -2264,42 +2378,6 @@ htmlwidgets::saveWidget(
       </categories>
   </entry>
   <entry>
-    <title>内网穿透</title>
-    <url>/2024/11/21/5/</url>
-    <content><![CDATA[<p>前言<br>对于在本地搭建需求公网的服务，比如nas，游戏联机等。但是又没有公网，这种时候就需要用到内网穿透工具，通过端口转发实现公网访问。市面上的映射基本都是限制流量，要么就是带宽只有1m。</p>
-<p>经过我的不断寻找，终于是找到了一款不限制流量，且基础带宽高的内网穿透工具。以下是他的基本信息：</p>
-<p>免费带宽：国内8m，国外32m（这是我能找到的唯一一款国内国外单独计带宽的映射）<br>免费隧道：4条<br>流量：不限制<br>并发：不限制<br>除此之外访问地址并不会强制变化<br>官网链接</p>
-<blockquote>
-<p><a href="https://www.chmlfrp.cn/">https://www.chmlfrp.cn</a></p>
-</blockquote>
-<p>使用教程<br>这款映射是基于开源软件frp实现的端口映射功能，所以实际使用方法和frp的使用方法一致，复制它生成的配置文件然后运行即可。</p>
-<p>注册/登录<br>没有帐户的首先前往chmlfrp官网注册账户，登录进首页之后是这样的页面：</p>
-<p>创建隧道<br>随后通过菜单前往 “隧道管理 -&gt; 隧道列表” ，然后点击右上角的添加隧道按钮（我已经创建了一个隧道）</p>
-<p>然后选择符合你要求的节点（一般选择离你近，且节点负载较低的节点。节点负载可以在 “隧道管理 -&gt; 节点状态” 查看所有节点的具体负载）</p>
-<p>然后填写相应隧道信息，如果没有特殊需求，一般只需要填写端口类型及内网端口。</p>
-<p>随后点击确定即可成功创建隧道</p>
-<p>启动隧道<br>前往 “隧道管理 -&gt; 软件下载” 页面，下载对应你系统的软件。</p>
-<p>下载好后解压压缩包，一般来讲只需要这三个文件，其他文件可以删除，也可以选择保留。</p>
-<p>随后进入网站的 “隧道管理 -&gt; 配置文件” 页面，在此页面选择你创建隧道的节点，就可以获取到相应的配置文件。将获取的配置文件覆盖到文件夹的frpc.ini中：</p>
-<p>随后保存文件，然后在此文件夹创建一个 “启动.txt” 的文本档案，然后将.txt后缀改为.bat。（注意！此方法仅windows可用，且需要打开显示文件扩展名）</p>
-<p>右键 “启动.bat” ，点击编辑，输入以下代码：</p>
-<p> <code>&nbsp;./frpc -c frpc.ini</code> </p>
-<p>接下来是设置开机后台自启</p>
-<p>新建一个启动服务</p>
-<p>编辑该服务</p>
-<p>重新加载</p>
-<p>启动服务</p>
-<p>开始服务</p>
-<p>查看服务状态</p>
-<p>重启</p>
-<p>在弹出的cmd窗口中直接输入frpc即可启动</p>
-]]></content>
-      <categories>
-        <category>折腾</category>
-        <category>WIFI</category>
-      </categories>
-  </entry>
-  <entry>
     <title>6.筛选组内一致率90%，组间有差异的SNP位点</title>
     <url>/2025/09/03/48/</url>
     <content><![CDATA[<p><strong>分析需求：</strong> </p>
@@ -2584,6 +2662,42 @@ fig  # 在RStudio中查看
       <categories>
         <category>默认分类</category>
         <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>内网穿透</title>
+    <url>/2024/11/21/5/</url>
+    <content><![CDATA[<p>前言<br>对于在本地搭建需求公网的服务，比如nas，游戏联机等。但是又没有公网，这种时候就需要用到内网穿透工具，通过端口转发实现公网访问。市面上的映射基本都是限制流量，要么就是带宽只有1m。</p>
+<p>经过我的不断寻找，终于是找到了一款不限制流量，且基础带宽高的内网穿透工具。以下是他的基本信息：</p>
+<p>免费带宽：国内8m，国外32m（这是我能找到的唯一一款国内国外单独计带宽的映射）<br>免费隧道：4条<br>流量：不限制<br>并发：不限制<br>除此之外访问地址并不会强制变化<br>官网链接</p>
+<blockquote>
+<p><a href="https://www.chmlfrp.cn/">https://www.chmlfrp.cn</a></p>
+</blockquote>
+<p>使用教程<br>这款映射是基于开源软件frp实现的端口映射功能，所以实际使用方法和frp的使用方法一致，复制它生成的配置文件然后运行即可。</p>
+<p>注册/登录<br>没有帐户的首先前往chmlfrp官网注册账户，登录进首页之后是这样的页面：</p>
+<p>创建隧道<br>随后通过菜单前往 “隧道管理 -&gt; 隧道列表” ，然后点击右上角的添加隧道按钮（我已经创建了一个隧道）</p>
+<p>然后选择符合你要求的节点（一般选择离你近，且节点负载较低的节点。节点负载可以在 “隧道管理 -&gt; 节点状态” 查看所有节点的具体负载）</p>
+<p>然后填写相应隧道信息，如果没有特殊需求，一般只需要填写端口类型及内网端口。</p>
+<p>随后点击确定即可成功创建隧道</p>
+<p>启动隧道<br>前往 “隧道管理 -&gt; 软件下载” 页面，下载对应你系统的软件。</p>
+<p>下载好后解压压缩包，一般来讲只需要这三个文件，其他文件可以删除，也可以选择保留。</p>
+<p>随后进入网站的 “隧道管理 -&gt; 配置文件” 页面，在此页面选择你创建隧道的节点，就可以获取到相应的配置文件。将获取的配置文件覆盖到文件夹的frpc.ini中：</p>
+<p>随后保存文件，然后在此文件夹创建一个 “启动.txt” 的文本档案，然后将.txt后缀改为.bat。（注意！此方法仅windows可用，且需要打开显示文件扩展名）</p>
+<p>右键 “启动.bat” ，点击编辑，输入以下代码：</p>
+<p> <code>&nbsp;./frpc -c frpc.ini</code> </p>
+<p>接下来是设置开机后台自启</p>
+<p>新建一个启动服务</p>
+<p>编辑该服务</p>
+<p>重新加载</p>
+<p>启动服务</p>
+<p>开始服务</p>
+<p>查看服务状态</p>
+<p>重启</p>
+<p>在弹出的cmd窗口中直接输入frpc即可启动</p>
+]]></content>
+      <categories>
+        <category>折腾</category>
+        <category>WIFI</category>
       </categories>
   </entry>
   <entry>
@@ -3185,6 +3299,44 @@ echo none &gt; /sys/class/leds/green\:internet/trigger<span aria-hidden="true" c
       </categories>
   </entry>
   <entry>
+    <title>openipc goke7205v200</title>
+    <url>/2024/12/03/7/</url>
+    <content><![CDATA[<h1 id="保存原始固件"><a href="#保存原始固件" class="headerlink" title="保存原始固件"></a>保存原始固件</h1><hr>
+<h2 id="备份您的原始固件，请不要跳过这个步骤！"><a href="#备份您的原始固件，请不要跳过这个步骤！" class="headerlink" title="备份您的原始固件，请不要跳过这个步骤！"></a>备份您的原始固件，请不要跳过这个步骤！</h2><p>OpenIPC U-Boot 会覆盖原始的加密分区，因此无法恢复为出厂固件，除非您拥有此特定摄像机的完整闪存备份！要创建完整的固件备份，请启动 TFTP 服务器并在引导加载程序 shell 中执行这些命令。</p>
+<blockquote>
+<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python"> # Enter commands line by line! Do not copy and paste multiple lines at once!
+setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105
+mw.b 0x42000000 0xff 0x1000000
+sf probe 0; sf read 0x42000000 0x0 0x1000000
+tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
+# if there is no tftpput but tftp then run this instead
+ tftp 0x42000000 backup-gk7205v200-nor16m.bin 0x1000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<p>有关详细信息，请参阅项目 wiki 中的安装说明。</p>
+<h1 id="烧录完整的-OpenIPC-固件"><a href="#烧录完整的-OpenIPC-固件" class="headerlink" title="烧录完整的 OpenIPC 固件"></a>烧录完整的 OpenIPC 固件</h1><h2 id="下载-OpenIPC-固件-Ultimate"><a href="#下载-OpenIPC-固件-Ultimate" class="headerlink" title="下载 OpenIPC 固件 (Ultimate)"></a>下载 OpenIPC 固件 (Ultimate)</h2><p>for Goke GK7205V200 with 16MB NOR flash</p>
+<p>完整的固件由引导加载程序、内核和根文件系统组成，也适用于使用编程器烧写闪存芯片。 请注意，完整固件不包含预设环境。你还需要添加自己的MAC地址、IP地址等设置。</p>
+<blockquote>
+<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105<br>mw.b 0x42000000 0xff 0x1000000<br>tftpboot 0x42000000 openipc-gk7205v200-ultimate-16mb.bin</p>
+<h1 id="if-there-is-no-tftpboot-but-tftp-then-run-this-instead"><a href="#if-there-is-no-tftpboot-but-tftp-then-run-this-instead" class="headerlink" title="if there is no tftpboot but tftp then run this instead"></a>if there is no tftpboot but tftp then run this instead</h1><p>tftp 0x42000000 openipc-gk7205v200-ultimate-16mb.bin<br>sf probe 0; sf lock 0;<br>sf erase 0x0 0x1000000; sf write 0x42000000 0x0 0x1000000<br>reset</p>
+</blockquote>
+<p>摄像机将自动重启并使用全新的引导加载程序启动。</p>
+<p>注意准备中断并进入引导程序的命令行。 在引导加载程序的命令行中，根据您的闪存大小和类型重新映射 ROM 分区。</p>
+<blockquote>
+<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>run setnor16m</p>
+</blockquote>
+<h1 id="恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。"><a href="#恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。" class="headerlink" title="恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。"></a>恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。</h1><p>在端口 85 ( <a href="http://192.168.15.169:85/">http://192.168.15.169:85/</a> ) 上打开摄像机的 Web 界面并使用登录root和密码12345登录。登录后将要求您设置自己的安全密码。通过以下方式访问摄像机ssh 或 UART 使用与上述相同的登录名和密码。</p>
+<hr>
+<p>打开web界面后，更新固件，更新完后调整majestic、sensor与设备型号对应。</p>
+<h1 id="majestic"><a href="#majestic" class="headerlink" title="majestic"></a>majestic</h1><p>openipc未开源部分。</p>
+]]></content>
+      <categories>
+        <category>折腾</category>
+      </categories>
+      <tags>
+        <tag>openipc</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>GPT 学术优化</title>
     <url>/2024/12/06/8/</url>
     <content><![CDATA[<h1 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h1><p>安装方法：直接运行 (Windows, Linux or MacOS)<br>下载项目</p>
@@ -3285,44 +3437,6 @@ echo none &gt; /sys/class/leds/green\:internet/trigger<span aria-hidden="true" c
       <categories>
         <category>默认分类</category>
       </categories>
-  </entry>
-  <entry>
-    <title>openipc goke7205v200</title>
-    <url>/2024/12/03/7/</url>
-    <content><![CDATA[<h1 id="保存原始固件"><a href="#保存原始固件" class="headerlink" title="保存原始固件"></a>保存原始固件</h1><hr>
-<h2 id="备份您的原始固件，请不要跳过这个步骤！"><a href="#备份您的原始固件，请不要跳过这个步骤！" class="headerlink" title="备份您的原始固件，请不要跳过这个步骤！"></a>备份您的原始固件，请不要跳过这个步骤！</h2><p>OpenIPC U-Boot 会覆盖原始的加密分区，因此无法恢复为出厂固件，除非您拥有此特定摄像机的完整闪存备份！要创建完整的固件备份，请启动 TFTP 服务器并在引导加载程序 shell 中执行这些命令。</p>
-<blockquote>
-<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python"> # Enter commands line by line! Do not copy and paste multiple lines at once!
-setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105
-mw.b 0x42000000 0xff 0x1000000
-sf probe 0; sf read 0x42000000 0x0 0x1000000
-tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
-# if there is no tftpput but tftp then run this instead
- tftp 0x42000000 backup-gk7205v200-nor16m.bin 0x1000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</blockquote>
-<p>有关详细信息，请参阅项目 wiki 中的安装说明。</p>
-<h1 id="烧录完整的-OpenIPC-固件"><a href="#烧录完整的-OpenIPC-固件" class="headerlink" title="烧录完整的 OpenIPC 固件"></a>烧录完整的 OpenIPC 固件</h1><h2 id="下载-OpenIPC-固件-Ultimate"><a href="#下载-OpenIPC-固件-Ultimate" class="headerlink" title="下载 OpenIPC 固件 (Ultimate)"></a>下载 OpenIPC 固件 (Ultimate)</h2><p>for Goke GK7205V200 with 16MB NOR flash</p>
-<p>完整的固件由引导加载程序、内核和根文件系统组成，也适用于使用编程器烧写闪存芯片。 请注意，完整固件不包含预设环境。你还需要添加自己的MAC地址、IP地址等设置。</p>
-<blockquote>
-<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>setenv ipaddr 192.168.15.169; setenv serverip 192.168.15.105<br>mw.b 0x42000000 0xff 0x1000000<br>tftpboot 0x42000000 openipc-gk7205v200-ultimate-16mb.bin</p>
-<h1 id="if-there-is-no-tftpboot-but-tftp-then-run-this-instead"><a href="#if-there-is-no-tftpboot-but-tftp-then-run-this-instead" class="headerlink" title="if there is no tftpboot but tftp then run this instead"></a>if there is no tftpboot but tftp then run this instead</h1><p>tftp 0x42000000 openipc-gk7205v200-ultimate-16mb.bin<br>sf probe 0; sf lock 0;<br>sf erase 0x0 0x1000000; sf write 0x42000000 0x0 0x1000000<br>reset</p>
-</blockquote>
-<p>摄像机将自动重启并使用全新的引导加载程序启动。</p>
-<p>注意准备中断并进入引导程序的命令行。 在引导加载程序的命令行中，根据您的闪存大小和类型重新映射 ROM 分区。</p>
-<blockquote>
-<h1 id="Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1"><a href="#Enter-commands-line-by-line-Do-not-copy-and-paste-multiple-lines-at-once-1" class="headerlink" title="Enter commands line by line! Do not copy and paste multiple lines at once!"></a>Enter commands line by line! Do not copy and paste multiple lines at once!</h1><p>run setnor16m</p>
-</blockquote>
-<h1 id="恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。"><a href="#恭喜！此时，您已经安装了-OpenIPC-固件-Ultimate-。" class="headerlink" title="恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。"></a>恭喜！此时，您已经安装了 OpenIPC 固件 (Ultimate)。</h1><p>在端口 85 ( <a href="http://192.168.15.169:85/">http://192.168.15.169:85/</a> ) 上打开摄像机的 Web 界面并使用登录root和密码12345登录。登录后将要求您设置自己的安全密码。通过以下方式访问摄像机ssh 或 UART 使用与上述相同的登录名和密码。</p>
-<hr>
-<p>打开web界面后，更新固件，更新完后调整majestic、sensor与设备型号对应。</p>
-<h1 id="majestic"><a href="#majestic" class="headerlink" title="majestic"></a>majestic</h1><p>openipc未开源部分。</p>
-]]></content>
-      <categories>
-        <category>折腾</category>
-      </categories>
-      <tags>
-        <tag>openipc</tag>
-      </tags>
   </entry>
   <entry>
     <title>记一次清空SMART修复群晖报故障的硬盘</title>

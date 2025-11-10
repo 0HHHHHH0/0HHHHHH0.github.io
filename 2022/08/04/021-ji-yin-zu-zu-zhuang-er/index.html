@@ -201,7 +201,7 @@
 <h2 id="三、基因组组装"><a href="#三、基因组组装" class="headerlink" title="三、基因组组装"></a>三、基因组组装</h2><h3 id="1-SOAPdenovo"><a href="#1-SOAPdenovo" class="headerlink" title="1.SOAPdenovo"></a>1.SOAPdenovo</h3><p> SOAPdenovo是由华大基因开发的SOAP软件包的一部分，SOAPdenovo主要用于短序列reads拼接，尤其是illumina测序数据。从小的细菌基因组到大的动植物基因组，人基因组都适用。已经成功应用于大熊猫基因组，黄瓜基因组等众多基因组的拼接中。</p>
 <p> SOAPdenovo的一个优点是使用起来比较简单，但是却拥有很好的拼接效果，尤其在基因组构建Scaffold方面，效果很好。对于内存控制的也比较好。通常只要给软件输入测序的数据，即可拼接出很好的全基因组。</p>
 <p>下面简单介绍一下SOAPdenovo组装的一般过程：</p>
-<p><img src="/images/soapdenovo.jpg"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/19684072-c918d42c41db034c.png"></p>
 <p> 原理：</p>
 <p> A.随即打散基因组，进行双端测序：扩增长度在150–500bp之间的短克隆，并直接测序</p>
 <p> B.将未处理（或者未经纠正的）reads读入到内存中，并且用deBruijin图数据结构来表示reads间的Overlap</p>
