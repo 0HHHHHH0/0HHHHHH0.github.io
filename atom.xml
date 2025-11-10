@@ -137,6 +137,28 @@
   </entry>
   
   <entry>
+    <title>文件处理与数据筛选-终端</title>
+    <link href="https://0hhhhhh0.github.io/2025/10/31/wen-jian-chu-li-yu-shu-ju-shai-xuan-liu-cheng/"/>
+    <id>https://0hhhhhh0.github.io/2025/10/31/wen-jian-chu-li-yu-shu-ju-shai-xuan-liu-cheng/</id>
+    <published>2025-10-31T02:26:00.000Z</published>
+    <updated>2025-10-31T02:32:15.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="文件处理与数据筛选流程"><a href="#文件处理与数据筛选流程" class="headerlink" title="文件处理与数据筛选流程"></a>文件处理与数据筛选流程</h1><h2 id="流程概述"><a href="#流程概述" class="headerlink" title="流程概述"></a>流程概述</h2><p>从两个基因组数据文件中筛选共有基因位点，生成TSV格式结果。</p><h2 id="处理步骤"><a href="#处理步骤" class="headerlink" title="处理步骤"></a>处理步骤</h2><h3 id="1-文件格式标准化"><a href="#1-文件格式标准化" class="headerlink" title="1. 文件格式标准化"></a>1. 文件格式标准化</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">dos2unix color_GWAS.anno.xls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><strong>作用：</strong> Windows转Unix换行符</p><h3 id="2-CSV转TSV格式"><a href="#2-CSV转TSV格式" class="headerlink" title="2. CSV转TSV格式"></a>2. CSV转TSV格式</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sed</span> <span class="token string">'1s/^\xEF\xBB\xBF//'</span> 红标0.7与黄标与GWAS共有.csv <span class="token operator">|</span> <span class="token function">tr</span> <span class="token string">','</span> <span class="token string">'\t'</span> <span class="token operator">&gt;</span> 红标0.7与黄标与GWAS共有.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><strong>作用：</strong> 去除BOM头，逗号转制表符</p><h3 id="3-数据筛选"><a href="#3-数据筛选" class="headerlink" title="3. 数据筛选"></a>3. 数据筛选</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'BEGIN {OFS="\t"}      NR==FNR {if(FNR&gt;1) start_values[$2] = 1; next}      FNR==1 {print; next}      $2 in start_values'</span> color_GWAS.anno.xls 红标0.7与黄标与GWAS共有.tsv <span class="token operator">&gt;</span> filtered_three2one.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre><p><strong>逻辑：</strong></p><ul><li>读取第一个文件的<code>第二列</code>作为筛选依据</li><li><code>保留</code>第二个文件中<code>匹配</code>的数据行</li><li><code>输出</code>制表符分隔的结果</li></ul><h2 id="文件说明"><a href="#文件说明" class="headerlink" title="文件说明"></a>文件说明</h2><ul><li><strong>输入：</strong> color_GWAS.anno.xls, 红标0.7与黄标与GWAS共有.csv</li><li><strong>输出：</strong> filtered_three2one.tsv（共有位点数据）</li></ul><h2 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h2><p>数据整合筛选、多源数据筛选、文件格式标准化。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;文件处理与数据筛选流程&quot;&gt;&lt;a href=&quot;#文件处理与数据筛选流程&quot; class=&quot;headerlink&quot; title=&quot;文件处理与数据筛选流程&quot;&gt;&lt;/a&gt;文件处理与数据筛选流程&lt;/h1&gt;&lt;h2 id=&quot;流程概述&quot;&gt;&lt;a href=&quot;#流程概述&quot; class=&quot;</summary>
+      
+    
+    
+    
+    <category term="Linux" scheme="https://0hhhhhh0.github.io/categories/Linux/"/>
+    
+    
+  </entry>
+  
+  <entry>
     <title>LD-Block 连锁不平衡分析</title>
     <link href="https://0hhhhhh0.github.io/2025/10/31/ld-block-lian-suo-bu-ping-heng-fen-xi/"/>
     <id>https://0hhhhhh0.github.io/2025/10/31/ld-block-lian-suo-bu-ping-heng-fen-xi/</id>
@@ -151,28 +173,6 @@
     <summary type="html">&lt;p&gt;&lt;strong&gt;关键词&lt;/strong&gt;：LD Block分析、连锁不平衡、LDBlockShow、群体遗传学、VCF处理、基因组可视化&lt;/p&gt;
 &lt;hr&gt;
 &lt;h1 id=&quot;使用LDBlockShow进行LD-Block分析&quot;&gt;&lt;a href=&quot;#使用LDBlockShow进</summary>
-      
-    
-    
-    
-    <category term="Linux" scheme="https://0hhhhhh0.github.io/categories/Linux/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>文件处理与数据筛选-终端</title>
-    <link href="https://0hhhhhh0.github.io/2025/10/31/wen-jian-chu-li-yu-shu-ju-shai-xuan-liu-cheng/"/>
-    <id>https://0hhhhhh0.github.io/2025/10/31/wen-jian-chu-li-yu-shu-ju-shai-xuan-liu-cheng/</id>
-    <published>2025-10-31T02:26:00.000Z</published>
-    <updated>2025-10-31T02:32:15.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="文件处理与数据筛选流程"><a href="#文件处理与数据筛选流程" class="headerlink" title="文件处理与数据筛选流程"></a>文件处理与数据筛选流程</h1><h2 id="流程概述"><a href="#流程概述" class="headerlink" title="流程概述"></a>流程概述</h2><p>从两个基因组数据文件中筛选共有基因位点，生成TSV格式结果。</p><h2 id="处理步骤"><a href="#处理步骤" class="headerlink" title="处理步骤"></a>处理步骤</h2><h3 id="1-文件格式标准化"><a href="#1-文件格式标准化" class="headerlink" title="1. 文件格式标准化"></a>1. 文件格式标准化</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">dos2unix color_GWAS.anno.xls<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><strong>作用：</strong> Windows转Unix换行符</p><h3 id="2-CSV转TSV格式"><a href="#2-CSV转TSV格式" class="headerlink" title="2. CSV转TSV格式"></a>2. CSV转TSV格式</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sed</span> <span class="token string">'1s/^\xEF\xBB\xBF//'</span> 红标0.7与黄标与GWAS共有.csv <span class="token operator">|</span> <span class="token function">tr</span> <span class="token string">','</span> <span class="token string">'\t'</span> <span class="token operator">&gt;</span> 红标0.7与黄标与GWAS共有.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p><strong>作用：</strong> 去除BOM头，逗号转制表符</p><h3 id="3-数据筛选"><a href="#3-数据筛选" class="headerlink" title="3. 数据筛选"></a>3. 数据筛选</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'BEGIN {OFS="\t"}      NR==FNR {if(FNR&gt;1) start_values[$2] = 1; next}      FNR==1 {print; next}      $2 in start_values'</span> color_GWAS.anno.xls 红标0.7与黄标与GWAS共有.tsv <span class="token operator">&gt;</span> filtered_three2one.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre><p><strong>逻辑：</strong></p><ul><li>读取第一个文件的<code>第二列</code>作为筛选依据</li><li><code>保留</code>第二个文件中<code>匹配</code>的数据行</li><li><code>输出</code>制表符分隔的结果</li></ul><h2 id="文件说明"><a href="#文件说明" class="headerlink" title="文件说明"></a>文件说明</h2><ul><li><strong>输入：</strong> color_GWAS.anno.xls, 红标0.7与黄标与GWAS共有.csv</li><li><strong>输出：</strong> filtered_three2one.tsv（共有位点数据）</li></ul><h2 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h2><p>数据整合筛选、多源数据筛选、文件格式标准化。</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h1 id=&quot;文件处理与数据筛选流程&quot;&gt;&lt;a href=&quot;#文件处理与数据筛选流程&quot; class=&quot;headerlink&quot; title=&quot;文件处理与数据筛选流程&quot;&gt;&lt;/a&gt;文件处理与数据筛选流程&lt;/h1&gt;&lt;h2 id=&quot;流程概述&quot;&gt;&lt;a href=&quot;#流程概述&quot; class=&quot;</summary>
       
     
     
