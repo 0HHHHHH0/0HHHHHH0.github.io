@@ -403,25 +403,6 @@ t.render(c) <span aria-hidden="true" class="line-numbers-rows"><span></span><spa
       </tags>
   </entry>
   <entry>
-    <title>分子生物学（一）</title>
-    <url>/2022/08/05/022-fen-zi-sheng-wu-xue-yi/</url>
-    <content><![CDATA[<h2 id="分子生物学的研究层次和基本任务"><a href="#分子生物学的研究层次和基本任务" class="headerlink" title="分子生物学的研究层次和基本任务"></a>分子生物学的研究层次和基本任务</h2><h3 id="两个研究层次：核酸和蛋白质"><a href="#两个研究层次：核酸和蛋白质" class="headerlink" title="两个研究层次：核酸和蛋白质"></a>两个研究层次：核酸和蛋白质</h3><h3 id="四个基本任务：定性、定位、定量和相互作用"><a href="#四个基本任务：定性、定位、定量和相互作用" class="headerlink" title="四个基本任务：定性、定位、定量和相互作用"></a>四个基本任务：定性、定位、定量和相互作用</h3><h5 id="定性：PCR、测序、生物信息学分析、原核表达"><a href="#定性：PCR、测序、生物信息学分析、原核表达" class="headerlink" title="定性：PCR、测序、生物信息学分析、原核表达"></a>定性：PCR、测序、生物信息学分析、原核表达</h5><h5 id="定量：原位杂交、免疫组化、荧光融合蛋白、Northern-Blot、Western-Blot"><a href="#定量：原位杂交、免疫组化、荧光融合蛋白、Northern-Blot、Western-Blot" class="headerlink" title="定量：原位杂交、免疫组化、荧光融合蛋白、Northern Blot、Western Blot"></a>定量：原位杂交、免疫组化、荧光融合蛋白、Northern Blot、Western Blot</h5><h5 id="定量：qPCR、ddPCR、Microarray、高通量测序、Northern-Blot、Western-Blot"><a href="#定量：qPCR、ddPCR、Microarray、高通量测序、Northern-Blot、Western-Blot" class="headerlink" title="定量：qPCR、ddPCR、Microarray、高通量测序、Northern Blot、Western Blot"></a>定量：qPCR、ddPCR、Microarray、高通量测序、Northern Blot、Western Blot</h5><h5 id="相互作用：酵母双杂交、免疫共沉淀、Pull-Down、荧光共定位、FRET、BiFC、Chip-seq"><a href="#相互作用：酵母双杂交、免疫共沉淀、Pull-Down、荧光共定位、FRET、BiFC、Chip-seq" class="headerlink" title="相互作用：酵母双杂交、免疫共沉淀、Pull Down、荧光共定位、FRET、BiFC、Chip-seq"></a>相互作用：酵母双杂交、免疫共沉淀、Pull Down、荧光共定位、FRET、BiFC、Chip-seq</h5><h2 id="实验中常见的浓度单位："><a href="#实验中常见的浓度单位：" class="headerlink" title="实验中常见的浓度单位："></a>实验中常见的浓度单位：</h2><p>| 浓度 | 单位 | 注释 |</p>
-<p>| —- | —- | — |</p>
-<p>| 1M NaCl | 物质的量浓度 | 溶质的物质的量/溶液的体积 |</p>
-<p>| 98% 硫酸 | 质量分数 | 溶质的质量/溶液的质量 |</p>
-<p>| 75% 乙醇 | 体积分数 | 溶质的体积/溶液的体积 |</p>
-<p>| 10% SDS | 质量体积分数 | 溶质的质量/溶液的体积 |</p>
-<p>| 10N NaOH | 当量浓度 | 碱的分子量/碱中所含氢氧根数 |</p>
-<h6 id="一般情况下：溶质-溶液，所以溶液需要定容，单位对应关系是kg对应L，g对应ml"><a href="#一般情况下：溶质-溶液，所以溶液需要定容，单位对应关系是kg对应L，g对应ml" class="headerlink" title="一般情况下：溶质/溶液，所以溶液需要定容，单位对应关系是kg对应L，g对应ml"></a>一般情况下：溶质/溶液，所以溶液需要定容，单位对应关系是kg对应L，g对应ml</h6><h2 id="十字交叉法"><a href="#十字交叉法" class="headerlink" title="十字交叉法"></a>十字交叉法</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-05%2020-18-28_20220805121901110639.png"></p>
-]]></content>
-      <categories>
-        <category>分子生物学</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>基因组组装（二）</title>
     <url>/2022/08/04/021-ji-yin-zu-zu-zhuang-er/</url>
     <content><![CDATA[<h1 id="二代测序基因组组装"><a href="#二代测序基因组组装" class="headerlink" title="二代测序基因组组装"></a>二代测序基因组组装</h1><h2 id="一、数据下载"><a href="#一、数据下载" class="headerlink" title="一、数据下载"></a>一、数据下载</h2><h3 id="1-两种数据格式"><a href="#1-两种数据格式" class="headerlink" title="1.两种数据格式"></a>1.两种数据格式</h3><p>1.frag_x.fastq –&gt; 不超过100bp</p>
@@ -478,6 +459,39 @@ t.render(c) <span aria-hidden="true" class="line-numbers-rows"><span></span><spa
       </tags>
   </entry>
   <entry>
+    <title>分子生物学（一）</title>
+    <url>/2022/08/05/022-fen-zi-sheng-wu-xue-yi/</url>
+    <content><![CDATA[<h2 id="分子生物学的研究层次和基本任务"><a href="#分子生物学的研究层次和基本任务" class="headerlink" title="分子生物学的研究层次和基本任务"></a>分子生物学的研究层次和基本任务</h2><h3 id="两个研究层次：核酸和蛋白质"><a href="#两个研究层次：核酸和蛋白质" class="headerlink" title="两个研究层次：核酸和蛋白质"></a>两个研究层次：核酸和蛋白质</h3><h3 id="四个基本任务：定性、定位、定量和相互作用"><a href="#四个基本任务：定性、定位、定量和相互作用" class="headerlink" title="四个基本任务：定性、定位、定量和相互作用"></a>四个基本任务：定性、定位、定量和相互作用</h3><h5 id="定性：PCR、测序、生物信息学分析、原核表达"><a href="#定性：PCR、测序、生物信息学分析、原核表达" class="headerlink" title="定性：PCR、测序、生物信息学分析、原核表达"></a>定性：PCR、测序、生物信息学分析、原核表达</h5><h5 id="定量：原位杂交、免疫组化、荧光融合蛋白、Northern-Blot、Western-Blot"><a href="#定量：原位杂交、免疫组化、荧光融合蛋白、Northern-Blot、Western-Blot" class="headerlink" title="定量：原位杂交、免疫组化、荧光融合蛋白、Northern Blot、Western Blot"></a>定量：原位杂交、免疫组化、荧光融合蛋白、Northern Blot、Western Blot</h5><h5 id="定量：qPCR、ddPCR、Microarray、高通量测序、Northern-Blot、Western-Blot"><a href="#定量：qPCR、ddPCR、Microarray、高通量测序、Northern-Blot、Western-Blot" class="headerlink" title="定量：qPCR、ddPCR、Microarray、高通量测序、Northern Blot、Western Blot"></a>定量：qPCR、ddPCR、Microarray、高通量测序、Northern Blot、Western Blot</h5><h5 id="相互作用：酵母双杂交、免疫共沉淀、Pull-Down、荧光共定位、FRET、BiFC、Chip-seq"><a href="#相互作用：酵母双杂交、免疫共沉淀、Pull-Down、荧光共定位、FRET、BiFC、Chip-seq" class="headerlink" title="相互作用：酵母双杂交、免疫共沉淀、Pull Down、荧光共定位、FRET、BiFC、Chip-seq"></a>相互作用：酵母双杂交、免疫共沉淀、Pull Down、荧光共定位、FRET、BiFC、Chip-seq</h5><h2 id="实验中常见的浓度单位："><a href="#实验中常见的浓度单位：" class="headerlink" title="实验中常见的浓度单位："></a>实验中常见的浓度单位：</h2><p>| 浓度 | 单位 | 注释 |</p>
+<p>| —- | —- | — |</p>
+<p>| 1M NaCl | 物质的量浓度 | 溶质的物质的量/溶液的体积 |</p>
+<p>| 98% 硫酸 | 质量分数 | 溶质的质量/溶液的质量 |</p>
+<p>| 75% 乙醇 | 体积分数 | 溶质的体积/溶液的体积 |</p>
+<p>| 10% SDS | 质量体积分数 | 溶质的质量/溶液的体积 |</p>
+<p>| 10N NaOH | 当量浓度 | 碱的分子量/碱中所含氢氧根数 |</p>
+<h6 id="一般情况下：溶质-溶液，所以溶液需要定容，单位对应关系是kg对应L，g对应ml"><a href="#一般情况下：溶质-溶液，所以溶液需要定容，单位对应关系是kg对应L，g对应ml" class="headerlink" title="一般情况下：溶质/溶液，所以溶液需要定容，单位对应关系是kg对应L，g对应ml"></a>一般情况下：溶质/溶液，所以溶液需要定容，单位对应关系是kg对应L，g对应ml</h6><h2 id="十字交叉法"><a href="#十字交叉法" class="headerlink" title="十字交叉法"></a>十字交叉法</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot%20from%202022-08-05%2020-18-28_20220805121901110639.png"></p>
+]]></content>
+      <categories>
+        <category>分子生物学</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>转录组标准分析</title>
+    <url>/2022/08/05/024-zhuan-lu-zu-biao-zhun-fen-xi/</url>
+    <content><![CDATA[<h2 id="如何获得表达矩阵？"><a href="#如何获得表达矩阵？" class="headerlink" title="如何获得表达矩阵？"></a>如何获得表达矩阵？</h2><h3 id="1-Microarray"><a href="#1-Microarray" class="headerlink" title="1.Microarray"></a>1.Microarray</h3><h3 id="2-RNA-Seq"><a href="#2-RNA-Seq" class="headerlink" title="2.RNA-Seq"></a>2.RNA-Seq</h3><h6 id="短reads"><a href="#短reads" class="headerlink" title="==> 短reads"></a>==&gt; 短reads</h6><h2 id="一、比对Spliced-alignment"><a href="#一、比对Spliced-alignment" class="headerlink" title="一、比对Spliced alignment"></a>一、比对Spliced alignment</h2><h3 id="1-比对到基因组"><a href="#1-比对到基因组" class="headerlink" title="1.比对到基因组"></a>1.比对到基因组</h3><p>Hisat2<br>STAR</p>
+<h3 id="2-比对到转录组"><a href="#2-比对到转录组" class="headerlink" title="2.比对到转录组"></a>2.比对到转录组</h3><p>Bowtie2</p>
+<h2 id="二、表达定量Quantification"><a href="#二、表达定量Quantification" class="headerlink" title="二、表达定量Quantification"></a>二、表达定量Quantification</h2><h2 id="三、标准化Normalization"><a href="#三、标准化Normalization" class="headerlink" title="三、标准化Normalization"></a>三、标准化Normalization</h2><p>RPKM<br>TPM</p>
+<h2 id="表达数据挖掘"><a href="#表达数据挖掘" class="headerlink" title="表达数据挖掘"></a>表达数据挖掘</h2><h2 id="差异表达"><a href="#差异表达" class="headerlink" title="差异表达"></a>差异表达</h2><h2 id="富集分析"><a href="#富集分析" class="headerlink" title="富集分析"></a>富集分析</h2><h2 id="样本聚类分析"><a href="#样本聚类分析" class="headerlink" title="样本聚类分析"></a>样本聚类分析</h2><h2 id="相关系数"><a href="#相关系数" class="headerlink" title="相关系数"></a>相关系数</h2><h2 id="聚类分析和WGCNA"><a href="#聚类分析和WGCNA" class="headerlink" title="聚类分析和WGCNA"></a>聚类分析和WGCNA</h2><h2 id="从聚类分析到主成分分析"><a href="#从聚类分析到主成分分析" class="headerlink" title="从聚类分析到主成分分析"></a>从聚类分析到主成分分析</h2>]]></content>
+      <categories>
+        <category>转录组</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>一个简单的基因家族分析</title>
     <url>/2022/08/05/023-ji-yin-jia-zu-fen-xi/</url>
     <content><![CDATA[<h1 id="基因家族分析"><a href="#基因家族分析" class="headerlink" title="基因家族分析"></a>基因家族分析</h1><p>以拟南芥为例，重现一个描述芝麻 大豆、拟南芥中一个与油脂合成相关的基因的进化关系以及拷贝数差异的图</p>
@@ -503,20 +517,6 @@ t.render(c) <span aria-hidden="true" class="line-numbers-rows"><span></span><spa
       </categories>
       <tags>
         <tag>Linux</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>转录组标准分析</title>
-    <url>/2022/08/05/024-zhuan-lu-zu-biao-zhun-fen-xi/</url>
-    <content><![CDATA[<h2 id="如何获得表达矩阵？"><a href="#如何获得表达矩阵？" class="headerlink" title="如何获得表达矩阵？"></a>如何获得表达矩阵？</h2><h3 id="1-Microarray"><a href="#1-Microarray" class="headerlink" title="1.Microarray"></a>1.Microarray</h3><h3 id="2-RNA-Seq"><a href="#2-RNA-Seq" class="headerlink" title="2.RNA-Seq"></a>2.RNA-Seq</h3><h6 id="短reads"><a href="#短reads" class="headerlink" title="==> 短reads"></a>==&gt; 短reads</h6><h2 id="一、比对Spliced-alignment"><a href="#一、比对Spliced-alignment" class="headerlink" title="一、比对Spliced alignment"></a>一、比对Spliced alignment</h2><h3 id="1-比对到基因组"><a href="#1-比对到基因组" class="headerlink" title="1.比对到基因组"></a>1.比对到基因组</h3><p>Hisat2<br>STAR</p>
-<h3 id="2-比对到转录组"><a href="#2-比对到转录组" class="headerlink" title="2.比对到转录组"></a>2.比对到转录组</h3><p>Bowtie2</p>
-<h2 id="二、表达定量Quantification"><a href="#二、表达定量Quantification" class="headerlink" title="二、表达定量Quantification"></a>二、表达定量Quantification</h2><h2 id="三、标准化Normalization"><a href="#三、标准化Normalization" class="headerlink" title="三、标准化Normalization"></a>三、标准化Normalization</h2><p>RPKM<br>TPM</p>
-<h2 id="表达数据挖掘"><a href="#表达数据挖掘" class="headerlink" title="表达数据挖掘"></a>表达数据挖掘</h2><h2 id="差异表达"><a href="#差异表达" class="headerlink" title="差异表达"></a>差异表达</h2><h2 id="富集分析"><a href="#富集分析" class="headerlink" title="富集分析"></a>富集分析</h2><h2 id="样本聚类分析"><a href="#样本聚类分析" class="headerlink" title="样本聚类分析"></a>样本聚类分析</h2><h2 id="相关系数"><a href="#相关系数" class="headerlink" title="相关系数"></a>相关系数</h2><h2 id="聚类分析和WGCNA"><a href="#聚类分析和WGCNA" class="headerlink" title="聚类分析和WGCNA"></a>聚类分析和WGCNA</h2><h2 id="从聚类分析到主成分分析"><a href="#从聚类分析到主成分分析" class="headerlink" title="从聚类分析到主成分分析"></a>从聚类分析到主成分分析</h2>]]></content>
-      <categories>
-        <category>转录组</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -872,6 +872,107 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
       </tags>
   </entry>
   <entry>
+    <title>Western blot 原理和详细操作步骤</title>
+    <url>/2022/11/04/029-western-blot/</url>
+    <content><![CDATA[<h2 id="Western-blot-原理"><a href="#Western-blot-原理" class="headerlink" title="Western blot 原理"></a>Western blot 原理</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-d6d9839833ec998ef6f250fe7a4dbc5b_720w.webp"></p>
+<blockquote>
+<p>Western blot（也称为蛋白质免疫印迹）是一种常用于研究中分离和鉴定蛋白质的技术。它利用 SDS-聚丙烯酰胺凝胶电泳 (SDS-PAGE) 来分离指定样品中包含的各种蛋白质，然后将分离的蛋白质转移到硝酸纤维素或 PVDF 膜上，接下来将膜与对感目标蛋白质的特异抗体一起孵育。在洗膜过程中，未结合的抗体被洗掉，只留下与目标蛋白质结合的抗体，最后通过显影胶片或荧光扫描来检测结合的抗体。</p>
+</blockquote>
+<blockquote>
+<p>由于抗体仅与目标蛋白质结合，因此一般只能看到一条清晰的带，条带的粗细对应于蛋白质量。通过分析特定反应的位置和强度，可以获得目标蛋白在给定细胞或组织匀浆中的表达信息。由于凝胶电泳的高分辨率和免疫的强特异性和高灵敏度，Western印迹分析可检测低至1ng的靶蛋白。该方法广泛应用于分子生物学、生物化学、免疫遗传学等分子生物学领域。</p>
+</blockquote>
+<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><h3 id="一、准备样品"><a href="#一、准备样品" class="headerlink" title="一、准备样品"></a>一、准备样品</h3><ol>
+<li><p>制冰，准备冰盒。</p>
+</li>
+<li><p>配制细胞裂解液：根据细胞数量确定所需裂解液：50ul/六孔板一孔 。</p>
+</li>
+</ol>
+<p> 裂解液配方：100ul碧云天裂解液+1ul蛋白酶抑制剂混合物+1ul PMSF</p>
+<ol start="3">
+<li><p>按实验需要准备好细胞：去掉培养基，1×PBS洗3次（去掉培养基中的血清），每个孔（6孔板）加入适量的裂解液。迅速用细胞刮刮下细胞并转移至1.5ml管中，置于冰上20min，振荡混合后，再置冰上10min。</p>
+</li>
+<li><p>12,000g，4℃离心15min，收集上清至另一1.5ml管。</p>
+</li>
+<li><p>取2.5ul样品加22.5ul三蒸水稀释，用于BCA法测蛋白浓度。</p>
+</li>
+<li><p>其余样品加5×Loading Buffer（按2.5mlBuffer/10ml蛋白）用95℃煮10分钟，期间振荡一次。</p>
+</li>
+<li><p>直接上样跑胶或者分装-80°C长期保存。</p>
+</li>
+</ol>
+<h3 id="二、SDS-PAGE聚丙烯酰胺凝胶电泳"><a href="#二、SDS-PAGE聚丙烯酰胺凝胶电泳" class="headerlink" title="二、SDS-PAGE聚丙烯酰胺凝胶电泳"></a>二、SDS-PAGE聚丙烯酰胺凝胶电泳</h3><ol>
+<li>制备分离胶（10%）</li>
+</ol>
+<p> <em>注：不同的分离胶配方可参见《分子克隆》p1716表A8-9</em></p>
+<ol start="2">
+<li><p>小心注入分离胶，留2 cm左右的空间（制胶架绿色或白色边框下缘）给浓缩胶，顶层覆盖无水乙醇。静置约30分钟。</p>
+</li>
+<li><p>制备浓缩胶（5%）</p>
+</li>
+<li><p>倒掉无水乙醇，用吸水纸吸去残留无水乙醇，然后将浓缩胶注入分离胶上端，注意避免气泡。</p>
+</li>
+<li><p>插入梳子，待浓缩胶凝固（胶与梳子之间有明显的分界，加上分离胶的凝固时间要大于2h），<del>用超纯水水将孔洗净，去除凝胶碎片，然后用滤纸吸干水</del>。</p>
+</li>
+<li><p>将胶放入电泳槽，上下槽均加入1×电泳缓冲液（反复使用不要超过3次）。</p>
+</li>
+<li><p>上样：marker孔中取5ul prestained marker<del>加入适量1×上样Buffer,使得总体积与sample孔一样</del>。Sample上样量一般为15－25μl，先用heating block 100℃煮5-10分钟，期间振荡一次，然后快速离心再上样跑胶；<del>在没有load sample的孔中加入等体积的1×上样Buffer</del>。</p>
+</li>
+<li><p>电泳：开始为恒压60-80V，当跑过浓缩胶后，将电流加大到100-120V，电泳时间根据目标蛋白的大小及marker的位置确定，一般为目标蛋白跑到分离胶的三分之二的位置即可。</p>
+</li>
+</ol>
+<h3 id="三、转膜"><a href="#三、转膜" class="headerlink" title="三、转膜"></a>三、转膜</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-4655ee5889e0b74ffeaf44a5927c9cfb_720w.webp"></p>
+<ol>
+<li><p>切胶，按Marker指示和目的条带的位置切胶(注意将胶切角做记号)，将洗脱的胶浸入转膜缓冲液中15分钟。</p>
+</li>
+<li><p>PVDF膜做好记号后先浸入甲醇中1分钟，再连同4张3mm滤纸和海绵浸入转移缓冲液中15分钟。</p>
+</li>
+<li><p>制备“夹心饼”：</p>
+</li>
+</ol>
+<p> 依次按如下顺序：纤维垫–滤纸—PVDF膜—凝胶—滤纸–纤维垫。</p>
+<p> 注意：每加一种物品都要对齐，确保没有气泡。</p>
+<ol start="4">
+<li>转膜：转膜时间根据1.确定。（60min）</li>
+</ol>
+<p> PVDF膜一边接正极（红色），凝胶一边接负极（黑色）。</p>
+<h3 id="四、封闭和抗体孵育"><a href="#四、封闭和抗体孵育" class="headerlink" title="四、封闭和抗体孵育"></a>四、封闭和抗体孵育</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-579f20046a8c0c8ed195c58cfce73423_720w.webp"></p>
+<ol>
+<li><p>转膜以后，<del>用10ml的1×TBS室温洗膜10分钟</del>。</p>
+</li>
+<li><p>15ml奶粉封闭液室温孵育<strong>2h</strong>或者4℃平缓摇动过夜。由于奶粉较为难溶，因此要<strong>提前至少1h配置</strong>。</p>
+</li>
+<li><p>10ml的TBS/T洗膜<del>3</del>5次，每次5分钟。</p>
+</li>
+<li><p>加入15ml一抗稀释缓冲液（抗体根据说明稀释），室温2 hrs或者4℃平缓摇动过夜，回收一抗，<del>按5ul/ml一抗液加入叠氮钠（可抑制细菌生长）4℃保存（不常用的抗体可-20℃长期保存），可重复使用！</del></p>
+</li>
+</ol>
+<p><em>如果用辣根过氧化物酶(HRP)检测系统，封闭液不应加叠氮钠(NaN3)，因为叠氮钠对辣根过氧化物酶（HRP）有灭活作用</em></p>
+<ol start="5">
+<li><p>10ml的TBS/T洗膜<del>3</del>5次，每次5分钟。</p>
+</li>
+<li><p>加入二抗（一般为1：2000稀释），室温平缓摇动1h。</p>
+</li>
+<li><p>10ml的TBS/T洗膜<del>3</del>5次，每次5分钟。</p>
+</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-787bb84a8e567620a49e3f0df4b365bf_720w.webp"></p>
+<h3 id="五、显影"><a href="#五、显影" class="headerlink" title="五、显影"></a>五、显影</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-87069acd533b8a41b7a4296c72786b0b_720w.webp"></p>
+<ol>
+<li><p>显色步骤：先铺保鲜膜，在吸水纸上再铺上保鲜膜；分别将水、显影液（颜色变深则不能用）和定影液倒入各自的盘中。2.5ml ECL-A 和2.5ml ECL-B混合,避光。将ECL混合液、膜等拿入暗房。关好门，反锁，拉回布。ECL混合液倒入小盒中，膜用吸水纸稍微吸干放入ECL混合液中室温摇动5min（使得ECL均匀的铺过膜），吸水纸吸干后置于保鲜膜上，膜面朝下包好置于夹子上，剪好X-film（注意手只能拿X-film的边缘）放于膜上，剪角一边为marker(注意：取胶片时要把灯光调到最小，且不要对着灯光，应背着灯光。)，根据条带的亮度来调整曝光时间，一般可先曝光2min，观察条带的深度，再确定最佳的曝光时间。</p>
+</li>
+<li><p>显影，定影: 取出X-film置于显影液中一定时间后(视目的条带强度与背景而定)，水洗一次再置于定影液中定影5min以上。</p>
+</li>
+</ol>
+<p> <em>（当然，随着时代的进步，现在很多实验室很少用古老的胶片显影定影。用在最后的发光二抗孵育后，直接扫描。这类仪器很多，操作方法看不同实验室的配置）</em></p>
+]]></content>
+      <categories>
+        <category>蛋白组</category>
+      </categories>
+      <tags>
+        <tag>实验</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SDS-PAGE（聚丙烯酰胺）蛋白电泳原理详解</title>
     <url>/2022/11/04/030-sds-page/</url>
     <content><![CDATA[<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-94435d28b337a80366f73f71e9d7fb14_1440w.jpg"></p>
@@ -1081,107 +1182,6 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
 ]]></content>
       <categories>
         <category>PCR</category>
-      </categories>
-      <tags>
-        <tag>实验</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Western blot 原理和详细操作步骤</title>
-    <url>/2022/11/04/029-western-blot/</url>
-    <content><![CDATA[<h2 id="Western-blot-原理"><a href="#Western-blot-原理" class="headerlink" title="Western blot 原理"></a>Western blot 原理</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-d6d9839833ec998ef6f250fe7a4dbc5b_720w.webp"></p>
-<blockquote>
-<p>Western blot（也称为蛋白质免疫印迹）是一种常用于研究中分离和鉴定蛋白质的技术。它利用 SDS-聚丙烯酰胺凝胶电泳 (SDS-PAGE) 来分离指定样品中包含的各种蛋白质，然后将分离的蛋白质转移到硝酸纤维素或 PVDF 膜上，接下来将膜与对感目标蛋白质的特异抗体一起孵育。在洗膜过程中，未结合的抗体被洗掉，只留下与目标蛋白质结合的抗体，最后通过显影胶片或荧光扫描来检测结合的抗体。</p>
-</blockquote>
-<blockquote>
-<p>由于抗体仅与目标蛋白质结合，因此一般只能看到一条清晰的带，条带的粗细对应于蛋白质量。通过分析特定反应的位置和强度，可以获得目标蛋白在给定细胞或组织匀浆中的表达信息。由于凝胶电泳的高分辨率和免疫的强特异性和高灵敏度，Western印迹分析可检测低至1ng的靶蛋白。该方法广泛应用于分子生物学、生物化学、免疫遗传学等分子生物学领域。</p>
-</blockquote>
-<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><h3 id="一、准备样品"><a href="#一、准备样品" class="headerlink" title="一、准备样品"></a>一、准备样品</h3><ol>
-<li><p>制冰，准备冰盒。</p>
-</li>
-<li><p>配制细胞裂解液：根据细胞数量确定所需裂解液：50ul/六孔板一孔 。</p>
-</li>
-</ol>
-<p> 裂解液配方：100ul碧云天裂解液+1ul蛋白酶抑制剂混合物+1ul PMSF</p>
-<ol start="3">
-<li><p>按实验需要准备好细胞：去掉培养基，1×PBS洗3次（去掉培养基中的血清），每个孔（6孔板）加入适量的裂解液。迅速用细胞刮刮下细胞并转移至1.5ml管中，置于冰上20min，振荡混合后，再置冰上10min。</p>
-</li>
-<li><p>12,000g，4℃离心15min，收集上清至另一1.5ml管。</p>
-</li>
-<li><p>取2.5ul样品加22.5ul三蒸水稀释，用于BCA法测蛋白浓度。</p>
-</li>
-<li><p>其余样品加5×Loading Buffer（按2.5mlBuffer/10ml蛋白）用95℃煮10分钟，期间振荡一次。</p>
-</li>
-<li><p>直接上样跑胶或者分装-80°C长期保存。</p>
-</li>
-</ol>
-<h3 id="二、SDS-PAGE聚丙烯酰胺凝胶电泳"><a href="#二、SDS-PAGE聚丙烯酰胺凝胶电泳" class="headerlink" title="二、SDS-PAGE聚丙烯酰胺凝胶电泳"></a>二、SDS-PAGE聚丙烯酰胺凝胶电泳</h3><ol>
-<li>制备分离胶（10%）</li>
-</ol>
-<p> <em>注：不同的分离胶配方可参见《分子克隆》p1716表A8-9</em></p>
-<ol start="2">
-<li><p>小心注入分离胶，留2 cm左右的空间（制胶架绿色或白色边框下缘）给浓缩胶，顶层覆盖无水乙醇。静置约30分钟。</p>
-</li>
-<li><p>制备浓缩胶（5%）</p>
-</li>
-<li><p>倒掉无水乙醇，用吸水纸吸去残留无水乙醇，然后将浓缩胶注入分离胶上端，注意避免气泡。</p>
-</li>
-<li><p>插入梳子，待浓缩胶凝固（胶与梳子之间有明显的分界，加上分离胶的凝固时间要大于2h），<del>用超纯水水将孔洗净，去除凝胶碎片，然后用滤纸吸干水</del>。</p>
-</li>
-<li><p>将胶放入电泳槽，上下槽均加入1×电泳缓冲液（反复使用不要超过3次）。</p>
-</li>
-<li><p>上样：marker孔中取5ul prestained marker<del>加入适量1×上样Buffer,使得总体积与sample孔一样</del>。Sample上样量一般为15－25μl，先用heating block 100℃煮5-10分钟，期间振荡一次，然后快速离心再上样跑胶；<del>在没有load sample的孔中加入等体积的1×上样Buffer</del>。</p>
-</li>
-<li><p>电泳：开始为恒压60-80V，当跑过浓缩胶后，将电流加大到100-120V，电泳时间根据目标蛋白的大小及marker的位置确定，一般为目标蛋白跑到分离胶的三分之二的位置即可。</p>
-</li>
-</ol>
-<h3 id="三、转膜"><a href="#三、转膜" class="headerlink" title="三、转膜"></a>三、转膜</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-4655ee5889e0b74ffeaf44a5927c9cfb_720w.webp"></p>
-<ol>
-<li><p>切胶，按Marker指示和目的条带的位置切胶(注意将胶切角做记号)，将洗脱的胶浸入转膜缓冲液中15分钟。</p>
-</li>
-<li><p>PVDF膜做好记号后先浸入甲醇中1分钟，再连同4张3mm滤纸和海绵浸入转移缓冲液中15分钟。</p>
-</li>
-<li><p>制备“夹心饼”：</p>
-</li>
-</ol>
-<p> 依次按如下顺序：纤维垫–滤纸—PVDF膜—凝胶—滤纸–纤维垫。</p>
-<p> 注意：每加一种物品都要对齐，确保没有气泡。</p>
-<ol start="4">
-<li>转膜：转膜时间根据1.确定。（60min）</li>
-</ol>
-<p> PVDF膜一边接正极（红色），凝胶一边接负极（黑色）。</p>
-<h3 id="四、封闭和抗体孵育"><a href="#四、封闭和抗体孵育" class="headerlink" title="四、封闭和抗体孵育"></a>四、封闭和抗体孵育</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-579f20046a8c0c8ed195c58cfce73423_720w.webp"></p>
-<ol>
-<li><p>转膜以后，<del>用10ml的1×TBS室温洗膜10分钟</del>。</p>
-</li>
-<li><p>15ml奶粉封闭液室温孵育<strong>2h</strong>或者4℃平缓摇动过夜。由于奶粉较为难溶，因此要<strong>提前至少1h配置</strong>。</p>
-</li>
-<li><p>10ml的TBS/T洗膜<del>3</del>5次，每次5分钟。</p>
-</li>
-<li><p>加入15ml一抗稀释缓冲液（抗体根据说明稀释），室温2 hrs或者4℃平缓摇动过夜，回收一抗，<del>按5ul/ml一抗液加入叠氮钠（可抑制细菌生长）4℃保存（不常用的抗体可-20℃长期保存），可重复使用！</del></p>
-</li>
-</ol>
-<p><em>如果用辣根过氧化物酶(HRP)检测系统，封闭液不应加叠氮钠(NaN3)，因为叠氮钠对辣根过氧化物酶（HRP）有灭活作用</em></p>
-<ol start="5">
-<li><p>10ml的TBS/T洗膜<del>3</del>5次，每次5分钟。</p>
-</li>
-<li><p>加入二抗（一般为1：2000稀释），室温平缓摇动1h。</p>
-</li>
-<li><p>10ml的TBS/T洗膜<del>3</del>5次，每次5分钟。</p>
-</li>
-</ol>
-<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-787bb84a8e567620a49e3f0df4b365bf_720w.webp"></p>
-<h3 id="五、显影"><a href="#五、显影" class="headerlink" title="五、显影"></a>五、显影</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-87069acd533b8a41b7a4296c72786b0b_720w.webp"></p>
-<ol>
-<li><p>显色步骤：先铺保鲜膜，在吸水纸上再铺上保鲜膜；分别将水、显影液（颜色变深则不能用）和定影液倒入各自的盘中。2.5ml ECL-A 和2.5ml ECL-B混合,避光。将ECL混合液、膜等拿入暗房。关好门，反锁，拉回布。ECL混合液倒入小盒中，膜用吸水纸稍微吸干放入ECL混合液中室温摇动5min（使得ECL均匀的铺过膜），吸水纸吸干后置于保鲜膜上，膜面朝下包好置于夹子上，剪好X-film（注意手只能拿X-film的边缘）放于膜上，剪角一边为marker(注意：取胶片时要把灯光调到最小，且不要对着灯光，应背着灯光。)，根据条带的亮度来调整曝光时间，一般可先曝光2min，观察条带的深度，再确定最佳的曝光时间。</p>
-</li>
-<li><p>显影，定影: 取出X-film置于显影液中一定时间后(视目的条带强度与背景而定)，水洗一次再置于定影液中定影5min以上。</p>
-</li>
-</ol>
-<p> <em>（当然，随着时代的进步，现在很多实验室很少用古老的胶片显影定影。用在最后的发光二抗孵育后，直接扫描。这类仪器很多，操作方法看不同实验室的配置）</em></p>
-]]></content>
-      <categories>
-        <category>蛋白组</category>
       </categories>
       <tags>
         <tag>实验</tag>
@@ -1737,6 +1737,169 @@ p<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><s
       </categories>
   </entry>
   <entry>
+    <title>3.对基因进行注释，长牡蛎注释包的构建及KEGG和GO分析</title>
+    <url>/2025/08/02/25/</url>
+    <content><![CDATA[<blockquote>
+<p>前面我们发现了一些显著的SNP窗口位点，下面对显著的SNP位点进行提取。</p>
+</blockquote>
+<h1 id="1-提取SNP位点信息"><a href="#1-提取SNP位点信息" class="headerlink" title="1.提取SNP位点信息"></a>1.提取SNP位点信息</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 设置FST阈值（例如取WEIGHTED_FST &gt; 0.2）</span>
+awk '$5 &gt; 0.2' fst_binned.windowed.weir.fst &gt; high_fst_windows.txt
+
+<span class="token title important"><span class="token punctuation">##</span> 检查最高FST窗口</span>
+sort -k5,5nr high_fst_windows.txt | head
+
+
+<span class="token title important"><span class="token punctuation">##</span> 从高FST结果生成BED格式（用于后续注释）</span>
+awk '{print $1"\t"$2"\t"$3"\t"$5}' high_fst_windows.txt &gt; high_fst_regions.bed
+
+<span class="token title important"><span class="token punctuation">##</span> 合并相邻窗口（如距离 merged_high_fst.bed</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="2-对提取SNP位点注释"><a href="#2-对提取SNP位点注释" class="headerlink" title="2.对提取SNP位点注释"></a>2.对提取SNP位点注释</h1><p>然后提取与基因重叠的区域（需准备reference.gtf）</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 步骤1：过滤GFF3中的基因行（注意GFF3中gene的第三列为"gene"）</span>
+bedtools intersect -a merged_high_fst.bed -b ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff -wa -wb | \
+awk -F'\t' '$8 == "gene" {print $1,$2,$3,$12}' OFS='\t' | \
+awk -F'[;\t]' '{gsub(/ID=gene-/, "", $4); print $1,$2,$3,$4}' | sort | uniq &gt; fst_genes.txt
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="3-提取SNP位点所在基因的ID号"><a href="#3-提取SNP位点所在基因的ID号" class="headerlink" title="3.提取SNP位点所在基因的ID号"></a>3.提取SNP位点所在基因的ID号</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">awk -F'\t' '{
+  match($8, /ID=gene-([^;]+)/, id_arr);
+  match($8, /Name=([^;]+)/, name_arr);
+  if (id_arr[1] &amp;&amp; name_arr[1]) {
+    print $1, $2, $3, id_arr[1], name_arr[1];
+  }
+}' OFS='\t' fst_genes_annotated.bed &gt; fst_gene_ids_names.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+
+<p>下面为整理好的上述过程的脚本</p>
+<p>命名为<code># annotate_fst.sh</code> </p>
+<pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash">#!/bin/bash
+# 输入文件
+BED="merged_high_fst.bed"
+GFF="../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff"
+
+# 步骤1：提取基因（直接运行，若为空则需名称映射）
+bedtools intersect -a $BED -b $GFF -wa -wb | \
+awk -F'\t' '$8 == "gene" {print $1,$2,$3,$12}' OFS='\t' | \
+awk -F'[;\t]' '{gsub(/ID=gene-/, "", $4); print $1,$2,$3,$4}' | sort | uniq &gt; fst_genes.txt
+
+# 步骤2：检查结果
+echo "=== 前10行基因 ==="
+head fst_genes.txt
+echo "=== 行数统计 ==="
+wc -l fst_genes.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<h1 id="4-通过基因ID提取蛋白序列"><a href="#4-通过基因ID提取蛋白序列" class="headerlink" title="4.通过基因ID提取蛋白序列"></a>4.通过基因ID提取蛋白序列</h1><p>下面为根据基因ID提取转录本序列，然后进行注释（后面不用这个，直接构建注释包进行分析，感觉更好</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">grep -E "$(paste -sd'|' missing_loc.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "gene" | grep -E "$(paste -sd'|' missing_loc.txt)" | grep -o "gene_biotype=[^;]*" | sort | uniq -c
+
+
+grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "protein_id=" | \
+sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | sort | uniq &gt; protein_ids.txt
+
+
+seqkit grep -f protein_ids.txt ../GCF_902806645.1_cgigas_uk_roslin_v1_protein.faa &gt; proteins_extracted/fst_genes_proteins.faa
+
+grep "^&gt;" proteins_extracted/fst_genes_proteins.faa | wc -l
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>发现不能完全匹配所有LOC，查看哪些没匹配到</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span> 找所有LOC对应的protein_id</span>
+grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "protein_id=" | \
+sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | sort | uniq &gt; protein_ids_all.txt
+
+<span class="token title important"><span class="token punctuation">#</span> 检查protein_ids.txt是否包含所有</span>
+<span class="token blockquote punctuation">&gt;</span> comm -23 protein_ids_all.txt protein_ids.txt &gt; missing_proteins.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<p>下面是上述命令整理好的查找脚本</p>
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span>!/bin/bash</span>
+set -euo pipefail
+
+<span class="token title important"><span class="token punctuation">#</span> 1. 从fst_gene_ids_names.txt中提取LOC ID列表（假设第4列为LOC ID）</span>
+cut -f4 fst_gene_ids_names.txt | sort | uniq &gt; gene_loc_ids.txt
+
+<span class="token title important"><span class="token punctuation">#</span> 2. 从基因组注释GFF文件中筛选出这些LOC对应的protein_id</span>
+grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | \
+    grep "protein_id=" | \
+    sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | \
+    sort | uniq &gt; protein_ids.txt
+
+<span class="token title important"><span class="token punctuation">#</span> 3. 使用seqkit提取对应的蛋白序列到指定文件</span>
+seqkit grep -f protein_ids.txt ../GCF_902806645.1_cgigas_uk_roslin_v1_protein.faa &gt; proteins_extracted/fst_genes_proteins.faa
+
+<span class="token title important"><span class="token punctuation">#</span> 4. 统计提取到的蛋白数量，确认数量</span>
+grep "^&gt;" proteins_extracted/fst_genes_proteins.faa | wc -l<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<h1 id="5-对提取的蛋白进行注释"><a href="#5-对提取的蛋白进行注释" class="headerlink" title="5.对提取的蛋白进行注释"></a>5.对提取的蛋白进行注释</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">conda create -n eggnog3_env -c bioconda -c conda-forge eggnog-mapper
+conda activate eggnog3_env
+
+
+emapper.py -h
+
+tar -xvzf eggnog_mapper_data-5.0.2.tar.gz -C ./data<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">emapper.py -i proteins_extracted/fst_genes_proteins.faa \
+  --output fst_proteins_annotation \
+  --data_dir ./data \
+  -m diamond \
+  --cpu 12 \
+  --override<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<p>下面是R中的操作，主要进行KEGG和GO分析</p>
+<h1 id="1-对前面注释的基因进行聚类分析"><a href="#1-对前面注释的基因进行聚类分析" class="headerlink" title="1.对前面注释的基因进行聚类分析"></a>1.对前面注释的基因进行聚类分析</h1><p>详细内容见 <a href="http://192.168.1.101/usr/uploads/2025/08/706163015.ipynb">Fst_2.ipynb</a><br><img src="/images/25/2038951127.png" alt="mdvyq9m6.png"><br>结果如上，没有达到我的预期，操作也较麻烦。</p>
+<h1 id="2-构建非模式物种注释包org-Cgigas-eg-db"><a href="#2-构建非模式物种注释包org-Cgigas-eg-db" class="headerlink" title="2.构建非模式物种注释包org.Cgigas.eg.db"></a>2.构建非模式物种注释包org.Cgigas.eg.db</h1><p>详细内容见 <a href="http://192.168.1.101/usr/uploads/2025/08/3120321603.ipynb">Fst_3.ipynb</a> </p>
+<pre><code class="markdown">library(tidyverse)
+library(AnnotationForge)
+library(readxl)
+
+emapper %
+  dplyr::select(GID=query,Gene_Symbol=Preferred_name, 
+                GO=GOs,KO=KEGG_ko,Pathway =KEGG_Pathway, 
+                OG=eggNOG_OGs,Gene_Name =seed_ortholog)
+
+emapper$GID %   #这是只提取有GO注释信息的行，判断的标准时GO信息不是NA，这也就是为什么前面必须将“-”替换为NA，不替换就无法进行有效过滤。
+  mutate(EVIDENCE = 'gigas')     #硬生生加了1列EVIDENCE，全部赋值A,凑数的。
+dim(gene2go)    #查看数据维度。
+#[1] 1523399       3
+
+#提取GID与KO信息，这里只有2列信息
+gene2ko%
+ separate_rows(KO, sep = ',', convert = F) %&gt;%
+  dplyr::filter(!is.na(KO))
+dim(gene2ko)
+#[1] 30530     2
+
+#提取GID与Pathway信息，这里只有2列信息
+gene2pathway%
+separate_rows(Pathway, sep = ',', convert = F) %&gt;%
+  dplyr::filter(!is.na(Pathway))
+ dim(gene2pathway)
+#[1] 143056      2
+
+#提取GID与Gene_Symbol信息，Gene_Symbol是Preferred_name信息，这里只有2列信息
+gene2symbol%
+  dplyr::filter(!is.na(Gene_Symbol))
+dim(gene2symbol)
+#[1] 4561    2
+
+## 删除 GO ID 中的空格、制表符、换行符
+
+gene2go$GO
+</code></pre>
+]]></content>
+      <categories>
+        <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
     <title>4.提取重测序数据中黑白肌痕组中各SNP的位点信息及基因型频率</title>
     <url>/2025/08/03/32/</url>
     <content><![CDATA[<p>相关的sh文件内容如下：</p>
@@ -1908,169 +2071,6 @@ rm -f NC_047567.1_results_*
 
 ./extract_chromosome_snps.sh NC_047567.1 Filter.snp.vcf.gz NC_047567.1_results 8
 ./extract_chromosome_snps_2.0.sh NC_047567.1 Filter.snp.vcf.gz NC_047567.1_results<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
-      <categories>
-        <category>重测序</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>3.对基因进行注释，长牡蛎注释包的构建及KEGG和GO分析</title>
-    <url>/2025/08/02/25/</url>
-    <content><![CDATA[<blockquote>
-<p>前面我们发现了一些显著的SNP窗口位点，下面对显著的SNP位点进行提取。</p>
-</blockquote>
-<h1 id="1-提取SNP位点信息"><a href="#1-提取SNP位点信息" class="headerlink" title="1.提取SNP位点信息"></a>1.提取SNP位点信息</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 设置FST阈值（例如取WEIGHTED_FST &gt; 0.2）</span>
-awk '$5 &gt; 0.2' fst_binned.windowed.weir.fst &gt; high_fst_windows.txt
-
-<span class="token title important"><span class="token punctuation">##</span> 检查最高FST窗口</span>
-sort -k5,5nr high_fst_windows.txt | head
-
-
-<span class="token title important"><span class="token punctuation">##</span> 从高FST结果生成BED格式（用于后续注释）</span>
-awk '{print $1"\t"$2"\t"$3"\t"$5}' high_fst_windows.txt &gt; high_fst_regions.bed
-
-<span class="token title important"><span class="token punctuation">##</span> 合并相邻窗口（如距离 merged_high_fst.bed</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h1 id="2-对提取SNP位点注释"><a href="#2-对提取SNP位点注释" class="headerlink" title="2.对提取SNP位点注释"></a>2.对提取SNP位点注释</h1><p>然后提取与基因重叠的区域（需准备reference.gtf）</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">##</span> 步骤1：过滤GFF3中的基因行（注意GFF3中gene的第三列为"gene"）</span>
-bedtools intersect -a merged_high_fst.bed -b ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff -wa -wb | \
-awk -F'\t' '$8 == "gene" {print $1,$2,$3,$12}' OFS='\t' | \
-awk -F'[;\t]' '{gsub(/ID=gene-/, "", $4); print $1,$2,$3,$4}' | sort | uniq &gt; fst_genes.txt
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h1 id="3-提取SNP位点所在基因的ID号"><a href="#3-提取SNP位点所在基因的ID号" class="headerlink" title="3.提取SNP位点所在基因的ID号"></a>3.提取SNP位点所在基因的ID号</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">awk -F'\t' '{
-  match($8, /ID=gene-([^;]+)/, id_arr);
-  match($8, /Name=([^;]+)/, name_arr);
-  if (id_arr[1] &amp;&amp; name_arr[1]) {
-    print $1, $2, $3, id_arr[1], name_arr[1];
-  }
-}' OFS='\t' fst_genes_annotated.bed &gt; fst_gene_ids_names.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-
-<p>下面为整理好的上述过程的脚本</p>
-<p>命名为<code># annotate_fst.sh</code> </p>
-<pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash">#!/bin/bash
-# 输入文件
-BED="merged_high_fst.bed"
-GFF="../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff"
-
-# 步骤1：提取基因（直接运行，若为空则需名称映射）
-bedtools intersect -a $BED -b $GFF -wa -wb | \
-awk -F'\t' '$8 == "gene" {print $1,$2,$3,$12}' OFS='\t' | \
-awk -F'[;\t]' '{gsub(/ID=gene-/, "", $4); print $1,$2,$3,$4}' | sort | uniq &gt; fst_genes.txt
-
-# 步骤2：检查结果
-echo "=== 前10行基因 ==="
-head fst_genes.txt
-echo "=== 行数统计 ==="
-wc -l fst_genes.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<h1 id="4-通过基因ID提取蛋白序列"><a href="#4-通过基因ID提取蛋白序列" class="headerlink" title="4.通过基因ID提取蛋白序列"></a>4.通过基因ID提取蛋白序列</h1><p>下面为根据基因ID提取转录本序列，然后进行注释（后面不用这个，直接构建注释包进行分析，感觉更好</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">grep -E "$(paste -sd'|' missing_loc.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "gene" | grep -E "$(paste -sd'|' missing_loc.txt)" | grep -o "gene_biotype=[^;]*" | sort | uniq -c
-
-
-grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "protein_id=" | \
-sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | sort | uniq &gt; protein_ids.txt
-
-
-seqkit grep -f protein_ids.txt ../GCF_902806645.1_cgigas_uk_roslin_v1_protein.faa &gt; proteins_extracted/fst_genes_proteins.faa
-
-grep "^&gt;" proteins_extracted/fst_genes_proteins.faa | wc -l
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>发现不能完全匹配所有LOC，查看哪些没匹配到</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span> 找所有LOC对应的protein_id</span>
-grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | grep "protein_id=" | \
-sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | sort | uniq &gt; protein_ids_all.txt
-
-<span class="token title important"><span class="token punctuation">#</span> 检查protein_ids.txt是否包含所有</span>
-<span class="token blockquote punctuation">&gt;</span> comm -23 protein_ids_all.txt protein_ids.txt &gt; missing_proteins.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-<p>下面是上述命令整理好的查找脚本</p>
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown"><span class="token title important"><span class="token punctuation">#</span>!/bin/bash</span>
-set -euo pipefail
-
-<span class="token title important"><span class="token punctuation">#</span> 1. 从fst_gene_ids_names.txt中提取LOC ID列表（假设第4列为LOC ID）</span>
-cut -f4 fst_gene_ids_names.txt | sort | uniq &gt; gene_loc_ids.txt
-
-<span class="token title important"><span class="token punctuation">#</span> 2. 从基因组注释GFF文件中筛选出这些LOC对应的protein_id</span>
-grep -E "$(paste -sd'|' gene_loc_ids.txt)" ../GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff | \
-    grep "protein_id=" | \
-    sed -r 's/.<span class="token italic"><span class="token punctuation">*</span><span class="token content">protein_id=([^;]+).</span><span class="token punctuation">*</span></span>/\1/' | \
-    sort | uniq &gt; protein_ids.txt
-
-<span class="token title important"><span class="token punctuation">#</span> 3. 使用seqkit提取对应的蛋白序列到指定文件</span>
-seqkit grep -f protein_ids.txt ../GCF_902806645.1_cgigas_uk_roslin_v1_protein.faa &gt; proteins_extracted/fst_genes_proteins.faa
-
-<span class="token title important"><span class="token punctuation">#</span> 4. 统计提取到的蛋白数量，确认数量</span>
-grep "^&gt;" proteins_extracted/fst_genes_proteins.faa | wc -l<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<h1 id="5-对提取的蛋白进行注释"><a href="#5-对提取的蛋白进行注释" class="headerlink" title="5.对提取的蛋白进行注释"></a>5.对提取的蛋白进行注释</h1><pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">conda create -n eggnog3_env -c bioconda -c conda-forge eggnog-mapper
-conda activate eggnog3_env
-
-
-emapper.py -h
-
-tar -xvzf eggnog_mapper_data-5.0.2.tar.gz -C ./data<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-<pre class="line-numbers language-markdown" data-language="markdown"><code class="language-markdown">emapper.py -i proteins_extracted/fst_genes_proteins.faa \
-  --output fst_proteins_annotation \
-  --data_dir ./data \
-  -m diamond \
-  --cpu 12 \
-  --override<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-<p>下面是R中的操作，主要进行KEGG和GO分析</p>
-<h1 id="1-对前面注释的基因进行聚类分析"><a href="#1-对前面注释的基因进行聚类分析" class="headerlink" title="1.对前面注释的基因进行聚类分析"></a>1.对前面注释的基因进行聚类分析</h1><p>详细内容见 <a href="http://192.168.1.101/usr/uploads/2025/08/706163015.ipynb">Fst_2.ipynb</a><br><img src="/images/25/2038951127.png" alt="mdvyq9m6.png"><br>结果如上，没有达到我的预期，操作也较麻烦。</p>
-<h1 id="2-构建非模式物种注释包org-Cgigas-eg-db"><a href="#2-构建非模式物种注释包org-Cgigas-eg-db" class="headerlink" title="2.构建非模式物种注释包org.Cgigas.eg.db"></a>2.构建非模式物种注释包org.Cgigas.eg.db</h1><p>详细内容见 <a href="http://192.168.1.101/usr/uploads/2025/08/3120321603.ipynb">Fst_3.ipynb</a> </p>
-<pre><code class="markdown">library(tidyverse)
-library(AnnotationForge)
-library(readxl)
-
-emapper %
-  dplyr::select(GID=query,Gene_Symbol=Preferred_name, 
-                GO=GOs,KO=KEGG_ko,Pathway =KEGG_Pathway, 
-                OG=eggNOG_OGs,Gene_Name =seed_ortholog)
-
-emapper$GID %   #这是只提取有GO注释信息的行，判断的标准时GO信息不是NA，这也就是为什么前面必须将“-”替换为NA，不替换就无法进行有效过滤。
-  mutate(EVIDENCE = 'gigas')     #硬生生加了1列EVIDENCE，全部赋值A,凑数的。
-dim(gene2go)    #查看数据维度。
-#[1] 1523399       3
-
-#提取GID与KO信息，这里只有2列信息
-gene2ko%
- separate_rows(KO, sep = ',', convert = F) %&gt;%
-  dplyr::filter(!is.na(KO))
-dim(gene2ko)
-#[1] 30530     2
-
-#提取GID与Pathway信息，这里只有2列信息
-gene2pathway%
-separate_rows(Pathway, sep = ',', convert = F) %&gt;%
-  dplyr::filter(!is.na(Pathway))
- dim(gene2pathway)
-#[1] 143056      2
-
-#提取GID与Gene_Symbol信息，Gene_Symbol是Preferred_name信息，这里只有2列信息
-gene2symbol%
-  dplyr::filter(!is.na(Gene_Symbol))
-dim(gene2symbol)
-#[1] 4561    2
-
-## 删除 GO ID 中的空格、制表符、换行符
-
-gene2go$GO
-</code></pre>
-]]></content>
       <categories>
         <category>重测序</category>
       </categories>
@@ -2378,42 +2378,6 @@ htmlwidgets::saveWidget(
       </categories>
   </entry>
   <entry>
-    <title>内网穿透</title>
-    <url>/2024/11/21/5/</url>
-    <content><![CDATA[<p>前言<br>对于在本地搭建需求公网的服务，比如nas，游戏联机等。但是又没有公网，这种时候就需要用到内网穿透工具，通过端口转发实现公网访问。市面上的映射基本都是限制流量，要么就是带宽只有1m。</p>
-<p>经过我的不断寻找，终于是找到了一款不限制流量，且基础带宽高的内网穿透工具。以下是他的基本信息：</p>
-<p>免费带宽：国内8m，国外32m（这是我能找到的唯一一款国内国外单独计带宽的映射）<br>免费隧道：4条<br>流量：不限制<br>并发：不限制<br>除此之外访问地址并不会强制变化<br>官网链接</p>
-<blockquote>
-<p><a href="https://www.chmlfrp.cn/">https://www.chmlfrp.cn</a></p>
-</blockquote>
-<p>使用教程<br>这款映射是基于开源软件frp实现的端口映射功能，所以实际使用方法和frp的使用方法一致，复制它生成的配置文件然后运行即可。</p>
-<p>注册/登录<br>没有帐户的首先前往chmlfrp官网注册账户，登录进首页之后是这样的页面：</p>
-<p>创建隧道<br>随后通过菜单前往 “隧道管理 -&gt; 隧道列表” ，然后点击右上角的添加隧道按钮（我已经创建了一个隧道）</p>
-<p>然后选择符合你要求的节点（一般选择离你近，且节点负载较低的节点。节点负载可以在 “隧道管理 -&gt; 节点状态” 查看所有节点的具体负载）</p>
-<p>然后填写相应隧道信息，如果没有特殊需求，一般只需要填写端口类型及内网端口。</p>
-<p>随后点击确定即可成功创建隧道</p>
-<p>启动隧道<br>前往 “隧道管理 -&gt; 软件下载” 页面，下载对应你系统的软件。</p>
-<p>下载好后解压压缩包，一般来讲只需要这三个文件，其他文件可以删除，也可以选择保留。</p>
-<p>随后进入网站的 “隧道管理 -&gt; 配置文件” 页面，在此页面选择你创建隧道的节点，就可以获取到相应的配置文件。将获取的配置文件覆盖到文件夹的frpc.ini中：</p>
-<p>随后保存文件，然后在此文件夹创建一个 “启动.txt” 的文本档案，然后将.txt后缀改为.bat。（注意！此方法仅windows可用，且需要打开显示文件扩展名）</p>
-<p>右键 “启动.bat” ，点击编辑，输入以下代码：</p>
-<p> <code>&nbsp;./frpc -c frpc.ini</code> </p>
-<p>接下来是设置开机后台自启</p>
-<p>新建一个启动服务</p>
-<p>编辑该服务</p>
-<p>重新加载</p>
-<p>启动服务</p>
-<p>开始服务</p>
-<p>查看服务状态</p>
-<p>重启</p>
-<p>在弹出的cmd窗口中直接输入frpc即可启动</p>
-]]></content>
-      <categories>
-        <category>折腾</category>
-        <category>WIFI</category>
-      </categories>
-  </entry>
-  <entry>
     <title>6.筛选组内一致率90%，组间有差异的SNP位点</title>
     <url>/2025/09/03/48/</url>
     <content><![CDATA[<p><strong>分析需求：</strong> </p>
@@ -2698,6 +2662,42 @@ fig  # 在RStudio中查看
       <categories>
         <category>默认分类</category>
         <category>重测序</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>内网穿透</title>
+    <url>/2024/11/21/5/</url>
+    <content><![CDATA[<p>前言<br>对于在本地搭建需求公网的服务，比如nas，游戏联机等。但是又没有公网，这种时候就需要用到内网穿透工具，通过端口转发实现公网访问。市面上的映射基本都是限制流量，要么就是带宽只有1m。</p>
+<p>经过我的不断寻找，终于是找到了一款不限制流量，且基础带宽高的内网穿透工具。以下是他的基本信息：</p>
+<p>免费带宽：国内8m，国外32m（这是我能找到的唯一一款国内国外单独计带宽的映射）<br>免费隧道：4条<br>流量：不限制<br>并发：不限制<br>除此之外访问地址并不会强制变化<br>官网链接</p>
+<blockquote>
+<p><a href="https://www.chmlfrp.cn/">https://www.chmlfrp.cn</a></p>
+</blockquote>
+<p>使用教程<br>这款映射是基于开源软件frp实现的端口映射功能，所以实际使用方法和frp的使用方法一致，复制它生成的配置文件然后运行即可。</p>
+<p>注册/登录<br>没有帐户的首先前往chmlfrp官网注册账户，登录进首页之后是这样的页面：</p>
+<p>创建隧道<br>随后通过菜单前往 “隧道管理 -&gt; 隧道列表” ，然后点击右上角的添加隧道按钮（我已经创建了一个隧道）</p>
+<p>然后选择符合你要求的节点（一般选择离你近，且节点负载较低的节点。节点负载可以在 “隧道管理 -&gt; 节点状态” 查看所有节点的具体负载）</p>
+<p>然后填写相应隧道信息，如果没有特殊需求，一般只需要填写端口类型及内网端口。</p>
+<p>随后点击确定即可成功创建隧道</p>
+<p>启动隧道<br>前往 “隧道管理 -&gt; 软件下载” 页面，下载对应你系统的软件。</p>
+<p>下载好后解压压缩包，一般来讲只需要这三个文件，其他文件可以删除，也可以选择保留。</p>
+<p>随后进入网站的 “隧道管理 -&gt; 配置文件” 页面，在此页面选择你创建隧道的节点，就可以获取到相应的配置文件。将获取的配置文件覆盖到文件夹的frpc.ini中：</p>
+<p>随后保存文件，然后在此文件夹创建一个 “启动.txt” 的文本档案，然后将.txt后缀改为.bat。（注意！此方法仅windows可用，且需要打开显示文件扩展名）</p>
+<p>右键 “启动.bat” ，点击编辑，输入以下代码：</p>
+<p> <code>&nbsp;./frpc -c frpc.ini</code> </p>
+<p>接下来是设置开机后台自启</p>
+<p>新建一个启动服务</p>
+<p>编辑该服务</p>
+<p>重新加载</p>
+<p>启动服务</p>
+<p>开始服务</p>
+<p>查看服务状态</p>
+<p>重启</p>
+<p>在弹出的cmd窗口中直接输入frpc即可启动</p>
+]]></content>
+      <categories>
+        <category>折腾</category>
+        <category>WIFI</category>
       </categories>
   </entry>
   <entry>
@@ -3337,50 +3337,6 @@ tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
       </tags>
   </entry>
   <entry>
-    <title>记一次清空SMART修复群晖报故障的硬盘</title>
-    <url>/2024/12/08/9/</url>
-    <content><![CDATA[<p>事先说明，虽然这篇文章内容大量注水，但是文中涉及的操作有风险，想要照葫芦画瓢的童鞋，请谨慎对待，切记提前备份重要数据。小姐姐们不见了别找我，我这里可不生产小姐姐</p>
-<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
-
-
-<p>好，让我们进入正题，凡事都有个前因后果，先说说起因</p>
-<p>前几天，群晖里一块希捷的2T硬盘报告故障，查看一下SMART信息，发现是End_to_End计数达到阈值，于是把硬盘抽出来接到Windows下用HDTune再次确认，确实见红了 但是用SeaTools扫描，各种长短检测都能通过，希捷这又是什么操作</p>
-<p>HDTune忘记截图了，借用网上的一张图说明一下是哪一项见红HDTune忘记截图了，借用网上的一张图说明一下是哪一项见红<br><img src="/images/9/762531194.png" alt="m4f55w5m.png"><br>最后用MHDD扫描过后，发现硬盘并没有坏块，那么是什么原因导致的B8 End_to_End计数增加呢？各种说法都有，有说是硬盘上的缓存坏掉了，有说是SATA线接触不良导致，有说是缓存到磁盘的数据包校验出错，反正各种说法都有，具体硬盘SMART里如何判断这个值的，估计也只有硬盘厂家知道，所以就不要纠结了。但是就这样淘汰掉一块2T的硬盘？是不是太浪费了？记一次清空SMART修复群晖报故障的硬盘 </p>
-<p>垃圾佬没别的本事，就是爱折腾，于是先尝试了低格整块硬盘，插回群晖还是报故障，看来只能祭出本垃圾佬的终极大杀器USB转TTL神器和给神器属性加成的TTL杜邦线了，没错，就是下面这俩玩意，马粑粑家几块钱一个，随便挑随便选记一次清空SMART修复群晖报故障的硬盘 </p>
-<p>如果你的电脑是第一次插入USB转TTL神器，要先安装驱动，并像下图这样在属性里设置好端口的波特率为38400</p>
-<p>安装好驱动的USB转TTL安装好驱动的USB转TTL</p>
-<p>端口的设置，第一项要设置为 <strong>38400</strong> 端口的设置<br><img src="/images/9/413614975.png" alt="m4f59zrr.png"><br>第一项要设置为 38400</p>
-<p>硬盘上TTL口的接法硬盘上TTL口的接法<br><img src="/images/9/231601982.png" alt="m4f5akz6.png"></p>
-<p>USB转TTL的接法USB转TTL的接法<br><img src="http://hhhh.ywhywhywh.top/usr/uploads/2024/12/4065335586.png" alt="m4f5awqp.png"></p>
-<p>接好了之后，让我们先把USB转TTL插入电脑的USB口，打开你的putty，像下图这样设置，如果你的USB转TTL在电脑上识别出来是COM4或者COM5这样的，请按你自己的实际情况设置COM口，Speed设置为38400，然后点open</p>
-<p>putty设置putty设置</p>
-<p>这时你会看到一个黑麻麻的窗口，什么都没有记一次清空SMART修复群晖报故障的硬盘 别着急，这时我们再接上电源线，记住，只接电源线。</p>
-<p>不要接SATA数据线，不要接SATA数据线，不要接SATA数据线，重要的事情说三遍</p>
-<p>另外，接电源线最好是用电源上引出来的原生SATA电源线，尽量不要用4pin转SATA的电源转换线</p>
-<p>接上电源线后接上电源线后<br><img src="/images/9/2870995132.png" alt="m4f5bgip.png"></p>
-<p>当你接上硬盘电源线后再看Putty会发现有回显了，当停在(P)SATA Reset后，说明硬盘已经启动完成了，这是可以按Ctrl+z激活终端，这时就会进入到希捷硬盘的F3工厂模式</p>
-<p>按下Ctrl+z后进入F3工厂模式按下Ctrl+z后进入F3工厂模式<br><img src="/images/9/1842945658.png" alt="m4f5bqet.png"></p>
-<p>这时如果只是清零SMART那只要输入两个命令/1和N1就能搞定</p>
-<p>输入/1进入1模式<br><img src="/images/9/391565786.png" alt="m4f5c1cz.png"><br>输入/1进入1模式</p>
-<p>在/1模式下输入N1，看到回显Clear SMART is completed，这时硬盘的SMART值已经被清零了，这时你可以拔掉电源线和TTL线，关机把硬盘接回电源线和SATA线（其实你不关机也行，重新接回SATA线和电源线就行，我经常这样干</p>
-<p>这时在我们再用HDTune查看硬盘的SMART值会发现：马达启停次数，硬盘通电时间，马达旋转重试次数，点到点错误计数，接口CRC错误计数，等等等等的很多参数都已经变成0了</p>
-<p>这是我的硬盘清零后的效果这是我的硬盘清零后的效果</p>
-<p>看看我这个硬盘SMART清零后的效果，“启动/停止次数”因为之前清零SMART后拔插过一次电源线，所以这里计数是1</p>
-<p>当然，有一些参数比如：原始读取错误率，磁头飞行时间等这些没有清零，这些都写在SMART的G-list里，要完全清掉需要在F3工厂模式里进入2模式停掉马达电机，清除G表，然后重建SMART和硬盘索引区到硬盘固件内才行</p>
-<p>这硬盘有固件锁<br><img src="/images/9/1367509578.png" alt="m4f5ehrp.png"></p>
-<p>这硬盘有固件锁</p>
-<p>但是如果你像上图我这块硬盘一样，在进入2模式输入Z想停止电机，返回Diagnostic Port Locked的话，说明这块硬盘有固件锁。被锁了固件是无法清零G表的，这也是希捷为了限制一些返厂硬盘和一些奸商通过改写G表来充当新硬盘坑人做的限制。当然，道高一尺魔高一丈，如果你有PC3000的软件和红卡或者MRT的话，固件锁其实也是可以解开的，这时候你就真的可以为所欲为了</p>
-<p>好了，本次折腾到此记录完毕，剩下的自然是把硬盘继续插回群晖里，把小姐姐们请回来</p>
-<p>仅以此文说明硬盘的SMART是可以清零的，硬盘SMART里的G表也是可以清零的，整个SMART是完全可以清除然后重建成刚出厂的样子的，甚至SMART还是可以通过工厂模式改写成你想要的任何样子的，所以二手硬盘水很深很深，请各位谨慎选择</p>
-<p>最后，此文仅以记录过程为目的，请某些头脑比较发达的朋友不要想着用学会了，拿旧硬盘把SMART清零了去坑人，既然有办法清零那肯定是有办法验出来的</p>
-<p>最后的最后，如果你只是本着不想浪费的原则，想清掉SMART上的错误，让这块硬盘继续发挥余热，建议最好清零SMART后的硬盘不要存放重要数据，同时注意时常关注一下硬盘状态，毕竟一块硬盘如果SMART某项报错了，那硬盘肯定是有一些问题的，所以如果有一天你硬盘里的小姐姐们灰飞烟灭了，千万别怪我没有提醒</p>
-<p>哦，还有个温馨提醒，USB转TTL的神器最好是选择CH340G芯片的，别选RS232的，别问我为什么，都是泪</p>
-]]></content>
-      <categories>
-        <category>默认分类</category>
-      </categories>
-  </entry>
-  <entry>
     <title>GPT 学术优化</title>
     <url>/2024/12/06/8/</url>
     <content><![CDATA[<h1 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h1><p>安装方法：直接运行 (Windows, Linux or MacOS)<br>下载项目</p>
@@ -3477,6 +3433,50 @@ tftpput 0x42000000 0x1000000 backup-gk7205v200-nor16m.bin
 <p>python main.py</p>
 </blockquote>
 <p>浏览器输入Running on local URL</p>
+]]></content>
+      <categories>
+        <category>默认分类</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>记一次清空SMART修复群晖报故障的硬盘</title>
+    <url>/2024/12/08/9/</url>
+    <content><![CDATA[<p>事先说明，虽然这篇文章内容大量注水，但是文中涉及的操作有风险，想要照葫芦画瓢的童鞋，请谨慎对待，切记提前备份重要数据。小姐姐们不见了别找我，我这里可不生产小姐姐</p>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+
+<p>好，让我们进入正题，凡事都有个前因后果，先说说起因</p>
+<p>前几天，群晖里一块希捷的2T硬盘报告故障，查看一下SMART信息，发现是End_to_End计数达到阈值，于是把硬盘抽出来接到Windows下用HDTune再次确认，确实见红了 但是用SeaTools扫描，各种长短检测都能通过，希捷这又是什么操作</p>
+<p>HDTune忘记截图了，借用网上的一张图说明一下是哪一项见红HDTune忘记截图了，借用网上的一张图说明一下是哪一项见红<br><img src="/images/9/762531194.png" alt="m4f55w5m.png"><br>最后用MHDD扫描过后，发现硬盘并没有坏块，那么是什么原因导致的B8 End_to_End计数增加呢？各种说法都有，有说是硬盘上的缓存坏掉了，有说是SATA线接触不良导致，有说是缓存到磁盘的数据包校验出错，反正各种说法都有，具体硬盘SMART里如何判断这个值的，估计也只有硬盘厂家知道，所以就不要纠结了。但是就这样淘汰掉一块2T的硬盘？是不是太浪费了？记一次清空SMART修复群晖报故障的硬盘 </p>
+<p>垃圾佬没别的本事，就是爱折腾，于是先尝试了低格整块硬盘，插回群晖还是报故障，看来只能祭出本垃圾佬的终极大杀器USB转TTL神器和给神器属性加成的TTL杜邦线了，没错，就是下面这俩玩意，马粑粑家几块钱一个，随便挑随便选记一次清空SMART修复群晖报故障的硬盘 </p>
+<p>如果你的电脑是第一次插入USB转TTL神器，要先安装驱动，并像下图这样在属性里设置好端口的波特率为38400</p>
+<p>安装好驱动的USB转TTL安装好驱动的USB转TTL</p>
+<p>端口的设置，第一项要设置为 <strong>38400</strong> 端口的设置<br><img src="/images/9/413614975.png" alt="m4f59zrr.png"><br>第一项要设置为 38400</p>
+<p>硬盘上TTL口的接法硬盘上TTL口的接法<br><img src="/images/9/231601982.png" alt="m4f5akz6.png"></p>
+<p>USB转TTL的接法USB转TTL的接法<br><img src="http://hhhh.ywhywhywh.top/usr/uploads/2024/12/4065335586.png" alt="m4f5awqp.png"></p>
+<p>接好了之后，让我们先把USB转TTL插入电脑的USB口，打开你的putty，像下图这样设置，如果你的USB转TTL在电脑上识别出来是COM4或者COM5这样的，请按你自己的实际情况设置COM口，Speed设置为38400，然后点open</p>
+<p>putty设置putty设置</p>
+<p>这时你会看到一个黑麻麻的窗口，什么都没有记一次清空SMART修复群晖报故障的硬盘 别着急，这时我们再接上电源线，记住，只接电源线。</p>
+<p>不要接SATA数据线，不要接SATA数据线，不要接SATA数据线，重要的事情说三遍</p>
+<p>另外，接电源线最好是用电源上引出来的原生SATA电源线，尽量不要用4pin转SATA的电源转换线</p>
+<p>接上电源线后接上电源线后<br><img src="/images/9/2870995132.png" alt="m4f5bgip.png"></p>
+<p>当你接上硬盘电源线后再看Putty会发现有回显了，当停在(P)SATA Reset后，说明硬盘已经启动完成了，这是可以按Ctrl+z激活终端，这时就会进入到希捷硬盘的F3工厂模式</p>
+<p>按下Ctrl+z后进入F3工厂模式按下Ctrl+z后进入F3工厂模式<br><img src="/images/9/1842945658.png" alt="m4f5bqet.png"></p>
+<p>这时如果只是清零SMART那只要输入两个命令/1和N1就能搞定</p>
+<p>输入/1进入1模式<br><img src="/images/9/391565786.png" alt="m4f5c1cz.png"><br>输入/1进入1模式</p>
+<p>在/1模式下输入N1，看到回显Clear SMART is completed，这时硬盘的SMART值已经被清零了，这时你可以拔掉电源线和TTL线，关机把硬盘接回电源线和SATA线（其实你不关机也行，重新接回SATA线和电源线就行，我经常这样干</p>
+<p>这时在我们再用HDTune查看硬盘的SMART值会发现：马达启停次数，硬盘通电时间，马达旋转重试次数，点到点错误计数，接口CRC错误计数，等等等等的很多参数都已经变成0了</p>
+<p>这是我的硬盘清零后的效果这是我的硬盘清零后的效果</p>
+<p>看看我这个硬盘SMART清零后的效果，“启动/停止次数”因为之前清零SMART后拔插过一次电源线，所以这里计数是1</p>
+<p>当然，有一些参数比如：原始读取错误率，磁头飞行时间等这些没有清零，这些都写在SMART的G-list里，要完全清掉需要在F3工厂模式里进入2模式停掉马达电机，清除G表，然后重建SMART和硬盘索引区到硬盘固件内才行</p>
+<p>这硬盘有固件锁<br><img src="/images/9/1367509578.png" alt="m4f5ehrp.png"></p>
+<p>这硬盘有固件锁</p>
+<p>但是如果你像上图我这块硬盘一样，在进入2模式输入Z想停止电机，返回Diagnostic Port Locked的话，说明这块硬盘有固件锁。被锁了固件是无法清零G表的，这也是希捷为了限制一些返厂硬盘和一些奸商通过改写G表来充当新硬盘坑人做的限制。当然，道高一尺魔高一丈，如果你有PC3000的软件和红卡或者MRT的话，固件锁其实也是可以解开的，这时候你就真的可以为所欲为了</p>
+<p>好了，本次折腾到此记录完毕，剩下的自然是把硬盘继续插回群晖里，把小姐姐们请回来</p>
+<p>仅以此文说明硬盘的SMART是可以清零的，硬盘SMART里的G表也是可以清零的，整个SMART是完全可以清除然后重建成刚出厂的样子的，甚至SMART还是可以通过工厂模式改写成你想要的任何样子的，所以二手硬盘水很深很深，请各位谨慎选择</p>
+<p>最后，此文仅以记录过程为目的，请某些头脑比较发达的朋友不要想着用学会了，拿旧硬盘把SMART清零了去坑人，既然有办法清零那肯定是有办法验出来的</p>
+<p>最后的最后，如果你只是本着不想浪费的原则，想清掉SMART上的错误，让这块硬盘继续发挥余热，建议最好清零SMART后的硬盘不要存放重要数据，同时注意时常关注一下硬盘状态，毕竟一块硬盘如果SMART某项报错了，那硬盘肯定是有一些问题的，所以如果有一天你硬盘里的小姐姐们灰飞烟灭了，千万别怪我没有提醒</p>
+<p>哦，还有个温馨提醒，USB转TTL的神器最好是选择CH340G芯片的，别选RS232的，别问我为什么，都是泪</p>
 ]]></content>
       <categories>
         <category>默认分类</category>
@@ -3666,6 +3666,763 @@ MPKVVSRSVVCTDVKDQEEYQGEKPLYVYYCICGQISLILDCPIDKLPMRRRDNARVIDSQKHAHKLTCDPDDIVYLKRP
       <categories>
         <category>蛋白互作</category>
         <category>PyMOL</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>从基因到结构：用PyMOL可视化理解分子对接与突变效应</title>
+    <url>/2025/11/24/latex/</url>
+    <content><![CDATA[<blockquote>
+<p>转载自: <a href="https://blog.csdn.net/NSJim/article/details/109066847">https://blog.csdn.net/NSJim/article/details/109066847</a></p>
+</blockquote>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>若想直接学习LaTeX数学公式，请参见我的另一篇博客：<a href="https://blog.csdn.net/NSJim/article/details/109045914">LaTeX数学公式-详细教程</a> 。</p>
+<p>本篇文章介绍LaTeX的基本用法，并有自己的经验和总结。另外，可以从LaTeX的官方文档进行学习，官方文档大部分是英文文档，链接：<a href="http://www.ctex.org/OnlineDocuments">LaTeX在线文档</a> ，<a href="http://www.ctex.org/documents/packages/index.htm">LaTex宏包文档</a>。</p>
+<p>本篇文章内容包含LaTeX工具，<a href="https://so.csdn.net/so/search?q=LaTeX%E6%A8%A1%E6%9D%BF&amp;spm=1001.2101.3001.7020">LaTeX模板</a>，LaTeX技巧，LaTeX基础，文章架构，字体、大小和颜色，链接，列表，图片，表格，数学公式，算法（伪代码），代码块，论文写作，等等。</p>
+<h2 id="LaTeX工具"><a href="#LaTeX工具" class="headerlink" title="LaTeX工具"></a>LaTeX工具</h2><h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>LaTeX工具分为在线工具和本地工具，本地工具又分为前台和后台。在线工具推荐Overleaf，本地工具推荐前台使用TeXStudio，后台推荐使用TeXLive（后台工具有TeXLive，MikTeX，CTeX等）。</p>
+<p>各个后台的比较：TeXLive有跨平台的性质，适用于Linux、Mac以及Windows系统；TeXLive是完全安装，大小大概为5G左右；每年有一次更新。TeXStudio只适用于Windows系统；它只安装基本的东西，其他任何需要的东西可以动态安装；只有发生重大变化时才会更新。CTeX只适用于Windows系统；默认编码不是UTF-8；已经不再维护，不再更新了，容易出Bug。</p>
+<p>可以根据需求选择合适的本地后台，若觉得安装配置比较麻烦，则可以使用Overleaf在线工具，有网络即可使用，更重要的是国内也可以使用，并支持中文界面。详细使用方法在下文介绍。</p>
+<h3 id="Overleaf（推荐）"><a href="#Overleaf（推荐）" class="headerlink" title="Overleaf（推荐）"></a>Overleaf（推荐）</h3><p>网址：<a href="https://www.overleaf.com/">Overleaf</a> 。<br>注册账户并登录后即可使用。</p>
+<h4 id="使用流程"><a href="#使用流程" class="headerlink" title="使用流程"></a>使用流程</h4><p>点击<code>New Project</code>后还可以使用<code>Templates</code>模板，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/39fa00e68d7ffbdd5c3d3167e023971d.png" alt="在这里插入图片描述"><br>新建项目后，左边为源代码视图，右边为预览视图。可以点击左上角的<code>Menu</code>下载源文件，PDF文件，或设置编译器，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/8e7851a57992dd06a3b1b55c7205a34f.png" alt="在这里插入图片描述"><br>展开<code>Recompile</code>按钮可以设置自动编译，并忽略语法检查，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/68becbf190957cc52ce795c0108f9b69.png" alt="在这里插入图片描述"></p>
+<h4 id="切换界面语言"><a href="#切换界面语言" class="headerlink" title="切换界面语言"></a>切换界面语言</h4><p><strong>方法1</strong></p>
+<p>点击Overleaf界面左下角的国旗标志可以切换界面语言，切换成中文的操作如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/1393c3043d906b6aa79b2167d8df5a98.png" alt="在这里插入图片描述"></p>
+<p><strong>方法2</strong></p>
+<p>直接更改网址如下：<code>https://cn.overleaf.com/project</code><br>即可切换界面语言为中文。</p>
+<h4 id="更改编译器"><a href="#更改编译器" class="headerlink" title="更改编译器"></a>更改编译器</h4><p>在项目<code>菜单</code>的<code>设置</code>中可以更改，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/c320de6eb4aced8679f56c80c5056e69.png" alt="在这里插入图片描述"></p>
+<h4 id="文档定位"><a href="#文档定位" class="headerlink" title="文档定位"></a>文档定位</h4><p>在项目中线顶部有2个箭头样式的按钮，可以使tex文档和PDF文档相互定位，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/769778c3d5c145f7f6b3f37d8cf3e21d.png" alt="在这里插入图片描述"><br>补充：<br>左键双击PDF文档的特定位置，tex文档会跳转到对应位置。</p>
+<h4 id="快捷键"><a href="#快捷键" class="headerlink" title="快捷键"></a>快捷键</h4><p>Overleaf内置了很多快捷键，本人分类为常用快捷键和全部快捷键如下：</p>
+<p><strong>常用快捷键</strong><br><code>Ctrl+B</code>：粗体<br><code>Ctrl+I</code>：斜体<br><code>Ctrl+/</code>：注释<br><code>Ctrl+Z</code>：撤销<br><code>Ctrl+Y</code>：重做<br><code>Ctrl+F</code>：查找和替换<br><code>Ctrl+Home</code>：到文档顶部<br><code>Ctrl+End</code>：到文档底部<br><code>Ctrl+S</code>：重新编译<br><code>Ctrl+Enter</code>：重新编译</p>
+<p><strong>全部快捷键</strong><br>可以在Overleaf项目中点击<code>菜单</code>中的<code>快捷键</code>选项查看，如下图：</p>
+<p>2021年5月<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/c738ce43b0fa42d886df60b770a82c5a.png" alt="在这里插入图片描述"></p>
+<h3 id="TeXLive和TeXStudio"><a href="#TeXLive和TeXStudio" class="headerlink" title="TeXLive和TeXStudio"></a>TeXLive和TeXStudio</h3><p>安装及配置详情可参见其他人的博客：<a href="https://blog.csdn.net/zywhehe/article/details/83113214">LaTeX新手入门以及TeXlive和TeXstudio的安装使用</a> 。</p>
+<p>本人一般使用在线工具Overleaf，因此个人教程暂略，后期若安装本地环境再进行完善。</p>
+<h2 id="LaTeX模板"><a href="#LaTeX模板" class="headerlink" title="LaTeX模板"></a>LaTeX模板</h2><p>LaTeX有很多模板，可以直接使用，方便用户排版。</p>
+<p>Overleaf中一些常用模板，包含Project，Resume，Homework，Letter，Memo，Poster，Book，Journal，Thesis。</p>
+<p>用户可以直接在Overleaf中使用，也可以下载到本地进行使用。</p>
+<h2 id="LaTeX技巧"><a href="#LaTeX技巧" class="headerlink" title="LaTeX技巧"></a>LaTeX技巧</h2><h3 id="LaTeX"><a href="#LaTeX" class="headerlink" title="LaTeX"></a>LaTeX</h3><p>LaTeX编辑器中，内置了一个语句，用来展现LaTeX的Logo，代码和效果如下：</p>
+<p>代码：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\LaTex</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cf2da4b179a665908abac9dadc694a0b.png" alt="在这里插入图片描述"></p>
+<h3 id="中文支持"><a href="#中文支持" class="headerlink" title="中文支持"></a>中文支持</h3><p>无论是在线工具还是本地工具，LaTeX默认都是不支持中文的，因此需要在源代码和配置上稍作修改才可以让LaTeX支持中文，步骤如下：</p>
+<ol>
+<li><p>编译器配置：<code>XeLaTeX</code>，可在Overleaf的<code>菜单 - 编译器</code>处修改。</p>
+</li>
+<li><p><code>tex</code>文件编码：<code>utf-8</code>，一般默认为<code>utf-8</code>编码，无需修改。</p>
+</li>
+<li><p>代码开头添加：</p>
+<p>方式1（推荐）：添加宏包</p>
+<pre class="line-numbers language-none"><code class="language-none">\usepackage[UTF8]{ctex}<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>方式2：设置文档类型</p>
+<pre class="line-numbers language-none"><code class="language-none">\documentclass[UTF8]{ctexart}<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+</ol>
+<h3 id="首行缩进"><a href="#首行缩进" class="headerlink" title="首行缩进"></a>首行缩进</h3><h4 id="进行缩进"><a href="#进行缩进" class="headerlink" title="进行缩进"></a>进行缩进</h4><p>若LaTeX默认没有段首缩进，因此要首行缩进需要进行修改。在导言区加入如下代码（距离单位一般为<code>pt</code>或<code>em</code>，<code>pt</code>是绝对单位；<code>em</code>是相对单位，表示1个中文字符宽度；本人比较喜欢<code>em</code>）：</p>
+<pre class="line-numbers language-none"><code class="language-none">% 使用indentfirst宏包
+\usepackage{indentfirst}
+% 设置首行缩进距离
+\setlength{\parindent}{2em}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="不进行缩进"><a href="#不进行缩进" class="headerlink" title="不进行缩进"></a>不进行缩进</h4><p>若LaTeX已经是段首缩进的，因此要段首不进行缩进需要进行修改。</p>
+<p><strong>方式1（推荐）：</strong> 单段取消缩进，放在段首即可。</p>
+<pre class="line-numbers language-none"><code class="language-none">\noindent<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><strong>方式2：</strong> 全局取消缩进，在想缩进的段落再进行缩进。<br>放在导言区：</p>
+<pre class="line-numbers language-none"><code class="language-none">\setlength{\parindent}{0pt}<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>放在想要缩进的段落：</p>
+<pre class="line-numbers language-none"><code class="language-none">\hspace*{2em}段落\\<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="显示下划线"><a href="#显示下划线" class="headerlink" title="显示下划线"></a>显示下划线</h3><p><strong>方法1</strong><br>使用转义字符：<code>\_</code></p>
+<p><strong>方法2</strong><br>使用LaTeX命令：<code>\textunderscore</code></p>
+<p><strong>方法3</strong><br>导入宏包：<code>\usepackage{underscore}</code></p>
+<p>例子1（方法1和2）：</p>
+<pre class="line-numbers language-none"><code class="language-none">a\_b
+
+a\textunderscore b<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/2846c8cfab95dca6c9623d2d7115070c.png" alt="在这里插入图片描述"></p>
+<p>例子2（方法3）：</p>
+<pre class="line-numbers language-none"><code class="language-none">\usepackage{underscore}
+
+a_b<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/188304638c7a9e1900c239e3639c9a20.png" alt="在这里插入图片描述"></p>
+<h2 id="LaTeX基础"><a href="#LaTeX基础" class="headerlink" title="LaTeX基础"></a>LaTeX基础</h2><h3 id="导言区与正文区"><a href="#导言区与正文区" class="headerlink" title="导言区与正文区"></a>导言区与正文区</h3><p>在<code>begin{document}</code>和<code>end{document}</code>之间的就是正文区，而在这之前的就是导言区。</p>
+<h3 id="文档类型"><a href="#文档类型" class="headerlink" title="文档类型"></a>文档类型</h3><p><code>\documentclass{article}</code>是确定了文档类型为<code>article</code>，一般LaTeX提供三种基本文档，此外两种是<code>report</code>和<code>book</code>。三者分别用来写小篇幅的文章、中篇幅的报告和长篇幅的书籍。</p>
+<h3 id="宏包"><a href="#宏包" class="headerlink" title="宏包"></a>宏包</h3><p>LaTeX导言区可以导入各种宏包，以使用相应宏包的功能，一条语句中可以导入多个宏包，语法如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">\usepackage{宏包1, 宏包2}<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>常用的宏包：<br>ctex：中文支持<br>amsmath：<a href="https://so.csdn.net/so/search?q=latex%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F&amp;spm=1001.2101.3001.7020">latex数学公式</a>支持<br>graphicx：插入图片<br>algorithm和algorithmic：算法排版<br>listings：插入代码块<br>等等</p>
+<h3 id="编译器"><a href="#编译器" class="headerlink" title="编译器"></a>编译器</h3><p>LaTeX的编译器有<code>pdfLaTeX</code>，<code>LaTeX</code>，<code>XeLaTeX</code>，<code>LuaLaTeX</code>，在设置中可以进行更改。Overleaf默认的编译器为<code>pdfLaTeX</code>，因此要使其支持中文需要改为<code>XeLaTeX</code>。</p>
+<h3 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h3><p>Overleaf等工具中可以使用快捷键<code>Ctrl+/</code>来批量注释或批量取消注释。</p>
+<h4 id="单行注释"><a href="#单行注释" class="headerlink" title="单行注释"></a>单行注释</h4><pre class="line-numbers language-none"><code class="language-none">% 注释内容<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="多行注释"><a href="#多行注释" class="headerlink" title="多行注释"></a>多行注释</h4><p>方式1（推荐）：</p>
+<pre class="line-numbers language-none"><code class="language-none">\iffalse
+注释内容
+\fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>方式2：<br>使用<code>\usepackage{verbatim}</code>宏包</p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{comment}
+注释内容
+\end{comment} <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="英文引号"><a href="#英文引号" class="headerlink" title="英文引号"></a>英文引号</h3><p>在LaTeX中输入英文引号时，导出的PDF显示的是顺撇的，如下：</p>
+<p>代码：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">'English'
+
+''English''<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/d29e424c7071faf291abdd38c81f5202.png" alt="在这里插入图片描述"><br>要想正确输入英文引号，把左侧的引号用 ` 代替即可，如下：</p>
+<p>代码：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">`English'
+
+``English''<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/29c080f321f400dd38e741a4834d769a.png" alt="在这里插入图片描述"></p>
+<h3 id="空格"><a href="#空格" class="headerlink" title="空格"></a>空格</h3><p><strong>LaTeX支持</strong></p>
+<table>
+<thead>
+<tr>
+<th>空格方式</th>
+<th>源代码</th>
+<th>显示</th>
+<th>宽度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>quad空格</td>
+<td>a \quad b</td>
+<td>a b a \quad b<em>a**b</em></td>
+<td>1个中文字符的宽度</td>
+</tr>
+<tr>
+<td>qquad空格</td>
+<td>a \qquad b</td>
+<td>a b a \qquad b<em>a**b</em></td>
+<td>2个中文字符的宽度</td>
+</tr>
+<tr>
+<td>大空格</td>
+<td>a\ b</td>
+<td>a  b a\ b<em>a</em> <em>b</em></td>
+<td>1/3字符宽度</td>
+</tr>
+<tr>
+<td>没有空格</td>
+<td>ab</td>
+<td>a b ab<em>ab</em></td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>LaTeX数学公式支持</strong></p>
+<p>除上述空格以外，还支持如下空格：</p>
+<table>
+<thead>
+<tr>
+<th>空格方式</th>
+<th>源代码</th>
+<th>显示</th>
+<th>宽度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>中等空格</td>
+<td><code>$a\;b$</code></td>
+<td>a    b a;b<em>a**b</em></td>
+<td>2/7字符宽度</td>
+</tr>
+<tr>
+<td>小空格</td>
+<td><code>$a\,b$</code></td>
+<td>a   b a,b<em>a**b</em></td>
+<td>1/6字符宽度</td>
+</tr>
+<tr>
+<td>紧贴</td>
+<td><code>$a\!b$</code></td>
+<td>a  ⁣ b a!b<em>a**b</em></td>
+<td>缩进1/6字符宽度</td>
+</tr>
+</tbody></table>
+<h3 id="换行"><a href="#换行" class="headerlink" title="换行"></a>换行</h3><p><code>\\</code>：换行，一般在一行的最后写。<br><code>\\[offset]</code>：换行，并且与下一行的行间距为原来行间距+offset，offset单位一般是<code>em</code>或<code>pt</code>。</p>
+<p><strong>注意：</strong><br>若要在表格单元格内换行，无法使用<code>\\</code>进行换行，需要在导言区导入<code>\usepackage{makecell}</code>宏包进行换行，详情见<strong>表格</strong>章节。</p>
+<h3 id="换段"><a href="#换段" class="headerlink" title="换段"></a>换段</h3><p>源代码空一行即可进行换段（推荐）。<br>也可以使用代码<code>\par</code>进行换段，一般在一段的最后写。</p>
+<h3 id="新页"><a href="#新页" class="headerlink" title="新页"></a>新页</h3><p>使用<code>\newpage</code>进行换页，一般在一页的最后写。</p>
+<h3 id="转义字符"><a href="#转义字符" class="headerlink" title="转义字符"></a>转义字符</h3><p>写法：<code>\+字符</code></p>
+<p>用途：当某些特殊字符与LaTeX语法冲突时，使用转义字符可以使字符强制显示。</p>
+<p>示例：<code>\%</code>，可以显示出百分号，而不是注释的含义；<code>\_</code>，显示下划线，而不是下标；<code>\^</code>显示符号本身，而不是上标。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\%home\_name\%=honor<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f8c4a3625d492de03606da8791546a8d.png" alt="在这里插入图片描述"><br>补充：若想不使用转义字符显示下划线，有2种方法，详情请见 <strong>LaTeX技巧-显示下划线</strong> 章节。</p>
+<h3 id="可选参数-htbp"><a href="#可选参数-htbp" class="headerlink" title="可选参数[htbp]"></a>可选参数[htbp]</h3><p>LaTeX插入图片、表格等元素时，第一行后面有一个可选参数<code>[htbp]</code>，例如，<code>\begin{figure}[htbp]</code>。</p>
+<p><code>[htbp]</code>是个可选参数项，允许用户指定图片、表格等元素被放置的位置。这一可选参数项可以是下列字母的任意组合。</p>
+<p>h(here): 当前位置；将图形放置在 正文文本中给出该图形环境的地方。如果本页所剩的页面不够， 这一参数将不起作用。<br>t(top): 顶部；将图形放置在页面的顶部。<br>b(bottom): 底部；将图形放置在页面的底部。<br>p(page): 浮动页；将图形放置在一只允许有浮动对象的页面上。</p>
+<p>注意：在使用这些参数时：</p>
+<ol>
+<li>如果在图形环境中没有给出上述任一参数，则缺省为 <code>[tbp]</code>。</li>
+<li>给出参数的顺序不会影响到最后的结果。因为在考虑这些参数时LaTeX总是尝试以 <code>h-t-b-p</code> 的顺序来确定图形的位置。所以 <code>[hb]</code> 和 <code>[bh]</code> 都以<code>h-b</code> 的顺序来排版。</li>
+<li>给出的参数越多，LaTeX的排版结果就会越好。<code>[htbp], [tbp], [htp], [tp]</code> 这些组合得到的效果不错，<code>[h]</code>也是常用的选择。</li>
+</ol>
+<h2 id="文章架构"><a href="#文章架构" class="headerlink" title="文章架构"></a>文章架构</h2><h3 id="纸张布局"><a href="#纸张布局" class="headerlink" title="纸张布局"></a>纸张布局</h3><pre class="line-numbers language-none"><code class="language-none">% 设置页面的环境,a4纸张大小，左右上下边距信息
+\usepackage[a4paper,left=10mm,right=10mm,top=15mm,bottom=15mm]{geometry}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h3 id="标题级别"><a href="#标题级别" class="headerlink" title="标题级别"></a>标题级别</h3><p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\section{一级标题}
+\subsection{二级标题} 
+\subsubsection{二级标题} <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f8d4d5a7983e97f44e4187d8efbeed02.png" alt="在这里插入图片描述"></p>
+<h3 id="标题、作者、时间"><a href="#标题、作者、时间" class="headerlink" title="标题、作者、时间"></a>标题、作者、时间</h3><p>注意：<code>\maketitle</code>这一行一定要在<code>\begin{document}</code>的后面，否则LaTeX会判定为语法错误。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\documentclass{article} % article 文档
+\usepackage[UTF8]{ctex}  % 使用宏包(为了能够显示汉字)
+% 设置页面的环境,a4纸张大小，左右上下边距信息
+\usepackage[a4paper,left=10mm,right=10mm,top=15mm,bottom=15mm]{geometry}
+
+\title{NSJim的文章}  % 文章标题
+\author{NSJim}   % 作者的名称
+\date{\today}       % 当天日期
+
+% 正文开始
+\begin{document}
+
+\maketitle          % 添加这一句才能够显示标题等信息
+
+% 正文结束
+\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/15f00dd995f7af1f8d900a79bb703e08.png" alt="在这里插入图片描述"></p>
+<h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>在<code>\maketitle</code>下添加内容，如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">\maketitle          %添加这一句才能够显示标题等信息
+%摘要开始部分
+\begin{abstract}
+该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。
+\end{abstract}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://i-blog.csdnimg.cn/blog_migrate/cbcad212c6cd56d55f4fb375a1b0448a.png#pic_center" alt="在这里插入图片描述"></p>
+<h3 id="引用、脚注"><a href="#引用、脚注" class="headerlink" title="引用、脚注"></a>引用、脚注</h3><p>引用：写在<code>\begin{quote}</code>和<code>\end{quote}</code>之间。<br>脚注：在需要添加脚注的文字后添加<code>\footnote{脚注内容}</code>即可。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">西游记\footnote{中国古典四大名著之一}小说开头写道：
+\begin{quote}
+{\kaishu 东胜神洲有一花果山，山顶一石，受日月精华，生出一石猴。之后因为成功闯入水帘洞，被花果山诸猴拜为“美猴王”。}
+\end{quote}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/04545b613491aa492b626a0d83121ae0.png" alt="在这里插入图片描述"><br><img src="https://i-blog.csdnimg.cn/blog_migrate/f46fd5f2a0548164c88ed243e5fdc7d3.png" alt="在这里插入图片描述"></p>
+<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p>标题设置：一级标题<code>\section{}</code>，耳机标题<code>\subsection{}</code>，三级标题<code>\subsubsection{}</code>；<br>段落设置：在一段的最后添加<code>\par</code>代表一段的结束；<br>目录设置：在<code>\begin{document}</code>内容中添加：<code>\tableofcontents</code></p>
+<p>以下为一个示例：</p>
+<pre class="line-numbers language-none"><code class="language-none">\documentclass{article} % article 文档
+\usepackage[UTF8]{ctex}  % 使用宏包(为了能够显示汉字)
+% 设置页面的环境,a4纸张大小，左右上下边距信息
+\usepackage[a4paper,left=10mm,right=10mm,top=15mm,bottom=15mm]{geometry}
+
+\title{NSJim的文章}  % 文章标题
+\author{NSJim}   % 作者的名称
+\date{\today}       % 当天日期
+
+% 正文开始
+\begin{document}
+
+\maketitle          % 添加这一句才能够显示标题等信息
+
+% 生成目录设置
+\renewcommand{\contentsname}{目录} %将content转为目录
+\tableofcontents
+
+% 摘要开始部分
+\begin{abstract}
+该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。
+\end{abstract}
+
+% 标题开始
+\section{一级标题1}
+第一段一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容。\par
+第二段一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容。
+
+\subsection{二级标题1.1}
+二级标题下的内容。
+
+\subsubsection{三级标题下的内容1.1.1}
+三级标题下的内容。
+
+\section{一级标题2}
+一级标题2中的内容
+
+% 正文结束
+\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/77ea4dbcda2ccf25b515a55207a7dbe6.png" alt="在这里插入图片描述"></p>
+<h2 id="字体，大小，颜色"><a href="#字体，大小，颜色" class="headerlink" title="字体，大小，颜色"></a>字体，大小，颜色</h2><p><strong>字体</strong></p>
+<p>使用代码：<code>{\字体 内容}</code>（推荐），有时可使用<code>\字体{内容}</code>（不推荐，容易出问题）。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">{\songti 宋体}
+{\heiti 黑体}
+{\fangsong 仿宋}
+{\kaishu 楷书}
+
+{\bf 粗体}
+{\it 斜体}
+{\sl 斜体}
+
+\textbf{粗体}
+\textit{斜体}
+\textsl{斜体}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/1de6158b0f9a068c3291d4aa4bc02da2.png" alt="在这里插入图片描述"></p>
+<p><strong>大小</strong></p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">{\tiny Hello} \\
+{\scriptsize Hello} \\
+{\footnotesize Hello} \\
+{\small Hello} \\
+{\normalsize Hello} \\
+{\large Hello} \\<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/fadf838e2821f43c676724fdd1136b2f.png" alt="在这里插入图片描述"><br><strong>颜色</strong></p>
+<p>需要导入宏包<code>\usepackage{xcolor}</code></p>
+<pre class="line-numbers language-none"><code class="language-none">\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage{color,xcolor}
+
+\setlength{\parindent}{0pt}
+
+% 预先定义好的颜色： red, green, blue, white, black, yellow, gray, darkgray, lightgray, brown, cyan, lime, magenta, olive, orange, pink, purple, teal, violet.
+
+% 定义颜色的5种方式
+\definecolor{light-gray}{gray}{0.95}    % 1.灰度
+\definecolor{orange}{rgb}{1,0.5,0}      % 2.rgb
+\definecolor{orange}{RGB}{255,127,0}    % 3.RGB
+\definecolor{orange}{HTML}{FF7F00}      % 4.HTML
+\definecolor{orange}{cmyk}{0,0.5,1,0}   % 5.cmyk
+
+\begin{document}
+
+% \pagecolor{yellow}          %设置背景色为黄色
+
+% 使用颜色的常用方式
+\textcolor{green}{绿色} % textcolor+颜色
+\color{orange}{橙色} % color+颜色
+\textcolor[rgb]{0,1,0}{绿色} % textcolor+rgb
+\color[rgb]{1,0,0}{红色} % color+rgb
+
+% 使用底色
+\colorbox{red}{\color{black}红底黑字}
+\fcolorbox{red}{green}{红框绿底} % 框色+背景色
+
+\end{document} <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/00bb12343ad32a159d28d7a08f3e1acc.png" alt="在这里插入图片描述"></p>
+<h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><p>导入宏包：<code>\usepackage{url}</code><br>插入超链接：<code>\url{www.baidu.com}</code></p>
+<h2 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h2><p>未完，待续。</p>
+<h2 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h2><h3 id="可选参数-htbp-1"><a href="#可选参数-htbp-1" class="headerlink" title="可选参数[htbp]"></a>可选参数[htbp]</h3><p>LaTeX插入图片、表格等元素时，第一行后面有一个可选参数<code>[htbp]</code>，例如，<code>\begin{figure}[htbp]</code>。</p>
+<p><code>[htbp]</code>是个可选参数项，允许用户指定图片、表格等元素被放置的位置。这一可选参数项可以是下列字母的任意组合。</p>
+<p>h(here): 当前位置；将图形放置在 正文文本中给出该图形环境的地方。如果本页所剩的页面不够， 这一参数将不起作用。<br>t(top): 顶部；将图形放置在页面的顶部。<br>b(bottom): 底部；将图形放置在页面的底部。<br>p(page): 浮动页；将图形放置在允许有浮动对象的页面上。</p>
+<p>注意：在使用这些参数时：</p>
+<ol>
+<li>如果在图形环境中没有给出上述任一参数，则缺省为 <code>[tbp]</code>。</li>
+<li>给出参数的顺序不会影响到最后的结果。因为在考虑这些参数时LaTeX总是尝试以 <code>h-t-b-p</code> 的顺序来确定图形的位置。所以 <code>[hb]</code> 和 <code>[bh]</code> 都以<code>h-b</code> 的顺序来排版。</li>
+<li>给出的参数越多，LaTeX的排版结果就会越好。<code>[htbp], [tbp], [htp], [tp]</code> 这些组合得到的效果不错，<code>[h]</code>也是常用的选择。</li>
+</ol>
+<h3 id="单张图片"><a href="#单张图片" class="headerlink" title="单张图片"></a>单张图片</h3><p>需要导入宏包：<code>\usepackage{graphicx}</code></p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">%开始插入图片
+\begin{figure}[htbp] % htbp代表图片插入位置的设置
+\centering %图片居中
+%添加图片；[]中为可选参数，可以设置图片的宽高；{}中为图片的相对位置
+\includegraphics[width=6cm]{image.jpg}
+\caption{达尔文游戏} % 图片标题
+\label{pic1} % 图片标签
+\end{figure}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/c87040c5dd7b87907aee4250f7c951c2.png" alt="在这里插入图片描述"></p>
+<h3 id="多张图片"><a href="#多张图片" class="headerlink" title="多张图片"></a>多张图片</h3><p><strong>并排插入两张图片</strong><br>方式1：图片编号增加1<br>两张图片公用一个大的图题，图片的编号只增加一个。</p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{figure}[ht]
+\centering
+\subfigure[11-1]{               %小图题的名称
+\includegraphics[width=4cm]{11-1}}
+\hspace{10pt}  %2张图片的水平距离
+\subfigure[11-2]{
+\includegraphics[width=4cm]{11-2}}
+\caption{两张图片公用的图题}
+\end{figure}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>方式2：图片编号增加2<br>每张图片有自己的图题，这种方法会使LaTeX中图片的编号顺序向后增加。</p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{figure}[h]
+\begin{minipage}[t]{0.45\linewidth}
+\centering
+\includegraphics[width=5.5cm,height=3.5cm]{10}
+\caption{第一张图片的图题.}
+\end{minipage}
+\begin{minipage}[t]{0.45\linewidth}        %图片占用一行宽度的45%
+\hspace{10pt}
+\includegraphics[width=5.5cm,height=3.5cm]{11}
+\caption{第二章图片的图题.}
+\end{minipage}
+\end{figure}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>并排插入多张图片</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{figure}
+\centering
+{
+\includegraphics[width=2.5cm]{10-1}}
+\hspace{10pt}    %每张图片水平距离
+{
+\includegraphics[width=2.5cm]{10-2}}
+\hspace{10pt}
+{
+\includegraphics[width=2.5cm]{10-3}}
+\hspace{10pt}
+{
+\includegraphics[width=2.5cm]{10-4}}
+\hspace{10pt}
+\caption{并排插入4张图片}
+\end{figure}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>竖排插入多张图片</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{figure}[h]
+\centering
+\subfigure[场景1]{
+\begin{minipage}[t]{0.45\textwidth}
+\centering
+\includegraphics[width=0.8\textwidth]{wolf2} \\
+\vspace{10pt} %2张图片的垂直距离
+\includegraphics[width=0.8\textwidth]{wolf3}
+\end{minipage}
+\end{figure}
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="表格"><a href="#表格" class="headerlink" title="表格"></a>表格</h2><p>技巧：若不想手动输入LaTeX语法生成表格，可以使用<a href="https://www.tablesgenerator.com/">在线生成LaTeX表格</a>的网站。可以从Excel里面粘贴或导入，可以实现单元格合并，而且会在合并行或合并列的时候提醒要引入对应的宏包。<br>网址：<code>https://www.tablesgenerator.com/</code></p>
+<p>当然，也可以使用LaTeX语法生成表格，示例如下：</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{table}[htbp] % htbp代表表格浮动位置
+% 表格居中
+\centering
+% 添加表头
+\caption{变量表}
+% 创建table环境
+\begin{tabular}{|cc|c|} % 3个c代表3列都居中，也可以设置l或r，|代表竖线位置
+% 表格的输入
+\hline  % 一条水平线
+x &amp; y &amp; z \\ % \\为换行符
+\hline
+11 &amp; 22 &amp; 33 \\
+\hline
+\end{tabular}
+\end{table}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/13dbb39eebe7b30121c961dd55dabe4f.png" alt="在这里插入图片描述"></p>
+<p><strong>表格单元格内换行</strong><br>需要使用<code>\usepackage{makecell}</code>宏包。将单元格的内容替换为<code>\makecell{XX\\XXXX}</code>，<code>\makecell{}</code>中的<code>\\</code>可以在单元格内换行。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{table}[htbp] % htbp代表表格浮动位置
+\centering
+\caption{变量表}
+\begin{tabular}{|cc|c|}
+\hline
+x &amp; y &amp; z \\
+\hline
+11 &amp; \makecell{Long\\text} &amp; 33 \\
+\hline
+\end{tabular}
+\end{table}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5fd5b3942e1bd198ea35063764963d4f.png" alt="在这里插入图片描述"></p>
+<h2 id="数学公式"><a href="#数学公式" class="headerlink" title="数学公式"></a>数学公式</h2><h3 id="公式支持"><a href="#公式支持" class="headerlink" title="公式支持"></a>公式支持</h3><p>LaTeX要输入数学公式需要导入宏包<code>\usepackage{amsmath}</code>；若要对公式的字体进行修改，还需要引入宏包<code>\usepackage{amsfonts}</code>。</p>
+<p>LaTeX数学公式的各种细节请参见我的另一篇博客：<a href="https://blog.csdn.net/NSJim/article/details/109045914"><em>LaTeX数学公式-详细教程</em></a> 。</p>
+<ol>
+<li>官方文档：<br>传送门：<a href="https://math.meta.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference"><em>官方文档</em></a><br>网址：<code>https://math.meta.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference</code></li>
+<li>中文教程：<br>传送门：<a href="https://www.jianshu.com/p/25f0139637b7"><em>中文教程</em></a><br>网址：<code>https://www.jianshu.com/p/25f0139637b7</code></li>
+<li>技巧：使用<a href="https://private.codecogs.com/latex/eqneditor.php"><em>在线LaTeX公式编辑器</em></a>，来生成LaTeX公式代码，然后复制到Markdown编辑器中，并在两边加上<code>$</code>或<code>$$</code>即可。<br>在线LaTeX公式编辑器网址：<code>https://private.codecogs.com/latex/eqneditor.php</code></li>
+<li>插入公式<br>左对齐公式（行中公式）：<code>$数学公式$</code><br>居中公式（独立公式）：<code>$$数学公式$$</code><br>注意：使用<code>$</code>行中公式时，<code>数学公式</code>与<code>$</code>连接处不要有空格，否则公式不会显示；使用<code>$$</code>居中公式时，<code>数学公式</code>与<code>$$</code>连接处可以有空格。即<code>$ 数学公式 $</code> 不显示公式。</li>
+<li>注释：<code>%</code>为单行注释，例子详见后文。</li>
+<li>细节：请参见我的另一篇博客：<a href="https://blog.csdn.net/NSJim/article/details/109045914"><em>LaTeX数学公式-详细教程</em></a> 。</li>
+</ol>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ol>
+<li>使用<code>$</code>，即行中公式时，<code>数学公式</code>与<code>$</code>连接处不要有空格，否则公式不会显示。</li>
+<li>使用<code>$$</code>，即居中公式时，<code>数学公式</code>与<code>$$</code>连接处可以有空格。即<code>$ 数学公式 $</code> 不显示公式。</li>
+<li>使用<code>$$</code>时，上方要空一行。</li>
+<li><code>=</code>不要单独打一行，否则可能会出错。</li>
+<li><code>+ - * / = ( ) | , . '</code>等符号直接在<code>$</code>或<code>$$</code>之间输入即可识别。</li>
+</ol>
+<h3 id="公式编号"><a href="#公式编号" class="headerlink" title="公式编号"></a>公式编号</h3><h4 id="自动编号"><a href="#自动编号" class="headerlink" title="自动编号"></a>自动编号</h4><p>使用<code>\begin{equation}</code>和<code>\end{equation}</code>进行公式输入，要同时使用，且编号不能够修改。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{equation}
+a^2+b^2=c^2
+\end{equation}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/dad5baa00648089323340c3fbc5f4ff2.png" alt="在这里插入图片描述"></p>
+<h4 id="手动编号"><a href="#手动编号" class="headerlink" title="手动编号"></a>手动编号</h4><p>在公式末尾使用<code>\tag{编号}</code>来实现公式手动编号，大括号内的内容可以自定义。需要使用<code>\usepackage{amsmath}</code>宏包，不能写在<code>$</code>或<code>$$</code>中，会报错。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{equation}
+a^2+b^2=c^2
+\tag{2}
+\end{equation}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/df680e3efbedf6adbba35b02e83c8fdb.png" alt="在这里插入图片描述"></p>
+<h2 id="自定义标题样式"><a href="#自定义标题样式" class="headerlink" title="自定义标题样式"></a>自定义标题样式</h2><p>在导言区使用<code>\newtheorem{example}{Example}[section]</code>可以自定义标题样式，例子如下。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\newtheorem{example}{Example}[section] % 自定义example样式
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\begin{example}{Test1}
+
+Hello world!
+
+\end{example}
+
+\begin{example}{Test2}
+
+Hello world!
+
+\end{example}
+
+\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/d67ce3fb6d9fc0080c104b98f20344c7.png" alt="在这里插入图片描述"></p>
+<h2 id="算法（伪代码）"><a href="#算法（伪代码）" class="headerlink" title="算法（伪代码）"></a>算法（伪代码）</h2><p>需要使用<code>\usepackage{algorithm}</code>和<code>\usepackage{algorithmic}</code>宏包，<code>if</code>、<code>for</code>等关键字要按照规范书写，如<code>\IF \ENDIF</code>。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage{algorithm} % 排版算法
+\usepackage{algorithmic} % 排版算法
+
+\title{Algorithm}
+\author{NSJim Green}
+\date{October 2020}
+
+\begin{document}
+
+\maketitle
+
+\section{Algorithm 1}
+
+\begin{algorithm}
+\caption{CheckSum(A,x)} %算法标题
+\label{alg2} %标签
+\begin{algorithmic} %算法开始
+\STATE {\bf Input:} An array A and a value x  %也可以用\textbf{Input:}
+\STATE {\bf Output:} A bool value show if there is two elements in A whose sum is x
+\STATE A $\gets$ SORT(A)
+\STATE n $\gets$ length(n)
+\FOR{i $\gets$ 0 to n}
+    \IF{Binary-search(A,x-A[i],1,n)}
+    \STATE return true
+    \ENDIF
+\ENDFOR
+\STATE return false
+\end{algorithmic}
+\end{algorithm}
+
+\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f75b779e5c296161d721546696e8cbef.png" alt="在这里插入图片描述"></p>
+<h2 id="代码块"><a href="#代码块" class="headerlink" title="代码块"></a>代码块</h2><h3 id="基础用法"><a href="#基础用法" class="headerlink" title="基础用法"></a>基础用法</h3><p>使用<code>\usepackage{listings}</code>宏包，并使用<code>\lstset{}</code>进行基础设置，然后使用<code>\begin{lstlisting}[language=xxx]</code>和<code>\end{lstlisting}</code>插入代码块。</p>
+<p>基础设置包括行号，不显示字符串空格，代码块边框，不包含颜色等设置，要设置颜色和字体请见下文的高级用法。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage{listings}
+
+% 代码块基础设置
+\lstset{
+numbers=left,                          	% 在左侧显示行号
+showstringspaces=false,        			% 不显示字符串中的空格
+frame=single,                         	% 设置代码块边框
+}
+
+\title{Code block}
+\author{NSJim Green}
+\date{October 2020}
+
+\begin{document}
+
+\maketitle
+
+\section{C Language}
+
+\begin{lstlisting}[language=c]
+#include &lt;stdio.h&gt;
+
+// main function
+int main() {
+    printf("Hello World!");
+    return 0;
+}
+\end{lstlisting}
+
+\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/b1b393090a2265beb7d979acdce1b89b.png" alt="在这里插入图片描述"></p>
+<h3 id="高级用法"><a href="#高级用法" class="headerlink" title="高级用法"></a>高级用法</h3><p>使用<code>\usepackage{listings}</code>和<code>\usepackage{xcolor}</code>宏包，并使用<code>\lstset{}</code>进行高级设置，然后使用<code>\begin{lstlisting}[language=xxx]</code>和<code>\end{lstlisting}</code>插入代码块。</p>
+<p>高级设置除基础设置外，还包括关键字格式，字符串格式等设置。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage{listings}
+\usepackage{xcolor}
+
+% 代码块高级设置
+\lstset{
+% basicstyle=\footnotesize,                 % 设置整体的字体大小
+showstringspaces=false,                     % 不显示字符串中的空格
+frame=single,                               % 设置代码块边框
+numbers=left,                               % 在左侧显示行号
+% numberstyle=\footnotesize\color{gray},    % 设置行号格式
+numberstyle=\color{darkgray},               % 设置行号格式
+backgroundcolor=\color{white},              % 设置背景颜色
+keywordstyle=\color{blue},                  % 设置关键字颜色
+commentstyle=\it\color[RGB]{0,100,0},       % 设置代码注释的格式
+stringstyle=\sl\color{red},                 % 设置字符串格式
+}
+
+\title{Code block}
+\author{NSJim Green}
+\date{October 2020}
+
+\begin{document}
+
+\maketitle
+
+\section{C Language}
+
+\begin{lstlisting}[language=c]
+#include &lt;stdio.h&gt;
+
+// main function
+int main() {
+    printf("Hello World!");
+    return 0;
+}
+\end{lstlisting}
+
+\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/9ddb7cf110f2c53c7ad37cc12cd7694f.png" alt="在这里插入图片描述"></p>
+<h2 id="论文写作"><a href="#论文写作" class="headerlink" title="论文写作"></a>论文写作</h2><h3 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h3><p>论文写作可以使用合适的模板，例如<code>IEEE</code>的模板，只需在文档类型处修改即可，代码如下：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\documentclass</span><span class="token punctuation">[</span>conference<span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token keyword">IEEEtran</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="双栏"><a href="#双栏" class="headerlink" title="双栏"></a>双栏</h3><p>更改文档的单双栏模式，只需更改文档类型处的选项即可，代码如下：<br>单栏：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\documentclass</span><span class="token punctuation">[</span>onecolumn<span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token keyword">article</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>双栏：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\documentclass</span><span class="token punctuation">[</span>twocolumn<span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token keyword">article</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="跨栏图表"><a href="#跨栏图表" class="headerlink" title="跨栏图表"></a>跨栏图表</h3><p>在双栏编辑模式下，图片只能在一栏中显示，而且如果图片的宽度超过单栏文本宽度，则只能显示其中一部分，剩下的部分会溢出。</p>
+<p>若想在双栏模式下插入跨栏图表可将环境替换为带<code>*</code>的<code>figure</code>或<code>table</code>环境，代码如下：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">figure*</span><span class="token punctuation">}</span>
+……
+<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">figure*</span><span class="token punctuation">}</span>
+或
+<span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">talbe*</span><span class="token punctuation">}</span>
+……
+<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">table*</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="无自动编号的标题"><a href="#无自动编号的标题" class="headerlink" title="无自动编号的标题"></a>无自动编号的标题</h3><p>LaTeX中的标题都是自动编号的，若想使用无编号的标题，可使用带<code>*</code>的<code>section</code>代码，如下：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\section*</span><span class="token punctuation">{</span><span class="token headline class-name">References</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><p>LaTeX中的公式，图表，参考文献都是自动编号的，添加<code>\label</code>语句后可以进行引用，还可以设置引用格式，使用方法如下：</p>
+<h4 id="公式引用"><a href="#公式引用" class="headerlink" title="公式引用"></a>公式引用</h4><p>需导入<code>amsmath</code>宏包，代码为<code>\usepackage{amsmath}</code>。</p>
+<p><strong>公式</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">equation</span><span class="token punctuation">}</span><span class="token equation string">
+z=x+y
+<span class="token equation-command regex">\label</span>{eq1}
+</span><span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">equation</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>引用</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">Eq. (<span class="token function selector">\ref</span><span class="token punctuation">{</span><span class="token keyword">eq1</span><span class="token punctuation">}</span>)
+或导入amsmath宏包，使用如下代码（推荐）：
+Eq. <span class="token function selector">\eqref</span><span class="token punctuation">{</span>eq1<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="图片引用"><a href="#图片引用" class="headerlink" title="图片引用"></a>图片引用</h4><p>需导入<code>graphicx</code>宏包，代码为<code>\usepackage{graphicx}</code>。</p>
+<p><strong>图片</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">figure</span><span class="token punctuation">}</span><span class="token punctuation">[</span>htbp<span class="token punctuation">]</span>
+<span class="token function selector">\centering</span>
+<span class="token function selector">\includegraphics</span><span class="token punctuation">[</span>width=8cm<span class="token punctuation">]</span><span class="token punctuation">{</span>image/fig01-network model.png<span class="token punctuation">}</span>
+<span class="token function selector">\caption</span><span class="token punctuation">{</span>Network model.<span class="token punctuation">}</span>
+<span class="token function selector">\label</span><span class="token punctuation">{</span><span class="token keyword">fig1</span><span class="token punctuation">}</span>
+<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">figure</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>引用</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">Fig. <span class="token function selector">\ref</span><span class="token punctuation">{</span><span class="token keyword">fig1</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="表格引用"><a href="#表格引用" class="headerlink" title="表格引用"></a>表格引用</h4><p><strong>表格</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">table</span><span class="token punctuation">}</span><span class="token punctuation">[</span>htbp<span class="token punctuation">]</span>
+<span class="token function selector">\caption</span><span class="token punctuation">{</span>Parameters for simulation<span class="token punctuation">}</span>
+<span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">center</span><span class="token punctuation">}</span>
+<span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">tabular</span><span class="token punctuation">}</span><span class="token punctuation">{</span>|c|c|c|c|<span class="token punctuation">}</span>
+<span class="token function selector">\hline</span>
+<span class="token function selector">\textbf</span><span class="token punctuation">{</span>Parameters<span class="token punctuation">}</span><span class="token punctuation">&amp;</span><span class="token function selector">\textbf</span><span class="token punctuation">{</span>Values<span class="token punctuation">}</span> <span class="token function selector">\\</span>
+<span class="token function selector">\hline</span>
+Count of Nodes <span class="token punctuation">&amp;</span> 2 to 160 <span class="token function selector">\\</span>
+Simulation time <span class="token punctuation">&amp;</span> 60s <span class="token function selector">\\</span>
+Layer used <span class="token punctuation">&amp;</span> Logical Link Layer <span class="token function selector">\\</span>
+Type of Antenna <span class="token punctuation">&amp;</span> Omni Directional <span class="token function selector">\\</span>
+Queue type <span class="token punctuation">&amp;</span> Drop tail <span class="token function selector">\\</span>
+MAC <span class="token punctuation">&amp;</span> 802.11 <span class="token function selector">\\</span>
+<span class="token function selector">\hline</span>
+<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">tabular</span><span class="token punctuation">}</span>
+<span class="token function selector">\label</span><span class="token punctuation">{</span><span class="token keyword">tab1</span><span class="token punctuation">}</span>
+<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">center</span><span class="token punctuation">}</span>
+<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">table</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>引用</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">Table. <span class="token function selector">\ref</span><span class="token punctuation">{</span><span class="token keyword">tab1</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="页面内参考文献引用"><a href="#页面内参考文献引用" class="headerlink" title="页面内参考文献引用"></a>页面内参考文献引用</h4><p><strong>参考文献</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">thebibliography</span><span class="token punctuation">}</span><span class="token punctuation">{</span>00<span class="token punctuation">}</span>
+<span class="token function selector">\bibitem</span><span class="token punctuation">{</span>b1<span class="token punctuation">}</span> Ben-Othman J, Yahya B. Energy efficient and QoS based routing protocol for wireless sensor networks. J Parallel Distrib Comput 2010;2010(70):849–57.
+<span class="token function selector">\bibitem</span><span class="token punctuation">{</span>b2<span class="token punctuation">}</span> Younis M, Youssef M, Arisha K. Energy-aware routing in cluster-based sensor networks. In: Proceedings of the IEEE 20th international symposium on modeling, analysis and simulation of computer and telecommunication systems; 2012. p. 0129. https://doi.org/10.1109/MASCOT.2002.1167069.
+<span class="token function selector">\bibitem</span><span class="token punctuation">{</span>b3<span class="token punctuation">}</span> Al-Karaki JN, Kamal AE. Routing techniques in wireless sensor networks: a survey. IEEE J Wirel Commun 2004;11(6):6–28. 2004.
+<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">thebibliography</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>引用</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\cite</span><span class="token punctuation">{</span><span class="token keyword">b1</span><span class="token punctuation">}</span>
+<span class="token function selector">\cite</span><span class="token punctuation">{</span><span class="token keyword">b2</span><span class="token punctuation">}</span>
+<span class="token function selector">\cite</span><span class="token punctuation">{</span><span class="token keyword">b3</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="bib参考文献引用"><a href="#bib参考文献引用" class="headerlink" title="bib参考文献引用"></a>bib参考文献引用</h4><p><strong>流程</strong></p>
+<ol>
+<li>在论文投稿官方网站上获取论文LaTeX模板，其中包含bib文件，可对bib文件重命名。</li>
+<li>在tex文件中找到bib文件声明位置，进行修改，若没有bib文件声明，则添加声明。</li>
+<li>在谷歌学术等文献检索网站上检索参考文献，在引用中复制<code>BibTeX</code>格式的代码，粘贴到bib文件的末尾。</li>
+<li>在tex文件中需要引用参考文献的位置使用<code>\cite{BibTexName}</code>语法进行引用，其中<code>BibTeXName</code>为<code>BibTeX</code>代码中的第一行的名称。</li>
+</ol>
+<p><strong>bib声明</strong><br>在<code>tex</code>文件中，结尾处，<code>\end{document}</code>之前，找到如下代码：</p>
+<pre class="line-numbers language-none"><code class="language-none">\bibliographystyle{FormatName}
+\bibliography{BibName}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>可进行修改，其中，<code>FormatName</code>为格式名称，<code>BibName</code>为bib文件名称。</p>
+<p>示例：</p>
+<pre class="line-numbers language-none"><code class="language-none">\bibliographystyle{ACM-Reference-Format}
+\bibliography{ref}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><strong>BibTeX代码</strong><br>在谷歌学术等文献检索软件中检索需要的参考文献，以<code>Conditional generative adversarial nets</code>为例，在文献处点击<code>引用</code>，选择<code>BibTeX</code>格式，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/fca90976b4271c4b9dbae0d94c383c40.png" alt="在这里插入图片描述"></p>
+<p>复制<code>BibTeX</code>代码，示例如下。将其粘贴到bib文件的末尾。</p>
+<pre class="line-numbers language-none"><code class="language-none">@article{mirza2014conditional,
+  title={Conditional generative adversarial nets},
+  author={Mirza, Mehdi and Osindero, Simon},
+  journal={arXiv preprint arXiv:1411.1784},
+  year={2014}
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>引用</strong><br>在<code>tex</code>文件中，要引用参考文献时，使用<code>\cite{}</code>语法进行引用，中括号的内容为<code>BibTeX</code>代码的第一行内容。</p>
+<p>以上文的<code>BibTeX</code>为例，进行引用：</p>
+<pre class="line-numbers language-none"><code class="language-none">Conditional GAN (CGAN) \cite{mirza2014conditional}.<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/95b7f365d4584b8f5f6935f887c7dbe8.png" alt="在这里插入图片描述"></p>
+<h4 id="改变引用颜色"><a href="#改变引用颜色" class="headerlink" title="改变引用颜色"></a>改变引用颜色</h4><p>改变引用颜色前最好在导言区导入<code>xcolor</code>宏包，代码为<code>\usepackage{xcolor}</code>。<br>改变引用颜色需要在导言区添加如下代码：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\usepackage</span><span class="token punctuation">[</span>colorlinks,bookmarksopen,bookmarksnumbered,citecolor=green, linkcolor=red, urlcolor=blue<span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token keyword">hyperref</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><code>citecolor</code>为参考文献颜色，<code>linkcolor</code>为图表和公式引用的颜色，<code>urlcolor</code>为超链接颜色。各颜色可根据偏好或要求自行更改。</p>
+<p>显示效果如下：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/7d1bd017c3aa6e21851d106a60c2b92c.png" alt="在这里插入图片描述"></p>
+]]></content>
+      <categories>
+        <category>Latex</category>
+        <category>Hexo</category>
       </categories>
   </entry>
   <entry>
