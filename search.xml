@@ -297,6 +297,58 @@ post_data <span class="token operator">=</span> <span class="token punctuation">
       </tags>
   </entry>
   <entry>
+    <title>Python爬取bing主页壁纸</title>
+    <url>/2022/08/01/020-python-pa-qu-bing-zhu-ye-bi-zhi/</url>
+    <content><![CDATA[<h3 id="一、爬取代码"><a href="#一、爬取代码" class="headerlink" title="一、爬取代码"></a>一、爬取代码</h3><h6 id="突然想给博客换个轮播图"><a href="#突然想给博客换个轮播图" class="headerlink" title="突然想给博客换个轮播图"></a>突然想给博客换个轮播图</h6><h6 id="百度搞起-smile"><a href="#百度搞起-smile" class="headerlink" title="百度搞起:smile:"></a>百度搞起<span class="github-emoji"><span>😄</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></h6><pre class="line-numbers language-none"><code class="language-none">import requests
+
+import json
+
+
+def Get_picUrl():
+
+url = "https://cn.bing.com/HPImageArchive.aspx?format=js&amp;idx=0&amp;n=1"
+
+con = requests.get(url=url)
+
+content = json.loads(con.text)
+
+imgUrl = 'https://cn.bing.com' + content['images'][0]['url']
+
+response = requests.get(imgUrl)
+
+if str(response) != '':
+
+imgUrl = '../static/img/temp/lunbo3.jpg'
+
+return imgUrl
+
+
+i = Get_picUrl()
+
+imgUrl = ''''
+
+print(imgUrl)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h5 id="根据需要自己修改"><a href="#根据需要自己修改" class="headerlink" title="根据需要自己修改"></a>根据需要自己修改</h5><h3 id="二、遇到的问题"><a href="#二、遇到的问题" class="headerlink" title="二、遇到的问题"></a>二、遇到的问题</h3><h6 id="lxml中etree找不到，暂时未解决"><a href="#lxml中etree找不到，暂时未解决" class="headerlink" title="lxml中etree找不到，暂时未解决"></a>lxml中etree找不到，暂时未解决</h6><h3 id="三、加入到Django中"><a href="#三、加入到Django中" class="headerlink" title="三、加入到Django中"></a>三、加入到Django中</h3><h5 id="1-django中的render"><a href="#1-django中的render" class="headerlink" title="1. django中的render"></a>1. django中的render</h5><h6 id="context在Django里表现为-Context-类，在-django-template-模块里。-它的构造函数带有一个可选的参数："><a href="#context在Django里表现为-Context-类，在-django-template-模块里。-它的构造函数带有一个可选的参数：" class="headerlink" title="context在Django里表现为 Context 类，在 django.template 模块里。 它的构造函数带有一个可选的参数："></a>context在Django里表现为 Context 类，在 django.template 模块里。 它的构造函数带有一个可选的参数：</h6><h6 id="一个字典映射变量和它们的值。-调用-Template-对象-的-render-方法并传递context来填充模板："><a href="#一个字典映射变量和它们的值。-调用-Template-对象-的-render-方法并传递context来填充模板：" class="headerlink" title="一个字典映射变量和它们的值。 调用 Template 对象 的 render() 方法并传递context来填充模板："></a>一个字典映射变量和它们的值。 调用 Template 对象 的 render() 方法并传递context来填充模板：</h6><pre class="line-numbers language-none"><code class="language-none">from django.template import Context, Template 
+
+t = Template('My name is {{ name }}.') 
+
+c = Context({'name': 'Stephane'}) 
+
+t.render(c) <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p> u’My name is Stephane.’</p>
+<h6 id="在views-py中"><a href="#在views-py中" class="headerlink" title="在views.py中:"></a>在views.py中:</h6><p> <code>return render(request, 'blog_add.html', {'blog': blog, 'form': form, 'id': id, 'tag': tag})</code></p>
+<h5 id="2-django中的render-to-response"><a href="#2-django中的render-to-response" class="headerlink" title="2. django中的render_to_response"></a>2. django中的render_to_response</h5><p> <code>return render_to_response('blog_add.html', {'blog': blog, 'form': form, 'id': id, 'tag': tag})</code></p>
+<h6 id="很明显，如果使用render-to-response就省去了render里传递的request。"><a href="#很明显，如果使用render-to-response就省去了render里传递的request。" class="headerlink" title="很明显，如果使用render_to_response就省去了render里传递的request。"></a>很明显，如果使用render_to_response就省去了render里传递的request。</h6><h6 id="3-locals-用法：locals-可以直接将函数中所有的变量全部传给模板。当然这可能会传递一些多余的参数，有点浪费内存的嫌疑。"><a href="#3-locals-用法：locals-可以直接将函数中所有的变量全部传给模板。当然这可能会传递一些多余的参数，有点浪费内存的嫌疑。" class="headerlink" title="3.locals()用法：locals()可以直接将函数中所有的变量全部传给模板。当然这可能会传递一些多余的参数，有点浪费内存的嫌疑。"></a>3.locals()用法：locals()可以直接将函数中所有的变量全部传给模板。当然这可能会传递一些多余的参数，有点浪费内存的嫌疑。</h6>]]></content>
+      <categories>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>爬虫</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>基因组组装</title>
     <url>/2022/07/27/019-ji-yin-zu-zu-zhuang/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>基因组组装(Genome assembly)是生物信息学领域的核心问题，基因组组装就是把序列测序产生的读取片段reads经过序列拼接组装，生成基因组的碱基序列。基因组组装软件可根据得到的所有读长组装成基因组。基因组组装这个步骤对于基因组分析是十分关键的，因为目前二代测序技术获得的测序序列一般都较短，需要组装拼接成较长的完整的序列用于进一步分析，例如长序列能提高物种注释分析的准确性。</p>
@@ -348,58 +400,6 @@ post_data <span class="token operator">=</span> <span class="token punctuation">
       </categories>
       <tags>
         <tag>转载</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python爬取bing主页壁纸</title>
-    <url>/2022/08/01/020-python-pa-qu-bing-zhu-ye-bi-zhi/</url>
-    <content><![CDATA[<h3 id="一、爬取代码"><a href="#一、爬取代码" class="headerlink" title="一、爬取代码"></a>一、爬取代码</h3><h6 id="突然想给博客换个轮播图"><a href="#突然想给博客换个轮播图" class="headerlink" title="突然想给博客换个轮播图"></a>突然想给博客换个轮播图</h6><h6 id="百度搞起-smile"><a href="#百度搞起-smile" class="headerlink" title="百度搞起:smile:"></a>百度搞起<span class="github-emoji"><span>😄</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span></h6><pre class="line-numbers language-none"><code class="language-none">import requests
-
-import json
-
-
-def Get_picUrl():
-
-url = "https://cn.bing.com/HPImageArchive.aspx?format=js&amp;idx=0&amp;n=1"
-
-con = requests.get(url=url)
-
-content = json.loads(con.text)
-
-imgUrl = 'https://cn.bing.com' + content['images'][0]['url']
-
-response = requests.get(imgUrl)
-
-if str(response) != '':
-
-imgUrl = '../static/img/temp/lunbo3.jpg'
-
-return imgUrl
-
-
-i = Get_picUrl()
-
-imgUrl = ''''
-
-print(imgUrl)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h5 id="根据需要自己修改"><a href="#根据需要自己修改" class="headerlink" title="根据需要自己修改"></a>根据需要自己修改</h5><h3 id="二、遇到的问题"><a href="#二、遇到的问题" class="headerlink" title="二、遇到的问题"></a>二、遇到的问题</h3><h6 id="lxml中etree找不到，暂时未解决"><a href="#lxml中etree找不到，暂时未解决" class="headerlink" title="lxml中etree找不到，暂时未解决"></a>lxml中etree找不到，暂时未解决</h6><h3 id="三、加入到Django中"><a href="#三、加入到Django中" class="headerlink" title="三、加入到Django中"></a>三、加入到Django中</h3><h5 id="1-django中的render"><a href="#1-django中的render" class="headerlink" title="1. django中的render"></a>1. django中的render</h5><h6 id="context在Django里表现为-Context-类，在-django-template-模块里。-它的构造函数带有一个可选的参数："><a href="#context在Django里表现为-Context-类，在-django-template-模块里。-它的构造函数带有一个可选的参数：" class="headerlink" title="context在Django里表现为 Context 类，在 django.template 模块里。 它的构造函数带有一个可选的参数："></a>context在Django里表现为 Context 类，在 django.template 模块里。 它的构造函数带有一个可选的参数：</h6><h6 id="一个字典映射变量和它们的值。-调用-Template-对象-的-render-方法并传递context来填充模板："><a href="#一个字典映射变量和它们的值。-调用-Template-对象-的-render-方法并传递context来填充模板：" class="headerlink" title="一个字典映射变量和它们的值。 调用 Template 对象 的 render() 方法并传递context来填充模板："></a>一个字典映射变量和它们的值。 调用 Template 对象 的 render() 方法并传递context来填充模板：</h6><pre class="line-numbers language-none"><code class="language-none">from django.template import Context, Template 
-
-t = Template('My name is {{ name }}.') 
-
-c = Context({'name': 'Stephane'}) 
-
-t.render(c) <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p> u’My name is Stephane.’</p>
-<h6 id="在views-py中"><a href="#在views-py中" class="headerlink" title="在views.py中:"></a>在views.py中:</h6><p> <code>return render(request, 'blog_add.html', {'blog': blog, 'form': form, 'id': id, 'tag': tag})</code></p>
-<h5 id="2-django中的render-to-response"><a href="#2-django中的render-to-response" class="headerlink" title="2. django中的render_to_response"></a>2. django中的render_to_response</h5><p> <code>return render_to_response('blog_add.html', {'blog': blog, 'form': form, 'id': id, 'tag': tag})</code></p>
-<h6 id="很明显，如果使用render-to-response就省去了render里传递的request。"><a href="#很明显，如果使用render-to-response就省去了render里传递的request。" class="headerlink" title="很明显，如果使用render_to_response就省去了render里传递的request。"></a>很明显，如果使用render_to_response就省去了render里传递的request。</h6><h6 id="3-locals-用法：locals-可以直接将函数中所有的变量全部传给模板。当然这可能会传递一些多余的参数，有点浪费内存的嫌疑。"><a href="#3-locals-用法：locals-可以直接将函数中所有的变量全部传给模板。当然这可能会传递一些多余的参数，有点浪费内存的嫌疑。" class="headerlink" title="3.locals()用法：locals()可以直接将函数中所有的变量全部传给模板。当然这可能会传递一些多余的参数，有点浪费内存的嫌疑。"></a>3.locals()用法：locals()可以直接将函数中所有的变量全部传给模板。当然这可能会传递一些多余的参数，有点浪费内存的嫌疑。</h6>]]></content>
-      <categories>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>爬虫</tag>
       </tags>
   </entry>
   <entry>
@@ -478,20 +478,6 @@ t.render(c) <span aria-hidden="true" class="line-numbers-rows"><span></span><spa
       </tags>
   </entry>
   <entry>
-    <title>转录组标准分析</title>
-    <url>/2022/08/05/024-zhuan-lu-zu-biao-zhun-fen-xi/</url>
-    <content><![CDATA[<h2 id="如何获得表达矩阵？"><a href="#如何获得表达矩阵？" class="headerlink" title="如何获得表达矩阵？"></a>如何获得表达矩阵？</h2><h3 id="1-Microarray"><a href="#1-Microarray" class="headerlink" title="1.Microarray"></a>1.Microarray</h3><h3 id="2-RNA-Seq"><a href="#2-RNA-Seq" class="headerlink" title="2.RNA-Seq"></a>2.RNA-Seq</h3><h6 id="短reads"><a href="#短reads" class="headerlink" title="==> 短reads"></a>==&gt; 短reads</h6><h2 id="一、比对Spliced-alignment"><a href="#一、比对Spliced-alignment" class="headerlink" title="一、比对Spliced alignment"></a>一、比对Spliced alignment</h2><h3 id="1-比对到基因组"><a href="#1-比对到基因组" class="headerlink" title="1.比对到基因组"></a>1.比对到基因组</h3><p>Hisat2<br>STAR</p>
-<h3 id="2-比对到转录组"><a href="#2-比对到转录组" class="headerlink" title="2.比对到转录组"></a>2.比对到转录组</h3><p>Bowtie2</p>
-<h2 id="二、表达定量Quantification"><a href="#二、表达定量Quantification" class="headerlink" title="二、表达定量Quantification"></a>二、表达定量Quantification</h2><h2 id="三、标准化Normalization"><a href="#三、标准化Normalization" class="headerlink" title="三、标准化Normalization"></a>三、标准化Normalization</h2><p>RPKM<br>TPM</p>
-<h2 id="表达数据挖掘"><a href="#表达数据挖掘" class="headerlink" title="表达数据挖掘"></a>表达数据挖掘</h2><h2 id="差异表达"><a href="#差异表达" class="headerlink" title="差异表达"></a>差异表达</h2><h2 id="富集分析"><a href="#富集分析" class="headerlink" title="富集分析"></a>富集分析</h2><h2 id="样本聚类分析"><a href="#样本聚类分析" class="headerlink" title="样本聚类分析"></a>样本聚类分析</h2><h2 id="相关系数"><a href="#相关系数" class="headerlink" title="相关系数"></a>相关系数</h2><h2 id="聚类分析和WGCNA"><a href="#聚类分析和WGCNA" class="headerlink" title="聚类分析和WGCNA"></a>聚类分析和WGCNA</h2><h2 id="从聚类分析到主成分分析"><a href="#从聚类分析到主成分分析" class="headerlink" title="从聚类分析到主成分分析"></a>从聚类分析到主成分分析</h2>]]></content>
-      <categories>
-        <category>转录组</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>一个简单的基因家族分析</title>
     <url>/2022/08/05/023-ji-yin-jia-zu-fen-xi/</url>
     <content><![CDATA[<h1 id="基因家族分析"><a href="#基因家族分析" class="headerlink" title="基因家族分析"></a>基因家族分析</h1><p>以拟南芥为例，重现一个描述芝麻 大豆、拟南芥中一个与油脂合成相关的基因的进化关系以及拷贝数差异的图</p>
@@ -517,6 +503,20 @@ t.render(c) <span aria-hidden="true" class="line-numbers-rows"><span></span><spa
       </categories>
       <tags>
         <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>转录组标准分析</title>
+    <url>/2022/08/05/024-zhuan-lu-zu-biao-zhun-fen-xi/</url>
+    <content><![CDATA[<h2 id="如何获得表达矩阵？"><a href="#如何获得表达矩阵？" class="headerlink" title="如何获得表达矩阵？"></a>如何获得表达矩阵？</h2><h3 id="1-Microarray"><a href="#1-Microarray" class="headerlink" title="1.Microarray"></a>1.Microarray</h3><h3 id="2-RNA-Seq"><a href="#2-RNA-Seq" class="headerlink" title="2.RNA-Seq"></a>2.RNA-Seq</h3><h6 id="短reads"><a href="#短reads" class="headerlink" title="==> 短reads"></a>==&gt; 短reads</h6><h2 id="一、比对Spliced-alignment"><a href="#一、比对Spliced-alignment" class="headerlink" title="一、比对Spliced alignment"></a>一、比对Spliced alignment</h2><h3 id="1-比对到基因组"><a href="#1-比对到基因组" class="headerlink" title="1.比对到基因组"></a>1.比对到基因组</h3><p>Hisat2<br>STAR</p>
+<h3 id="2-比对到转录组"><a href="#2-比对到转录组" class="headerlink" title="2.比对到转录组"></a>2.比对到转录组</h3><p>Bowtie2</p>
+<h2 id="二、表达定量Quantification"><a href="#二、表达定量Quantification" class="headerlink" title="二、表达定量Quantification"></a>二、表达定量Quantification</h2><h2 id="三、标准化Normalization"><a href="#三、标准化Normalization" class="headerlink" title="三、标准化Normalization"></a>三、标准化Normalization</h2><p>RPKM<br>TPM</p>
+<h2 id="表达数据挖掘"><a href="#表达数据挖掘" class="headerlink" title="表达数据挖掘"></a>表达数据挖掘</h2><h2 id="差异表达"><a href="#差异表达" class="headerlink" title="差异表达"></a>差异表达</h2><h2 id="富集分析"><a href="#富集分析" class="headerlink" title="富集分析"></a>富集分析</h2><h2 id="样本聚类分析"><a href="#样本聚类分析" class="headerlink" title="样本聚类分析"></a>样本聚类分析</h2><h2 id="相关系数"><a href="#相关系数" class="headerlink" title="相关系数"></a>相关系数</h2><h2 id="聚类分析和WGCNA"><a href="#聚类分析和WGCNA" class="headerlink" title="聚类分析和WGCNA"></a>聚类分析和WGCNA</h2><h2 id="从聚类分析到主成分分析"><a href="#从聚类分析到主成分分析" class="headerlink" title="从聚类分析到主成分分析"></a>从聚类分析到主成分分析</h2>]]></content>
+      <categories>
+        <category>转录组</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -2665,42 +2665,6 @@ fig  # 在RStudio中查看
       </categories>
   </entry>
   <entry>
-    <title>内网穿透</title>
-    <url>/2024/11/21/5/</url>
-    <content><![CDATA[<p>前言<br>对于在本地搭建需求公网的服务，比如nas，游戏联机等。但是又没有公网，这种时候就需要用到内网穿透工具，通过端口转发实现公网访问。市面上的映射基本都是限制流量，要么就是带宽只有1m。</p>
-<p>经过我的不断寻找，终于是找到了一款不限制流量，且基础带宽高的内网穿透工具。以下是他的基本信息：</p>
-<p>免费带宽：国内8m，国外32m（这是我能找到的唯一一款国内国外单独计带宽的映射）<br>免费隧道：4条<br>流量：不限制<br>并发：不限制<br>除此之外访问地址并不会强制变化<br>官网链接</p>
-<blockquote>
-<p><a href="https://www.chmlfrp.cn/">https://www.chmlfrp.cn</a></p>
-</blockquote>
-<p>使用教程<br>这款映射是基于开源软件frp实现的端口映射功能，所以实际使用方法和frp的使用方法一致，复制它生成的配置文件然后运行即可。</p>
-<p>注册/登录<br>没有帐户的首先前往chmlfrp官网注册账户，登录进首页之后是这样的页面：</p>
-<p>创建隧道<br>随后通过菜单前往 “隧道管理 -&gt; 隧道列表” ，然后点击右上角的添加隧道按钮（我已经创建了一个隧道）</p>
-<p>然后选择符合你要求的节点（一般选择离你近，且节点负载较低的节点。节点负载可以在 “隧道管理 -&gt; 节点状态” 查看所有节点的具体负载）</p>
-<p>然后填写相应隧道信息，如果没有特殊需求，一般只需要填写端口类型及内网端口。</p>
-<p>随后点击确定即可成功创建隧道</p>
-<p>启动隧道<br>前往 “隧道管理 -&gt; 软件下载” 页面，下载对应你系统的软件。</p>
-<p>下载好后解压压缩包，一般来讲只需要这三个文件，其他文件可以删除，也可以选择保留。</p>
-<p>随后进入网站的 “隧道管理 -&gt; 配置文件” 页面，在此页面选择你创建隧道的节点，就可以获取到相应的配置文件。将获取的配置文件覆盖到文件夹的frpc.ini中：</p>
-<p>随后保存文件，然后在此文件夹创建一个 “启动.txt” 的文本档案，然后将.txt后缀改为.bat。（注意！此方法仅windows可用，且需要打开显示文件扩展名）</p>
-<p>右键 “启动.bat” ，点击编辑，输入以下代码：</p>
-<p> <code>&nbsp;./frpc -c frpc.ini</code> </p>
-<p>接下来是设置开机后台自启</p>
-<p>新建一个启动服务</p>
-<p>编辑该服务</p>
-<p>重新加载</p>
-<p>启动服务</p>
-<p>开始服务</p>
-<p>查看服务状态</p>
-<p>重启</p>
-<p>在弹出的cmd窗口中直接输入frpc即可启动</p>
-]]></content>
-      <categories>
-        <category>折腾</category>
-        <category>WIFI</category>
-      </categories>
-  </entry>
-  <entry>
     <title>Typecho快速修改文章图片和文件链接地址</title>
     <url>/2025/09/03/50/</url>
     <content><![CDATA[<p>说明<br>为了使我们的博客速度更快，图片等一些文件会采用外接的形式。但当跟换域名或CDN图片地址时，需要大批修正一切文章的援用图片链接和一些文件链接地址，手动修正又烦劳，这里就说一下通过 phpMyAdmin工具快速修正数据库文章图片，文件链接地址。</p>
@@ -2801,6 +2765,42 @@ SHOW GRANTS FOR <span class="token string">'phpmyadmin'</span>@<span class="toke
 <p>选中 <code>typecho_contents</code> ，然后点上面的搜索，选择查找和替换，输入之前的图片或者文件地址和之后的地址，字段选择 <code>text</code> ，确认后执行即可批量修改。</p>
 ]]></content>
       <categories>
+        <category>WIFI</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>内网穿透</title>
+    <url>/2024/11/21/5/</url>
+    <content><![CDATA[<p>前言<br>对于在本地搭建需求公网的服务，比如nas，游戏联机等。但是又没有公网，这种时候就需要用到内网穿透工具，通过端口转发实现公网访问。市面上的映射基本都是限制流量，要么就是带宽只有1m。</p>
+<p>经过我的不断寻找，终于是找到了一款不限制流量，且基础带宽高的内网穿透工具。以下是他的基本信息：</p>
+<p>免费带宽：国内8m，国外32m（这是我能找到的唯一一款国内国外单独计带宽的映射）<br>免费隧道：4条<br>流量：不限制<br>并发：不限制<br>除此之外访问地址并不会强制变化<br>官网链接</p>
+<blockquote>
+<p><a href="https://www.chmlfrp.cn/">https://www.chmlfrp.cn</a></p>
+</blockquote>
+<p>使用教程<br>这款映射是基于开源软件frp实现的端口映射功能，所以实际使用方法和frp的使用方法一致，复制它生成的配置文件然后运行即可。</p>
+<p>注册/登录<br>没有帐户的首先前往chmlfrp官网注册账户，登录进首页之后是这样的页面：</p>
+<p>创建隧道<br>随后通过菜单前往 “隧道管理 -&gt; 隧道列表” ，然后点击右上角的添加隧道按钮（我已经创建了一个隧道）</p>
+<p>然后选择符合你要求的节点（一般选择离你近，且节点负载较低的节点。节点负载可以在 “隧道管理 -&gt; 节点状态” 查看所有节点的具体负载）</p>
+<p>然后填写相应隧道信息，如果没有特殊需求，一般只需要填写端口类型及内网端口。</p>
+<p>随后点击确定即可成功创建隧道</p>
+<p>启动隧道<br>前往 “隧道管理 -&gt; 软件下载” 页面，下载对应你系统的软件。</p>
+<p>下载好后解压压缩包，一般来讲只需要这三个文件，其他文件可以删除，也可以选择保留。</p>
+<p>随后进入网站的 “隧道管理 -&gt; 配置文件” 页面，在此页面选择你创建隧道的节点，就可以获取到相应的配置文件。将获取的配置文件覆盖到文件夹的frpc.ini中：</p>
+<p>随后保存文件，然后在此文件夹创建一个 “启动.txt” 的文本档案，然后将.txt后缀改为.bat。（注意！此方法仅windows可用，且需要打开显示文件扩展名）</p>
+<p>右键 “启动.bat” ，点击编辑，输入以下代码：</p>
+<p> <code>&nbsp;./frpc -c frpc.ini</code> </p>
+<p>接下来是设置开机后台自启</p>
+<p>新建一个启动服务</p>
+<p>编辑该服务</p>
+<p>重新加载</p>
+<p>启动服务</p>
+<p>开始服务</p>
+<p>查看服务状态</p>
+<p>重启</p>
+<p>在弹出的cmd窗口中直接输入frpc即可启动</p>
+]]></content>
+      <categories>
+        <category>折腾</category>
         <category>WIFI</category>
       </categories>
   </entry>
@@ -3666,763 +3666,6 @@ MPKVVSRSVVCTDVKDQEEYQGEKPLYVYYCICGQISLILDCPIDKLPMRRRDNARVIDSQKHAHKLTCDPDDIVYLKRP
       <categories>
         <category>蛋白互作</category>
         <category>PyMOL</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>从基因到结构：用PyMOL可视化理解分子对接与突变效应</title>
-    <url>/2025/11/24/latex/</url>
-    <content><![CDATA[<blockquote>
-<p>转载自: <a href="https://blog.csdn.net/NSJim/article/details/109066847">https://blog.csdn.net/NSJim/article/details/109066847</a></p>
-</blockquote>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>若想直接学习LaTeX数学公式，请参见我的另一篇博客：<a href="https://blog.csdn.net/NSJim/article/details/109045914">LaTeX数学公式-详细教程</a> 。</p>
-<p>本篇文章介绍LaTeX的基本用法，并有自己的经验和总结。另外，可以从LaTeX的官方文档进行学习，官方文档大部分是英文文档，链接：<a href="http://www.ctex.org/OnlineDocuments">LaTeX在线文档</a> ，<a href="http://www.ctex.org/documents/packages/index.htm">LaTex宏包文档</a>。</p>
-<p>本篇文章内容包含LaTeX工具，<a href="https://so.csdn.net/so/search?q=LaTeX%E6%A8%A1%E6%9D%BF&amp;spm=1001.2101.3001.7020">LaTeX模板</a>，LaTeX技巧，LaTeX基础，文章架构，字体、大小和颜色，链接，列表，图片，表格，数学公式，算法（伪代码），代码块，论文写作，等等。</p>
-<h2 id="LaTeX工具"><a href="#LaTeX工具" class="headerlink" title="LaTeX工具"></a>LaTeX工具</h2><h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>LaTeX工具分为在线工具和本地工具，本地工具又分为前台和后台。在线工具推荐Overleaf，本地工具推荐前台使用TeXStudio，后台推荐使用TeXLive（后台工具有TeXLive，MikTeX，CTeX等）。</p>
-<p>各个后台的比较：TeXLive有跨平台的性质，适用于Linux、Mac以及Windows系统；TeXLive是完全安装，大小大概为5G左右；每年有一次更新。TeXStudio只适用于Windows系统；它只安装基本的东西，其他任何需要的东西可以动态安装；只有发生重大变化时才会更新。CTeX只适用于Windows系统；默认编码不是UTF-8；已经不再维护，不再更新了，容易出Bug。</p>
-<p>可以根据需求选择合适的本地后台，若觉得安装配置比较麻烦，则可以使用Overleaf在线工具，有网络即可使用，更重要的是国内也可以使用，并支持中文界面。详细使用方法在下文介绍。</p>
-<h3 id="Overleaf（推荐）"><a href="#Overleaf（推荐）" class="headerlink" title="Overleaf（推荐）"></a>Overleaf（推荐）</h3><p>网址：<a href="https://www.overleaf.com/">Overleaf</a> 。<br>注册账户并登录后即可使用。</p>
-<h4 id="使用流程"><a href="#使用流程" class="headerlink" title="使用流程"></a>使用流程</h4><p>点击<code>New Project</code>后还可以使用<code>Templates</code>模板，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/39fa00e68d7ffbdd5c3d3167e023971d.png" alt="在这里插入图片描述"><br>新建项目后，左边为源代码视图，右边为预览视图。可以点击左上角的<code>Menu</code>下载源文件，PDF文件，或设置编译器，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/8e7851a57992dd06a3b1b55c7205a34f.png" alt="在这里插入图片描述"><br>展开<code>Recompile</code>按钮可以设置自动编译，并忽略语法检查，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/68becbf190957cc52ce795c0108f9b69.png" alt="在这里插入图片描述"></p>
-<h4 id="切换界面语言"><a href="#切换界面语言" class="headerlink" title="切换界面语言"></a>切换界面语言</h4><p><strong>方法1</strong></p>
-<p>点击Overleaf界面左下角的国旗标志可以切换界面语言，切换成中文的操作如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/1393c3043d906b6aa79b2167d8df5a98.png" alt="在这里插入图片描述"></p>
-<p><strong>方法2</strong></p>
-<p>直接更改网址如下：<code>https://cn.overleaf.com/project</code><br>即可切换界面语言为中文。</p>
-<h4 id="更改编译器"><a href="#更改编译器" class="headerlink" title="更改编译器"></a>更改编译器</h4><p>在项目<code>菜单</code>的<code>设置</code>中可以更改，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/c320de6eb4aced8679f56c80c5056e69.png" alt="在这里插入图片描述"></p>
-<h4 id="文档定位"><a href="#文档定位" class="headerlink" title="文档定位"></a>文档定位</h4><p>在项目中线顶部有2个箭头样式的按钮，可以使tex文档和PDF文档相互定位，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/769778c3d5c145f7f6b3f37d8cf3e21d.png" alt="在这里插入图片描述"><br>补充：<br>左键双击PDF文档的特定位置，tex文档会跳转到对应位置。</p>
-<h4 id="快捷键"><a href="#快捷键" class="headerlink" title="快捷键"></a>快捷键</h4><p>Overleaf内置了很多快捷键，本人分类为常用快捷键和全部快捷键如下：</p>
-<p><strong>常用快捷键</strong><br><code>Ctrl+B</code>：粗体<br><code>Ctrl+I</code>：斜体<br><code>Ctrl+/</code>：注释<br><code>Ctrl+Z</code>：撤销<br><code>Ctrl+Y</code>：重做<br><code>Ctrl+F</code>：查找和替换<br><code>Ctrl+Home</code>：到文档顶部<br><code>Ctrl+End</code>：到文档底部<br><code>Ctrl+S</code>：重新编译<br><code>Ctrl+Enter</code>：重新编译</p>
-<p><strong>全部快捷键</strong><br>可以在Overleaf项目中点击<code>菜单</code>中的<code>快捷键</code>选项查看，如下图：</p>
-<p>2021年5月<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/c738ce43b0fa42d886df60b770a82c5a.png" alt="在这里插入图片描述"></p>
-<h3 id="TeXLive和TeXStudio"><a href="#TeXLive和TeXStudio" class="headerlink" title="TeXLive和TeXStudio"></a>TeXLive和TeXStudio</h3><p>安装及配置详情可参见其他人的博客：<a href="https://blog.csdn.net/zywhehe/article/details/83113214">LaTeX新手入门以及TeXlive和TeXstudio的安装使用</a> 。</p>
-<p>本人一般使用在线工具Overleaf，因此个人教程暂略，后期若安装本地环境再进行完善。</p>
-<h2 id="LaTeX模板"><a href="#LaTeX模板" class="headerlink" title="LaTeX模板"></a>LaTeX模板</h2><p>LaTeX有很多模板，可以直接使用，方便用户排版。</p>
-<p>Overleaf中一些常用模板，包含Project，Resume，Homework，Letter，Memo，Poster，Book，Journal，Thesis。</p>
-<p>用户可以直接在Overleaf中使用，也可以下载到本地进行使用。</p>
-<h2 id="LaTeX技巧"><a href="#LaTeX技巧" class="headerlink" title="LaTeX技巧"></a>LaTeX技巧</h2><h3 id="LaTeX"><a href="#LaTeX" class="headerlink" title="LaTeX"></a>LaTeX</h3><p>LaTeX编辑器中，内置了一个语句，用来展现LaTeX的Logo，代码和效果如下：</p>
-<p>代码：</p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\LaTex</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cf2da4b179a665908abac9dadc694a0b.png" alt="在这里插入图片描述"></p>
-<h3 id="中文支持"><a href="#中文支持" class="headerlink" title="中文支持"></a>中文支持</h3><p>无论是在线工具还是本地工具，LaTeX默认都是不支持中文的，因此需要在源代码和配置上稍作修改才可以让LaTeX支持中文，步骤如下：</p>
-<ol>
-<li><p>编译器配置：<code>XeLaTeX</code>，可在Overleaf的<code>菜单 - 编译器</code>处修改。</p>
-</li>
-<li><p><code>tex</code>文件编码：<code>utf-8</code>，一般默认为<code>utf-8</code>编码，无需修改。</p>
-</li>
-<li><p>代码开头添加：</p>
-<p>方式1（推荐）：添加宏包</p>
-<pre class="line-numbers language-none"><code class="language-none">\usepackage[UTF8]{ctex}<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>方式2：设置文档类型</p>
-<pre class="line-numbers language-none"><code class="language-none">\documentclass[UTF8]{ctexart}<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
-</ol>
-<h3 id="首行缩进"><a href="#首行缩进" class="headerlink" title="首行缩进"></a>首行缩进</h3><h4 id="进行缩进"><a href="#进行缩进" class="headerlink" title="进行缩进"></a>进行缩进</h4><p>若LaTeX默认没有段首缩进，因此要首行缩进需要进行修改。在导言区加入如下代码（距离单位一般为<code>pt</code>或<code>em</code>，<code>pt</code>是绝对单位；<code>em</code>是相对单位，表示1个中文字符宽度；本人比较喜欢<code>em</code>）：</p>
-<pre class="line-numbers language-none"><code class="language-none">% 使用indentfirst宏包
-\usepackage{indentfirst}
-% 设置首行缩进距离
-\setlength{\parindent}{2em}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="不进行缩进"><a href="#不进行缩进" class="headerlink" title="不进行缩进"></a>不进行缩进</h4><p>若LaTeX已经是段首缩进的，因此要段首不进行缩进需要进行修改。</p>
-<p><strong>方式1（推荐）：</strong> 单段取消缩进，放在段首即可。</p>
-<pre class="line-numbers language-none"><code class="language-none">\noindent<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><strong>方式2：</strong> 全局取消缩进，在想缩进的段落再进行缩进。<br>放在导言区：</p>
-<pre class="line-numbers language-none"><code class="language-none">\setlength{\parindent}{0pt}<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>放在想要缩进的段落：</p>
-<pre class="line-numbers language-none"><code class="language-none">\hspace*{2em}段落\\<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h3 id="显示下划线"><a href="#显示下划线" class="headerlink" title="显示下划线"></a>显示下划线</h3><p><strong>方法1</strong><br>使用转义字符：<code>\_</code></p>
-<p><strong>方法2</strong><br>使用LaTeX命令：<code>\textunderscore</code></p>
-<p><strong>方法3</strong><br>导入宏包：<code>\usepackage{underscore}</code></p>
-<p>例子1（方法1和2）：</p>
-<pre class="line-numbers language-none"><code class="language-none">a\_b
-
-a\textunderscore b<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/2846c8cfab95dca6c9623d2d7115070c.png" alt="在这里插入图片描述"></p>
-<p>例子2（方法3）：</p>
-<pre class="line-numbers language-none"><code class="language-none">\usepackage{underscore}
-
-a_b<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/188304638c7a9e1900c239e3639c9a20.png" alt="在这里插入图片描述"></p>
-<h2 id="LaTeX基础"><a href="#LaTeX基础" class="headerlink" title="LaTeX基础"></a>LaTeX基础</h2><h3 id="导言区与正文区"><a href="#导言区与正文区" class="headerlink" title="导言区与正文区"></a>导言区与正文区</h3><p>在<code>begin{document}</code>和<code>end{document}</code>之间的就是正文区，而在这之前的就是导言区。</p>
-<h3 id="文档类型"><a href="#文档类型" class="headerlink" title="文档类型"></a>文档类型</h3><p><code>\documentclass{article}</code>是确定了文档类型为<code>article</code>，一般LaTeX提供三种基本文档，此外两种是<code>report</code>和<code>book</code>。三者分别用来写小篇幅的文章、中篇幅的报告和长篇幅的书籍。</p>
-<h3 id="宏包"><a href="#宏包" class="headerlink" title="宏包"></a>宏包</h3><p>LaTeX导言区可以导入各种宏包，以使用相应宏包的功能，一条语句中可以导入多个宏包，语法如下：</p>
-<pre class="line-numbers language-none"><code class="language-none">\usepackage{宏包1, 宏包2}<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>常用的宏包：<br>ctex：中文支持<br>amsmath：<a href="https://so.csdn.net/so/search?q=latex%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F&amp;spm=1001.2101.3001.7020">latex数学公式</a>支持<br>graphicx：插入图片<br>algorithm和algorithmic：算法排版<br>listings：插入代码块<br>等等</p>
-<h3 id="编译器"><a href="#编译器" class="headerlink" title="编译器"></a>编译器</h3><p>LaTeX的编译器有<code>pdfLaTeX</code>，<code>LaTeX</code>，<code>XeLaTeX</code>，<code>LuaLaTeX</code>，在设置中可以进行更改。Overleaf默认的编译器为<code>pdfLaTeX</code>，因此要使其支持中文需要改为<code>XeLaTeX</code>。</p>
-<h3 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h3><p>Overleaf等工具中可以使用快捷键<code>Ctrl+/</code>来批量注释或批量取消注释。</p>
-<h4 id="单行注释"><a href="#单行注释" class="headerlink" title="单行注释"></a>单行注释</h4><pre class="line-numbers language-none"><code class="language-none">% 注释内容<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h4 id="多行注释"><a href="#多行注释" class="headerlink" title="多行注释"></a>多行注释</h4><p>方式1（推荐）：</p>
-<pre class="line-numbers language-none"><code class="language-none">\iffalse
-注释内容
-\fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<p>方式2：<br>使用<code>\usepackage{verbatim}</code>宏包</p>
-<pre class="line-numbers language-none"><code class="language-none">\begin{comment}
-注释内容
-\end{comment} <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="英文引号"><a href="#英文引号" class="headerlink" title="英文引号"></a>英文引号</h3><p>在LaTeX中输入英文引号时，导出的PDF显示的是顺撇的，如下：</p>
-<p>代码：</p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">'English'
-
-''English''<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/d29e424c7071faf291abdd38c81f5202.png" alt="在这里插入图片描述"><br>要想正确输入英文引号，把左侧的引号用 ` 代替即可，如下：</p>
-<p>代码：</p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">`English'
-
-``English''<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/29c080f321f400dd38e741a4834d769a.png" alt="在这里插入图片描述"></p>
-<h3 id="空格"><a href="#空格" class="headerlink" title="空格"></a>空格</h3><p><strong>LaTeX支持</strong></p>
-<table>
-<thead>
-<tr>
-<th>空格方式</th>
-<th>源代码</th>
-<th>显示</th>
-<th>宽度</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>quad空格</td>
-<td>a \quad b</td>
-<td>a b a \quad b<em>a**b</em></td>
-<td>1个中文字符的宽度</td>
-</tr>
-<tr>
-<td>qquad空格</td>
-<td>a \qquad b</td>
-<td>a b a \qquad b<em>a**b</em></td>
-<td>2个中文字符的宽度</td>
-</tr>
-<tr>
-<td>大空格</td>
-<td>a\ b</td>
-<td>a  b a\ b<em>a</em> <em>b</em></td>
-<td>1/3字符宽度</td>
-</tr>
-<tr>
-<td>没有空格</td>
-<td>ab</td>
-<td>a b ab<em>ab</em></td>
-<td></td>
-</tr>
-</tbody></table>
-<p><strong>LaTeX数学公式支持</strong></p>
-<p>除上述空格以外，还支持如下空格：</p>
-<table>
-<thead>
-<tr>
-<th>空格方式</th>
-<th>源代码</th>
-<th>显示</th>
-<th>宽度</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>中等空格</td>
-<td><code>$a\;b$</code></td>
-<td>a    b a;b<em>a**b</em></td>
-<td>2/7字符宽度</td>
-</tr>
-<tr>
-<td>小空格</td>
-<td><code>$a\,b$</code></td>
-<td>a   b a,b<em>a**b</em></td>
-<td>1/6字符宽度</td>
-</tr>
-<tr>
-<td>紧贴</td>
-<td><code>$a\!b$</code></td>
-<td>a  ⁣ b a!b<em>a**b</em></td>
-<td>缩进1/6字符宽度</td>
-</tr>
-</tbody></table>
-<h3 id="换行"><a href="#换行" class="headerlink" title="换行"></a>换行</h3><p><code>\\</code>：换行，一般在一行的最后写。<br><code>\\[offset]</code>：换行，并且与下一行的行间距为原来行间距+offset，offset单位一般是<code>em</code>或<code>pt</code>。</p>
-<p><strong>注意：</strong><br>若要在表格单元格内换行，无法使用<code>\\</code>进行换行，需要在导言区导入<code>\usepackage{makecell}</code>宏包进行换行，详情见<strong>表格</strong>章节。</p>
-<h3 id="换段"><a href="#换段" class="headerlink" title="换段"></a>换段</h3><p>源代码空一行即可进行换段（推荐）。<br>也可以使用代码<code>\par</code>进行换段，一般在一段的最后写。</p>
-<h3 id="新页"><a href="#新页" class="headerlink" title="新页"></a>新页</h3><p>使用<code>\newpage</code>进行换页，一般在一页的最后写。</p>
-<h3 id="转义字符"><a href="#转义字符" class="headerlink" title="转义字符"></a>转义字符</h3><p>写法：<code>\+字符</code></p>
-<p>用途：当某些特殊字符与LaTeX语法冲突时，使用转义字符可以使字符强制显示。</p>
-<p>示例：<code>\%</code>，可以显示出百分号，而不是注释的含义；<code>\_</code>，显示下划线，而不是下标；<code>\^</code>显示符号本身，而不是上标。</p>
-<p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">\%home\_name\%=honor<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f8c4a3625d492de03606da8791546a8d.png" alt="在这里插入图片描述"><br>补充：若想不使用转义字符显示下划线，有2种方法，详情请见 <strong>LaTeX技巧-显示下划线</strong> 章节。</p>
-<h3 id="可选参数-htbp"><a href="#可选参数-htbp" class="headerlink" title="可选参数[htbp]"></a>可选参数[htbp]</h3><p>LaTeX插入图片、表格等元素时，第一行后面有一个可选参数<code>[htbp]</code>，例如，<code>\begin{figure}[htbp]</code>。</p>
-<p><code>[htbp]</code>是个可选参数项，允许用户指定图片、表格等元素被放置的位置。这一可选参数项可以是下列字母的任意组合。</p>
-<p>h(here): 当前位置；将图形放置在 正文文本中给出该图形环境的地方。如果本页所剩的页面不够， 这一参数将不起作用。<br>t(top): 顶部；将图形放置在页面的顶部。<br>b(bottom): 底部；将图形放置在页面的底部。<br>p(page): 浮动页；将图形放置在一只允许有浮动对象的页面上。</p>
-<p>注意：在使用这些参数时：</p>
-<ol>
-<li>如果在图形环境中没有给出上述任一参数，则缺省为 <code>[tbp]</code>。</li>
-<li>给出参数的顺序不会影响到最后的结果。因为在考虑这些参数时LaTeX总是尝试以 <code>h-t-b-p</code> 的顺序来确定图形的位置。所以 <code>[hb]</code> 和 <code>[bh]</code> 都以<code>h-b</code> 的顺序来排版。</li>
-<li>给出的参数越多，LaTeX的排版结果就会越好。<code>[htbp], [tbp], [htp], [tp]</code> 这些组合得到的效果不错，<code>[h]</code>也是常用的选择。</li>
-</ol>
-<h2 id="文章架构"><a href="#文章架构" class="headerlink" title="文章架构"></a>文章架构</h2><h3 id="纸张布局"><a href="#纸张布局" class="headerlink" title="纸张布局"></a>纸张布局</h3><pre class="line-numbers language-none"><code class="language-none">% 设置页面的环境,a4纸张大小，左右上下边距信息
-\usepackage[a4paper,left=10mm,right=10mm,top=15mm,bottom=15mm]{geometry}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<h3 id="标题级别"><a href="#标题级别" class="headerlink" title="标题级别"></a>标题级别</h3><p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">\section{一级标题}
-\subsection{二级标题} 
-\subsubsection{二级标题} <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f8d4d5a7983e97f44e4187d8efbeed02.png" alt="在这里插入图片描述"></p>
-<h3 id="标题、作者、时间"><a href="#标题、作者、时间" class="headerlink" title="标题、作者、时间"></a>标题、作者、时间</h3><p>注意：<code>\maketitle</code>这一行一定要在<code>\begin{document}</code>的后面，否则LaTeX会判定为语法错误。</p>
-<p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">\documentclass{article} % article 文档
-\usepackage[UTF8]{ctex}  % 使用宏包(为了能够显示汉字)
-% 设置页面的环境,a4纸张大小，左右上下边距信息
-\usepackage[a4paper,left=10mm,right=10mm,top=15mm,bottom=15mm]{geometry}
-
-\title{NSJim的文章}  % 文章标题
-\author{NSJim}   % 作者的名称
-\date{\today}       % 当天日期
-
-% 正文开始
-\begin{document}
-
-\maketitle          % 添加这一句才能够显示标题等信息
-
-% 正文结束
-\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/15f00dd995f7af1f8d900a79bb703e08.png" alt="在这里插入图片描述"></p>
-<h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>在<code>\maketitle</code>下添加内容，如下：</p>
-<pre class="line-numbers language-none"><code class="language-none">\maketitle          %添加这一句才能够显示标题等信息
-%摘要开始部分
-\begin{abstract}
-该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。
-\end{abstract}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://i-blog.csdnimg.cn/blog_migrate/cbcad212c6cd56d55f4fb375a1b0448a.png#pic_center" alt="在这里插入图片描述"></p>
-<h3 id="引用、脚注"><a href="#引用、脚注" class="headerlink" title="引用、脚注"></a>引用、脚注</h3><p>引用：写在<code>\begin{quote}</code>和<code>\end{quote}</code>之间。<br>脚注：在需要添加脚注的文字后添加<code>\footnote{脚注内容}</code>即可。</p>
-<p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">西游记\footnote{中国古典四大名著之一}小说开头写道：
-\begin{quote}
-{\kaishu 东胜神洲有一花果山，山顶一石，受日月精华，生出一石猴。之后因为成功闯入水帘洞，被花果山诸猴拜为“美猴王”。}
-\end{quote}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/04545b613491aa492b626a0d83121ae0.png" alt="在这里插入图片描述"><br><img src="https://i-blog.csdnimg.cn/blog_migrate/f46fd5f2a0548164c88ed243e5fdc7d3.png" alt="在这里插入图片描述"></p>
-<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p>标题设置：一级标题<code>\section{}</code>，耳机标题<code>\subsection{}</code>，三级标题<code>\subsubsection{}</code>；<br>段落设置：在一段的最后添加<code>\par</code>代表一段的结束；<br>目录设置：在<code>\begin{document}</code>内容中添加：<code>\tableofcontents</code></p>
-<p>以下为一个示例：</p>
-<pre class="line-numbers language-none"><code class="language-none">\documentclass{article} % article 文档
-\usepackage[UTF8]{ctex}  % 使用宏包(为了能够显示汉字)
-% 设置页面的环境,a4纸张大小，左右上下边距信息
-\usepackage[a4paper,left=10mm,right=10mm,top=15mm,bottom=15mm]{geometry}
-
-\title{NSJim的文章}  % 文章标题
-\author{NSJim}   % 作者的名称
-\date{\today}       % 当天日期
-
-% 正文开始
-\begin{document}
-
-\maketitle          % 添加这一句才能够显示标题等信息
-
-% 生成目录设置
-\renewcommand{\contentsname}{目录} %将content转为目录
-\tableofcontents
-
-% 摘要开始部分
-\begin{abstract}
-该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。
-\end{abstract}
-
-% 标题开始
-\section{一级标题1}
-第一段一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容。\par
-第二段一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容。
-
-\subsection{二级标题1.1}
-二级标题下的内容。
-
-\subsubsection{三级标题下的内容1.1.1}
-三级标题下的内容。
-
-\section{一级标题2}
-一级标题2中的内容
-
-% 正文结束
-\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/77ea4dbcda2ccf25b515a55207a7dbe6.png" alt="在这里插入图片描述"></p>
-<h2 id="字体，大小，颜色"><a href="#字体，大小，颜色" class="headerlink" title="字体，大小，颜色"></a>字体，大小，颜色</h2><p><strong>字体</strong></p>
-<p>使用代码：<code>{\字体 内容}</code>（推荐），有时可使用<code>\字体{内容}</code>（不推荐，容易出问题）。</p>
-<p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">{\songti 宋体}
-{\heiti 黑体}
-{\fangsong 仿宋}
-{\kaishu 楷书}
-
-{\bf 粗体}
-{\it 斜体}
-{\sl 斜体}
-
-\textbf{粗体}
-\textit{斜体}
-\textsl{斜体}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/1de6158b0f9a068c3291d4aa4bc02da2.png" alt="在这里插入图片描述"></p>
-<p><strong>大小</strong></p>
-<p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">{\tiny Hello} \\
-{\scriptsize Hello} \\
-{\footnotesize Hello} \\
-{\small Hello} \\
-{\normalsize Hello} \\
-{\large Hello} \\<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/fadf838e2821f43c676724fdd1136b2f.png" alt="在这里插入图片描述"><br><strong>颜色</strong></p>
-<p>需要导入宏包<code>\usepackage{xcolor}</code></p>
-<pre class="line-numbers language-none"><code class="language-none">\documentclass{article}
-\usepackage[UTF8]{ctex}
-\usepackage{color,xcolor}
-
-\setlength{\parindent}{0pt}
-
-% 预先定义好的颜色： red, green, blue, white, black, yellow, gray, darkgray, lightgray, brown, cyan, lime, magenta, olive, orange, pink, purple, teal, violet.
-
-% 定义颜色的5种方式
-\definecolor{light-gray}{gray}{0.95}    % 1.灰度
-\definecolor{orange}{rgb}{1,0.5,0}      % 2.rgb
-\definecolor{orange}{RGB}{255,127,0}    % 3.RGB
-\definecolor{orange}{HTML}{FF7F00}      % 4.HTML
-\definecolor{orange}{cmyk}{0,0.5,1,0}   % 5.cmyk
-
-\begin{document}
-
-% \pagecolor{yellow}          %设置背景色为黄色
-
-% 使用颜色的常用方式
-\textcolor{green}{绿色} % textcolor+颜色
-\color{orange}{橙色} % color+颜色
-\textcolor[rgb]{0,1,0}{绿色} % textcolor+rgb
-\color[rgb]{1,0,0}{红色} % color+rgb
-
-% 使用底色
-\colorbox{red}{\color{black}红底黑字}
-\fcolorbox{red}{green}{红框绿底} % 框色+背景色
-
-\end{document} <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/00bb12343ad32a159d28d7a08f3e1acc.png" alt="在这里插入图片描述"></p>
-<h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><p>导入宏包：<code>\usepackage{url}</code><br>插入超链接：<code>\url{www.baidu.com}</code></p>
-<h2 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h2><p>未完，待续。</p>
-<h2 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h2><h3 id="可选参数-htbp-1"><a href="#可选参数-htbp-1" class="headerlink" title="可选参数[htbp]"></a>可选参数[htbp]</h3><p>LaTeX插入图片、表格等元素时，第一行后面有一个可选参数<code>[htbp]</code>，例如，<code>\begin{figure}[htbp]</code>。</p>
-<p><code>[htbp]</code>是个可选参数项，允许用户指定图片、表格等元素被放置的位置。这一可选参数项可以是下列字母的任意组合。</p>
-<p>h(here): 当前位置；将图形放置在 正文文本中给出该图形环境的地方。如果本页所剩的页面不够， 这一参数将不起作用。<br>t(top): 顶部；将图形放置在页面的顶部。<br>b(bottom): 底部；将图形放置在页面的底部。<br>p(page): 浮动页；将图形放置在允许有浮动对象的页面上。</p>
-<p>注意：在使用这些参数时：</p>
-<ol>
-<li>如果在图形环境中没有给出上述任一参数，则缺省为 <code>[tbp]</code>。</li>
-<li>给出参数的顺序不会影响到最后的结果。因为在考虑这些参数时LaTeX总是尝试以 <code>h-t-b-p</code> 的顺序来确定图形的位置。所以 <code>[hb]</code> 和 <code>[bh]</code> 都以<code>h-b</code> 的顺序来排版。</li>
-<li>给出的参数越多，LaTeX的排版结果就会越好。<code>[htbp], [tbp], [htp], [tp]</code> 这些组合得到的效果不错，<code>[h]</code>也是常用的选择。</li>
-</ol>
-<h3 id="单张图片"><a href="#单张图片" class="headerlink" title="单张图片"></a>单张图片</h3><p>需要导入宏包：<code>\usepackage{graphicx}</code></p>
-<p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">%开始插入图片
-\begin{figure}[htbp] % htbp代表图片插入位置的设置
-\centering %图片居中
-%添加图片；[]中为可选参数，可以设置图片的宽高；{}中为图片的相对位置
-\includegraphics[width=6cm]{image.jpg}
-\caption{达尔文游戏} % 图片标题
-\label{pic1} % 图片标签
-\end{figure}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/c87040c5dd7b87907aee4250f7c951c2.png" alt="在这里插入图片描述"></p>
-<h3 id="多张图片"><a href="#多张图片" class="headerlink" title="多张图片"></a>多张图片</h3><p><strong>并排插入两张图片</strong><br>方式1：图片编号增加1<br>两张图片公用一个大的图题，图片的编号只增加一个。</p>
-<pre class="line-numbers language-none"><code class="language-none">\begin{figure}[ht]
-\centering
-\subfigure[11-1]{               %小图题的名称
-\includegraphics[width=4cm]{11-1}}
-\hspace{10pt}  %2张图片的水平距离
-\subfigure[11-2]{
-\includegraphics[width=4cm]{11-2}}
-\caption{两张图片公用的图题}
-\end{figure}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>方式2：图片编号增加2<br>每张图片有自己的图题，这种方法会使LaTeX中图片的编号顺序向后增加。</p>
-<pre class="line-numbers language-none"><code class="language-none">\begin{figure}[h]
-\begin{minipage}[t]{0.45\linewidth}
-\centering
-\includegraphics[width=5.5cm,height=3.5cm]{10}
-\caption{第一张图片的图题.}
-\end{minipage}
-\begin{minipage}[t]{0.45\linewidth}        %图片占用一行宽度的45%
-\hspace{10pt}
-\includegraphics[width=5.5cm,height=3.5cm]{11}
-\caption{第二章图片的图题.}
-\end{minipage}
-\end{figure}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>并排插入多张图片</strong></p>
-<pre class="line-numbers language-none"><code class="language-none">\begin{figure}
-\centering
-{
-\includegraphics[width=2.5cm]{10-1}}
-\hspace{10pt}    %每张图片水平距离
-{
-\includegraphics[width=2.5cm]{10-2}}
-\hspace{10pt}
-{
-\includegraphics[width=2.5cm]{10-3}}
-\hspace{10pt}
-{
-\includegraphics[width=2.5cm]{10-4}}
-\hspace{10pt}
-\caption{并排插入4张图片}
-\end{figure}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>竖排插入多张图片</strong></p>
-<pre class="line-numbers language-none"><code class="language-none">\begin{figure}[h]
-\centering
-\subfigure[场景1]{
-\begin{minipage}[t]{0.45\textwidth}
-\centering
-\includegraphics[width=0.8\textwidth]{wolf2} \\
-\vspace{10pt} %2张图片的垂直距离
-\includegraphics[width=0.8\textwidth]{wolf3}
-\end{minipage}
-\end{figure}
-}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h2 id="表格"><a href="#表格" class="headerlink" title="表格"></a>表格</h2><p>技巧：若不想手动输入LaTeX语法生成表格，可以使用<a href="https://www.tablesgenerator.com/">在线生成LaTeX表格</a>的网站。可以从Excel里面粘贴或导入，可以实现单元格合并，而且会在合并行或合并列的时候提醒要引入对应的宏包。<br>网址：<code>https://www.tablesgenerator.com/</code></p>
-<p>当然，也可以使用LaTeX语法生成表格，示例如下：</p>
-<p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">\begin{table}[htbp] % htbp代表表格浮动位置
-% 表格居中
-\centering
-% 添加表头
-\caption{变量表}
-% 创建table环境
-\begin{tabular}{|cc|c|} % 3个c代表3列都居中，也可以设置l或r，|代表竖线位置
-% 表格的输入
-\hline  % 一条水平线
-x &amp; y &amp; z \\ % \\为换行符
-\hline
-11 &amp; 22 &amp; 33 \\
-\hline
-\end{tabular}
-\end{table}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/13dbb39eebe7b30121c961dd55dabe4f.png" alt="在这里插入图片描述"></p>
-<p><strong>表格单元格内换行</strong><br>需要使用<code>\usepackage{makecell}</code>宏包。将单元格的内容替换为<code>\makecell{XX\\XXXX}</code>，<code>\makecell{}</code>中的<code>\\</code>可以在单元格内换行。</p>
-<p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">\begin{table}[htbp] % htbp代表表格浮动位置
-\centering
-\caption{变量表}
-\begin{tabular}{|cc|c|}
-\hline
-x &amp; y &amp; z \\
-\hline
-11 &amp; \makecell{Long\\text} &amp; 33 \\
-\hline
-\end{tabular}
-\end{table}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5fd5b3942e1bd198ea35063764963d4f.png" alt="在这里插入图片描述"></p>
-<h2 id="数学公式"><a href="#数学公式" class="headerlink" title="数学公式"></a>数学公式</h2><h3 id="公式支持"><a href="#公式支持" class="headerlink" title="公式支持"></a>公式支持</h3><p>LaTeX要输入数学公式需要导入宏包<code>\usepackage{amsmath}</code>；若要对公式的字体进行修改，还需要引入宏包<code>\usepackage{amsfonts}</code>。</p>
-<p>LaTeX数学公式的各种细节请参见我的另一篇博客：<a href="https://blog.csdn.net/NSJim/article/details/109045914"><em>LaTeX数学公式-详细教程</em></a> 。</p>
-<ol>
-<li>官方文档：<br>传送门：<a href="https://math.meta.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference"><em>官方文档</em></a><br>网址：<code>https://math.meta.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference</code></li>
-<li>中文教程：<br>传送门：<a href="https://www.jianshu.com/p/25f0139637b7"><em>中文教程</em></a><br>网址：<code>https://www.jianshu.com/p/25f0139637b7</code></li>
-<li>技巧：使用<a href="https://private.codecogs.com/latex/eqneditor.php"><em>在线LaTeX公式编辑器</em></a>，来生成LaTeX公式代码，然后复制到Markdown编辑器中，并在两边加上<code>$</code>或<code>$$</code>即可。<br>在线LaTeX公式编辑器网址：<code>https://private.codecogs.com/latex/eqneditor.php</code></li>
-<li>插入公式<br>左对齐公式（行中公式）：<code>$数学公式$</code><br>居中公式（独立公式）：<code>$$数学公式$$</code><br>注意：使用<code>$</code>行中公式时，<code>数学公式</code>与<code>$</code>连接处不要有空格，否则公式不会显示；使用<code>$$</code>居中公式时，<code>数学公式</code>与<code>$$</code>连接处可以有空格。即<code>$ 数学公式 $</code> 不显示公式。</li>
-<li>注释：<code>%</code>为单行注释，例子详见后文。</li>
-<li>细节：请参见我的另一篇博客：<a href="https://blog.csdn.net/NSJim/article/details/109045914"><em>LaTeX数学公式-详细教程</em></a> 。</li>
-</ol>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ol>
-<li>使用<code>$</code>，即行中公式时，<code>数学公式</code>与<code>$</code>连接处不要有空格，否则公式不会显示。</li>
-<li>使用<code>$$</code>，即居中公式时，<code>数学公式</code>与<code>$$</code>连接处可以有空格。即<code>$ 数学公式 $</code> 不显示公式。</li>
-<li>使用<code>$$</code>时，上方要空一行。</li>
-<li><code>=</code>不要单独打一行，否则可能会出错。</li>
-<li><code>+ - * / = ( ) | , . '</code>等符号直接在<code>$</code>或<code>$$</code>之间输入即可识别。</li>
-</ol>
-<h3 id="公式编号"><a href="#公式编号" class="headerlink" title="公式编号"></a>公式编号</h3><h4 id="自动编号"><a href="#自动编号" class="headerlink" title="自动编号"></a>自动编号</h4><p>使用<code>\begin{equation}</code>和<code>\end{equation}</code>进行公式输入，要同时使用，且编号不能够修改。</p>
-<p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">\begin{equation}
-a^2+b^2=c^2
-\end{equation}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/dad5baa00648089323340c3fbc5f4ff2.png" alt="在这里插入图片描述"></p>
-<h4 id="手动编号"><a href="#手动编号" class="headerlink" title="手动编号"></a>手动编号</h4><p>在公式末尾使用<code>\tag{编号}</code>来实现公式手动编号，大括号内的内容可以自定义。需要使用<code>\usepackage{amsmath}</code>宏包，不能写在<code>$</code>或<code>$$</code>中，会报错。</p>
-<p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">\begin{equation}
-a^2+b^2=c^2
-\tag{2}
-\end{equation}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/df680e3efbedf6adbba35b02e83c8fdb.png" alt="在这里插入图片描述"></p>
-<h2 id="自定义标题样式"><a href="#自定义标题样式" class="headerlink" title="自定义标题样式"></a>自定义标题样式</h2><p>在导言区使用<code>\newtheorem{example}{Example}[section]</code>可以自定义标题样式，例子如下。</p>
-<p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">\newtheorem{example}{Example}[section] % 自定义example样式
-
-\begin{document}
-
-\maketitle
-
-\section{Introduction}
-
-\begin{example}{Test1}
-
-Hello world!
-
-\end{example}
-
-\begin{example}{Test2}
-
-Hello world!
-
-\end{example}
-
-\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/d67ce3fb6d9fc0080c104b98f20344c7.png" alt="在这里插入图片描述"></p>
-<h2 id="算法（伪代码）"><a href="#算法（伪代码）" class="headerlink" title="算法（伪代码）"></a>算法（伪代码）</h2><p>需要使用<code>\usepackage{algorithm}</code>和<code>\usepackage{algorithmic}</code>宏包，<code>if</code>、<code>for</code>等关键字要按照规范书写，如<code>\IF \ENDIF</code>。</p>
-<p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">\documentclass{article}
-\usepackage[UTF8]{ctex}
-\usepackage{algorithm} % 排版算法
-\usepackage{algorithmic} % 排版算法
-
-\title{Algorithm}
-\author{NSJim Green}
-\date{October 2020}
-
-\begin{document}
-
-\maketitle
-
-\section{Algorithm 1}
-
-\begin{algorithm}
-\caption{CheckSum(A,x)} %算法标题
-\label{alg2} %标签
-\begin{algorithmic} %算法开始
-\STATE {\bf Input:} An array A and a value x  %也可以用\textbf{Input:}
-\STATE {\bf Output:} A bool value show if there is two elements in A whose sum is x
-\STATE A $\gets$ SORT(A)
-\STATE n $\gets$ length(n)
-\FOR{i $\gets$ 0 to n}
-    \IF{Binary-search(A,x-A[i],1,n)}
-    \STATE return true
-    \ENDIF
-\ENDFOR
-\STATE return false
-\end{algorithmic}
-\end{algorithm}
-
-\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f75b779e5c296161d721546696e8cbef.png" alt="在这里插入图片描述"></p>
-<h2 id="代码块"><a href="#代码块" class="headerlink" title="代码块"></a>代码块</h2><h3 id="基础用法"><a href="#基础用法" class="headerlink" title="基础用法"></a>基础用法</h3><p>使用<code>\usepackage{listings}</code>宏包，并使用<code>\lstset{}</code>进行基础设置，然后使用<code>\begin{lstlisting}[language=xxx]</code>和<code>\end{lstlisting}</code>插入代码块。</p>
-<p>基础设置包括行号，不显示字符串空格，代码块边框，不包含颜色等设置，要设置颜色和字体请见下文的高级用法。</p>
-<p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">\documentclass{article}
-\usepackage[UTF8]{ctex}
-\usepackage{listings}
-
-% 代码块基础设置
-\lstset{
-numbers=left,                          	% 在左侧显示行号
-showstringspaces=false,        			% 不显示字符串中的空格
-frame=single,                         	% 设置代码块边框
-}
-
-\title{Code block}
-\author{NSJim Green}
-\date{October 2020}
-
-\begin{document}
-
-\maketitle
-
-\section{C Language}
-
-\begin{lstlisting}[language=c]
-#include &lt;stdio.h&gt;
-
-// main function
-int main() {
-    printf("Hello World!");
-    return 0;
-}
-\end{lstlisting}
-
-\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/b1b393090a2265beb7d979acdce1b89b.png" alt="在这里插入图片描述"></p>
-<h3 id="高级用法"><a href="#高级用法" class="headerlink" title="高级用法"></a>高级用法</h3><p>使用<code>\usepackage{listings}</code>和<code>\usepackage{xcolor}</code>宏包，并使用<code>\lstset{}</code>进行高级设置，然后使用<code>\begin{lstlisting}[language=xxx]</code>和<code>\end{lstlisting}</code>插入代码块。</p>
-<p>高级设置除基础设置外，还包括关键字格式，字符串格式等设置。</p>
-<p>例子：</p>
-<pre class="line-numbers language-none"><code class="language-none">\documentclass{article}
-\usepackage[UTF8]{ctex}
-\usepackage{listings}
-\usepackage{xcolor}
-
-% 代码块高级设置
-\lstset{
-% basicstyle=\footnotesize,                 % 设置整体的字体大小
-showstringspaces=false,                     % 不显示字符串中的空格
-frame=single,                               % 设置代码块边框
-numbers=left,                               % 在左侧显示行号
-% numberstyle=\footnotesize\color{gray},    % 设置行号格式
-numberstyle=\color{darkgray},               % 设置行号格式
-backgroundcolor=\color{white},              % 设置背景颜色
-keywordstyle=\color{blue},                  % 设置关键字颜色
-commentstyle=\it\color[RGB]{0,100,0},       % 设置代码注释的格式
-stringstyle=\sl\color{red},                 % 设置字符串格式
-}
-
-\title{Code block}
-\author{NSJim Green}
-\date{October 2020}
-
-\begin{document}
-
-\maketitle
-
-\section{C Language}
-
-\begin{lstlisting}[language=c]
-#include &lt;stdio.h&gt;
-
-// main function
-int main() {
-    printf("Hello World!");
-    return 0;
-}
-\end{lstlisting}
-
-\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/9ddb7cf110f2c53c7ad37cc12cd7694f.png" alt="在这里插入图片描述"></p>
-<h2 id="论文写作"><a href="#论文写作" class="headerlink" title="论文写作"></a>论文写作</h2><h3 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h3><p>论文写作可以使用合适的模板，例如<code>IEEE</code>的模板，只需在文档类型处修改即可，代码如下：</p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\documentclass</span><span class="token punctuation">[</span>conference<span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token keyword">IEEEtran</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h3 id="双栏"><a href="#双栏" class="headerlink" title="双栏"></a>双栏</h3><p>更改文档的单双栏模式，只需更改文档类型处的选项即可，代码如下：<br>单栏：</p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\documentclass</span><span class="token punctuation">[</span>onecolumn<span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token keyword">article</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>双栏：</p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\documentclass</span><span class="token punctuation">[</span>twocolumn<span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token keyword">article</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h3 id="跨栏图表"><a href="#跨栏图表" class="headerlink" title="跨栏图表"></a>跨栏图表</h3><p>在双栏编辑模式下，图片只能在一栏中显示，而且如果图片的宽度超过单栏文本宽度，则只能显示其中一部分，剩下的部分会溢出。</p>
-<p>若想在双栏模式下插入跨栏图表可将环境替换为带<code>*</code>的<code>figure</code>或<code>table</code>环境，代码如下：</p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">figure*</span><span class="token punctuation">}</span>
-……
-<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">figure*</span><span class="token punctuation">}</span>
-或
-<span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">talbe*</span><span class="token punctuation">}</span>
-……
-<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">table*</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="无自动编号的标题"><a href="#无自动编号的标题" class="headerlink" title="无自动编号的标题"></a>无自动编号的标题</h3><p>LaTeX中的标题都是自动编号的，若想使用无编号的标题，可使用带<code>*</code>的<code>section</code>代码，如下：</p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\section*</span><span class="token punctuation">{</span><span class="token headline class-name">References</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><p>LaTeX中的公式，图表，参考文献都是自动编号的，添加<code>\label</code>语句后可以进行引用，还可以设置引用格式，使用方法如下：</p>
-<h4 id="公式引用"><a href="#公式引用" class="headerlink" title="公式引用"></a>公式引用</h4><p>需导入<code>amsmath</code>宏包，代码为<code>\usepackage{amsmath}</code>。</p>
-<p><strong>公式</strong></p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">equation</span><span class="token punctuation">}</span><span class="token equation string">
-z=x+y
-<span class="token equation-command regex">\label</span>{eq1}
-</span><span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">equation</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>引用</strong></p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">Eq. (<span class="token function selector">\ref</span><span class="token punctuation">{</span><span class="token keyword">eq1</span><span class="token punctuation">}</span>)
-或导入amsmath宏包，使用如下代码（推荐）：
-Eq. <span class="token function selector">\eqref</span><span class="token punctuation">{</span>eq1<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="图片引用"><a href="#图片引用" class="headerlink" title="图片引用"></a>图片引用</h4><p>需导入<code>graphicx</code>宏包，代码为<code>\usepackage{graphicx}</code>。</p>
-<p><strong>图片</strong></p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">figure</span><span class="token punctuation">}</span><span class="token punctuation">[</span>htbp<span class="token punctuation">]</span>
-<span class="token function selector">\centering</span>
-<span class="token function selector">\includegraphics</span><span class="token punctuation">[</span>width=8cm<span class="token punctuation">]</span><span class="token punctuation">{</span>image/fig01-network model.png<span class="token punctuation">}</span>
-<span class="token function selector">\caption</span><span class="token punctuation">{</span>Network model.<span class="token punctuation">}</span>
-<span class="token function selector">\label</span><span class="token punctuation">{</span><span class="token keyword">fig1</span><span class="token punctuation">}</span>
-<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">figure</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>引用</strong></p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">Fig. <span class="token function selector">\ref</span><span class="token punctuation">{</span><span class="token keyword">fig1</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h4 id="表格引用"><a href="#表格引用" class="headerlink" title="表格引用"></a>表格引用</h4><p><strong>表格</strong></p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">table</span><span class="token punctuation">}</span><span class="token punctuation">[</span>htbp<span class="token punctuation">]</span>
-<span class="token function selector">\caption</span><span class="token punctuation">{</span>Parameters for simulation<span class="token punctuation">}</span>
-<span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">center</span><span class="token punctuation">}</span>
-<span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">tabular</span><span class="token punctuation">}</span><span class="token punctuation">{</span>|c|c|c|c|<span class="token punctuation">}</span>
-<span class="token function selector">\hline</span>
-<span class="token function selector">\textbf</span><span class="token punctuation">{</span>Parameters<span class="token punctuation">}</span><span class="token punctuation">&amp;</span><span class="token function selector">\textbf</span><span class="token punctuation">{</span>Values<span class="token punctuation">}</span> <span class="token function selector">\\</span>
-<span class="token function selector">\hline</span>
-Count of Nodes <span class="token punctuation">&amp;</span> 2 to 160 <span class="token function selector">\\</span>
-Simulation time <span class="token punctuation">&amp;</span> 60s <span class="token function selector">\\</span>
-Layer used <span class="token punctuation">&amp;</span> Logical Link Layer <span class="token function selector">\\</span>
-Type of Antenna <span class="token punctuation">&amp;</span> Omni Directional <span class="token function selector">\\</span>
-Queue type <span class="token punctuation">&amp;</span> Drop tail <span class="token function selector">\\</span>
-MAC <span class="token punctuation">&amp;</span> 802.11 <span class="token function selector">\\</span>
-<span class="token function selector">\hline</span>
-<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">tabular</span><span class="token punctuation">}</span>
-<span class="token function selector">\label</span><span class="token punctuation">{</span><span class="token keyword">tab1</span><span class="token punctuation">}</span>
-<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">center</span><span class="token punctuation">}</span>
-<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">table</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>引用</strong></p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">Table. <span class="token function selector">\ref</span><span class="token punctuation">{</span><span class="token keyword">tab1</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h4 id="页面内参考文献引用"><a href="#页面内参考文献引用" class="headerlink" title="页面内参考文献引用"></a>页面内参考文献引用</h4><p><strong>参考文献</strong></p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">thebibliography</span><span class="token punctuation">}</span><span class="token punctuation">{</span>00<span class="token punctuation">}</span>
-<span class="token function selector">\bibitem</span><span class="token punctuation">{</span>b1<span class="token punctuation">}</span> Ben-Othman J, Yahya B. Energy efficient and QoS based routing protocol for wireless sensor networks. J Parallel Distrib Comput 2010;2010(70):849–57.
-<span class="token function selector">\bibitem</span><span class="token punctuation">{</span>b2<span class="token punctuation">}</span> Younis M, Youssef M, Arisha K. Energy-aware routing in cluster-based sensor networks. In: Proceedings of the IEEE 20th international symposium on modeling, analysis and simulation of computer and telecommunication systems; 2012. p. 0129. https://doi.org/10.1109/MASCOT.2002.1167069.
-<span class="token function selector">\bibitem</span><span class="token punctuation">{</span>b3<span class="token punctuation">}</span> Al-Karaki JN, Kamal AE. Routing techniques in wireless sensor networks: a survey. IEEE J Wirel Commun 2004;11(6):6–28. 2004.
-<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">thebibliography</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>引用</strong></p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\cite</span><span class="token punctuation">{</span><span class="token keyword">b1</span><span class="token punctuation">}</span>
-<span class="token function selector">\cite</span><span class="token punctuation">{</span><span class="token keyword">b2</span><span class="token punctuation">}</span>
-<span class="token function selector">\cite</span><span class="token punctuation">{</span><span class="token keyword">b3</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="bib参考文献引用"><a href="#bib参考文献引用" class="headerlink" title="bib参考文献引用"></a>bib参考文献引用</h4><p><strong>流程</strong></p>
-<ol>
-<li>在论文投稿官方网站上获取论文LaTeX模板，其中包含bib文件，可对bib文件重命名。</li>
-<li>在tex文件中找到bib文件声明位置，进行修改，若没有bib文件声明，则添加声明。</li>
-<li>在谷歌学术等文献检索网站上检索参考文献，在引用中复制<code>BibTeX</code>格式的代码，粘贴到bib文件的末尾。</li>
-<li>在tex文件中需要引用参考文献的位置使用<code>\cite{BibTexName}</code>语法进行引用，其中<code>BibTeXName</code>为<code>BibTeX</code>代码中的第一行的名称。</li>
-</ol>
-<p><strong>bib声明</strong><br>在<code>tex</code>文件中，结尾处，<code>\end{document}</code>之前，找到如下代码：</p>
-<pre class="line-numbers language-none"><code class="language-none">\bibliographystyle{FormatName}
-\bibliography{BibName}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>可进行修改，其中，<code>FormatName</code>为格式名称，<code>BibName</code>为bib文件名称。</p>
-<p>示例：</p>
-<pre class="line-numbers language-none"><code class="language-none">\bibliographystyle{ACM-Reference-Format}
-\bibliography{ref}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p><strong>BibTeX代码</strong><br>在谷歌学术等文献检索软件中检索需要的参考文献，以<code>Conditional generative adversarial nets</code>为例，在文献处点击<code>引用</code>，选择<code>BibTeX</code>格式，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/fca90976b4271c4b9dbae0d94c383c40.png" alt="在这里插入图片描述"></p>
-<p>复制<code>BibTeX</code>代码，示例如下。将其粘贴到bib文件的末尾。</p>
-<pre class="line-numbers language-none"><code class="language-none">@article{mirza2014conditional,
-  title={Conditional generative adversarial nets},
-  author={Mirza, Mehdi and Osindero, Simon},
-  journal={arXiv preprint arXiv:1411.1784},
-  year={2014}
-}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>引用</strong><br>在<code>tex</code>文件中，要引用参考文献时，使用<code>\cite{}</code>语法进行引用，中括号的内容为<code>BibTeX</code>代码的第一行内容。</p>
-<p>以上文的<code>BibTeX</code>为例，进行引用：</p>
-<pre class="line-numbers language-none"><code class="language-none">Conditional GAN (CGAN) \cite{mirza2014conditional}.<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/95b7f365d4584b8f5f6935f887c7dbe8.png" alt="在这里插入图片描述"></p>
-<h4 id="改变引用颜色"><a href="#改变引用颜色" class="headerlink" title="改变引用颜色"></a>改变引用颜色</h4><p>改变引用颜色前最好在导言区导入<code>xcolor</code>宏包，代码为<code>\usepackage{xcolor}</code>。<br>改变引用颜色需要在导言区添加如下代码：</p>
-<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\usepackage</span><span class="token punctuation">[</span>colorlinks,bookmarksopen,bookmarksnumbered,citecolor=green, linkcolor=red, urlcolor=blue<span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token keyword">hyperref</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><code>citecolor</code>为参考文献颜色，<code>linkcolor</code>为图表和公式引用的颜色，<code>urlcolor</code>为超链接颜色。各颜色可根据偏好或要求自行更改。</p>
-<p>显示效果如下：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/7d1bd017c3aa6e21851d106a60c2b92c.png" alt="在这里插入图片描述"></p>
-]]></content>
-      <categories>
-        <category>Latex</category>
-        <category>Hexo</category>
       </categories>
   </entry>
   <entry>
@@ -11973,6 +11216,762 @@ gvcf/chr2/BM_S_1.g.vcf.gz<span aria-hidden="true" class="line-numbers-rows"><spa
 ]]></content>
       <categories>
         <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>LaTeX详细教程+技巧总结</title>
+    <url>/2025/11/24/latex/</url>
+    <content><![CDATA[<blockquote>
+<p>转载自: <a href="https://blog.csdn.net/NSJim/article/details/109066847">https://blog.csdn.net/NSJim/article/details/109066847</a></p>
+</blockquote>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>若想直接学习LaTeX数学公式，请参见我的另一篇博客：<a href="https://blog.csdn.net/NSJim/article/details/109045914">LaTeX数学公式-详细教程</a> 。</p>
+<p>本篇文章介绍LaTeX的基本用法，并有自己的经验和总结。另外，可以从LaTeX的官方文档进行学习，官方文档大部分是英文文档，链接：<a href="http://www.ctex.org/OnlineDocuments">LaTeX在线文档</a> ，<a href="http://www.ctex.org/documents/packages/index.htm">LaTex宏包文档</a>。</p>
+<p>本篇文章内容包含LaTeX工具，<a href="https://so.csdn.net/so/search?q=LaTeX%E6%A8%A1%E6%9D%BF&amp;spm=1001.2101.3001.7020">LaTeX模板</a>，LaTeX技巧，LaTeX基础，文章架构，字体、大小和颜色，链接，列表，图片，表格，数学公式，算法（伪代码），代码块，论文写作，等等。</p>
+<h2 id="LaTeX工具"><a href="#LaTeX工具" class="headerlink" title="LaTeX工具"></a>LaTeX工具</h2><h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>LaTeX工具分为在线工具和本地工具，本地工具又分为前台和后台。在线工具推荐Overleaf，本地工具推荐前台使用TeXStudio，后台推荐使用TeXLive（后台工具有TeXLive，MikTeX，CTeX等）。</p>
+<p>各个后台的比较：TeXLive有跨平台的性质，适用于Linux、Mac以及Windows系统；TeXLive是完全安装，大小大概为5G左右；每年有一次更新。TeXStudio只适用于Windows系统；它只安装基本的东西，其他任何需要的东西可以动态安装；只有发生重大变化时才会更新。CTeX只适用于Windows系统；默认编码不是UTF-8；已经不再维护，不再更新了，容易出Bug。</p>
+<p>可以根据需求选择合适的本地后台，若觉得安装配置比较麻烦，则可以使用Overleaf在线工具，有网络即可使用，更重要的是国内也可以使用，并支持中文界面。详细使用方法在下文介绍。</p>
+<h3 id="Overleaf（推荐）"><a href="#Overleaf（推荐）" class="headerlink" title="Overleaf（推荐）"></a>Overleaf（推荐）</h3><p>网址：<a href="https://www.overleaf.com/">Overleaf</a> 。<br>注册账户并登录后即可使用。</p>
+<h4 id="使用流程"><a href="#使用流程" class="headerlink" title="使用流程"></a>使用流程</h4><p>点击<code>New Project</code>后还可以使用<code>Templates</code>模板，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/39fa00e68d7ffbdd5c3d3167e023971d.png" alt="在这里插入图片描述"><br>新建项目后，左边为源代码视图，右边为预览视图。可以点击左上角的<code>Menu</code>下载源文件，PDF文件，或设置编译器，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/8e7851a57992dd06a3b1b55c7205a34f.png" alt="在这里插入图片描述"><br>展开<code>Recompile</code>按钮可以设置自动编译，并忽略语法检查，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/68becbf190957cc52ce795c0108f9b69.png" alt="在这里插入图片描述"></p>
+<h4 id="切换界面语言"><a href="#切换界面语言" class="headerlink" title="切换界面语言"></a>切换界面语言</h4><p><strong>方法1</strong></p>
+<p>点击Overleaf界面左下角的国旗标志可以切换界面语言，切换成中文的操作如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/1393c3043d906b6aa79b2167d8df5a98.png" alt="在这里插入图片描述"></p>
+<p><strong>方法2</strong></p>
+<p>直接更改网址如下：<code>https://cn.overleaf.com/project</code><br>即可切换界面语言为中文。</p>
+<h4 id="更改编译器"><a href="#更改编译器" class="headerlink" title="更改编译器"></a>更改编译器</h4><p>在项目<code>菜单</code>的<code>设置</code>中可以更改，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/c320de6eb4aced8679f56c80c5056e69.png" alt="在这里插入图片描述"></p>
+<h4 id="文档定位"><a href="#文档定位" class="headerlink" title="文档定位"></a>文档定位</h4><p>在项目中线顶部有2个箭头样式的按钮，可以使tex文档和PDF文档相互定位，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/769778c3d5c145f7f6b3f37d8cf3e21d.png" alt="在这里插入图片描述"><br>补充：<br>左键双击PDF文档的特定位置，tex文档会跳转到对应位置。</p>
+<h4 id="快捷键"><a href="#快捷键" class="headerlink" title="快捷键"></a>快捷键</h4><p>Overleaf内置了很多快捷键，本人分类为常用快捷键和全部快捷键如下：</p>
+<p><strong>常用快捷键</strong><br><code>Ctrl+B</code>：粗体<br><code>Ctrl+I</code>：斜体<br><code>Ctrl+/</code>：注释<br><code>Ctrl+Z</code>：撤销<br><code>Ctrl+Y</code>：重做<br><code>Ctrl+F</code>：查找和替换<br><code>Ctrl+Home</code>：到文档顶部<br><code>Ctrl+End</code>：到文档底部<br><code>Ctrl+S</code>：重新编译<br><code>Ctrl+Enter</code>：重新编译</p>
+<p><strong>全部快捷键</strong><br>可以在Overleaf项目中点击<code>菜单</code>中的<code>快捷键</code>选项查看，如下图：</p>
+<p>2021年5月<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/c738ce43b0fa42d886df60b770a82c5a.png" alt="在这里插入图片描述"></p>
+<h3 id="TeXLive和TeXStudio"><a href="#TeXLive和TeXStudio" class="headerlink" title="TeXLive和TeXStudio"></a>TeXLive和TeXStudio</h3><p>安装及配置详情可参见其他人的博客：<a href="https://blog.csdn.net/zywhehe/article/details/83113214">LaTeX新手入门以及TeXlive和TeXstudio的安装使用</a> 。</p>
+<p>本人一般使用在线工具Overleaf，因此个人教程暂略，后期若安装本地环境再进行完善。</p>
+<h2 id="LaTeX模板"><a href="#LaTeX模板" class="headerlink" title="LaTeX模板"></a>LaTeX模板</h2><p>LaTeX有很多模板，可以直接使用，方便用户排版。</p>
+<p>Overleaf中一些常用模板，包含Project，Resume，Homework，Letter，Memo，Poster，Book，Journal，Thesis。</p>
+<p>用户可以直接在Overleaf中使用，也可以下载到本地进行使用。</p>
+<h2 id="LaTeX技巧"><a href="#LaTeX技巧" class="headerlink" title="LaTeX技巧"></a>LaTeX技巧</h2><h3 id="LaTeX"><a href="#LaTeX" class="headerlink" title="LaTeX"></a>LaTeX</h3><p>LaTeX编辑器中，内置了一个语句，用来展现LaTeX的Logo，代码和效果如下：</p>
+<p>代码：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\LaTex</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cf2da4b179a665908abac9dadc694a0b.png" alt="在这里插入图片描述"></p>
+<h3 id="中文支持"><a href="#中文支持" class="headerlink" title="中文支持"></a>中文支持</h3><p>无论是在线工具还是本地工具，LaTeX默认都是不支持中文的，因此需要在源代码和配置上稍作修改才可以让LaTeX支持中文，步骤如下：</p>
+<ol>
+<li><p>编译器配置：<code>XeLaTeX</code>，可在Overleaf的<code>菜单 - 编译器</code>处修改。</p>
+</li>
+<li><p><code>tex</code>文件编码：<code>utf-8</code>，一般默认为<code>utf-8</code>编码，无需修改。</p>
+</li>
+<li><p>代码开头添加：</p>
+<p>方式1（推荐）：添加宏包</p>
+<pre class="line-numbers language-none"><code class="language-none">\usepackage[UTF8]{ctex}<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>方式2：设置文档类型</p>
+<pre class="line-numbers language-none"><code class="language-none">\documentclass[UTF8]{ctexart}<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+</ol>
+<h3 id="首行缩进"><a href="#首行缩进" class="headerlink" title="首行缩进"></a>首行缩进</h3><h4 id="进行缩进"><a href="#进行缩进" class="headerlink" title="进行缩进"></a>进行缩进</h4><p>若LaTeX默认没有段首缩进，因此要首行缩进需要进行修改。在导言区加入如下代码（距离单位一般为<code>pt</code>或<code>em</code>，<code>pt</code>是绝对单位；<code>em</code>是相对单位，表示1个中文字符宽度；本人比较喜欢<code>em</code>）：</p>
+<pre class="line-numbers language-none"><code class="language-none">% 使用indentfirst宏包
+\usepackage{indentfirst}
+% 设置首行缩进距离
+\setlength{\parindent}{2em}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="不进行缩进"><a href="#不进行缩进" class="headerlink" title="不进行缩进"></a>不进行缩进</h4><p>若LaTeX已经是段首缩进的，因此要段首不进行缩进需要进行修改。</p>
+<p><strong>方式1（推荐）：</strong> 单段取消缩进，放在段首即可。</p>
+<pre class="line-numbers language-none"><code class="language-none">\noindent<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><strong>方式2：</strong> 全局取消缩进，在想缩进的段落再进行缩进。<br>放在导言区：</p>
+<pre class="line-numbers language-none"><code class="language-none">\setlength{\parindent}{0pt}<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>放在想要缩进的段落：</p>
+<pre class="line-numbers language-none"><code class="language-none">\hspace*{2em}段落\\<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="显示下划线"><a href="#显示下划线" class="headerlink" title="显示下划线"></a>显示下划线</h3><p><strong>方法1</strong><br>使用转义字符：<code>\_</code></p>
+<p><strong>方法2</strong><br>使用LaTeX命令：<code>\textunderscore</code></p>
+<p><strong>方法3</strong><br>导入宏包：<code>\usepackage{underscore}</code></p>
+<p>例子1（方法1和2）：</p>
+<pre class="line-numbers language-none"><code class="language-none">a\_b
+
+a\textunderscore b<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/2846c8cfab95dca6c9623d2d7115070c.png" alt="在这里插入图片描述"></p>
+<p>例子2（方法3）：</p>
+<pre class="line-numbers language-none"><code class="language-none">\usepackage{underscore}
+
+a_b<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/188304638c7a9e1900c239e3639c9a20.png" alt="在这里插入图片描述"></p>
+<h2 id="LaTeX基础"><a href="#LaTeX基础" class="headerlink" title="LaTeX基础"></a>LaTeX基础</h2><h3 id="导言区与正文区"><a href="#导言区与正文区" class="headerlink" title="导言区与正文区"></a>导言区与正文区</h3><p>在<code>begin{document}</code>和<code>end{document}</code>之间的就是正文区，而在这之前的就是导言区。</p>
+<h3 id="文档类型"><a href="#文档类型" class="headerlink" title="文档类型"></a>文档类型</h3><p><code>\documentclass{article}</code>是确定了文档类型为<code>article</code>，一般LaTeX提供三种基本文档，此外两种是<code>report</code>和<code>book</code>。三者分别用来写小篇幅的文章、中篇幅的报告和长篇幅的书籍。</p>
+<h3 id="宏包"><a href="#宏包" class="headerlink" title="宏包"></a>宏包</h3><p>LaTeX导言区可以导入各种宏包，以使用相应宏包的功能，一条语句中可以导入多个宏包，语法如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">\usepackage{宏包1, 宏包2}<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>常用的宏包：<br>ctex：中文支持<br>amsmath：<a href="https://so.csdn.net/so/search?q=latex%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F&amp;spm=1001.2101.3001.7020">latex数学公式</a>支持<br>graphicx：插入图片<br>algorithm和algorithmic：算法排版<br>listings：插入代码块<br>等等</p>
+<h3 id="编译器"><a href="#编译器" class="headerlink" title="编译器"></a>编译器</h3><p>LaTeX的编译器有<code>pdfLaTeX</code>，<code>LaTeX</code>，<code>XeLaTeX</code>，<code>LuaLaTeX</code>，在设置中可以进行更改。Overleaf默认的编译器为<code>pdfLaTeX</code>，因此要使其支持中文需要改为<code>XeLaTeX</code>。</p>
+<h3 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h3><p>Overleaf等工具中可以使用快捷键<code>Ctrl+/</code>来批量注释或批量取消注释。</p>
+<h4 id="单行注释"><a href="#单行注释" class="headerlink" title="单行注释"></a>单行注释</h4><pre class="line-numbers language-none"><code class="language-none">% 注释内容<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="多行注释"><a href="#多行注释" class="headerlink" title="多行注释"></a>多行注释</h4><p>方式1（推荐）：</p>
+<pre class="line-numbers language-none"><code class="language-none">\iffalse
+注释内容
+\fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>方式2：<br>使用<code>\usepackage{verbatim}</code>宏包</p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{comment}
+注释内容
+\end{comment} <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="英文引号"><a href="#英文引号" class="headerlink" title="英文引号"></a>英文引号</h3><p>在LaTeX中输入英文引号时，导出的PDF显示的是顺撇的，如下：</p>
+<p>代码：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">'English'
+
+''English''<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/d29e424c7071faf291abdd38c81f5202.png" alt="在这里插入图片描述"><br>要想正确输入英文引号，把左侧的引号用 ` 代替即可，如下：</p>
+<p>代码：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">`English'
+
+``English''<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/29c080f321f400dd38e741a4834d769a.png" alt="在这里插入图片描述"></p>
+<h3 id="空格"><a href="#空格" class="headerlink" title="空格"></a>空格</h3><p><strong>LaTeX支持</strong></p>
+<table>
+<thead>
+<tr>
+<th>空格方式</th>
+<th>源代码</th>
+<th>显示</th>
+<th>宽度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>quad空格</td>
+<td>a \quad b</td>
+<td>a b a \quad b<em>a**b</em></td>
+<td>1个中文字符的宽度</td>
+</tr>
+<tr>
+<td>qquad空格</td>
+<td>a \qquad b</td>
+<td>a b a \qquad b<em>a**b</em></td>
+<td>2个中文字符的宽度</td>
+</tr>
+<tr>
+<td>大空格</td>
+<td>a\ b</td>
+<td>a  b a\ b<em>a</em> <em>b</em></td>
+<td>1/3字符宽度</td>
+</tr>
+<tr>
+<td>没有空格</td>
+<td>ab</td>
+<td>a b ab<em>ab</em></td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>LaTeX数学公式支持</strong></p>
+<p>除上述空格以外，还支持如下空格：</p>
+<table>
+<thead>
+<tr>
+<th>空格方式</th>
+<th>源代码</th>
+<th>显示</th>
+<th>宽度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>中等空格</td>
+<td><code>$a\;b$</code></td>
+<td>a    b a;b<em>a**b</em></td>
+<td>2/7字符宽度</td>
+</tr>
+<tr>
+<td>小空格</td>
+<td><code>$a\,b$</code></td>
+<td>a   b a,b<em>a**b</em></td>
+<td>1/6字符宽度</td>
+</tr>
+<tr>
+<td>紧贴</td>
+<td><code>$a\!b$</code></td>
+<td>a  ⁣ b a!b<em>a**b</em></td>
+<td>缩进1/6字符宽度</td>
+</tr>
+</tbody></table>
+<h3 id="换行"><a href="#换行" class="headerlink" title="换行"></a>换行</h3><p><code>\\</code>：换行，一般在一行的最后写。<br><code>\\[offset]</code>：换行，并且与下一行的行间距为原来行间距+offset，offset单位一般是<code>em</code>或<code>pt</code>。</p>
+<p><strong>注意：</strong><br>若要在表格单元格内换行，无法使用<code>\\</code>进行换行，需要在导言区导入<code>\usepackage{makecell}</code>宏包进行换行，详情见<strong>表格</strong>章节。</p>
+<h3 id="换段"><a href="#换段" class="headerlink" title="换段"></a>换段</h3><p>源代码空一行即可进行换段（推荐）。<br>也可以使用代码<code>\par</code>进行换段，一般在一段的最后写。</p>
+<h3 id="新页"><a href="#新页" class="headerlink" title="新页"></a>新页</h3><p>使用<code>\newpage</code>进行换页，一般在一页的最后写。</p>
+<h3 id="转义字符"><a href="#转义字符" class="headerlink" title="转义字符"></a>转义字符</h3><p>写法：<code>\+字符</code></p>
+<p>用途：当某些特殊字符与LaTeX语法冲突时，使用转义字符可以使字符强制显示。</p>
+<p>示例：<code>\%</code>，可以显示出百分号，而不是注释的含义；<code>\_</code>，显示下划线，而不是下标；<code>\^</code>显示符号本身，而不是上标。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\%home\_name\%=honor<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f8c4a3625d492de03606da8791546a8d.png" alt="在这里插入图片描述"><br>补充：若想不使用转义字符显示下划线，有2种方法，详情请见 <strong>LaTeX技巧-显示下划线</strong> 章节。</p>
+<h3 id="可选参数-htbp"><a href="#可选参数-htbp" class="headerlink" title="可选参数[htbp]"></a>可选参数[htbp]</h3><p>LaTeX插入图片、表格等元素时，第一行后面有一个可选参数<code>[htbp]</code>，例如，<code>\begin{figure}[htbp]</code>。</p>
+<p><code>[htbp]</code>是个可选参数项，允许用户指定图片、表格等元素被放置的位置。这一可选参数项可以是下列字母的任意组合。</p>
+<p>h(here): 当前位置；将图形放置在 正文文本中给出该图形环境的地方。如果本页所剩的页面不够， 这一参数将不起作用。<br>t(top): 顶部；将图形放置在页面的顶部。<br>b(bottom): 底部；将图形放置在页面的底部。<br>p(page): 浮动页；将图形放置在一只允许有浮动对象的页面上。</p>
+<p>注意：在使用这些参数时：</p>
+<ol>
+<li>如果在图形环境中没有给出上述任一参数，则缺省为 <code>[tbp]</code>。</li>
+<li>给出参数的顺序不会影响到最后的结果。因为在考虑这些参数时LaTeX总是尝试以 <code>h-t-b-p</code> 的顺序来确定图形的位置。所以 <code>[hb]</code> 和 <code>[bh]</code> 都以<code>h-b</code> 的顺序来排版。</li>
+<li>给出的参数越多，LaTeX的排版结果就会越好。<code>[htbp], [tbp], [htp], [tp]</code> 这些组合得到的效果不错，<code>[h]</code>也是常用的选择。</li>
+</ol>
+<h2 id="文章架构"><a href="#文章架构" class="headerlink" title="文章架构"></a>文章架构</h2><h3 id="纸张布局"><a href="#纸张布局" class="headerlink" title="纸张布局"></a>纸张布局</h3><pre class="line-numbers language-none"><code class="language-none">% 设置页面的环境,a4纸张大小，左右上下边距信息
+\usepackage[a4paper,left=10mm,right=10mm,top=15mm,bottom=15mm]{geometry}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h3 id="标题级别"><a href="#标题级别" class="headerlink" title="标题级别"></a>标题级别</h3><p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\section{一级标题}
+\subsection{二级标题} 
+\subsubsection{二级标题} <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f8d4d5a7983e97f44e4187d8efbeed02.png" alt="在这里插入图片描述"></p>
+<h3 id="标题、作者、时间"><a href="#标题、作者、时间" class="headerlink" title="标题、作者、时间"></a>标题、作者、时间</h3><p>注意：<code>\maketitle</code>这一行一定要在<code>\begin{document}</code>的后面，否则LaTeX会判定为语法错误。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\documentclass{article} % article 文档
+\usepackage[UTF8]{ctex}  % 使用宏包(为了能够显示汉字)
+% 设置页面的环境,a4纸张大小，左右上下边距信息
+\usepackage[a4paper,left=10mm,right=10mm,top=15mm,bottom=15mm]{geometry}
+
+\title{NSJim的文章}  % 文章标题
+\author{NSJim}   % 作者的名称
+\date{\today}       % 当天日期
+
+% 正文开始
+\begin{document}
+
+\maketitle          % 添加这一句才能够显示标题等信息
+
+% 正文结束
+\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/15f00dd995f7af1f8d900a79bb703e08.png" alt="在这里插入图片描述"></p>
+<h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>在<code>\maketitle</code>下添加内容，如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">\maketitle          %添加这一句才能够显示标题等信息
+%摘要开始部分
+\begin{abstract}
+该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。
+\end{abstract}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://i-blog.csdnimg.cn/blog_migrate/cbcad212c6cd56d55f4fb375a1b0448a.png#pic_center" alt="在这里插入图片描述"></p>
+<h3 id="引用、脚注"><a href="#引用、脚注" class="headerlink" title="引用、脚注"></a>引用、脚注</h3><p>引用：写在<code>\begin{quote}</code>和<code>\end{quote}</code>之间。<br>脚注：在需要添加脚注的文字后添加<code>\footnote{脚注内容}</code>即可。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">西游记\footnote{中国古典四大名著之一}小说开头写道：
+\begin{quote}
+{\kaishu 东胜神洲有一花果山，山顶一石，受日月精华，生出一石猴。之后因为成功闯入水帘洞，被花果山诸猴拜为“美猴王”。}
+\end{quote}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/04545b613491aa492b626a0d83121ae0.png" alt="在这里插入图片描述"><br><img src="https://i-blog.csdnimg.cn/blog_migrate/f46fd5f2a0548164c88ed243e5fdc7d3.png" alt="在这里插入图片描述"></p>
+<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p>标题设置：一级标题<code>\section{}</code>，耳机标题<code>\subsection{}</code>，三级标题<code>\subsubsection{}</code>；<br>段落设置：在一段的最后添加<code>\par</code>代表一段的结束；<br>目录设置：在<code>\begin{document}</code>内容中添加：<code>\tableofcontents</code></p>
+<p>以下为一个示例：</p>
+<pre class="line-numbers language-none"><code class="language-none">\documentclass{article} % article 文档
+\usepackage[UTF8]{ctex}  % 使用宏包(为了能够显示汉字)
+% 设置页面的环境,a4纸张大小，左右上下边距信息
+\usepackage[a4paper,left=10mm,right=10mm,top=15mm,bottom=15mm]{geometry}
+
+\title{NSJim的文章}  % 文章标题
+\author{NSJim}   % 作者的名称
+\date{\today}       % 当天日期
+
+% 正文开始
+\begin{document}
+
+\maketitle          % 添加这一句才能够显示标题等信息
+
+% 生成目录设置
+\renewcommand{\contentsname}{目录} %将content转为目录
+\tableofcontents
+
+% 摘要开始部分
+\begin{abstract}
+该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。该部分内容是放置摘要信息的。
+\end{abstract}
+
+% 标题开始
+\section{一级标题1}
+第一段一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容。\par
+第二段一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容，一级标题下的内容。
+
+\subsection{二级标题1.1}
+二级标题下的内容。
+
+\subsubsection{三级标题下的内容1.1.1}
+三级标题下的内容。
+
+\section{一级标题2}
+一级标题2中的内容
+
+% 正文结束
+\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/77ea4dbcda2ccf25b515a55207a7dbe6.png" alt="在这里插入图片描述"></p>
+<h2 id="字体，大小，颜色"><a href="#字体，大小，颜色" class="headerlink" title="字体，大小，颜色"></a>字体，大小，颜色</h2><p><strong>字体</strong></p>
+<p>使用代码：<code>{\字体 内容}</code>（推荐），有时可使用<code>\字体{内容}</code>（不推荐，容易出问题）。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">{\songti 宋体}
+{\heiti 黑体}
+{\fangsong 仿宋}
+{\kaishu 楷书}
+
+{\bf 粗体}
+{\it 斜体}
+{\sl 斜体}
+
+\textbf{粗体}
+\textit{斜体}
+\textsl{斜体}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/1de6158b0f9a068c3291d4aa4bc02da2.png" alt="在这里插入图片描述"></p>
+<p><strong>大小</strong></p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">{\tiny Hello} \\
+{\scriptsize Hello} \\
+{\footnotesize Hello} \\
+{\small Hello} \\
+{\normalsize Hello} \\
+{\large Hello} \\<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/fadf838e2821f43c676724fdd1136b2f.png" alt="在这里插入图片描述"><br><strong>颜色</strong></p>
+<p>需要导入宏包<code>\usepackage{xcolor}</code></p>
+<pre class="line-numbers language-none"><code class="language-none">\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage{color,xcolor}
+
+\setlength{\parindent}{0pt}
+
+% 预先定义好的颜色： red, green, blue, white, black, yellow, gray, darkgray, lightgray, brown, cyan, lime, magenta, olive, orange, pink, purple, teal, violet.
+
+% 定义颜色的5种方式
+\definecolor{light-gray}{gray}{0.95}    % 1.灰度
+\definecolor{orange}{rgb}{1,0.5,0}      % 2.rgb
+\definecolor{orange}{RGB}{255,127,0}    % 3.RGB
+\definecolor{orange}{HTML}{FF7F00}      % 4.HTML
+\definecolor{orange}{cmyk}{0,0.5,1,0}   % 5.cmyk
+
+\begin{document}
+
+% \pagecolor{yellow}          %设置背景色为黄色
+
+% 使用颜色的常用方式
+\textcolor{green}{绿色} % textcolor+颜色
+\color{orange}{橙色} % color+颜色
+\textcolor[rgb]{0,1,0}{绿色} % textcolor+rgb
+\color[rgb]{1,0,0}{红色} % color+rgb
+
+% 使用底色
+\colorbox{red}{\color{black}红底黑字}
+\fcolorbox{red}{green}{红框绿底} % 框色+背景色
+
+\end{document} <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/00bb12343ad32a159d28d7a08f3e1acc.png" alt="在这里插入图片描述"></p>
+<h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><p>导入宏包：<code>\usepackage{url}</code><br>插入超链接：<code>\url{www.baidu.com}</code></p>
+<h2 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h2><p>未完，待续。</p>
+<h2 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h2><h3 id="可选参数-htbp-1"><a href="#可选参数-htbp-1" class="headerlink" title="可选参数[htbp]"></a>可选参数[htbp]</h3><p>LaTeX插入图片、表格等元素时，第一行后面有一个可选参数<code>[htbp]</code>，例如，<code>\begin{figure}[htbp]</code>。</p>
+<p><code>[htbp]</code>是个可选参数项，允许用户指定图片、表格等元素被放置的位置。这一可选参数项可以是下列字母的任意组合。</p>
+<p>h(here): 当前位置；将图形放置在 正文文本中给出该图形环境的地方。如果本页所剩的页面不够， 这一参数将不起作用。<br>t(top): 顶部；将图形放置在页面的顶部。<br>b(bottom): 底部；将图形放置在页面的底部。<br>p(page): 浮动页；将图形放置在允许有浮动对象的页面上。</p>
+<p>注意：在使用这些参数时：</p>
+<ol>
+<li>如果在图形环境中没有给出上述任一参数，则缺省为 <code>[tbp]</code>。</li>
+<li>给出参数的顺序不会影响到最后的结果。因为在考虑这些参数时LaTeX总是尝试以 <code>h-t-b-p</code> 的顺序来确定图形的位置。所以 <code>[hb]</code> 和 <code>[bh]</code> 都以<code>h-b</code> 的顺序来排版。</li>
+<li>给出的参数越多，LaTeX的排版结果就会越好。<code>[htbp], [tbp], [htp], [tp]</code> 这些组合得到的效果不错，<code>[h]</code>也是常用的选择。</li>
+</ol>
+<h3 id="单张图片"><a href="#单张图片" class="headerlink" title="单张图片"></a>单张图片</h3><p>需要导入宏包：<code>\usepackage{graphicx}</code></p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">%开始插入图片
+\begin{figure}[htbp] % htbp代表图片插入位置的设置
+\centering %图片居中
+%添加图片；[]中为可选参数，可以设置图片的宽高；{}中为图片的相对位置
+\includegraphics[width=6cm]{image.jpg}
+\caption{达尔文游戏} % 图片标题
+\label{pic1} % 图片标签
+\end{figure}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/c87040c5dd7b87907aee4250f7c951c2.png" alt="在这里插入图片描述"></p>
+<h3 id="多张图片"><a href="#多张图片" class="headerlink" title="多张图片"></a>多张图片</h3><p><strong>并排插入两张图片</strong><br>方式1：图片编号增加1<br>两张图片公用一个大的图题，图片的编号只增加一个。</p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{figure}[ht]
+\centering
+\subfigure[11-1]{               %小图题的名称
+\includegraphics[width=4cm]{11-1}}
+\hspace{10pt}  %2张图片的水平距离
+\subfigure[11-2]{
+\includegraphics[width=4cm]{11-2}}
+\caption{两张图片公用的图题}
+\end{figure}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>方式2：图片编号增加2<br>每张图片有自己的图题，这种方法会使LaTeX中图片的编号顺序向后增加。</p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{figure}[h]
+\begin{minipage}[t]{0.45\linewidth}
+\centering
+\includegraphics[width=5.5cm,height=3.5cm]{10}
+\caption{第一张图片的图题.}
+\end{minipage}
+\begin{minipage}[t]{0.45\linewidth}        %图片占用一行宽度的45%
+\hspace{10pt}
+\includegraphics[width=5.5cm,height=3.5cm]{11}
+\caption{第二章图片的图题.}
+\end{minipage}
+\end{figure}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>并排插入多张图片</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{figure}
+\centering
+{
+\includegraphics[width=2.5cm]{10-1}}
+\hspace{10pt}    %每张图片水平距离
+{
+\includegraphics[width=2.5cm]{10-2}}
+\hspace{10pt}
+{
+\includegraphics[width=2.5cm]{10-3}}
+\hspace{10pt}
+{
+\includegraphics[width=2.5cm]{10-4}}
+\hspace{10pt}
+\caption{并排插入4张图片}
+\end{figure}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>竖排插入多张图片</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{figure}[h]
+\centering
+\subfigure[场景1]{
+\begin{minipage}[t]{0.45\textwidth}
+\centering
+\includegraphics[width=0.8\textwidth]{wolf2} \\
+\vspace{10pt} %2张图片的垂直距离
+\includegraphics[width=0.8\textwidth]{wolf3}
+\end{minipage}
+\end{figure}
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="表格"><a href="#表格" class="headerlink" title="表格"></a>表格</h2><p>技巧：若不想手动输入LaTeX语法生成表格，可以使用<a href="https://www.tablesgenerator.com/">在线生成LaTeX表格</a>的网站。可以从Excel里面粘贴或导入，可以实现单元格合并，而且会在合并行或合并列的时候提醒要引入对应的宏包。<br>网址：<code>https://www.tablesgenerator.com/</code></p>
+<p>当然，也可以使用LaTeX语法生成表格，示例如下：</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{table}[htbp] % htbp代表表格浮动位置
+% 表格居中
+\centering
+% 添加表头
+\caption{变量表}
+% 创建table环境
+\begin{tabular}{|cc|c|} % 3个c代表3列都居中，也可以设置l或r，|代表竖线位置
+% 表格的输入
+\hline  % 一条水平线
+x &amp; y &amp; z \\ % \\为换行符
+\hline
+11 &amp; 22 &amp; 33 \\
+\hline
+\end{tabular}
+\end{table}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/13dbb39eebe7b30121c961dd55dabe4f.png" alt="在这里插入图片描述"></p>
+<p><strong>表格单元格内换行</strong><br>需要使用<code>\usepackage{makecell}</code>宏包。将单元格的内容替换为<code>\makecell{XX\\XXXX}</code>，<code>\makecell{}</code>中的<code>\\</code>可以在单元格内换行。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{table}[htbp] % htbp代表表格浮动位置
+\centering
+\caption{变量表}
+\begin{tabular}{|cc|c|}
+\hline
+x &amp; y &amp; z \\
+\hline
+11 &amp; \makecell{Long\\text} &amp; 33 \\
+\hline
+\end{tabular}
+\end{table}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5fd5b3942e1bd198ea35063764963d4f.png" alt="在这里插入图片描述"></p>
+<h2 id="数学公式"><a href="#数学公式" class="headerlink" title="数学公式"></a>数学公式</h2><h3 id="公式支持"><a href="#公式支持" class="headerlink" title="公式支持"></a>公式支持</h3><p>LaTeX要输入数学公式需要导入宏包<code>\usepackage{amsmath}</code>；若要对公式的字体进行修改，还需要引入宏包<code>\usepackage{amsfonts}</code>。</p>
+<p>LaTeX数学公式的各种细节请参见我的另一篇博客：<a href="https://blog.csdn.net/NSJim/article/details/109045914"><em>LaTeX数学公式-详细教程</em></a> 。</p>
+<ol>
+<li>官方文档：<br>传送门：<a href="https://math.meta.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference"><em>官方文档</em></a><br>网址：<code>https://math.meta.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference</code></li>
+<li>中文教程：<br>传送门：<a href="https://www.jianshu.com/p/25f0139637b7"><em>中文教程</em></a><br>网址：<code>https://www.jianshu.com/p/25f0139637b7</code></li>
+<li>技巧：使用<a href="https://private.codecogs.com/latex/eqneditor.php"><em>在线LaTeX公式编辑器</em></a>，来生成LaTeX公式代码，然后复制到Markdown编辑器中，并在两边加上<code>$</code>或<code>$$</code>即可。<br>在线LaTeX公式编辑器网址：<code>https://private.codecogs.com/latex/eqneditor.php</code></li>
+<li>插入公式<br>左对齐公式（行中公式）：<code>$数学公式$</code><br>居中公式（独立公式）：<code>$$数学公式$$</code><br>注意：使用<code>$</code>行中公式时，<code>数学公式</code>与<code>$</code>连接处不要有空格，否则公式不会显示；使用<code>$$</code>居中公式时，<code>数学公式</code>与<code>$$</code>连接处可以有空格。即<code>$ 数学公式 $</code> 不显示公式。</li>
+<li>注释：<code>%</code>为单行注释，例子详见后文。</li>
+<li>细节：请参见我的另一篇博客：<a href="https://blog.csdn.net/NSJim/article/details/109045914"><em>LaTeX数学公式-详细教程</em></a> 。</li>
+</ol>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ol>
+<li>使用<code>$</code>，即行中公式时，<code>数学公式</code>与<code>$</code>连接处不要有空格，否则公式不会显示。</li>
+<li>使用<code>$$</code>，即居中公式时，<code>数学公式</code>与<code>$$</code>连接处可以有空格。即<code>$ 数学公式 $</code> 不显示公式。</li>
+<li>使用<code>$$</code>时，上方要空一行。</li>
+<li><code>=</code>不要单独打一行，否则可能会出错。</li>
+<li><code>+ - * / = ( ) | , . '</code>等符号直接在<code>$</code>或<code>$$</code>之间输入即可识别。</li>
+</ol>
+<h3 id="公式编号"><a href="#公式编号" class="headerlink" title="公式编号"></a>公式编号</h3><h4 id="自动编号"><a href="#自动编号" class="headerlink" title="自动编号"></a>自动编号</h4><p>使用<code>\begin{equation}</code>和<code>\end{equation}</code>进行公式输入，要同时使用，且编号不能够修改。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{equation}
+a^2+b^2=c^2
+\end{equation}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/dad5baa00648089323340c3fbc5f4ff2.png" alt="在这里插入图片描述"></p>
+<h4 id="手动编号"><a href="#手动编号" class="headerlink" title="手动编号"></a>手动编号</h4><p>在公式末尾使用<code>\tag{编号}</code>来实现公式手动编号，大括号内的内容可以自定义。需要使用<code>\usepackage{amsmath}</code>宏包，不能写在<code>$</code>或<code>$$</code>中，会报错。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\begin{equation}
+a^2+b^2=c^2
+\tag{2}
+\end{equation}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/df680e3efbedf6adbba35b02e83c8fdb.png" alt="在这里插入图片描述"></p>
+<h2 id="自定义标题样式"><a href="#自定义标题样式" class="headerlink" title="自定义标题样式"></a>自定义标题样式</h2><p>在导言区使用<code>\newtheorem{example}{Example}[section]</code>可以自定义标题样式，例子如下。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\newtheorem{example}{Example}[section] % 自定义example样式
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\begin{example}{Test1}
+
+Hello world!
+
+\end{example}
+
+\begin{example}{Test2}
+
+Hello world!
+
+\end{example}
+
+\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/d67ce3fb6d9fc0080c104b98f20344c7.png" alt="在这里插入图片描述"></p>
+<h2 id="算法（伪代码）"><a href="#算法（伪代码）" class="headerlink" title="算法（伪代码）"></a>算法（伪代码）</h2><p>需要使用<code>\usepackage{algorithm}</code>和<code>\usepackage{algorithmic}</code>宏包，<code>if</code>、<code>for</code>等关键字要按照规范书写，如<code>\IF \ENDIF</code>。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage{algorithm} % 排版算法
+\usepackage{algorithmic} % 排版算法
+
+\title{Algorithm}
+\author{NSJim Green}
+\date{October 2020}
+
+\begin{document}
+
+\maketitle
+
+\section{Algorithm 1}
+
+\begin{algorithm}
+\caption{CheckSum(A,x)} %算法标题
+\label{alg2} %标签
+\begin{algorithmic} %算法开始
+\STATE {\bf Input:} An array A and a value x  %也可以用\textbf{Input:}
+\STATE {\bf Output:} A bool value show if there is two elements in A whose sum is x
+\STATE A $\gets$ SORT(A)
+\STATE n $\gets$ length(n)
+\FOR{i $\gets$ 0 to n}
+    \IF{Binary-search(A,x-A[i],1,n)}
+    \STATE return true
+    \ENDIF
+\ENDFOR
+\STATE return false
+\end{algorithmic}
+\end{algorithm}
+
+\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f75b779e5c296161d721546696e8cbef.png" alt="在这里插入图片描述"></p>
+<h2 id="代码块"><a href="#代码块" class="headerlink" title="代码块"></a>代码块</h2><h3 id="基础用法"><a href="#基础用法" class="headerlink" title="基础用法"></a>基础用法</h3><p>使用<code>\usepackage{listings}</code>宏包，并使用<code>\lstset{}</code>进行基础设置，然后使用<code>\begin{lstlisting}[language=xxx]</code>和<code>\end{lstlisting}</code>插入代码块。</p>
+<p>基础设置包括行号，不显示字符串空格，代码块边框，不包含颜色等设置，要设置颜色和字体请见下文的高级用法。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage{listings}
+
+% 代码块基础设置
+\lstset{
+numbers=left,                          	% 在左侧显示行号
+showstringspaces=false,        			% 不显示字符串中的空格
+frame=single,                         	% 设置代码块边框
+}
+
+\title{Code block}
+\author{NSJim Green}
+\date{October 2020}
+
+\begin{document}
+
+\maketitle
+
+\section{C Language}
+
+\begin{lstlisting}[language=c]
+#include &lt;stdio.h&gt;
+
+// main function
+int main() {
+    printf("Hello World!");
+    return 0;
+}
+\end{lstlisting}
+
+\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/b1b393090a2265beb7d979acdce1b89b.png" alt="在这里插入图片描述"></p>
+<h3 id="高级用法"><a href="#高级用法" class="headerlink" title="高级用法"></a>高级用法</h3><p>使用<code>\usepackage{listings}</code>和<code>\usepackage{xcolor}</code>宏包，并使用<code>\lstset{}</code>进行高级设置，然后使用<code>\begin{lstlisting}[language=xxx]</code>和<code>\end{lstlisting}</code>插入代码块。</p>
+<p>高级设置除基础设置外，还包括关键字格式，字符串格式等设置。</p>
+<p>例子：</p>
+<pre class="line-numbers language-none"><code class="language-none">\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage{listings}
+\usepackage{xcolor}
+
+% 代码块高级设置
+\lstset{
+% basicstyle=\footnotesize,                 % 设置整体的字体大小
+showstringspaces=false,                     % 不显示字符串中的空格
+frame=single,                               % 设置代码块边框
+numbers=left,                               % 在左侧显示行号
+% numberstyle=\footnotesize\color{gray},    % 设置行号格式
+numberstyle=\color{darkgray},               % 设置行号格式
+backgroundcolor=\color{white},              % 设置背景颜色
+keywordstyle=\color{blue},                  % 设置关键字颜色
+commentstyle=\it\color[RGB]{0,100,0},       % 设置代码注释的格式
+stringstyle=\sl\color{red},                 % 设置字符串格式
+}
+
+\title{Code block}
+\author{NSJim Green}
+\date{October 2020}
+
+\begin{document}
+
+\maketitle
+
+\section{C Language}
+
+\begin{lstlisting}[language=c]
+#include &lt;stdio.h&gt;
+
+// main function
+int main() {
+    printf("Hello World!");
+    return 0;
+}
+\end{lstlisting}
+
+\end{document}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/9ddb7cf110f2c53c7ad37cc12cd7694f.png" alt="在这里插入图片描述"></p>
+<h2 id="论文写作"><a href="#论文写作" class="headerlink" title="论文写作"></a>论文写作</h2><h3 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h3><p>论文写作可以使用合适的模板，例如<code>IEEE</code>的模板，只需在文档类型处修改即可，代码如下：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\documentclass</span><span class="token punctuation">[</span>conference<span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token keyword">IEEEtran</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="双栏"><a href="#双栏" class="headerlink" title="双栏"></a>双栏</h3><p>更改文档的单双栏模式，只需更改文档类型处的选项即可，代码如下：<br>单栏：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\documentclass</span><span class="token punctuation">[</span>onecolumn<span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token keyword">article</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>双栏：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\documentclass</span><span class="token punctuation">[</span>twocolumn<span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token keyword">article</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="跨栏图表"><a href="#跨栏图表" class="headerlink" title="跨栏图表"></a>跨栏图表</h3><p>在双栏编辑模式下，图片只能在一栏中显示，而且如果图片的宽度超过单栏文本宽度，则只能显示其中一部分，剩下的部分会溢出。</p>
+<p>若想在双栏模式下插入跨栏图表可将环境替换为带<code>*</code>的<code>figure</code>或<code>table</code>环境，代码如下：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">figure*</span><span class="token punctuation">}</span>
+……
+<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">figure*</span><span class="token punctuation">}</span>
+或
+<span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">talbe*</span><span class="token punctuation">}</span>
+……
+<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">table*</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="无自动编号的标题"><a href="#无自动编号的标题" class="headerlink" title="无自动编号的标题"></a>无自动编号的标题</h3><p>LaTeX中的标题都是自动编号的，若想使用无编号的标题，可使用带<code>*</code>的<code>section</code>代码，如下：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\section*</span><span class="token punctuation">{</span><span class="token headline class-name">References</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><p>LaTeX中的公式，图表，参考文献都是自动编号的，添加<code>\label</code>语句后可以进行引用，还可以设置引用格式，使用方法如下：</p>
+<h4 id="公式引用"><a href="#公式引用" class="headerlink" title="公式引用"></a>公式引用</h4><p>需导入<code>amsmath</code>宏包，代码为<code>\usepackage{amsmath}</code>。</p>
+<p><strong>公式</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">equation</span><span class="token punctuation">}</span><span class="token equation string">
+z=x+y
+<span class="token equation-command regex">\label</span>{eq1}
+</span><span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">equation</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>引用</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">Eq. (<span class="token function selector">\ref</span><span class="token punctuation">{</span><span class="token keyword">eq1</span><span class="token punctuation">}</span>)
+或导入amsmath宏包，使用如下代码（推荐）：
+Eq. <span class="token function selector">\eqref</span><span class="token punctuation">{</span>eq1<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="图片引用"><a href="#图片引用" class="headerlink" title="图片引用"></a>图片引用</h4><p>需导入<code>graphicx</code>宏包，代码为<code>\usepackage{graphicx}</code>。</p>
+<p><strong>图片</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">figure</span><span class="token punctuation">}</span><span class="token punctuation">[</span>htbp<span class="token punctuation">]</span>
+<span class="token function selector">\centering</span>
+<span class="token function selector">\includegraphics</span><span class="token punctuation">[</span>width=8cm<span class="token punctuation">]</span><span class="token punctuation">{</span>image/fig01-network model.png<span class="token punctuation">}</span>
+<span class="token function selector">\caption</span><span class="token punctuation">{</span>Network model.<span class="token punctuation">}</span>
+<span class="token function selector">\label</span><span class="token punctuation">{</span><span class="token keyword">fig1</span><span class="token punctuation">}</span>
+<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">figure</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>引用</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">Fig. <span class="token function selector">\ref</span><span class="token punctuation">{</span><span class="token keyword">fig1</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="表格引用"><a href="#表格引用" class="headerlink" title="表格引用"></a>表格引用</h4><p><strong>表格</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">table</span><span class="token punctuation">}</span><span class="token punctuation">[</span>htbp<span class="token punctuation">]</span>
+<span class="token function selector">\caption</span><span class="token punctuation">{</span>Parameters for simulation<span class="token punctuation">}</span>
+<span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">center</span><span class="token punctuation">}</span>
+<span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">tabular</span><span class="token punctuation">}</span><span class="token punctuation">{</span>|c|c|c|c|<span class="token punctuation">}</span>
+<span class="token function selector">\hline</span>
+<span class="token function selector">\textbf</span><span class="token punctuation">{</span>Parameters<span class="token punctuation">}</span><span class="token punctuation">&amp;</span><span class="token function selector">\textbf</span><span class="token punctuation">{</span>Values<span class="token punctuation">}</span> <span class="token function selector">\\</span>
+<span class="token function selector">\hline</span>
+Count of Nodes <span class="token punctuation">&amp;</span> 2 to 160 <span class="token function selector">\\</span>
+Simulation time <span class="token punctuation">&amp;</span> 60s <span class="token function selector">\\</span>
+Layer used <span class="token punctuation">&amp;</span> Logical Link Layer <span class="token function selector">\\</span>
+Type of Antenna <span class="token punctuation">&amp;</span> Omni Directional <span class="token function selector">\\</span>
+Queue type <span class="token punctuation">&amp;</span> Drop tail <span class="token function selector">\\</span>
+MAC <span class="token punctuation">&amp;</span> 802.11 <span class="token function selector">\\</span>
+<span class="token function selector">\hline</span>
+<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">tabular</span><span class="token punctuation">}</span>
+<span class="token function selector">\label</span><span class="token punctuation">{</span><span class="token keyword">tab1</span><span class="token punctuation">}</span>
+<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">center</span><span class="token punctuation">}</span>
+<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">table</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>引用</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">Table. <span class="token function selector">\ref</span><span class="token punctuation">{</span><span class="token keyword">tab1</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="页面内参考文献引用"><a href="#页面内参考文献引用" class="headerlink" title="页面内参考文献引用"></a>页面内参考文献引用</h4><p><strong>参考文献</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">{</span><span class="token keyword">thebibliography</span><span class="token punctuation">}</span><span class="token punctuation">{</span>00<span class="token punctuation">}</span>
+<span class="token function selector">\bibitem</span><span class="token punctuation">{</span>b1<span class="token punctuation">}</span> Ben-Othman J, Yahya B. Energy efficient and QoS based routing protocol for wireless sensor networks. J Parallel Distrib Comput 2010;2010(70):849–57.
+<span class="token function selector">\bibitem</span><span class="token punctuation">{</span>b2<span class="token punctuation">}</span> Younis M, Youssef M, Arisha K. Energy-aware routing in cluster-based sensor networks. In: Proceedings of the IEEE 20th international symposium on modeling, analysis and simulation of computer and telecommunication systems; 2012. p. 0129. https://doi.org/10.1109/MASCOT.2002.1167069.
+<span class="token function selector">\bibitem</span><span class="token punctuation">{</span>b3<span class="token punctuation">}</span> Al-Karaki JN, Kamal AE. Routing techniques in wireless sensor networks: a survey. IEEE J Wirel Commun 2004;11(6):6–28. 2004.
+<span class="token function selector">\end</span><span class="token punctuation">{</span><span class="token keyword">thebibliography</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>引用</strong></p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\cite</span><span class="token punctuation">{</span><span class="token keyword">b1</span><span class="token punctuation">}</span>
+<span class="token function selector">\cite</span><span class="token punctuation">{</span><span class="token keyword">b2</span><span class="token punctuation">}</span>
+<span class="token function selector">\cite</span><span class="token punctuation">{</span><span class="token keyword">b3</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="bib参考文献引用"><a href="#bib参考文献引用" class="headerlink" title="bib参考文献引用"></a>bib参考文献引用</h4><p><strong>流程</strong></p>
+<ol>
+<li>在论文投稿官方网站上获取论文LaTeX模板，其中包含bib文件，可对bib文件重命名。</li>
+<li>在tex文件中找到bib文件声明位置，进行修改，若没有bib文件声明，则添加声明。</li>
+<li>在谷歌学术等文献检索网站上检索参考文献，在引用中复制<code>BibTeX</code>格式的代码，粘贴到bib文件的末尾。</li>
+<li>在tex文件中需要引用参考文献的位置使用<code>\cite{BibTexName}</code>语法进行引用，其中<code>BibTeXName</code>为<code>BibTeX</code>代码中的第一行的名称。</li>
+</ol>
+<p><strong>bib声明</strong><br>在<code>tex</code>文件中，结尾处，<code>\end{document}</code>之前，找到如下代码：</p>
+<pre class="line-numbers language-none"><code class="language-none">\bibliographystyle{FormatName}
+\bibliography{BibName}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>可进行修改，其中，<code>FormatName</code>为格式名称，<code>BibName</code>为bib文件名称。</p>
+<p>示例：</p>
+<pre class="line-numbers language-none"><code class="language-none">\bibliographystyle{ACM-Reference-Format}
+\bibliography{ref}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><strong>BibTeX代码</strong><br>在谷歌学术等文献检索软件中检索需要的参考文献，以<code>Conditional generative adversarial nets</code>为例，在文献处点击<code>引用</code>，选择<code>BibTeX</code>格式，如下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/fca90976b4271c4b9dbae0d94c383c40.png" alt="在这里插入图片描述"></p>
+<p>复制<code>BibTeX</code>代码，示例如下。将其粘贴到bib文件的末尾。</p>
+<pre class="line-numbers language-none"><code class="language-none">@article{mirza2014conditional,
+  title={Conditional generative adversarial nets},
+  author={Mirza, Mehdi and Osindero, Simon},
+  journal={arXiv preprint arXiv:1411.1784},
+  year={2014}
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>引用</strong><br>在<code>tex</code>文件中，要引用参考文献时，使用<code>\cite{}</code>语法进行引用，中括号的内容为<code>BibTeX</code>代码的第一行内容。</p>
+<p>以上文的<code>BibTeX</code>为例，进行引用：</p>
+<pre class="line-numbers language-none"><code class="language-none">Conditional GAN (CGAN) \cite{mirza2014conditional}.<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>显示：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/95b7f365d4584b8f5f6935f887c7dbe8.png" alt="在这里插入图片描述"></p>
+<h4 id="改变引用颜色"><a href="#改变引用颜色" class="headerlink" title="改变引用颜色"></a>改变引用颜色</h4><p>改变引用颜色前最好在导言区导入<code>xcolor</code>宏包，代码为<code>\usepackage{xcolor}</code>。<br>改变引用颜色需要在导言区添加如下代码：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\usepackage</span><span class="token punctuation">[</span>colorlinks,bookmarksopen,bookmarksnumbered,citecolor=green, linkcolor=red, urlcolor=blue<span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token keyword">hyperref</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><code>citecolor</code>为参考文献颜色，<code>linkcolor</code>为图表和公式引用的颜色，<code>urlcolor</code>为超链接颜色。各颜色可根据偏好或要求自行更改。</p>
+<p>显示效果如下：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/7d1bd017c3aa6e21851d106a60c2b92c.png" alt="在这里插入图片描述"></p>
+]]></content>
+      <categories>
+        <category>Latex</category>
       </categories>
   </entry>
 </search>
