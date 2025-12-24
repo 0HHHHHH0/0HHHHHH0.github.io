@@ -9003,192 +9003,6 @@ dist-ssr
       </categories>
   </entry>
   <entry>
-    <title>记一次清空SMART修复群晖报故障的硬盘</title>
-    <url>/2025/12/24/indel/</url>
-    <content><![CDATA[<h1 id="基于-OpenSpliceAI-的-INDEL-可变剪接影响筛选流程"><a href="#基于-OpenSpliceAI-的-INDEL-可变剪接影响筛选流程" class="headerlink" title="基于 OpenSpliceAI 的 INDEL 可变剪接影响筛选流程"></a>基于 OpenSpliceAI 的 INDEL 可变剪接影响筛选流程</h1><h2 id="背景与目的"><a href="#背景与目的" class="headerlink" title="背景与目的"></a>背景与目的</h2><p>在全基因组 INDEL 分析中，大多数变异并不直接影响基因功能。<br>本流程的目标是：</p>
-<blockquote>
-<p><strong>从全基因组 INDEL 出发，逐步筛选出可能影响可变剪接（alternative splicing）的高可信 INDEL 位点。</strong></p>
-</blockquote>
-<p>核心思想包括三点：</p>
-<ol>
-<li>仅保留功能相关区域（exonic / splicing / UTR / 近端调控区）</li>
-<li>聚焦具有一定结构效应的 <strong>中等以上长度 INDEL（≥10 bp）</strong></li>
-<li>使用 <strong>OpenSpliceAI（牡蛎模型）</strong> 对 INDEL 的剪接影响进行定量预测</li>
-</ol>
-<p>最终输出的是一个 <strong>明确标注是否影响剪接（YES / NO）</strong> 的 INDEL 列表。</p>
-<hr>
-<h2 id="一、原始-INDEL-注释文件准备"><a href="#一、原始-INDEL-注释文件准备" class="headerlink" title="一、原始 INDEL 注释文件准备"></a>一、原始 INDEL 注释文件准备</h2><h3 id="1-原始文件说明"><a href="#1-原始文件说明" class="headerlink" title="1. 原始文件说明"></a>1. 原始文件说明</h3><ul>
-<li>文件名：<code>indel.annotation.xls</code></li>
-<li>实际格式：<strong>ASCII 文本（TSV）</strong></li>
-<li>分隔符：<code>\t</code></li>
-</ul>
-<h3 id="2-文件检查"><a href="#2-文件检查" class="headerlink" title="2. 文件检查"></a>2. 文件检查</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">head</span> <span class="token parameter variable">-n</span> <span class="token number">5</span> indel.annotation.xls
-```<span class="token variable"><span class="token variable">`</span>
-
-<span class="token variable">`</span></span>``bash
-<span class="token function">sed</span> <span class="token parameter variable">-n</span> <span class="token string">'1p'</span> indel.annotation.xls <span class="token operator">|</span> <span class="token function">cat</span> <span class="token parameter variable">-A</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>确认：</p>
-<ul>
-<li>不是 Excel 二进制格式</li>
-<li>字段之间为制表符分隔</li>
-</ul>
-<h3 id="3-重命名为-TSV"><a href="#3-重命名为-TSV" class="headerlink" title="3. 重命名为 TSV"></a>3. 重命名为 TSV</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mv</span> indel.annotation.xls indel.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<hr>
-<h2 id="二、Step-1：去除-intergenic-INDEL"><a href="#二、Step-1：去除-intergenic-INDEL" class="headerlink" title="二、Step 1：去除 intergenic INDEL"></a>二、Step 1：去除 intergenic INDEL</h2><p><strong>目的</strong>：剔除功能解释价值较低的基因间区变异。</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> -F<span class="token string">'\t'</span> <span class="token string">'NR==1 || $6!="intergenic"'</span> indel.tsv <span class="token operator">&gt;</span> indel.step1.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">wc</span> <span class="token parameter variable">-l</span> indel.step1.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<ul>
-<li><code>$6</code>：功能注释列</li>
-<li>保留表头（NR==1）</li>
-</ul>
-<hr>
-<h2 id="三、Step-2：筛选功能相关区域-INDEL"><a href="#三、Step-2：筛选功能相关区域-INDEL" class="headerlink" title="三、Step 2：筛选功能相关区域 INDEL"></a>三、Step 2：筛选功能相关区域 INDEL</h2><p><strong>保留以下类型：</strong></p>
-<ul>
-<li>exonic</li>
-<li>splicing</li>
-<li>UTR3 / UTR5</li>
-<li>upstream / downstream 且距离 ≤ 2000 bp</li>
-</ul>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> -F<span class="token string">'\t'</span> <span class="token string">'
-$6=="upstream" || $6=="downstream" {
-  if ($8 ~ /dist=([0-9]+)/) {
-    match($8,/dist=([0-9]+)/,a)
-    if (a[1] &lt;= 2000) print
-  }
-}
-$6=="exonic" || $6=="splicing" || $6=="UTR3" || $6=="UTR5"
-'</span> indel.step1.tsv <span class="token operator">&gt;</span> indel.step2.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">wc</span> <span class="token parameter variable">-l</span> indel.step2.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<hr>
-<h2 id="四、Step-3：筛选真正具有结构效应的-INDEL（≥10-bp）"><a href="#四、Step-3：筛选真正具有结构效应的-INDEL（≥10-bp）" class="headerlink" title="四、Step 3：筛选真正具有结构效应的 INDEL（≥10 bp）"></a>四、Step 3：筛选真正具有结构效应的 INDEL（≥10 bp）</h2><p><strong>思想</strong>：<br>过短的插入/缺失（1–2 bp）往往功能影响有限，这一步聚焦中等以上长度 INDEL。</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> -F<span class="token string">'\t'</span> <span class="token string">'{
-  if (NR==1) { print; next }
-  ref_len = length($4)
-  alt_len = length($5)
-  len = (ref_len &gt; alt_len) ? (ref_len - alt_len) : (alt_len - ref_len)
-  if (len &gt;= 10) print
-}'</span> indel.step2.tsv <span class="token operator">&gt;</span> indel.step3.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">wc</span> <span class="token parameter variable">-l</span> indel.step3.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<hr>
-<h2 id="五、Step-4：限定在候选基因集合中"><a href="#五、Step-4：限定在候选基因集合中" class="headerlink" title="五、Step 4：限定在候选基因集合中"></a>五、Step 4：限定在候选基因集合中</h2><h3 id="1-构建候选基因列表"><a href="#1-构建候选基因列表" class="headerlink" title="1. 构建候选基因列表"></a>1. 构建候选基因列表</h3><p>基于 INDEL 在多个样本中重复出现的统计结果：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'$1&gt;=2{print $2}'</span> gene.indel.count.txt <span class="token operator">&gt;</span> candidate.genes.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>含义：</p>
-<ul>
-<li>至少在 2 个样本中出现</li>
-<li>提高与表型相关的可能性</li>
-</ul>
-<hr>
-<h3 id="2-提取候选基因中的-INDEL"><a href="#2-提取候选基因中的-INDEL" class="headerlink" title="2. 提取候选基因中的 INDEL"></a>2. 提取候选基因中的 INDEL</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">grep</span> <span class="token parameter variable">-F</span> <span class="token parameter variable">-f</span> candidate.genes.txt indel.step3.tsv <span class="token operator">&gt;</span> indel.step4.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">wc</span> <span class="token parameter variable">-l</span> indel.step4.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<hr>
-<h2 id="六、OpenSpliceAI：预测-INDEL-对剪接的影响"><a href="#六、OpenSpliceAI：预测-INDEL-对剪接的影响" class="headerlink" title="六、OpenSpliceAI：预测 INDEL 对剪接的影响"></a>六、OpenSpliceAI：预测 INDEL 对剪接的影响</h2><h3 id="1-运行-OpenSpliceAI（INDEL-模式）"><a href="#1-运行-OpenSpliceAI（INDEL-模式）" class="headerlink" title="1. 运行 OpenSpliceAI（INDEL 模式）"></a>1. 运行 OpenSpliceAI（INDEL 模式）</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">openspliceai variant <span class="token punctuation">\</span>
-  <span class="token parameter variable">-I</span> Filter.indel.vcf.gz <span class="token punctuation">\</span>
-  <span class="token parameter variable">-R</span> GCA_902806645.1_cgigas_uk_roslin_v1_genomic_fixed.fna <span class="token punctuation">\</span>
-  <span class="token parameter variable">-A</span> oyster_annotation_clean.txt <span class="token punctuation">\</span>
-  <span class="token parameter variable">-m</span> model_best.pt <span class="token punctuation">\</span>
-  <span class="token parameter variable">-f</span> <span class="token number">2000</span> <span class="token punctuation">\</span>
-  <span class="token parameter variable">-D</span> <span class="token number">50</span> <span class="token punctuation">\</span>
-  <span class="token parameter variable">-O</span> indel.spliceai.vcf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<hr>
-<h3 id="2-从-VCF-中提取-SpliceAI-分数"><a href="#2-从-VCF-中提取-SpliceAI-分数" class="headerlink" title="2. 从 VCF 中提取 SpliceAI 分数"></a>2. 从 VCF 中提取 SpliceAI 分数</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> -F<span class="token string">'\t'</span> <span class="token string">'
-BEGIN{
-  OFS="\t";
-  print "CHR","POS","REF","ALT","GENE","DS_AG","DS_AL","DS_DG","DS_DL","MAX"
-}
-!/^#/ &amp;&amp; $8~"SpliceAI="{
-  match($8,/SpliceAI=([^;]+)/,a)
-  split(a[1],b,"\\|")
-  ds_ag=b[3]+0
-  ds_al=b[4]+0
-  ds_dg=b[5]+0
-  ds_dl=b[6]+0
-  max=ds_ag
-  if(ds_al&gt;max)max=ds_al
-  if(ds_dg&gt;max)max=ds_dg
-  if(ds_dl&gt;max)max=ds_dl
-  print $1,$2,$4,$5,b[1],ds_ag,ds_al,ds_dg,ds_dl,max
-}'</span> indel.spliceai.vcf <span class="token operator">&gt;</span> indel.spliceai.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<hr>
-<h3 id="3-高可信剪接影响位点（MAX-≥-0-5）"><a href="#3-高可信剪接影响位点（MAX-≥-0-5）" class="headerlink" title="3. 高可信剪接影响位点（MAX ≥ 0.5）"></a>3. 高可信剪接影响位点（MAX ≥ 0.5）</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'NR==1 || $10&gt;=0.5'</span> indel.spliceai.tsv <span class="token operator">&gt;</span> indel.spliceai.high.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<hr>
-<h3 id="4-提取明确影响剪接的-INDEL-位置"><a href="#4-提取明确影响剪接的-INDEL-位置" class="headerlink" title="4. 提取明确影响剪接的 INDEL 位置"></a>4. 提取明确影响剪接的 INDEL 位置</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'NR&gt;1 &amp;&amp; ($6&gt;=0.5 || $7&gt;=0.5 || $8&gt;=0.5 || $9&gt;=0.5)'</span> <span class="token punctuation">\</span>
-indel.spliceai.high.tsv <span class="token punctuation">\</span>
-<span class="token operator">|</span> <span class="token function">cut</span> -f1,2 <span class="token punctuation">\</span>
-<span class="token operator">|</span> <span class="token function">sort</span> <span class="token parameter variable">-u</span> <span class="token operator">&gt;</span> splice_affect.indel.pos<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
-<hr>
-<h2 id="七、回注释到功能筛选后的-INDEL-集合"><a href="#七、回注释到功能筛选后的-INDEL-集合" class="headerlink" title="七、回注释到功能筛选后的 INDEL 集合"></a>七、回注释到功能筛选后的 INDEL 集合</h2><h3 id="1-标注是否影响剪接（YES-NO）"><a href="#1-标注是否影响剪接（YES-NO）" class="headerlink" title="1. 标注是否影响剪接（YES / NO）"></a>1. 标注是否影响剪接（YES / NO）</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'NR==FNR{a[$1":"$2]=1;next}
-     {
-       key=$1":"$2;
-       if(key in a) print $0"\tYES";
-       else print $0"\tNO"
-     }'</span> <span class="token punctuation">\</span>
-splice_affect.indel.pos indel.step4.tsv <span class="token punctuation">\</span>
-<span class="token operator">&gt;</span> indel.step4.splice_annotated.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<hr>
-<h3 id="2-只保留影响可变剪接的-INDEL"><a href="#2-只保留影响可变剪接的-INDEL" class="headerlink" title="2. 只保留影响可变剪接的 INDEL"></a>2. 只保留影响可变剪接的 INDEL</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'NR==1 || $NF=="YES"'</span> indel.step4.splice_annotated.tsv <span class="token punctuation">\</span>
-<span class="token operator">&gt;</span> indel.step4.splice_only.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">wc</span> <span class="token parameter variable">-l</span> indel.step4.splice_only.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<hr>
-<h2 id="八、最终输出文件说明"><a href="#八、最终输出文件说明" class="headerlink" title="八、最终输出文件说明"></a>八、最终输出文件说明</h2><table>
-<thead>
-<tr>
-<th>文件名</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>indel.step4.tsv</code></td>
-<td>功能 + 长度 + 候选基因筛选后的 INDEL</td>
-</tr>
-<tr>
-<td><code>indel.step4.splice_annotated.tsv</code></td>
-<td>是否影响剪接（YES / NO）</td>
-</tr>
-<tr>
-<td><strong><code>indel.step4.splice_only.tsv</code></strong></td>
-<td>最终高可信剪接影响 INDEL</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>该流程通过 <strong>功能注释筛选 + 结构效应筛选 + 剪接模型预测</strong> 三层过滤：</p>
-<ul>
-<li><p>显著降低背景噪音</p>
-</li>
-<li><p>保留生物学解释性强的 INDEL</p>
-</li>
-<li><p>结果可直接用于：</p>
-<ul>
-<li>RNA-seq 剪接验证</li>
-<li>候选基因机制分析</li>
-<li>论文或专利的变异筛选方法描述</li>
-</ul>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>GWAS</category>
-        <category>INDEL</category>
-      </categories>
-  </entry>
-  <entry>
     <title>LD-Block 连锁不平衡分析</title>
     <url>/2025/10/31/ld-block-lian-suo-bu-ping-heng-fen-xi/</url>
     <content><![CDATA[<p><strong>关键词</strong>：LD Block分析、连锁不平衡、LDBlockShow、群体遗传学、VCF处理、基因组可视化</p>
@@ -13810,6 +13624,192 @@ EOF</span>
 ]]></content>
       <categories>
         <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>基于 OpenSpliceAI 的 INDEL 可变剪接影响筛选流程</title>
+    <url>/2025/12/24/indel/</url>
+    <content><![CDATA[<h1 id="基于-OpenSpliceAI-的-INDEL-可变剪接影响筛选流程"><a href="#基于-OpenSpliceAI-的-INDEL-可变剪接影响筛选流程" class="headerlink" title="基于 OpenSpliceAI 的 INDEL 可变剪接影响筛选流程"></a>基于 OpenSpliceAI 的 INDEL 可变剪接影响筛选流程</h1><h2 id="背景与目的"><a href="#背景与目的" class="headerlink" title="背景与目的"></a>背景与目的</h2><p>在全基因组 INDEL 分析中，大多数变异并不直接影响基因功能。<br>本流程的目标是：</p>
+<blockquote>
+<p><strong>从全基因组 INDEL 出发，逐步筛选出可能影响可变剪接（alternative splicing）的高可信 INDEL 位点。</strong></p>
+</blockquote>
+<p>核心思想包括三点：</p>
+<ol>
+<li>仅保留功能相关区域（exonic / splicing / UTR / 近端调控区）</li>
+<li>聚焦具有一定结构效应的 <strong>中等以上长度 INDEL（≥10 bp）</strong></li>
+<li>使用 <strong>OpenSpliceAI（牡蛎模型）</strong> 对 INDEL 的剪接影响进行定量预测</li>
+</ol>
+<p>最终输出的是一个 <strong>明确标注是否影响剪接（YES / NO）</strong> 的 INDEL 列表。</p>
+<hr>
+<h2 id="一、原始-INDEL-注释文件准备"><a href="#一、原始-INDEL-注释文件准备" class="headerlink" title="一、原始 INDEL 注释文件准备"></a>一、原始 INDEL 注释文件准备</h2><h3 id="1-原始文件说明"><a href="#1-原始文件说明" class="headerlink" title="1. 原始文件说明"></a>1. 原始文件说明</h3><ul>
+<li>文件名：<code>indel.annotation.xls</code></li>
+<li>实际格式：<strong>ASCII 文本（TSV）</strong></li>
+<li>分隔符：<code>\t</code></li>
+</ul>
+<h3 id="2-文件检查"><a href="#2-文件检查" class="headerlink" title="2. 文件检查"></a>2. 文件检查</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">head</span> <span class="token parameter variable">-n</span> <span class="token number">5</span> indel.annotation.xls
+```<span class="token variable"><span class="token variable">`</span>
+
+<span class="token variable">`</span></span>``bash
+<span class="token function">sed</span> <span class="token parameter variable">-n</span> <span class="token string">'1p'</span> indel.annotation.xls <span class="token operator">|</span> <span class="token function">cat</span> <span class="token parameter variable">-A</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>确认：</p>
+<ul>
+<li>不是 Excel 二进制格式</li>
+<li>字段之间为制表符分隔</li>
+</ul>
+<h3 id="3-重命名为-TSV"><a href="#3-重命名为-TSV" class="headerlink" title="3. 重命名为 TSV"></a>3. 重命名为 TSV</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mv</span> indel.annotation.xls indel.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<hr>
+<h2 id="二、Step-1：去除-intergenic-INDEL"><a href="#二、Step-1：去除-intergenic-INDEL" class="headerlink" title="二、Step 1：去除 intergenic INDEL"></a>二、Step 1：去除 intergenic INDEL</h2><p><strong>目的</strong>：剔除功能解释价值较低的基因间区变异。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> -F<span class="token string">'\t'</span> <span class="token string">'NR==1 || $6!="intergenic"'</span> indel.tsv <span class="token operator">&gt;</span> indel.step1.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">wc</span> <span class="token parameter variable">-l</span> indel.step1.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<ul>
+<li><code>$6</code>：功能注释列</li>
+<li>保留表头（NR==1）</li>
+</ul>
+<hr>
+<h2 id="三、Step-2：筛选功能相关区域-INDEL"><a href="#三、Step-2：筛选功能相关区域-INDEL" class="headerlink" title="三、Step 2：筛选功能相关区域 INDEL"></a>三、Step 2：筛选功能相关区域 INDEL</h2><p><strong>保留以下类型：</strong></p>
+<ul>
+<li>exonic</li>
+<li>splicing</li>
+<li>UTR3 / UTR5</li>
+<li>upstream / downstream 且距离 ≤ 2000 bp</li>
+</ul>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> -F<span class="token string">'\t'</span> <span class="token string">'
+$6=="upstream" || $6=="downstream" {
+  if ($8 ~ /dist=([0-9]+)/) {
+    match($8,/dist=([0-9]+)/,a)
+    if (a[1] &lt;= 2000) print
+  }
+}
+$6=="exonic" || $6=="splicing" || $6=="UTR3" || $6=="UTR5"
+'</span> indel.step1.tsv <span class="token operator">&gt;</span> indel.step2.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">wc</span> <span class="token parameter variable">-l</span> indel.step2.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<hr>
+<h2 id="四、Step-3：筛选真正具有结构效应的-INDEL（≥10-bp）"><a href="#四、Step-3：筛选真正具有结构效应的-INDEL（≥10-bp）" class="headerlink" title="四、Step 3：筛选真正具有结构效应的 INDEL（≥10 bp）"></a>四、Step 3：筛选真正具有结构效应的 INDEL（≥10 bp）</h2><p><strong>思想</strong>：<br>过短的插入/缺失（1–2 bp）往往功能影响有限，这一步聚焦中等以上长度 INDEL。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> -F<span class="token string">'\t'</span> <span class="token string">'{
+  if (NR==1) { print; next }
+  ref_len = length($4)
+  alt_len = length($5)
+  len = (ref_len &gt; alt_len) ? (ref_len - alt_len) : (alt_len - ref_len)
+  if (len &gt;= 10) print
+}'</span> indel.step2.tsv <span class="token operator">&gt;</span> indel.step3.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">wc</span> <span class="token parameter variable">-l</span> indel.step3.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<hr>
+<h2 id="五、Step-4：限定在候选基因集合中"><a href="#五、Step-4：限定在候选基因集合中" class="headerlink" title="五、Step 4：限定在候选基因集合中"></a>五、Step 4：限定在候选基因集合中</h2><h3 id="1-构建候选基因列表"><a href="#1-构建候选基因列表" class="headerlink" title="1. 构建候选基因列表"></a>1. 构建候选基因列表</h3><p>基于 INDEL 在多个样本中重复出现的统计结果：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'$1&gt;=2{print $2}'</span> gene.indel.count.txt <span class="token operator">&gt;</span> candidate.genes.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>含义：</p>
+<ul>
+<li>至少在 2 个样本中出现</li>
+<li>提高与表型相关的可能性</li>
+</ul>
+<hr>
+<h3 id="2-提取候选基因中的-INDEL"><a href="#2-提取候选基因中的-INDEL" class="headerlink" title="2. 提取候选基因中的 INDEL"></a>2. 提取候选基因中的 INDEL</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">grep</span> <span class="token parameter variable">-F</span> <span class="token parameter variable">-f</span> candidate.genes.txt indel.step3.tsv <span class="token operator">&gt;</span> indel.step4.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">wc</span> <span class="token parameter variable">-l</span> indel.step4.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<hr>
+<h2 id="六、OpenSpliceAI：预测-INDEL-对剪接的影响"><a href="#六、OpenSpliceAI：预测-INDEL-对剪接的影响" class="headerlink" title="六、OpenSpliceAI：预测 INDEL 对剪接的影响"></a>六、OpenSpliceAI：预测 INDEL 对剪接的影响</h2><h3 id="1-运行-OpenSpliceAI（INDEL-模式）"><a href="#1-运行-OpenSpliceAI（INDEL-模式）" class="headerlink" title="1. 运行 OpenSpliceAI（INDEL 模式）"></a>1. 运行 OpenSpliceAI（INDEL 模式）</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">openspliceai variant <span class="token punctuation">\</span>
+  <span class="token parameter variable">-I</span> Filter.indel.vcf.gz <span class="token punctuation">\</span>
+  <span class="token parameter variable">-R</span> GCA_902806645.1_cgigas_uk_roslin_v1_genomic_fixed.fna <span class="token punctuation">\</span>
+  <span class="token parameter variable">-A</span> oyster_annotation_clean.txt <span class="token punctuation">\</span>
+  <span class="token parameter variable">-m</span> model_best.pt <span class="token punctuation">\</span>
+  <span class="token parameter variable">-f</span> <span class="token number">2000</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">-D</span> <span class="token number">50</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">-O</span> indel.spliceai.vcf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<hr>
+<h3 id="2-从-VCF-中提取-SpliceAI-分数"><a href="#2-从-VCF-中提取-SpliceAI-分数" class="headerlink" title="2. 从 VCF 中提取 SpliceAI 分数"></a>2. 从 VCF 中提取 SpliceAI 分数</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> -F<span class="token string">'\t'</span> <span class="token string">'
+BEGIN{
+  OFS="\t";
+  print "CHR","POS","REF","ALT","GENE","DS_AG","DS_AL","DS_DG","DS_DL","MAX"
+}
+!/^#/ &amp;&amp; $8~"SpliceAI="{
+  match($8,/SpliceAI=([^;]+)/,a)
+  split(a[1],b,"\\|")
+  ds_ag=b[3]+0
+  ds_al=b[4]+0
+  ds_dg=b[5]+0
+  ds_dl=b[6]+0
+  max=ds_ag
+  if(ds_al&gt;max)max=ds_al
+  if(ds_dg&gt;max)max=ds_dg
+  if(ds_dl&gt;max)max=ds_dl
+  print $1,$2,$4,$5,b[1],ds_ag,ds_al,ds_dg,ds_dl,max
+}'</span> indel.spliceai.vcf <span class="token operator">&gt;</span> indel.spliceai.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<hr>
+<h3 id="3-高可信剪接影响位点（MAX-≥-0-5）"><a href="#3-高可信剪接影响位点（MAX-≥-0-5）" class="headerlink" title="3. 高可信剪接影响位点（MAX ≥ 0.5）"></a>3. 高可信剪接影响位点（MAX ≥ 0.5）</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'NR==1 || $10&gt;=0.5'</span> indel.spliceai.tsv <span class="token operator">&gt;</span> indel.spliceai.high.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<hr>
+<h3 id="4-提取明确影响剪接的-INDEL-位置"><a href="#4-提取明确影响剪接的-INDEL-位置" class="headerlink" title="4. 提取明确影响剪接的 INDEL 位置"></a>4. 提取明确影响剪接的 INDEL 位置</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'NR&gt;1 &amp;&amp; ($6&gt;=0.5 || $7&gt;=0.5 || $8&gt;=0.5 || $9&gt;=0.5)'</span> <span class="token punctuation">\</span>
+indel.spliceai.high.tsv <span class="token punctuation">\</span>
+<span class="token operator">|</span> <span class="token function">cut</span> -f1,2 <span class="token punctuation">\</span>
+<span class="token operator">|</span> <span class="token function">sort</span> <span class="token parameter variable">-u</span> <span class="token operator">&gt;</span> splice_affect.indel.pos<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<hr>
+<h2 id="七、回注释到功能筛选后的-INDEL-集合"><a href="#七、回注释到功能筛选后的-INDEL-集合" class="headerlink" title="七、回注释到功能筛选后的 INDEL 集合"></a>七、回注释到功能筛选后的 INDEL 集合</h2><h3 id="1-标注是否影响剪接（YES-NO）"><a href="#1-标注是否影响剪接（YES-NO）" class="headerlink" title="1. 标注是否影响剪接（YES / NO）"></a>1. 标注是否影响剪接（YES / NO）</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'NR==FNR{a[$1":"$2]=1;next}
+     {
+       key=$1":"$2;
+       if(key in a) print $0"\tYES";
+       else print $0"\tNO"
+     }'</span> <span class="token punctuation">\</span>
+splice_affect.indel.pos indel.step4.tsv <span class="token punctuation">\</span>
+<span class="token operator">&gt;</span> indel.step4.splice_annotated.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<hr>
+<h3 id="2-只保留影响可变剪接的-INDEL"><a href="#2-只保留影响可变剪接的-INDEL" class="headerlink" title="2. 只保留影响可变剪接的 INDEL"></a>2. 只保留影响可变剪接的 INDEL</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">awk</span> <span class="token string">'NR==1 || $NF=="YES"'</span> indel.step4.splice_annotated.tsv <span class="token punctuation">\</span>
+<span class="token operator">&gt;</span> indel.step4.splice_only.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">wc</span> <span class="token parameter variable">-l</span> indel.step4.splice_only.tsv<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<hr>
+<h2 id="八、最终输出文件说明"><a href="#八、最终输出文件说明" class="headerlink" title="八、最终输出文件说明"></a>八、最终输出文件说明</h2><table>
+<thead>
+<tr>
+<th>文件名</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>indel.step4.tsv</code></td>
+<td>功能 + 长度 + 候选基因筛选后的 INDEL</td>
+</tr>
+<tr>
+<td><code>indel.step4.splice_annotated.tsv</code></td>
+<td>是否影响剪接（YES / NO）</td>
+</tr>
+<tr>
+<td><strong><code>indel.step4.splice_only.tsv</code></strong></td>
+<td>最终高可信剪接影响 INDEL</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>该流程通过 <strong>功能注释筛选 + 结构效应筛选 + 剪接模型预测</strong> 三层过滤：</p>
+<ul>
+<li><p>显著降低背景噪音</p>
+</li>
+<li><p>保留生物学解释性强的 INDEL</p>
+</li>
+<li><p>结果可直接用于：</p>
+<ul>
+<li>RNA-seq 剪接验证</li>
+<li>候选基因机制分析</li>
+<li>论文或专利的变异筛选方法描述</li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>GWAS</category>
+        <category>INDEL</category>
       </categories>
   </entry>
   <entry>
