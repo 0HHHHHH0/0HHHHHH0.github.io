@@ -1,0 +1,1126 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>根据SNP位点进行快速引物设计 | HHHH</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="根据SNP位点进行快速引物设计概述这是一个基于Python Tkinter开发的图形化界面工具，专门用于基因突变位点的引物设计。通过输入基因序列和突变位点信息，工具能够自动定位目标碱基并设计出合适的PCR引物对。  主打一个快速，但设计结果有待验证  功能特点 用户友好界面：直观的图形化操作界面 快速定位：自动识别基因序列中的突变位点 智能设计：根据参数设置自动生成引物序列 结果导出：一键复制引物">
+<meta property="og:type" content="article">
+<meta property="og:title" content="根据SNP位点进行快速引物设计">
+<meta property="og:url" content="https://0hhhhhh0.github.io/2025/07/03/kuai-su-yin-wu-she-ji/index.html">
+<meta property="og:site_name" content="HHHH">
+<meta property="og:description" content="根据SNP位点进行快速引物设计概述这是一个基于Python Tkinter开发的图形化界面工具，专门用于基因突变位点的引物设计。通过输入基因序列和突变位点信息，工具能够自动定位目标碱基并设计出合适的PCR引物对。  主打一个快速，但设计结果有待验证  功能特点 用户友好界面：直观的图形化操作界面 快速定位：自动识别基因序列中的突变位点 智能设计：根据参数设置自动生成引物序列 结果导出：一键复制引物">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0hhhhhh0.github.io/uploads/avatar.png">
+<meta property="article:published_time" content="2025-07-03T14:26:00.000Z">
+<meta property="article:modified_time" content="2025-07-03T14:32:15.000Z">
+<meta property="article:author" content="HHHH">
+<meta property="article:tag" content="hexo">
+<meta property="article:tag" content="组学">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="折腾">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0hhhhhh0.github.io/uploads/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "根据SNP位点进行快速引物设计",
+  "url": "https://0hhhhhh0.github.io/2025/07/03/kuai-su-yin-wu-she-ji/",
+  "image": "https://0hhhhhh0.github.io/uploads/avatar.png",
+  "datePublished": "2025-07-03T14:26:00.000Z",
+  "dateModified": "2025-07-03T14:32:15.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "HHHH",
+      "url": "https://0HHHHHH0.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/uploads/avatar.png"><link rel="canonical" href="https://0hhhhhh0.github.io/2025/07/03/kuai-su-yin-wu-she-ji/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":-1,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '根据SNP位点进行快速引物设计',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@4.5.12/index.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/styles/css/font.css"><link rel="stylesheet" href="/css/mermaid.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="HHHH" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="scarecrow"><div class="scarecrow__hat"><div class="scarecrow__ribbon"></div></div><div class="scarecrow__head"><div class="scarecrow__eye"></div><div class="scarecrow__eye"></div><div class="scarecrow__mouth"></div><div class="scarecrow__pipe"></div></div><div class="scarecrow__body"><div class="scarecrow__glove scarecrow__glove--l"></div><div class="scarecrow__sleeve scarecrow__sleeve--l"></div><div class="scarecrow__bow"></div><div class="scarecrow__shirt"></div><div class="scarecrow__coat"></div><div class="scarecrow__waistcoat"></div><div class="scarecrow__sleeve scarecrow__sleeve--r"></div><div class="scarecrow__glove scarecrow__glove--r"></div><div class="scarecrow__coattails"></div><div class="scarecrow__pants"></div></div><div class="scarecrow__arms"></div><div class="scarecrow__leg">  </div></div></div><script async="async">(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-color: #fbfdff;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/uploads/avatar.png" alt="Logo"><span class="site-name">HHHH</span></a><a class="nav-page-title" href="/"><span class="site-name">根据SNP位点进行快速引物设计</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">根据SNP位点进行快速引物设计</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-07-03T14:26:00.000Z" title="Created 2025-07-03 22:26:00">2025-07-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-07-03T14:32:15.000Z" title="Updated 2025-07-03 22:32:15">2025-07-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%88%86%E5%AD%90%E5%AE%9E%E9%AA%8C/">分子实验</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%88%86%E5%AD%90%E5%AE%9E%E9%AA%8C/Python/">Python</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="ai-summary"><div class="ai-explanation" style="display: block;" data-summary="这篇文章介绍了一个基于Python Tkinter开发的图形化界面工具，专门用于基因突变位点（SNP）的快速引物设计。该工具通过输入基因序列和突变位点信息，能够自动定位目标碱基并智能设计出合适的PCR引物对。文章详细说明了工具的功能特点，包括用户友好界面、快速定位突变位点、自动引物设计和结果一键导出等，并提供了系统要求和环境配置指南（需Python 3.12及相关依赖库）。文中还包含完整的代码实现，展示了如何通过Tkinter构建GUI界面、处理序列输入、设置设计参数以及结果显示等功能模块。工具强调设计速度但指出结果需进一步验证，适用于需要快速设计SNP位点引物的研究人员。">AI正在绞尽脑汁想思路ING···</div><div class="ai-title"> <div class="ai-title-left"> <i class="fa-brands fa-slack"></i><div class="ai-title-text">AI摘要</div></div><div class="ai-tag" id="ai-tag">deepseek-ai/DeepSeek-V3</div></div></div><h1 id="根据SNP位点进行快速引物设计"><a href="#根据SNP位点进行快速引物设计" class="headerlink" title="根据SNP位点进行快速引物设计"></a>根据SNP位点进行快速引物设计</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>这是一个基于Python Tkinter开发的图形化界面工具，专门用于基因突变位点的引物设计。通过输入基因序列和突变位点信息，工具能够自动定位目标碱基并设计出合适的PCR引物对。</p>
+<blockquote>
+<p>主打一个快速，但设计结果有待验证</p>
+</blockquote>
+<h2 id="功能特点"><a href="#功能特点" class="headerlink" title="功能特点"></a>功能特点</h2><ul>
+<li><strong>用户友好界面</strong>：直观的图形化操作界面</li>
+<li><strong>快速定位</strong>：自动识别基因序列中的突变位点</li>
+<li><strong>智能设计</strong>：根据参数设置自动生成引物序列</li>
+<li><strong>结果导出</strong>：一键复制引物序列到剪贴板</li>
+</ul>
+<h2 id="系统要求"><a href="#系统要求" class="headerlink" title="系统要求"></a>系统要求</h2><ul>
+<li>操作系统：Windows/Linux/macOS</li>
+<li>环境：Conda、 Python、 3.12</li>
+<li>依赖库：tkinter, scrolledtext, messagebox等</li>
+</ul>
+<h2 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h2><h3 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a>1. 环境准备</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">conda activate py312<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="2-进入工作目录"><a href="#2-进入工作目录" class="headerlink" title="2. 进入工作目录"></a>2. 进入工作目录</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> E:<span class="token punctuation">\</span>坚果云<span class="token punctuation">\</span>我的坚果云<span class="token punctuation">\</span>课题<span class="token punctuation">\</span>Python<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="3-启动工具"><a href="#3-启动工具" class="headerlink" title="3. 启动工具"></a>3. 启动工具</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">jupyter notebook<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h2 id="使用步骤"><a href="#使用步骤" class="headerlink" title="使用步骤"></a>使用步骤</h2><h3 id="第一步：准备数据"><a href="#第一步：准备数据" class="headerlink" title="第一步：准备数据"></a>第一步：准备数据</h3><ol>
+<li>从NCBI获取基因序列（如基因: <a href="https://www.ncbi.nlm.nih.gov/gene/105346934"><strong>LOC105346934</strong></a>），选取对应基因组版本，选取基因，下载基因序列</li>
+<li>记录突变位点信息（如：NC_047567.1:<strong>26604856</strong> T-&gt;A）</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251104193021260.png" alt="image-20251104193021260"></p>
+<p><strong>基因序列格式如下</strong>：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251104192940724.png" alt="image-20251104192940724"></p>
+<p><strong>代码如下</strong>:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> tkinter <span class="token keyword">as</span> tk
+<span class="token keyword">from</span> tkinter <span class="token keyword">import</span> ttk<span class="token punctuation">,</span> scrolledtext<span class="token punctuation">,</span> messagebox<span class="token punctuation">,</span> simpledialog<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">DNASequenceViewer</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> root<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>root <span class="token operator">=</span> root
+        self<span class="token punctuation">.</span>root<span class="token punctuation">.</span>title<span class="token punctuation">(</span><span class="token string">"DNA序列定位工具"</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>root<span class="token punctuation">.</span>configure<span class="token punctuation">(</span>bg<span class="token operator">=</span><span class="token string">'#f9f9f9'</span><span class="token punctuation">)</span>
+        
+        <span class="token comment"># 设置统一风格</span>
+        style <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Style<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        style<span class="token punctuation">.</span>theme_use<span class="token punctuation">(</span><span class="token string">'clam'</span><span class="token punctuation">)</span>
+        style<span class="token punctuation">.</span>configure<span class="token punctuation">(</span><span class="token string">'TButton'</span><span class="token punctuation">,</span> font<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">'Arial'</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">,</span> padding<span class="token operator">=</span><span class="token number">3</span><span class="token punctuation">)</span>
+        style<span class="token punctuation">.</span>configure<span class="token punctuation">(</span><span class="token string">'TLabel'</span><span class="token punctuation">,</span> font<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">'Arial'</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        style<span class="token punctuation">.</span>configure<span class="token punctuation">(</span><span class="token string">'TEntry'</span><span class="token punctuation">,</span> font<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">'Arial'</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        style<span class="token punctuation">.</span>configure<span class="token punctuation">(</span><span class="token string">'TLabelframe'</span><span class="token punctuation">,</span> font<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">'Arial'</span><span class="token punctuation">,</span> <span class="token number">11</span><span class="token punctuation">,</span> <span class="token string">'bold'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        
+        <span class="token comment"># 序列输入区</span>
+        ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>root<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"输入FASTA格式序列:"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>pack<span class="token punctuation">(</span>pady<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>seq_text <span class="token operator">=</span> scrolledtext<span class="token punctuation">.</span>ScrolledText<span class="token punctuation">(</span>root<span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">35</span><span class="token punctuation">,</span> height<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">,</span> wrap<span class="token operator">=</span>tk<span class="token punctuation">.</span>WORD<span class="token punctuation">,</span> font<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">'Courier New'</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>seq_text<span class="token punctuation">.</span>pack<span class="token punctuation">(</span>padx<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">)</span>
+
+        <span class="token comment"># 坐标输入区</span>
+        self<span class="token punctuation">.</span>pos_frame <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Frame<span class="token punctuation">(</span>root<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>pos_frame<span class="token punctuation">.</span>pack<span class="token punctuation">(</span>pady<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">)</span>
+        ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>self<span class="token punctuation">.</span>pos_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"基因组位置:"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>pack<span class="token punctuation">(</span>side<span class="token operator">=</span>tk<span class="token punctuation">.</span>LEFT<span class="token punctuation">,</span> padx<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>pos_entry <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Entry<span class="token punctuation">(</span>self<span class="token punctuation">.</span>pos_frame<span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">15</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>pos_entry<span class="token punctuation">.</span>pack<span class="token punctuation">(</span>side<span class="token operator">=</span>tk<span class="token punctuation">.</span>LEFT<span class="token punctuation">)</span>
+
+        <span class="token comment"># 参数设置区</span>
+        self<span class="token punctuation">.</span>param_frame <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Labelframe<span class="token punctuation">(</span>root<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"参数设置"</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>param_frame<span class="token punctuation">.</span>pack<span class="token punctuation">(</span>pady<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">,</span> padx<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">)</span>
+
+        <span class="token comment"># 参数输入控件</span>
+        <span class="token keyword">for</span> label_text<span class="token punctuation">,</span> attr <span class="token keyword">in</span> <span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token string">"理想产物长度:"</span><span class="token punctuation">,</span> <span class="token string">'product_size_entry'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                                 <span class="token punctuation">(</span><span class="token string">"大小容差:"</span><span class="token punctuation">,</span> <span class="token string">'tolerance_entry'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                                 <span class="token punctuation">(</span><span class="token string">"最小引物长度:"</span><span class="token punctuation">,</span> <span class="token string">'min_len_entry'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                                 <span class="token punctuation">(</span><span class="token string">"最大引物长度:"</span><span class="token punctuation">,</span> <span class="token string">'max_len_entry'</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+            frame <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Frame<span class="token punctuation">(</span>self<span class="token punctuation">.</span>param_frame<span class="token punctuation">)</span>
+            frame<span class="token punctuation">.</span>pack<span class="token punctuation">(</span>anchor<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">,</span> padx<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">,</span> pady<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">)</span>
+            ttk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>frame<span class="token punctuation">,</span> text<span class="token operator">=</span>label_text<span class="token punctuation">)</span><span class="token punctuation">.</span>pack<span class="token punctuation">(</span>side<span class="token operator">=</span>tk<span class="token punctuation">.</span>LEFT<span class="token punctuation">)</span>
+            entry <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Entry<span class="token punctuation">(</span>frame<span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">)</span>
+            entry<span class="token punctuation">.</span>pack<span class="token punctuation">(</span>side<span class="token operator">=</span>tk<span class="token punctuation">.</span>LEFT<span class="token punctuation">,</span> padx<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">)</span>
+            <span class="token builtin">setattr</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> attr<span class="token punctuation">,</span> entry<span class="token punctuation">)</span>
+
+        <span class="token comment"># 设置默认值</span>
+        self<span class="token punctuation">.</span>product_size_entry<span class="token punctuation">.</span>insert<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"500"</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>tolerance_entry<span class="token punctuation">.</span>insert<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"200"</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>min_len_entry<span class="token punctuation">.</span>insert<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"18"</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>max_len_entry<span class="token punctuation">.</span>insert<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"22"</span><span class="token punctuation">)</span>
+
+        <span class="token comment"># 按钮区</span>
+        self<span class="token punctuation">.</span>btn_frame <span class="token operator">=</span> ttk<span class="token punctuation">.</span>Frame<span class="token punctuation">(</span>root<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>btn_frame<span class="token punctuation">.</span>pack<span class="token punctuation">(</span>pady<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">)</span>
+        ttk<span class="token punctuation">.</span>Button<span class="token punctuation">(</span>self<span class="token punctuation">.</span>btn_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"加载示例"</span><span class="token punctuation">,</span> command<span class="token operator">=</span>self<span class="token punctuation">.</span>load_example<span class="token punctuation">)</span><span class="token punctuation">.</span>pack<span class="token punctuation">(</span>side<span class="token operator">=</span>tk<span class="token punctuation">.</span>LEFT<span class="token punctuation">,</span> padx<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">)</span>
+        ttk<span class="token punctuation">.</span>Button<span class="token punctuation">(</span>self<span class="token punctuation">.</span>btn_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"定位碱基"</span><span class="token punctuation">,</span> command<span class="token operator">=</span>self<span class="token punctuation">.</span>locate_base<span class="token punctuation">)</span><span class="token punctuation">.</span>pack<span class="token punctuation">(</span>side<span class="token operator">=</span>tk<span class="token punctuation">.</span>LEFT<span class="token punctuation">,</span> padx<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">)</span>
+        ttk<span class="token punctuation">.</span>Button<span class="token punctuation">(</span>self<span class="token punctuation">.</span>btn_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"设计引物"</span><span class="token punctuation">,</span> command<span class="token operator">=</span>self<span class="token punctuation">.</span>design_primer<span class="token punctuation">)</span><span class="token punctuation">.</span>pack<span class="token punctuation">(</span>side<span class="token operator">=</span>tk<span class="token punctuation">.</span>LEFT<span class="token punctuation">,</span> padx<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">)</span>
+        
+        <span class="token comment"># 结果显示区</span>
+        self<span class="token punctuation">.</span>result_label <span class="token operator">=</span> tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>root<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">""</span><span class="token punctuation">,</span> fg<span class="token operator">=</span><span class="token string">"blue"</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>result_label<span class="token punctuation">.</span>pack<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        
+        <span class="token comment"># 反向互补序列显示区</span>
+        self<span class="token punctuation">.</span>rev_comp_label <span class="token operator">=</span> tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>root<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"反向互补序列:"</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>rev_comp_text <span class="token operator">=</span> scrolledtext<span class="token punctuation">.</span>ScrolledText<span class="token punctuation">(</span>root<span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">35</span><span class="token punctuation">,</span> height<span class="token operator">=</span><span class="token number">15</span><span class="token punctuation">,</span> wrap<span class="token operator">=</span>tk<span class="token punctuation">.</span>WORD<span class="token punctuation">,</span> state<span class="token operator">=</span><span class="token string">'disabled'</span><span class="token punctuation">)</span>
+        
+        <span class="token comment"># 状态变量</span>
+        self<span class="token punctuation">.</span>is_reverse <span class="token operator">=</span> <span class="token boolean">False</span>
+        self<span class="token punctuation">.</span>original_seq <span class="token operator">=</span> <span class="token string">""</span>
+        self<span class="token punctuation">.</span>rev_comp_seq <span class="token operator">=</span> <span class="token string">""</span>
+        self<span class="token punctuation">.</span>start_pos <span class="token operator">=</span> <span class="token number">0</span>
+        self<span class="token punctuation">.</span>end_pos <span class="token operator">=</span> <span class="token number">0</span>
+
+    <span class="token keyword">def</span> <span class="token function">load_example</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        example <span class="token operator">=</span> <span class="token triple-quoted-string string">"""&gt;ref|NC_047567.1|:c31905813-31888694 Crassostrea gigas (反向链示例)
+AATGATTAAAAAGTGGATATATAAAAAAGTTATACGTTGAAAGTTATGATAAGATCCTAACAGTTGCTAC
+GTAATTAAATCTTTAATGAAGTTCTTTTTTAATGTAATGGTAACTGCAGTATGATAACAATAAAAAAATA
+GATAATAATACATGTAATATGCATATCAATTGAAAAATTGACTGCAATTATTACGAACAGCTAATACAGA
+AAAAGAATGCTTGTTTGTGTTGAGGGAGGGGGTGAGGTCATAGGGATAATTTTTTATGCCGAAGGGGAAG
+GGTGTGGATGGTATTTTCACGATGAAAATTTTATGACTTTGAATTTTCCAGTGGGCCCAGGGCCGACCCC
+CCAATCTTGTTCCCAGCCTCTGGATTTTTAATGCGTACTGCGGTATTTGATCCCAAGTAATTTTAAAAAC
+AGTTTACTGATTTGCAAGTTTAACAGAAATCATTTTCAGGTTCTTAACTGTAAAGAATTACATATATAAC
+TCTCTTGGTAATGAAATTTAAAAGACGAATTGCCTATTACTTGGTACATGTATTTCAAATATTACAGTTT
+CTCATTTAATATTGTGATAATGGTAAGATTTGTATGTATGCTGCCATATACATGTATATATGAGTGTTAT
+ATAAAATATAAATATTAAAAACATGGATTATGATACATATATGGGTATACAACAGTTTATGTCCGTCTCC
+TTACAATTATATTTGGATGGAAACTCTCTTATCATAGACACTGTATTGACGCCGTGCGATTATGGAATCG
+ATTGCTGACAATGGAGGACAATCGGCTAACAAAGCGTGTATTTTTGTGGCACTTTAATCAAACTGGTATA
+TCTAGATGGACATCACGAATTAAATCACTGTTTGAATCTATGAATCTTTTACATATTTATGATAATTTAT
+CAGTCTGTGATGTTAATGAATTTGAAAACAAGCTGTTTCTTACTTATGAAAATGAATGGTTAGGAAAGAT
+AAACCAACTACCAAAGTTGCGATTATATAAAGGCGTTAAAACAAATTTTAAAACTGAAAATTACCTTGAA
+ATGAACATTTCAAAATCTCAAAGATTTATTTTGGCACAATTCAGATGTGGGATTCTCCCAATTAGAATTG
+AAACAGAGCGATATAAGGGGGAACCTCTCGATGAAAGAATATGTAATTTTTGTGTATTAATGAAATAGAA
+GACGAGAGTCATTTTCTTTTGAATTGTGCAATGTTATCTGATTTTAGAAGGGAATTATTTAATAATGTAG
+GATGTAATCCAACACTAGTAATGTCAAATTTAGACTGTATAATTTTTCTACTGTCAAACTTTCCGAGACA
+AAGATCTAAATATTTACTTGAATCTTACCTTTACAGACAATCATTATTGTATAAAATACGCAATGCGTAA
+TATGTGTATATATGTTATAATTGTATTTTCAGTGACATATAGGCCCAATAGGCCGGGTGTTTCATTATCT
+AATTTGTATAACATTTTGTATTTTGTTATAACACATGTCACTATAATAAATTATTTACTTACTTACTTAT
+ATCACTCGTTCCCTCTTGTGTATACTTGTGTTTATTGATAATATTGTGCATGTTGTTTATTTACATAACT
+GTACCATATCATCCTGCTGCCCCCTGAGAGTCCCTGATTTGTCAATAAATTGGTTTTTCTTAAAAATTTG
+ATTAAGTTAAACTACAAAGTATCCCTCATCCTAAACTATATCTCTCTTGCTGAACTTCTCATAGATTTGT
+CATTCACACACTTGATACCTTCGCTAAATACTGTCGATGGACTAGGTCTAGGATTCGGGGAAAAACCTAA
+TAGCCAAAGGGATGGTCGTCTTGACCCTAACCTTTACCATGCGATTTTCGGAAAATTGGTTTAAAGATCA
+CCACGTGTTTGTTTTGTTTATCAATGATTTTCATTAAAAGTTTTTATCACTAGCCGACTTACTCCCACAG
+GTAAACCCGGACCGGTGGTTTTCCCTCCCTATGACTCACTCGATCAATAAAAGTCAAAATGAAAGTAGAA
+GATTCTCGGAATAGAATGTTGTACAGGTTGACCTATATTGAGCCTTGAACGTAAGATAGGTGAGGACTGA
+TAGAGCTGATGTGACCACAGTCCACGACAGGTGTGTACACTAGTTACTTATGATTGACACATGTTGATAT
+TATTGCGATAGTGTGTGTGCCGAATGATAACATATTTCAGATATGACTGATTACGAAACGTAGCGCATAC
+GTGCATCTGATAACTTCTGTAAAAAAGAAGATGTGTCTATATTTCGTAACATTTAATTTTTGATACATGT
+TTAAAAACAATTAAGTCTGTTAGTAGAAGTAGATTTATAAATGTATGCATAAAACTGGATGTATATGTAT
+GTACCGTACCTTTTTAAATTTTATATTTTCGACTACATTTACAAAGAAGTCGGATATTTTGATATGGATA
+TAGCAAAAAAGGTAAAAACTGGCCATGGTGTATAAATACTGAAACCCAAACGAGAAAAGAATCCGAATTA
+ATTTCATTAAGTTAATGGACGTATGTTAAATTTTGAATAAGCTAGGTGAATCACTGAATGTCAATACAAA
+ATTTACGTTATGACATACATGGCACCCTGATAGTAAATTCATGACTTAGTAAAAGCAAAGAGGTGTGATA
+TTTTTGTCCATGGAATATTAAATTCTACTTGGACATTGGATGAAAAAATTGCTCATCTCAGATGAAGGTA
+AAAACTATAATCAACTTGAAAATGTTAATCCTTTTCATATTCTGGTTTAGGCCATGTGAAAAACATTTTA
+TGGGGTTATTTAGGAGGGCCCTATGTGCCCCCGGGCATAGCAAGGACTAGGTAGGTACATGTAGGTTTGG
+AGGTTAGCAAAAATATGTTTTTAAAACCATTTTATTCGTGGTAGTAAAATCTCCTACTTCGTAAGTTATG
+GTTTCCTAGTTATAAGGATCAACAACATAAATTCAGTAAGTACAGACACTCGGAGGTTTCCGATTACAGG
+GCTTAGGCAATGTTGTAAAACCATCGTAGTATGAATAATAGAACATTATCTGGCGAAATATCCATTTAGC
+TCAAATTTTGTCTCCTTGTGTCGTATAAAGATATTTGTTAAACTACTTTGTATTATATATTTTCTCAAAA
+TAACCAACTACTTTTTTTTTATTCTCGCATACTTCGCACCCGAGAAATAGAGGTAGGAATTAGTTGTTTT
+ATGCGTCTTTTCCGTTACTTATATAAATAGTCTTTTAAAAGTTGCATGTAGCACGAGGCAAAATGTTACC
+GTGTTACAATATAGCTGTAAGAATGAACAATGCAGCCTCTAGGGAAAACTCAGGTCGATTGACATCTTCC
+CTAGCCAAGGGTTTGCGATCCGCTCCTCTCATCTACAGTTGAGGAGTGGATCGTAACCATTGGCTAGCGG
+AGATAGTTGATAGATTAGACGAGGAACATTACTGCACAAAATAAAATGCTTAAGTATTGAATTTGCATGA
+TTGTATGTTTCATAATTCCTTATTTAATGTATCAATAAAGTGGATTTCAACATGAGTATACTTTCATCGG
+ACGCTCTCTCAAGCCTCAGTGCGTTTGTTTATTAGGTAAATTGGTAACACCTGTTAATCGAAAAATTGAT
+GGACTTCAAATTTCAACTATTTAAATAAAAAGGCAATATATTAAAGCTTATTTCAAAGTCCATACACTCT
+GAGGCCGAAAATGTCACTAAGTACTGCAAATGTATCTTGCATTGACAGTGCACTTACGTTTGAACAAGAC
+TTGTTGAAACACTAACCCCACTTTAACATCAATGATAAAAACCAAGCACTTCAGACAAAGCAGACGATAC
+TTTTTTCTTCCAGTCGTGAAATCAGCGCGCAAATGTAAAAAAAAAACCCACCAAACTTTAAGGGCGTTAA
+GCTTGGTATTTTGTAAAAAATAAAATGAATATTTATTTCTTCAATTGCTGAATAATGAGAGAGCATTCAA
+GCAGAAACGTGATGCGTATGTCGATAACAGCTATACTTGCAGCTTTATTTTTATAGAAATAATTCCACTT
+ACATTTTTTTAATGAAAAACCTTTGATAGGAAATGACAGAATGGCCTTTGATATTACCAAATTAAATTTG
+CCAAATTTTCGTCTCCACTTTCACGCTTACAATGATTTCATACTTTCCTGAAATAATGACATAATTCAAA
+TGCAGATAATATGAAATGTCAAAATTAAGTCAAATATCAAGTTATAGGCAAGATACAGGGTTCAGAGTTC
+TTTGTTTTGTAAACAAAGCTCGAATATTGTAATTTTTTTTACATATGTGTTTTATTGATGTAAGTTTATA
+TCAAATGTAACTTTCTTTTGTTGATTATAGTGTTTATGAAGATATTGAGTTACTTTAAATTGTTTTTTAC
+ATATAATTTTGTCTTAGAAATGGTAATTCTCTACATTTCATTTTTTGTAAACAACTATAAGACTCGTCCT
+TTGTTTACATACCAATCAACTCTTACCTCTCTATCTCGCTTGTAACTTGATTTTGACATTCAATATTTTG
+GTCAATCATTTAAAATGCACGAGAAAACCATTTTATACATAAAAAGTAAAAAGAAAAATTTTGATCTCGA
+ATCGTGTCCAAGTCCTTTTGAGGGAGGGGGATTTTTTTTACGGCTGCATGGAACTACATGTATGTATTCT
+GTTCAGTATTTCTTCGATTCGGTTATTTTTTGAAAAAAAAAAGTCAGTTCGGAAAGTCTTTCACGCTTAT
+TCAATTTTTAAATTAGCCAGTAAACATTTCTGAATACATGTATATGAACTGATACGAACAAATTATATAA
+AAACTTTTGATTAAAAAAAAATCTTTGTACTTTTAACTACAGATATTCAAAATAAACCTTAATAGAATAC
+TTGTACGTCATATAAACGGTATACGTTATTTCCTAAAACAGAGATAAATGTTAGATGATAAGTATCTCAT
+ATGAGGTAACAAAAACATTTGATTGTTTAAGCTGAACAGCACTCCTTGAAACCAAGCGATTTCATGAGTG
+CTCGAGGATCTGTCTAAACGTGAACAACTTGTATCAGTAAACCAGGCCCTGTATATCAGTAAATGGCTAC
+TGAACGTTCCTTTCAGAAAACTTTAAAATTTGACGTCGTCAATAGCGGTTTGGAGGTAACAGGCGTTTGC
+TTGTGAAAAGTGAGCTATCTTTATGTTATCATTTTCTACCTACCTTCATAACATTTAAAAGAAACGTTTA
+CGGAGCCCTATTAATGAAATTTTCCAAACATTTATTCTACTTTTGTGCCACTCTGTAAACCAAAGTAACT
+ATGTGCGTATTGCATGCATGTTTAAGGATGTTCTTGAATCAAGCATGATGTACAAACTTCCATCAGTCGT
+TACTCAGCCTCAAGCCTGAGTATTGACTTCAAATTTTTGAGTTTTTGAGTTGAGGAATAAGTTGAGTGAT
+TTGAAAATTTTGATGAAGGCAGGGTCTGACCATAACATAGGTAATCAACTAATCATCGAGTAAATTCAAT
+ACAAAATAACTTTTAAAAATGCGCTATATTTCAGGATATCAGCGCTATGGTTTTCAAATGCCCTATTTGT
+AAAAGGGACGATTTCCAGAGTGAGGGAGGACTCAGCAGTCACATAACATGGAAACATTCAGGTAGCTCAG
+ACGGCAGAGGATCGCGACCATCTACTGGTGGACGTGGCAGGAAAGACGATAGGGTAAGGATAACAATACA
+CGCTACACGGCCTCTAGATCAGGACACTCACCGCTGATTAATGCTATTGTAAATGGCGTTTAAAGTTATT
+AATCAAAAGAAGTTAAGAGGGCACGATGGTTGTGGTCATTTGCAGACTATATTGATCTTCTTTAGAAGAA
+GAGCTCAATATAGAACTACAGAAAAATACCAAAATTTTAAAGGTGAAATATATGGATATTTTTTCTTTCC
+TTAATAATAGTTTATAGGCAATCAAATGATATCTCCAAATTTTAGGCAGATCCGATGGTTAATTGGTTGA
+CCATCTAGTATCCTTAAAGAATACACGCTATTGAATGTGTAAACACCCAGGATAAAATTATTTAATATGA
+TTTGTATTTGGGATAAATAAATTGAAAAACAGTTAGCAAATTATGATTAAATTTTTAGTTGCTATGTTAA
+AATATCACTTTTATCGAATATTACTTTTCACTAAGATATAAGTCAAGTAGGGTTAAAAAAAATGTACCAT
+TTTTGAAGTTTTACAATATATTTTTTTTTCATTTCAAACATTTGTAGCCGATACACAGTTCGAATACATA
+TTGTTTATTGCAACAGAACTATGAGTGCTAAAACTGATACCATTAGTCTAAATATGTTACCAATGGGGAC
+ACACGAAATCATAAAAAATTCCAACTAGTAGTTTGGGGAAACAATTTTTTAGCGTTAATCGACTGCTTGT
+AAGACCAACTAACTATGTCTACAGACAAAAAGATATTGTTTGTAAATAAACGTAGTATACTTTAATTTGA
+AAAGTAAAACATCCCATTTTTGACGAATTCGCCAATTAGGTATAGAGTAGTCAAATGTTGTATAGAATCT
+AACCTAAGAAAGAAAGATATAATACATGTAGGTATGATATACAATGTGAATACCTTAATTTTTGTGGATT
+TATTTCCCAGGATATCAAAGCCAGGGTTTTCAAATGCCCTATTTGCAAAAGGGACGATTTCCAGAATGAA
+AGAGGACTCAGCTGTCATATATCACGAATGCACCTGAGTGGCTCAGACGGCAGAGGATCGCGACCATCCA
+GTGGTGCATGTGGCAGGAGTGACGATAGGGTAAGGACAACAATACACGCTACACGGTTTCTAGATCAGGA
+CACTCACAGCTAATCAAGGATATAACAAATGACTTACCAAAAAATTAAATAAATCAATTGTTCAATTTTT
+TGGGATGGGCAAAAACAAACAACCCCCCCCCCCCCGCCCCCCCAAAAAACAAAGCAAAAGACCCCCCCCC
+CCCCCTAAAAAAGAAAAAAACAAAACAAAATCCGATCAAACAAAAATACCAATACATAGCAGATGGAATC
+TATAACAAATTTAACAGGAAATAAAGTTTGTAGATCAATCCATAAATAAAAGAACGCAAAAATTCTTTTA
+AAATTTTCACTAATTTGTCAGTAACAAAACTAATGAAGTACTGTTTGCAAAAGGGACGAATTCAGTTTTT
+GACAGCCACGGTGTGATTATTTCAAACAGTATACATATTTTAATTTTTTTATTCAGGATGTTAACGCTAT
+GGTTATCAAATGTCATATTTGCGGTAAGGACGATTTCAAGAGTGAGGGAGGACTGAGCCGTCATATAACG
+ACTGTGCACCAAGGTAGCGCAAATGGCAAGGGATCTCGACCGTCTTCTTGTACAAATGGCAAAAGGGACG
+ACGGAGCAAGACCAAAAACTCACACGCCACGTCATAGAGACCACGAGAGACACAACAGTGACAGAGATGT
+TGTAAGGGGTGTTGCAAGAGTACAGAGGGAATCACCCCAAAGGGGTTCTCTAGACGATTTTCCGTTCAAA
+GTAAATATGTTATTTTTATATATGTTTTGCTTCTGAAAAGATTTGCAATGATAACTAATTCGCTTGTATT
+AATAAAATAGAATCATCGTTAGTCTATTGTAACGATTAAAATTTTATTTGCATAGTAAAAGTCAGGGAAA
+AGTTTTTTAATTTATAATCACCTTCATGATAAATTTGTATATTACATTAATTTTGTAAACATGTTTCCTT
+ATTTGAACCTATTGACTAACAAAAGCATTCATTTCTATATATTTACATTTGCAAAATTTCTTCCTAATAT
+GAACCTTTAAAATAGCGAAAAGATTTGATTCTTTATGTTAAAATTGCAAAAATGTTTCCTTATATGAACC
+TGTAGAATAGCCAAAACGCTAAGTCTATTGTGAACGTTTACGTGACGTGAACATGATAATCACAGGCGAT
+TATCGTTTGCATTTTTGTAAACATTAAAATACGGATATGTTAATAACTATGAACGATTTGACTTTAAACG
+TAAATATAAGTAATAAATTAAACAAGACGGGATATGAACTTGGTTGTTACGTGATCAAATCTTTTGAGAA
+GTCCTACCTGTTTCACGTGACCAACCAAGTTCATATATTTGAGAACTTTTTAAGGTGCTGTTTATTTCTT
+GTGTAAACTTTTTAATGACGTCACAATGAATACAACGCCCTCTTATCGTTTGACGGTTGCATTACTGTAA
+GTTCATGTTTTAAAACACGATTATGTTAAAAATTATGAACAATTTGCCTTTCTTAAACGTATATATAAGT
+AACAAACAACAATGTTATAAAATCAATGGGGATCTGAACTTTTGTTTGTCACATGATCAAATCATATGAA
+GCCTTCACAGTATTTAATTACGTGACAAACTAAGTTCATATCCCGTTTAACTTTTATACTTGTTGTTTTT
+TTTCTAATATAACTTGTCAATAGTTAGGCCATGGTGTCCCTTAAAGAGTTTTTGCTGATCAAATCTTAAT
+GTATAAGATGGTCTTCCATGGCAAGTTAATGATTCCCTTTGATCCTAAAGTCAAATGATAAACGGCATTG
+TTATGCCTTTATTAATCTTCCTCTTAATTATTCTACCCAACAAAAAGTCAAATGTTAGTTCAACCGGCCG
+CGGTATAACAAACTAGATGTTTGACCGGTCGCTTCGCTACAACTATTTAACCGTTGTTCAATCTTGGCGA
+GATAGAAGAAACGGAAAGAATGCAAGTGCTTTGCGACAAGAGTGGCTTGGTGCAACTTGAAATGATCCCT
+GCGTCTGCAGTGAAAGATAACACAAAATAGCTATTGGATCGGATTTGGACAACATGTCATCTGTTGGACC
+ATCTGACAGAAGTATTGTCTTAGATGTTTAACCTTGGGCAACGTTTGTGTCGTGTCTGTAAAAGTCCAAC
+AAATGATATGTTGTCTCATACCCCGGCAATATGTGAATGAGACTGTATTTCAAAAGTTGACCGTACGATA
+ACTTGAGAGTTATATTATTACTTATTAGGTTTGTTACTGACTGTTTACAGAAATTTGTGGGGTCGGTAAA
+GTCCATAGAAGGCGAGGCGGAGCCGAGCCTTCTGTGGACTTTACTGACACCACCAATTTCTGTAAACAGT
+CAGCAACAAACCTAATAAGTGTTTTGTTTTGTCGAGGACCCTAAATTTGATATGTAAACAACAAAAGAGA
+ATACATACCAATTAAATTCATAGGCTTATTATCTAATTTTGTACCTTTCTCGTCAGTCGTCTGTGTAAAC
+TTGGATGCCATTGTATATAGGATCGTTTTATTACGTCACGGGCAAAGGGGGAGTCACTCTAAATATTTTG
+GGGCTTAAAAATTATAGGTATGGTTGAACGTTTGTGTTAAAAATAAGCTCAACTAACGTTACGTCCGCCA
+TGTTGCCGTATAAATTTTAACGCACGCCGTGTAAAGAAATTTATAAGGCAATCACGTGACGTGATTCATC
+CAATGACGTCGAGACATTCTAGTCCGAGGCAAAACAAATTTACATATAAGTCACCATTCACCATTTCTAT
+CAATTACGATTTAACAATTATTGGAGAATCATTTTTAAGACATTTTATCTTATGACACAGGATGGTGCAG
+GAGGAGCAACATGGAAATCGAGCTCAGCAAAGTATAAAGGTAACAAGACAGAGTTGTTTTTATAGTCCAA
+GCAATCCAGCTTTACGTAGTGTTGGCCATATAATAATATAAGCTATCTCAGAAGAACAATTTCTTCTTTA
+TCAAAACCGTTGGACACTCGGCAACTAGATTTATCAAATTTTAAATGGAAAGGCACTAATTTAAAGAAGC
+TTTAAATTATTTGTCATTTATTGACCTGTTCCCTGATATTGATAATGAAAATATAGGAAGCATTTGATTT
+GTTTCTATTTCATCAATAGAATCTCCAAAACAAAGCAGAAAAACAGAGGAACCTCGTGAAAGACCCTCAT
+CATCAGATTTAAGTAAGAACTGTTTTAGTGTGAAATTAGCATCATCTATATGTAAGGGAATGAAACGGTC
+ACTTGCAGGTTGTCTATATTCAGTCCTTGTAGTAAAGTTTACTTATATATGACTGAGCCATTCAGTTTGC
+TTTTCAGACCTTTTTGTAAATATTCAGTTGACTGAACATCAGAATCTCTTGTGATAATTGTAATTGCTGC
+ATCAGGAAGTTGTTAAAGTTAAAAATGCTTTAGTTGATCAAAGGGCAGAACTTCTTGCGATAATTATATT
+GGTAAATCAGGAAATAGTTAAAAGTAAAAATTCATTAGGTGACGAAATTGCAGGACCTTTGGGAAAACTT
+GTATTGCTCTATTAGGAATTTGTTAAACATTTTTCAGTTGATCAAATGGCAGAACTTCTAATGATAATTG
+CAAGGGTGTGTATCAGGAAATAGTAAAAAAGGAAACAATCTTTTGTTGACCAAGTGGCAGGACCTTTTGT
+GAAAATTGTAATGATGTATCAGAAAAGGGTAAAAAATGAAAATTCTTTACTTGACCATATAACAGAACGT
+CTTGTGGTAATTGTATTGCTGTATACGAAAATTGTTAAAGTTAAGATTTTTTCAGTTGATCCAATGTCAG
+AAGCTTTTGCAATAATTGTTTTGGTTTATCAGAAAATAGTAAAAAGGTTAAAAAAACAAAACCTCTTGTG
+ATTATCGTATTGATGTACATAGAAACTATTAAAGTAAAAACATATTCAGTAGAATGTCAGAACTTCTTGT
+GAAAATCTTTTATTTGTGTATCAGAAAATGGTGAGAAGTAAATTTTCCTTAGTTGATTTAATGGCAAAGG
+TTTTGTGAAAACTGTATTGCTGTATCAGAAAATAATTAAACACAGAAAATGATAAAAGTAAAAATTTCTT
+ACAGATTTATCGCTGTCGTTCAATGCTCCAAATTTTGAGAAATTTGTGGGAATGATAGAGGGCAGCATTG
+TACGTCCGAGGGAAGACAGTACACTTAGGACAGACAGCATAAACAAGTTCATTGATGACTTATTGGTTGT
+GATGGATAGGATATCTGATATACCGATAAAGCTCATGAGATCCGGGTCTTACTATGACAGAACGAAGGTA
+ACTGTAAAAAGAAAGTGGTACCATGTTAGGCGCCTTGAAAATATGACTTTTATGTTTACATTTATGTATT
+TGTCTGTAATAACAGTATGGGTCGTATTTGTAACGTATTCTTCAATGCATTTCATGAATAACGCAATTGA
+GATGCCCCTGGAGAGCAAGCGGGGTTTGGGGGGTTGTTGGTCGGTCCTCCCCCCCCCCCCCCCCCAAGCA
+CCTGTGTATTCGATTAACTCATAAACTCAAGGAATGGTTCCTTATTCCTAATTCACTGTGAAAAGATGTT
+TTTATGAATAAAATCATCTTTAAGGGTCAATCATGAGAAAAAAAAAAAAAACAAGTGTCTCCATTGAGAC
+ACTTATTGTTAGATCATAATTAATCACCTAATTGTGTACGGATTTTCCTTTCTTTCCGATTTCGACAAAG
+AGCACCCGGGGATGTGACCGGTCAGCAGAGGATGCTTTACTCCTCAACGGCACCTGATTCTACCTCTAAT
+TTTTTTTATGAGGTCTTTGTTTGCTCTCCTCCTGACTTGTGATTTTCCTTTTGACTTTTGATGTTTGTTA
+TCACCAAATGCCTGTTATTTTAAAGCGAAATATTTAAGAACGAGGAAGAACGTTATAATTCTACCTAGTA
+TTTCATACACCTTTCTTTTAATTTCTTTGAACAGATCGACTACAACGATGAATTCGATTTTATGTTTTAT
+GCTGACATCAGAATGGAAGCAGATTTTACAAACTGTCCCCCAGGATATTGTAAAATTCGGAAAGGAATGA
+CTGTAAAACCGGATCTTGATCCGTTCATCGACAGGAACGGGTACCTTGTTCCTGAAAAGTACAAAGCCCA
+TATGTTCGATATATTCGAAAAATGTCGGACTGATTCCAGTTTTAGACAAGGGAGGAGAACCCAAAGTAAG
+TGATCTAATTTTAGTTTTTTTTTATTTAGAAGCCTTTTTAAATATTTTGGCATATGGCGTGTTATGCATT
+GATATATAACTAATATTGTTTGCTATTCGGCAGATCAGAGGCAGACTAATTTGTTACCAAGTAACTGTAA
+ATTTGCATAGAACTAGCACAAAGAGAAAGTCTTCCTCTCCTAAACACTTCAAATAAACTCTAACTAGGCA
+TGACGTCGTGTACACGTTATCCTAAAAATGATTATATTACCCTCAGACGCATTTTGTTTATACTTAATTC
+AATCATAAATGAATAACTTGAAATCTTATGTTCCAGAACAAGATCGCAAACCTGAGAGCCCAGCATACAC
+ATTACTGTTCGATTTAGGAATTTCTGGTAAACCCCCAATCGACATTGATTTAGTTCCTGCAATAAAAATT
+GATGGCTGGCCAAAACCTGCAAGAAAAATCGGTCCTAGTAAATGGATAGAAAAAAGCATGGCTGAGAGAG
+CTATGCAATGCTTCCACGTCGTTACCAAGAAGTTTCAAGAAGGTATACTTTTGTTCATTACATTTTAAGT
+CATCTGTTAGAAAAGAAACATTTAAAATGATTTGGATAAAAAAAATGAGAATTGTTTGATCACATCATTA
+ATTTCATACGGTTTTGTAGTATACAATTTTAATCAATATAGTTATAAAAAATAACGCTATTGCATCGTAT
+GATACTATACAATATCGTGCCATATGATATATCATCTGATACAGGAAATTGAAGAAAATTAACTTTCTGC
+ATATGCATTGTACTGAAATTGTTGGGCAAATACTATCCATAAACTAGATTAATTTAAAAATAAAAATCTT
+AAAACTGAGTTCAGTTGCAAACAGTATACAGCAATTAACTTTTATGGTAAACAAAACAAAAAGAAAAATG
+CGAAAATGTTTTTCTTTTCTAAAAATGAACATTAACAATGAAATGCGATATGATTCGCCGGAATTTTATT
+TTTTTCATATGATTTCATTTATAGCTCACCAAGACAGTCGCCTGCTATGGAGGATTTCCTTCTCGCACGC
+AGAAAAAGAACTTATTCTTCACGCTAACATGTCGGACAATGGTTGTCGGAAGGATGTTTTTAAAATTCTG
+AAGAGAATTAAGGAAAACATGAAGTCTAAAAACCCAACTGAAATGGACAAGTTCTGTAGTTACCATCTTA
+AAATGTTCATTCTAAGGTTTTATGATAAACACGGTGATTTTAGTAAGGAGAGGAAGTTGGACTTGCTTAA
+GGAGAGTATAAAGCAGCTCGCGAAATGTGTACGTGAGGGAACCATTGAAAATTACTTCATTCCTAAGGAC
+AATGTTCTACAGTCAGTCCCAGAGAAAGAAAGGTTGTCTGTTGTCAGGGAACTAGATGGTCTCTTACAAT
+AAATGGTGCTGAAATGTTACATGTTTTCGTTGATATCCATACCAACATATGTTCAAGTTAACTAATTCTT
+TTTACAGGTTTCGTGTTCAGGAGATGTTTTATATATTTTTTTTTTATATTTTCAGTATGTCTGGTGCATT
+ATTATAAATCATGACACAAGATAGCTTGTAACTTTGTACCAATTAACTTATTGGTCTGTCTTTGTTGCAT
+CATCGTTGTGTGTTAAGGTGGTAAGATTTTGTAAGGATACTGAATGAAACGCATAGCTCTTATTAGGTAA
+AAGTGTCTCTGCATACACATTTTAAACCAATGACTTTATTTCTAGGCCTGTGCATAATGGTACAATCAGT
+ACTTTGTAAATTTGCAAATGTTGATTTTTTTTTAAATAATCGTTTGTTGGATTTTTTGTGAGAAAGAGGA
+ACACGGTGTGTGTTTTTAACCTGGCCTCTTTGTTCAGCTTTTGTGCTAAAAAGGTAAAATTGGATGATGA
+TTGTTTTAAATAAATATATCATAGACGATAGTATTTTAATATTGAGTTTTACGATCTTGTCATCATTATG
+AACTGCTGATTGCGTATAACTGTAATGTAATGTACAAGGTATAATCAAGCATTTGTGAAGTGAATGAAAT
+TCTAAATTATCTATTCTTTACAAAACAAGTCTGCTTTATATATTATCTGTAAAATGTGTCGCATATAATT
+CGATGTTTGGCTTTAGCATATGAGCAAAACTACTTAACACTGCCATTTAATAACAATATTTTGAATAATA
+TCTTTACTTCACATTACTGTCTCCAAGTACATATAATAGTATCTACGTTGTGACGTTTTTATTTGTGAGG
+CCATATTTTCTTTATCTTTTATTTTACTTATAATCGATAATTGATCATAAAGTTTGTTAAAAGATTTAAA
+GCAATATGAGCTGTAATTTTTAGAATTTTATTTTGCTGCAAAAACCTGCCAGTATGATAAGTCTGCATGT
+AACTTAAACTCTTATGATAAATAAAATTTGAAAGAATTATTAATTTCGTCAGATGAAAGATTTCTCTTAT
+GAAGAATATATAGCAGATCAATTTTGGTAGAGGACGACAATAATTCAATTTTGCTTCAATTAAGGCTTCT
+TTACGGCTTTTAAAATAAACATATGCCTAACAGAACTTTAAAAACCATGATATGTTTGTTAATTTAATAG
+AAAATAACATTTTCGTAAAAAAAAAAAATCAGCATGAAAATTGCAGCTCATATTGCTTTAAACTGTATAT
+TGATATATGTAAACTATTGATTACAGAGAATAAATAATGTTCAAATTTCAAAACTTTATTTTCAAATACT
+TTTATCGTATGATCAAAACTATTGAATGTGATTACCATTTGCACAGTGATCAGGTTTTATAGAAAGATGC
+ATAATTTAAAAAAAATATATTGCGGTTGTGCTTTGGTTTTTTTTCTATCTCTAAACATTTACTCTTATTT
+TTTTGTTTCATTTGACATGGCATTTTGTATCCATTGTAAAAAAATGTTTTACTAGGATATAGTAATTAGA
+ACCCAATAACTGTTGTCAATAATAATACACAGTTCATAATTTTGACGATTACAATTTAGTTATTTGAATA
+AAGTTAACAAGTTATTTTCTGGAAAGTAGATTGGTTGTAGCATGATTTGTCAAACACTGTAAGTACCTTT
+GCATATAAAAAGATTATTTGATAATCCTTAATTTTTATCATTTAAAGCGTAGATGATGATGATGATACTG
+TATGCATAAGCGAATTTCTTCCCATTGGGTAGCATTTAGGAACATCTCGAGTGTATATTGCAGGGGGAAT
+TGATGACATAATTTGCGGAATATATCATTAATATACAAAAAATCCAATATCAGCGATATCGGAAAAAAAC
+ATCAGAAAAAATTTGAGATCACAGTATTGTGTAATATACGTCGAACACCGAACATTTAAAGGGGCATGGT
+CACGATTATGGTCAAAAATCATTCTTCCGAATTCAATGTTAACAATGCTTCAGTAAGGCATTCTTTATAG
+GCAACCAAAAATTGAGTGTCATTCATTGAGTTAAAAGCGAGTTACAGAGCTTAAATTTTTTTCTATGTAA
+AGAAAGCTTTTGTTTACTTTTTGAATGTAGAAGGGAAAATTCCAGTTTTAGACCTAAAATGAATGTGTTG
+AATGTTTAAAAATACTGTTAATTTTATGCTTTAAATGAATAAGAAGATAAACAAATCAGCTTTATATAGT
+ATATTTCATCTTTGTAAACAAAAACAGGGCACGAGTCTTGTTTACATTACAAAGAGTTGTGACCCATGTA
+TCTTGCTCATAACTCTACGACTGACTCTCAAATTTATTTGAATATAGAAATGCATTTCTAAAGCATTGTA
+AATAATAAAAACTGAAGAACTAAATTTGACCAAAATCGTAACCATGCCCTTTATCGCAAACGATATAGGA
+AAGTGTTTTGAGAAAAGAAACCAATGAAACACGATACAAAACAGATATATTTAAAAGTTTCACATTTACA
+GACGTTACTCTGTGTTAGTTTGTCAAAACATGTACTGCAATAGATCAAGCAGAGACATCGTGGACTTAAA
+AACGTGTTGTTAATTTGAAATAAATTTTACCTACTACGTGTATTGTATCCTCGTCTATAGACAACGCTGG
+TAAGAGAACGAGGGTATGCAATTATATTGGAAAGTTGAAAAAGCCCCTTTTGATGTGCACTCACAGCGAA
+ATTACTCGTTTTGTGCAAGAAAATCCTAATACTTTGTATTCTTCCAATAAATGCAACATTAAAATAAATA
+CCGGTATGAAATTTTGCTTAATATTACGAATTCACCATTGCAATTTCATTTATTTTCTGTTCAAATTTGT
+TATCTTAAATTGAATTTTGCATGGTCTACTTGTTAGGACCCCGCTCTGCGGGTGACTTATAGTGAGCAGT
+CCATCCATCCATTTTTGTTTCTTTCTGTCTGTCCGTCCGTCCGAGATCTCTTGTCAGGAGCATTTTGTCT
+CCCCCTTGGCCTATTTTTGCTGTTACTTCCCCAAGTTTTAAGGCGAAATGTGAAGATCATAGCAGATCTC
+TTTATAATCCAGTTTTAGAACATACATTTATTCTCAAATGCTTAATTTTGCTCAGATTGAACAAATAAAT
+ACATGTAAGTAAGAGTAATGACATTGAATTATTTAAACTTCTATGCCAGCTGGAACATTTTTAAGTCATA
+GGTTAAGGTCAAAGCAAATTATCTGAAACACTTTTCATTCTATTGTCCATTATTTGAGTAGGCCCTTTGA
+GATGCTTACCTTCTTAATGATGCCTAGATACTGTCAATTTTATATTCCTGTCATGCAAACGTGTATTGCG
+CTATGTTGATTTGATAAGGTTGATTTTTTCCCTATGTCTGTCATAATTGTAATTAAAGTGTTCTTTTCAG
+GAGGAGAGGGTTACTCAAGGAAGCTATACTATCCTATTTAAAGTAATAGGCAGTAGACCCTTTTTCATAT
+AACTTGATAAATGCCTTTTAAACTTAATTTTAAAAAGATTAAATTGTACACAAATTTGTCAGTTTAAAGG
+TAAATACTCACGAGTATGAAAGGTAGTTAATCCAAAATCAATAAATGATAAAACGAATAAAGGGTCCATT
+TTGTATTAATCAACAAATAACATTTCATTTTGATTAAATT"""</span>
+        self<span class="token punctuation">.</span>seq_text<span class="token punctuation">.</span>delete<span class="token punctuation">(</span><span class="token number">1.0</span><span class="token punctuation">,</span> tk<span class="token punctuation">.</span>END<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>seq_text<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>tk<span class="token punctuation">.</span>END<span class="token punctuation">,</span> example<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>pos_entry<span class="token punctuation">.</span>delete<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> tk<span class="token punctuation">.</span>END<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>pos_entry<span class="token punctuation">.</span>insert<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"31898289"</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>hide_rev_comp<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">get_clean_sequence</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""提取并清理序列"""</span>
+        lines <span class="token operator">=</span> self<span class="token punctuation">.</span>seq_text<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token number">1.0</span><span class="token punctuation">,</span> tk<span class="token punctuation">.</span>END<span class="token punctuation">)</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">)</span>
+        header <span class="token operator">=</span> lines<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+        seq <span class="token operator">=</span> <span class="token string">''</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span><span class="token punctuation">[</span>line<span class="token punctuation">.</span>strip<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">for</span> line <span class="token keyword">in</span> lines<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">:</span><span class="token punctuation">]</span> <span class="token keyword">if</span> line <span class="token keyword">and</span> <span class="token keyword">not</span> line<span class="token punctuation">.</span>startswith<span class="token punctuation">(</span><span class="token string">'&gt;'</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> header<span class="token punctuation">,</span> seq<span class="token punctuation">.</span>upper<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        
+    <span class="token keyword">def</span> <span class="token function">parse_coordinates</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> header<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""智能解析基因组坐标（兼容正/反链表示法）
+        
+        支持的格式：
+        - 正链："&gt;ref|NC_001234|:100-200" 
+        - 反链："&gt;ref|NC_001234|:c200-100" 或 "&gt;ref|NC_001234|:complement(100-200)"
+        """</span>
+        <span class="token keyword">try</span><span class="token punctuation">:</span>
+            <span class="token comment"># 处理标准反向链表示法（带c前缀）</span>
+            <span class="token keyword">if</span> <span class="token string">':c'</span> <span class="token keyword">in</span> header<span class="token punctuation">:</span>
+                coord_part <span class="token operator">=</span> header<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">':c'</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+                start<span class="token punctuation">,</span> end <span class="token operator">=</span> <span class="token builtin">map</span><span class="token punctuation">(</span><span class="token builtin">int</span><span class="token punctuation">,</span> coord_part<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">'-'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> <span class="token punctuation">(</span>start<span class="token punctuation">,</span> end<span class="token punctuation">,</span> <span class="token boolean">True</span><span class="token punctuation">)</span>  <span class="token comment"># 返回元组，第三个参数表示是否反向</span>
+            
+            <span class="token comment"># 处理complement表示法</span>
+            <span class="token keyword">elif</span> <span class="token string">'complement('</span> <span class="token keyword">in</span> header<span class="token punctuation">.</span>lower<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                coord_part <span class="token operator">=</span> header<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">'('</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">')'</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+                start<span class="token punctuation">,</span> end <span class="token operator">=</span> <span class="token builtin">map</span><span class="token punctuation">(</span><span class="token builtin">int</span><span class="token punctuation">,</span> coord_part<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">'-'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> <span class="token punctuation">(</span>start<span class="token punctuation">,</span> end<span class="token punctuation">,</span> <span class="token boolean">True</span><span class="token punctuation">)</span>
+            
+            <span class="token comment"># 默认正向链</span>
+            <span class="token keyword">elif</span> <span class="token string">':'</span> <span class="token keyword">in</span> header<span class="token punctuation">:</span>
+                coord_part <span class="token operator">=</span> header<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">':'</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+                <span class="token keyword">if</span> <span class="token string">'-'</span> <span class="token keyword">in</span> coord_part<span class="token punctuation">:</span>  <span class="token comment"># 标准范围表示</span>
+                    start<span class="token punctuation">,</span> end <span class="token operator">=</span> <span class="token builtin">map</span><span class="token punctuation">(</span><span class="token builtin">int</span><span class="token punctuation">,</span> coord_part<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">'-'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                    <span class="token keyword">return</span> <span class="token punctuation">(</span>start<span class="token punctuation">,</span> end<span class="token punctuation">,</span> <span class="token boolean">False</span><span class="token punctuation">)</span>
+                <span class="token keyword">else</span><span class="token punctuation">:</span>  <span class="token comment"># 单点位置</span>
+                    pos <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>coord_part<span class="token punctuation">)</span>
+                    <span class="token keyword">return</span> <span class="token punctuation">(</span>pos<span class="token punctuation">,</span> pos<span class="token punctuation">,</span> <span class="token boolean">False</span><span class="token punctuation">)</span>
+            
+            <span class="token keyword">raise</span> ValueError<span class="token punctuation">(</span><span class="token string">"无法解析坐标信息"</span><span class="token punctuation">)</span>
+        
+        <span class="token keyword">except</span> Exception <span class="token keyword">as</span> e<span class="token punctuation">:</span>
+            <span class="token keyword">raise</span> ValueError<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"坐标解析错误: </span><span class="token interpolation"><span class="token punctuation">{</span><span class="token builtin">str</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">reverse_complement</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> seq<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""生成反向互补序列"""</span>
+        comp <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'A'</span><span class="token punctuation">:</span> <span class="token string">'T'</span><span class="token punctuation">,</span> <span class="token string">'T'</span><span class="token punctuation">:</span> <span class="token string">'A'</span><span class="token punctuation">,</span> <span class="token string">'C'</span><span class="token punctuation">:</span> <span class="token string">'G'</span><span class="token punctuation">,</span> <span class="token string">'G'</span><span class="token punctuation">:</span> <span class="token string">'C'</span><span class="token punctuation">,</span> <span class="token string">'N'</span><span class="token punctuation">:</span> <span class="token string">'N'</span><span class="token punctuation">}</span>
+        <span class="token keyword">return</span> <span class="token string">''</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span><span class="token punctuation">[</span>comp<span class="token punctuation">.</span>get<span class="token punctuation">(</span>base<span class="token punctuation">,</span> <span class="token string">'N'</span><span class="token punctuation">)</span> <span class="token keyword">for</span> base <span class="token keyword">in</span> seq<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">locate_base</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">try</span><span class="token punctuation">:</span>
+            header<span class="token punctuation">,</span> seq <span class="token operator">=</span> self<span class="token punctuation">.</span>get_clean_sequence<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            start<span class="token punctuation">,</span> end<span class="token punctuation">,</span> is_reverse <span class="token operator">=</span> self<span class="token punctuation">.</span>parse_coordinates<span class="token punctuation">(</span>header<span class="token punctuation">)</span>
+            target_pos <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>pos_entry<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            
+            self<span class="token punctuation">.</span>is_reverse <span class="token operator">=</span> is_reverse
+            self<span class="token punctuation">.</span>original_seq <span class="token operator">=</span> seq
+            seq_length <span class="token operator">=</span> <span class="token builtin">abs</span><span class="token punctuation">(</span>start <span class="token operator">-</span> end<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span>
+            
+            <span class="token comment"># 验证位置范围</span>
+            <span class="token keyword">if</span> <span class="token keyword">not</span> <span class="token punctuation">(</span><span class="token builtin">min</span><span class="token punctuation">(</span>start<span class="token punctuation">,</span> end<span class="token punctuation">)</span> <span class="token operator">&lt;=</span> target_pos <span class="token operator">&lt;=</span> <span class="token builtin">max</span><span class="token punctuation">(</span>start<span class="token punctuation">,</span> end<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                <span class="token keyword">raise</span> ValueError<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"位点 </span><span class="token interpolation"><span class="token punctuation">{</span>target_pos<span class="token punctuation">}</span></span><span class="token string"> 不在序列范围内 (</span><span class="token interpolation"><span class="token punctuation">{</span><span class="token builtin">min</span><span class="token punctuation">(</span>start<span class="token punctuation">,</span> end<span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token string">-</span><span class="token interpolation"><span class="token punctuation">{</span><span class="token builtin">max</span><span class="token punctuation">(</span>start<span class="token punctuation">,</span> end<span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token string">)"</span></span><span class="token punctuation">)</span>
+            
+            <span class="token comment"># 计算相对位置</span>
+            <span class="token keyword">if</span> self<span class="token punctuation">.</span>is_reverse<span class="token punctuation">:</span>
+                distance_from_end <span class="token operator">=</span> <span class="token builtin">max</span><span class="token punctuation">(</span>start<span class="token punctuation">,</span> end<span class="token punctuation">)</span> <span class="token operator">-</span> target_pos
+                rel_pos <span class="token operator">=</span> seq_length <span class="token operator">-</span> distance_from_end <span class="token operator">-</span> <span class="token number">1</span>
+                self<span class="token punctuation">.</span>rev_comp_seq <span class="token operator">=</span> self<span class="token punctuation">.</span>reverse_complement<span class="token punctuation">(</span>seq<span class="token punctuation">)</span>
+                working_seq <span class="token operator">=</span> self<span class="token punctuation">.</span>rev_comp_seq
+                display_text <span class="token operator">=</span> self<span class="token punctuation">.</span>rev_comp_text
+                strand <span class="token operator">=</span> <span class="token string">"负链"</span>
+                self<span class="token punctuation">.</span>show_rev_comp<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token keyword">else</span><span class="token punctuation">:</span>
+                rel_pos <span class="token operator">=</span> target_pos <span class="token operator">-</span> <span class="token builtin">min</span><span class="token punctuation">(</span>start<span class="token punctuation">,</span> end<span class="token punctuation">)</span>
+                working_seq <span class="token operator">=</span> seq
+                display_text <span class="token operator">=</span> self<span class="token punctuation">.</span>seq_text
+                strand <span class="token operator">=</span> <span class="token string">"正链"</span>
+                self<span class="token punctuation">.</span>hide_rev_comp<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                     
+            <span class="token keyword">if</span> rel_pos <span class="token operator">&gt;=</span> <span class="token builtin">len</span><span class="token punctuation">(</span>working_seq<span class="token punctuation">)</span> <span class="token keyword">or</span> rel_pos <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">:</span>
+                <span class="token keyword">raise</span> ValueError<span class="token punctuation">(</span><span class="token string">"计算错误：相对位置超出序列长度"</span><span class="token punctuation">)</span>
+            
+            base <span class="token operator">=</span> working_seq<span class="token punctuation">[</span>rel_pos<span class="token punctuation">]</span>
+            self<span class="token punctuation">.</span>result_label<span class="token punctuation">.</span>config<span class="token punctuation">(</span>
+                text<span class="token operator">=</span><span class="token string-interpolation"><span class="token string">f"位点 </span><span class="token interpolation"><span class="token punctuation">{</span>target_pos<span class="token punctuation">}</span></span><span class="token string"> (</span><span class="token interpolation"><span class="token punctuation">{</span>strand<span class="token punctuation">}</span></span><span class="token string">): 位置 </span><span class="token interpolation"><span class="token punctuation">{</span>rel_pos<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">}</span></span><span class="token string">/</span><span class="token interpolation"><span class="token punctuation">{</span><span class="token builtin">len</span><span class="token punctuation">(</span>working_seq<span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token string"> | 碱基 = </span><span class="token interpolation"><span class="token punctuation">{</span>base<span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">,</span>
+                fg<span class="token operator">=</span><span class="token string">"blue"</span>
+            <span class="token punctuation">)</span>
+            
+            self<span class="token punctuation">.</span>highlight_position<span class="token punctuation">(</span>rel_pos<span class="token punctuation">,</span> display_text<span class="token punctuation">)</span>
+            
+        <span class="token keyword">except</span> Exception <span class="token keyword">as</span> e<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>result_label<span class="token punctuation">.</span>config<span class="token punctuation">(</span>text<span class="token operator">=</span><span class="token string-interpolation"><span class="token string">f"错误: </span><span class="token interpolation"><span class="token punctuation">{</span><span class="token builtin">str</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">,</span> fg<span class="token operator">=</span><span class="token string">"red"</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">highlight_position</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> rel_pos<span class="token punctuation">,</span> text_widget<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""精确定位高亮位置（考虑实际行长度）"""</span>
+        text_widget<span class="token punctuation">.</span>tag_remove<span class="token punctuation">(</span><span class="token string">"highlight"</span><span class="token punctuation">,</span> <span class="token number">1.0</span><span class="token punctuation">,</span> tk<span class="token punctuation">.</span>END<span class="token punctuation">)</span>
+        
+        <span class="token comment"># 获取文本内容（包含换行符）</span>
+        content <span class="token operator">=</span> text_widget<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"1.0"</span><span class="token punctuation">,</span> <span class="token string">"end-1c"</span><span class="token punctuation">)</span>
+        lines <span class="token operator">=</span> content<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">)</span>
+        
+        <span class="token comment"># 跳过标题行（以&gt;开头的行）</span>
+        data_lines <span class="token operator">=</span> <span class="token punctuation">[</span>line <span class="token keyword">for</span> line <span class="token keyword">in</span> lines <span class="token keyword">if</span> line <span class="token keyword">and</span> <span class="token keyword">not</span> line<span class="token punctuation">.</span>startswith<span class="token punctuation">(</span><span class="token string">'&gt;'</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+        
+        <span class="token comment"># 计算实际字符位置</span>
+        cumulative_len <span class="token operator">=</span> <span class="token number">0</span>
+        found_line <span class="token operator">=</span> <span class="token number">0</span>
+        found_col <span class="token operator">=</span> <span class="token number">0</span>
+        
+        <span class="token keyword">for</span> i<span class="token punctuation">,</span> line <span class="token keyword">in</span> <span class="token builtin">enumerate</span><span class="token punctuation">(</span>data_lines<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            line_len <span class="token operator">=</span> <span class="token builtin">len</span><span class="token punctuation">(</span>line<span class="token punctuation">)</span>
+            <span class="token keyword">if</span> cumulative_len <span class="token operator">+</span> line_len <span class="token operator">&gt;</span> rel_pos<span class="token punctuation">:</span>
+                found_line <span class="token operator">=</span> i <span class="token operator">+</span> <span class="token number">1</span>  <span class="token comment"># +1因为前面跳过了标题行</span>
+                found_col <span class="token operator">=</span> rel_pos <span class="token operator">-</span> cumulative_len
+                <span class="token keyword">break</span>
+            cumulative_len <span class="token operator">+=</span> line_len
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            <span class="token keyword">raise</span> ValueError<span class="token punctuation">(</span><span class="token string">"无法定位位置：超出序列范围"</span><span class="token punctuation">)</span>
+        
+        <span class="token comment"># 高亮定位</span>
+        start_index <span class="token operator">=</span> <span class="token string-interpolation"><span class="token string">f"</span><span class="token interpolation"><span class="token punctuation">{</span>found_line <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">}</span></span><span class="token string">.</span><span class="token interpolation"><span class="token punctuation">{</span>found_col<span class="token punctuation">}</span></span><span class="token string">"</span></span>  <span class="token comment"># +1因为tkinter行号从1开始</span>
+        end_index <span class="token operator">=</span> <span class="token string-interpolation"><span class="token string">f"</span><span class="token interpolation"><span class="token punctuation">{</span>found_line <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">}</span></span><span class="token string">.</span><span class="token interpolation"><span class="token punctuation">{</span>found_col <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">}</span></span><span class="token string">"</span></span>
+        
+        text_widget<span class="token punctuation">.</span>tag_add<span class="token punctuation">(</span><span class="token string">"highlight"</span><span class="token punctuation">,</span> start_index<span class="token punctuation">,</span> end_index<span class="token punctuation">)</span>
+        text_widget<span class="token punctuation">.</span>tag_config<span class="token punctuation">(</span><span class="token string">"highlight"</span><span class="token punctuation">,</span> background<span class="token operator">=</span><span class="token string">"yellow"</span><span class="token punctuation">)</span>
+        text_widget<span class="token punctuation">.</span>see<span class="token punctuation">(</span>start_index<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">show_rev_comp</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""显示反向互补序列"""</span>
+        header <span class="token operator">=</span> <span class="token string-interpolation"><span class="token string">f"&gt;反向互补链 (基因组位置 </span><span class="token interpolation"><span class="token punctuation">{</span>self<span class="token punctuation">.</span>start_pos<span class="token punctuation">}</span></span><span class="token string">-</span><span class="token interpolation"><span class="token punctuation">{</span>self<span class="token punctuation">.</span>end_pos<span class="token punctuation">}</span></span><span class="token string">)"</span></span>
+        self<span class="token punctuation">.</span>rev_comp_text<span class="token punctuation">.</span>config<span class="token punctuation">(</span>state<span class="token operator">=</span><span class="token string">'normal'</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>rev_comp_text<span class="token punctuation">.</span>delete<span class="token punctuation">(</span><span class="token number">1.0</span><span class="token punctuation">,</span> tk<span class="token punctuation">.</span>END<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>rev_comp_text<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>tk<span class="token punctuation">.</span>END<span class="token punctuation">,</span> <span class="token string-interpolation"><span class="token string">f"</span><span class="token interpolation"><span class="token punctuation">{</span>header<span class="token punctuation">}</span></span><span class="token string">\n</span><span class="token interpolation"><span class="token punctuation">{</span>self<span class="token punctuation">.</span>format_sequence<span class="token punctuation">(</span>self<span class="token punctuation">.</span>rev_comp_seq<span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>rev_comp_text<span class="token punctuation">.</span>config<span class="token punctuation">(</span>state<span class="token operator">=</span><span class="token string">'disabled'</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>rev_comp_label<span class="token punctuation">.</span>pack<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>rev_comp_text<span class="token punctuation">.</span>pack<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">hide_rev_comp</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""隐藏反向互补序列"""</span>
+        self<span class="token punctuation">.</span>rev_comp_label<span class="token punctuation">.</span>pack_forget<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>rev_comp_text<span class="token punctuation">.</span>pack_forget<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">format_sequence</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> seq<span class="token punctuation">,</span> chars_per_line<span class="token operator">=</span><span class="token number">35</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""格式化序列为多行显示"""</span>
+        <span class="token keyword">return</span> <span class="token string">'\n'</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span>seq<span class="token punctuation">[</span>i<span class="token punctuation">:</span>i<span class="token operator">+</span>chars_per_line<span class="token punctuation">]</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token builtin">len</span><span class="token punctuation">(</span>seq<span class="token punctuation">)</span><span class="token punctuation">,</span> chars_per_line<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">design_primer</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""智能引物设计（自动选择最佳产物长度）"""</span>
+        <span class="token keyword">try</span><span class="token punctuation">:</span>
+            <span class="token comment"># 参数设置</span>
+            IDEAL_PRODUCT_SIZE <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>product_size_entry<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment"># 理想产物大小</span>
+            SIZE_TOLERANCE <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>tolerance_entry<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>     <span class="token comment"># 产物大小允许波动范围</span>
+            MIN_PRIMER_LEN <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>min_len_entry<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            MAX_PRIMER_LEN <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>max_len_entry<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">except</span> ValueError<span class="token punctuation">:</span>
+            messagebox<span class="token punctuation">.</span>showerror<span class="token punctuation">(</span><span class="token string">"错误"</span><span class="token punctuation">,</span> <span class="token string">"参数设置中存在非法数值！"</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span>
+    
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"[调试] 获取参数成功：理想产物大小=</span><span class="token interpolation"><span class="token punctuation">{</span>IDEAL_PRODUCT_SIZE<span class="token punctuation">}</span></span><span class="token string">, 容差=</span><span class="token interpolation"><span class="token punctuation">{</span>SIZE_TOLERANCE<span class="token punctuation">}</span></span><span class="token string">, 引物长度=</span><span class="token interpolation"><span class="token punctuation">{</span>MIN_PRIMER_LEN<span class="token punctuation">}</span></span><span class="token string">-</span><span class="token interpolation"><span class="token punctuation">{</span>MAX_PRIMER_LEN<span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+        
+        <span class="token comment"># 调用实际引物设计函数或逻辑</span>
+        <span class="token keyword">if</span> <span class="token keyword">not</span> self<span class="token punctuation">.</span>original_seq<span class="token punctuation">:</span>
+            messagebox<span class="token punctuation">.</span>showwarning<span class="token punctuation">(</span><span class="token string">"警告"</span><span class="token punctuation">,</span> <span class="token string">"请先定位碱基后再设计引物。"</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span>
+        <span class="token keyword">try</span><span class="token punctuation">:</span>
+            <span class="token comment"># 获取序列信息</span>
+            header<span class="token punctuation">,</span> seq <span class="token operator">=</span> self<span class="token punctuation">.</span>get_clean_sequence<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            start<span class="token punctuation">,</span> end<span class="token punctuation">,</span> is_reverse <span class="token operator">=</span> self<span class="token punctuation">.</span>parse_coordinates<span class="token punctuation">(</span>header<span class="token punctuation">)</span>
+            target_pos <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>pos_entry<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            
+            <span class="token comment"># 计算相对位置</span>
+            <span class="token keyword">if</span> is_reverse<span class="token punctuation">:</span>
+                working_seq <span class="token operator">=</span> self<span class="token punctuation">.</span>reverse_complement<span class="token punctuation">(</span>seq<span class="token punctuation">)</span>
+                rel_pos <span class="token operator">=</span> <span class="token builtin">len</span><span class="token punctuation">(</span>working_seq<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token punctuation">(</span>start <span class="token operator">-</span> target_pos<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span>
+            <span class="token keyword">else</span><span class="token punctuation">:</span>
+                working_seq <span class="token operator">=</span> seq
+                rel_pos <span class="token operator">=</span> target_pos <span class="token operator">-</span> start
+            
+            <span class="token comment"># 动态设计引物区域</span>
+            best_result <span class="token operator">=</span> <span class="token boolean">None</span>
+            best_score <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span>
+            
+            <span class="token comment"># 尝试不同产物大小（300-700bp范围）</span>
+            <span class="token keyword">for</span> product_size <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>IDEAL_PRODUCT_SIZE <span class="token operator">-</span> SIZE_TOLERANCE<span class="token punctuation">,</span> 
+                                    IDEAL_PRODUCT_SIZE <span class="token operator">+</span> SIZE_TOLERANCE <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">50</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                
+                half_size <span class="token operator">=</span> product_size <span class="token operator">//</span> <span class="token number">2</span>
+                region_start <span class="token operator">=</span> <span class="token builtin">max</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> rel_pos <span class="token operator">-</span> half_size<span class="token punctuation">)</span>
+                region_end <span class="token operator">=</span> <span class="token builtin">min</span><span class="token punctuation">(</span><span class="token builtin">len</span><span class="token punctuation">(</span>working_seq<span class="token punctuation">)</span><span class="token punctuation">,</span> rel_pos <span class="token operator">+</span> half_size<span class="token punctuation">)</span>
+                
+                <span class="token comment"># 跳过无效范围</span>
+                <span class="token keyword">if</span> region_start <span class="token operator">&gt;=</span> region_end<span class="token punctuation">:</span>
+                    <span class="token keyword">continue</span>
+                    
+                <span class="token comment"># 生成候选引物</span>
+                fwd_candidates <span class="token operator">=</span> self<span class="token punctuation">.</span>get_primer_candidates<span class="token punctuation">(</span>
+                    working_seq<span class="token punctuation">,</span> region_start<span class="token punctuation">,</span> rel_pos<span class="token punctuation">,</span> 
+                    min_len<span class="token operator">=</span>MIN_PRIMER_LEN<span class="token punctuation">,</span> max_len<span class="token operator">=</span>MAX_PRIMER_LEN
+                <span class="token punctuation">)</span>
+                rev_candidates <span class="token operator">=</span> self<span class="token punctuation">.</span>get_primer_candidates<span class="token punctuation">(</span>
+                    working_seq<span class="token punctuation">,</span> rel_pos<span class="token punctuation">,</span> region_end<span class="token punctuation">,</span>
+                    min_len<span class="token operator">=</span>MIN_PRIMER_LEN<span class="token punctuation">,</span> max_len<span class="token operator">=</span>MAX_PRIMER_LEN<span class="token punctuation">,</span>
+                    is_forward<span class="token operator">=</span><span class="token boolean">False</span>
+                <span class="token punctuation">)</span>
+                
+                <span class="token comment"># 评估最佳引物对</span>
+                current_result <span class="token operator">=</span> self<span class="token punctuation">.</span>evaluate_primer_pairs<span class="token punctuation">(</span>
+                    fwd_candidates<span class="token punctuation">,</span> rev_candidates<span class="token punctuation">,</span> 
+                    ideal_size<span class="token operator">=</span>IDEAL_PRODUCT_SIZE
+                <span class="token punctuation">)</span>
+                
+                <span class="token comment"># 保留最优结果</span>
+                <span class="token keyword">if</span> current_result <span class="token keyword">and</span> current_result<span class="token punctuation">[</span><span class="token string">"score"</span><span class="token punctuation">]</span> <span class="token operator">&gt;</span> best_score<span class="token punctuation">:</span>
+                    best_result <span class="token operator">=</span> current_result
+                    best_score <span class="token operator">=</span> current_result<span class="token punctuation">[</span><span class="token string">"score"</span><span class="token punctuation">]</span>
+            
+            <span class="token keyword">if</span> <span class="token keyword">not</span> best_result<span class="token punctuation">:</span>
+                <span class="token keyword">raise</span> ValueError<span class="token punctuation">(</span><span class="token string">"未找到符合条件的引物，请尝试调整参数"</span><span class="token punctuation">)</span>
+                
+            <span class="token comment"># 补充：生成产物序列并加入 result</span>
+            f_start <span class="token operator">=</span> best_result<span class="token punctuation">[</span><span class="token string">"forward"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">"pos"</span><span class="token punctuation">]</span>
+            r_end <span class="token operator">=</span> best_result<span class="token punctuation">[</span><span class="token string">"reverse"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">"pos"</span><span class="token punctuation">]</span> <span class="token operator">+</span> best_result<span class="token punctuation">[</span><span class="token string">"reverse"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">"len"</span><span class="token punctuation">]</span>
+            template_seq <span class="token operator">=</span> self<span class="token punctuation">.</span>reverse_complement<span class="token punctuation">(</span>seq<span class="token punctuation">)</span> <span class="token keyword">if</span> is_reverse <span class="token keyword">else</span> seq
+            
+            <span class="token comment"># 防止越界</span>
+            r_end <span class="token operator">=</span> <span class="token builtin">min</span><span class="token punctuation">(</span>r_end<span class="token punctuation">,</span> <span class="token builtin">len</span><span class="token punctuation">(</span>template_seq<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            f_start <span class="token operator">=</span> <span class="token builtin">max</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> f_start<span class="token punctuation">)</span>
+            
+            <span class="token comment"># 生成产物序列</span>
+            product_seq <span class="token operator">=</span> template_seq<span class="token punctuation">[</span>f_start<span class="token punctuation">:</span>r_end<span class="token punctuation">]</span>
+            best_result<span class="token punctuation">[</span><span class="token string">"product_seq"</span><span class="token punctuation">]</span> <span class="token operator">=</span> product_seq
+                    
+            <span class="token comment"># 显示结果</span>
+            self<span class="token punctuation">.</span>show_primer_result<span class="token punctuation">(</span>best_result<span class="token punctuation">)</span>
+            
+        <span class="token keyword">except</span> Exception <span class="token keyword">as</span> e<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>result_label<span class="token punctuation">.</span>config<span class="token punctuation">(</span>text<span class="token operator">=</span><span class="token string-interpolation"><span class="token string">f"引物设计错误: </span><span class="token interpolation"><span class="token punctuation">{</span><span class="token builtin">str</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">,</span> fg<span class="token operator">=</span><span class="token string">"red"</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">calculate_gc</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> seq<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""计算GC含量，返回百分比整数"""</span>
+        gc_count <span class="token operator">=</span> seq<span class="token punctuation">.</span>upper<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>count<span class="token punctuation">(</span><span class="token string">'G'</span><span class="token punctuation">)</span> <span class="token operator">+</span> seq<span class="token punctuation">.</span>upper<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>count<span class="token punctuation">(</span><span class="token string">'C'</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token builtin">round</span><span class="token punctuation">(</span><span class="token number">100</span> <span class="token operator">*</span> gc_count <span class="token operator">/</span> <span class="token builtin">len</span><span class="token punctuation">(</span>seq<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">calculate_tm</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> seq<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""计算引物的Tm值（简单公式：Wallace规则）"""</span>
+        seq <span class="token operator">=</span> seq<span class="token punctuation">.</span>upper<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        a <span class="token operator">=</span> seq<span class="token punctuation">.</span>count<span class="token punctuation">(</span><span class="token string">'A'</span><span class="token punctuation">)</span>
+        t <span class="token operator">=</span> seq<span class="token punctuation">.</span>count<span class="token punctuation">(</span><span class="token string">'T'</span><span class="token punctuation">)</span>
+        g <span class="token operator">=</span> seq<span class="token punctuation">.</span>count<span class="token punctuation">(</span><span class="token string">'G'</span><span class="token punctuation">)</span>
+        c <span class="token operator">=</span> seq<span class="token punctuation">.</span>count<span class="token punctuation">(</span><span class="token string">'C'</span><span class="token punctuation">)</span>
+        tm <span class="token operator">=</span> <span class="token number">2</span> <span class="token operator">*</span> <span class="token punctuation">(</span>a <span class="token operator">+</span> t<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">4</span> <span class="token operator">*</span> <span class="token punctuation">(</span>g <span class="token operator">+</span> c<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token builtin">round</span><span class="token punctuation">(</span>tm<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">has_homopolymer</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> seq<span class="token punctuation">,</span> max_repeat<span class="token operator">=</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""
+        检查是否存在连续重复碱基（如AAAA、CCCC）
+        max_repeat: 允许的最大重复次数
+        """</span>
+        <span class="token keyword">for</span> base <span class="token keyword">in</span> <span class="token string">"ATCG"</span><span class="token punctuation">:</span>
+            <span class="token keyword">if</span> base <span class="token operator">*</span> <span class="token punctuation">(</span>max_repeat <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">in</span> seq<span class="token punctuation">:</span>
+                <span class="token keyword">return</span> <span class="token boolean">True</span>
+        <span class="token keyword">return</span> <span class="token boolean">False</span>
+
+    
+    <span class="token keyword">def</span> <span class="token function">get_primer_candidates</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> seq<span class="token punctuation">,</span> start<span class="token punctuation">,</span> end<span class="token punctuation">,</span> min_len<span class="token operator">=</span><span class="token number">18</span><span class="token punctuation">,</span> max_len<span class="token operator">=</span><span class="token number">22</span><span class="token punctuation">,</span> is_forward<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""生成候选引物（可变长度）"""</span>
+        candidates <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+        
+        <span class="token keyword">for</span> length <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>min_len<span class="token punctuation">,</span> max_len <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>start<span class="token punctuation">,</span> end <span class="token operator">-</span> length <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                primer <span class="token operator">=</span> seq<span class="token punctuation">[</span>i<span class="token punctuation">:</span>i<span class="token operator">+</span>length<span class="token punctuation">]</span> <span class="token keyword">if</span> is_forward \
+                        <span class="token keyword">else</span> self<span class="token punctuation">.</span>reverse_complement<span class="token punctuation">(</span>seq<span class="token punctuation">[</span>i<span class="token punctuation">:</span>i<span class="token operator">+</span>length<span class="token punctuation">]</span><span class="token punctuation">)</span>
+                
+                <span class="token comment"># 跳过无效引物</span>
+                <span class="token keyword">if</span> <span class="token builtin">len</span><span class="token punctuation">(</span>primer<span class="token punctuation">)</span> <span class="token operator">!=</span> length<span class="token punctuation">:</span>
+                    <span class="token keyword">continue</span>
+                    
+                <span class="token comment"># 计算引物参数</span>
+                gc <span class="token operator">=</span> self<span class="token punctuation">.</span>calculate_gc<span class="token punctuation">(</span>primer<span class="token punctuation">)</span>
+                tm <span class="token operator">=</span> self<span class="token punctuation">.</span>calculate_tm<span class="token punctuation">(</span>primer<span class="token punctuation">)</span>
+                
+                <span class="token comment"># 基础筛选</span>
+                <span class="token keyword">if</span> <span class="token keyword">not</span> <span class="token punctuation">(</span><span class="token number">40</span> <span class="token operator">&lt;=</span> gc <span class="token operator">&lt;=</span> <span class="token number">60</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                    <span class="token keyword">continue</span>
+                <span class="token keyword">if</span> <span class="token keyword">not</span> <span class="token punctuation">(</span><span class="token number">55</span> <span class="token operator">&lt;=</span> tm <span class="token operator">&lt;=</span> <span class="token number">65</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                    <span class="token keyword">continue</span>
+                <span class="token keyword">if</span> self<span class="token punctuation">.</span>has_homopolymer<span class="token punctuation">(</span>primer<span class="token punctuation">)</span><span class="token punctuation">:</span>
+                    <span class="token keyword">continue</span>
+                    
+                candidates<span class="token punctuation">.</span>append<span class="token punctuation">(</span><span class="token punctuation">{</span>
+                    <span class="token string">"seq"</span><span class="token punctuation">:</span> primer<span class="token punctuation">,</span>
+                    <span class="token string">"pos"</span><span class="token punctuation">:</span> i<span class="token punctuation">,</span>
+                    <span class="token string">"len"</span><span class="token punctuation">:</span> length<span class="token punctuation">,</span>
+                    <span class="token string">"gc"</span><span class="token punctuation">:</span> gc<span class="token punctuation">,</span>
+                    <span class="token string">"tm"</span><span class="token punctuation">:</span> tm<span class="token punctuation">,</span>
+                    <span class="token string">"end3"</span><span class="token punctuation">:</span> primer<span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">5</span><span class="token punctuation">:</span><span class="token punctuation">]</span>  <span class="token comment"># 3'端序列（用于二聚体检查）</span>
+                <span class="token punctuation">}</span><span class="token punctuation">)</span>
+        
+        <span class="token keyword">return</span> candidates
+
+    <span class="token keyword">def</span> <span class="token function">has_dimer</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> seq1<span class="token punctuation">,</span> seq2<span class="token punctuation">,</span> min_match<span class="token operator">=</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""
+        检查两个引物是否可能形成二聚体（简单3'端互补检查）
+        min_match：最小连续碱基配对数
+        """</span>
+        <span class="token comment"># 构建反向互补序列</span>
+        rc2 <span class="token operator">=</span> self<span class="token punctuation">.</span>reverse_complement<span class="token punctuation">(</span>seq2<span class="token punctuation">)</span>
+    
+        <span class="token comment"># 检查是否存在3'端配对</span>
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token builtin">len</span><span class="token punctuation">(</span>seq1<span class="token punctuation">)</span> <span class="token operator">-</span> min_match <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            tail <span class="token operator">=</span> seq1<span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">(</span>i <span class="token operator">+</span> min_match<span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+            <span class="token keyword">if</span> tail <span class="token keyword">in</span> rc2<span class="token punctuation">:</span>
+                <span class="token keyword">return</span> <span class="token boolean">True</span>
+    
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token builtin">len</span><span class="token punctuation">(</span>rc2<span class="token punctuation">)</span> <span class="token operator">-</span> min_match <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            tail <span class="token operator">=</span> rc2<span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">(</span>i <span class="token operator">+</span> min_match<span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+            <span class="token keyword">if</span> tail <span class="token keyword">in</span> seq1<span class="token punctuation">:</span>
+                <span class="token keyword">return</span> <span class="token boolean">True</span>
+    
+        <span class="token keyword">return</span> <span class="token boolean">False</span>
+
+
+    <span class="token keyword">def</span> <span class="token function">evaluate_primer_pairs</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> fwd_candidates<span class="token punctuation">,</span> rev_candidates<span class="token punctuation">,</span> ideal_size<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""评估并选择最佳引物对"""</span>
+        best_pair <span class="token operator">=</span> <span class="token boolean">None</span>
+        best_score <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span>
+        
+        <span class="token keyword">for</span> fwd <span class="token keyword">in</span> fwd_candidates<span class="token punctuation">:</span>
+            <span class="token keyword">for</span> rev <span class="token keyword">in</span> rev_candidates<span class="token punctuation">:</span>
+                <span class="token comment"># 计算实际产物大小</span>
+                product_size <span class="token operator">=</span> rev<span class="token punctuation">[</span><span class="token string">"pos"</span><span class="token punctuation">]</span> <span class="token operator">-</span> fwd<span class="token punctuation">[</span><span class="token string">"pos"</span><span class="token punctuation">]</span> <span class="token operator">+</span> fwd<span class="token punctuation">[</span><span class="token string">"len"</span><span class="token punctuation">]</span>
+                
+                <span class="token comment"># 基本筛选</span>
+                <span class="token keyword">if</span> product_size <span class="token operator">&lt;</span> <span class="token number">200</span> <span class="token keyword">or</span> product_size <span class="token operator">&gt;</span> <span class="token number">800</span><span class="token punctuation">:</span>  <span class="token comment"># 放宽产物大小限制</span>
+                    <span class="token keyword">continue</span>
+                    
+                <span class="token comment"># 检查二聚体</span>
+                <span class="token keyword">if</span> self<span class="token punctuation">.</span>has_dimer<span class="token punctuation">(</span>fwd<span class="token punctuation">[</span><span class="token string">"seq"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> rev<span class="token punctuation">[</span><span class="token string">"seq"</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                    <span class="token keyword">continue</span>
+                    
+                <span class="token comment"># 综合评分</span>
+                size_diff <span class="token operator">=</span> <span class="token builtin">abs</span><span class="token punctuation">(</span>product_size <span class="token operator">-</span> ideal_size<span class="token punctuation">)</span>
+                tm_diff <span class="token operator">=</span> <span class="token builtin">abs</span><span class="token punctuation">(</span>fwd<span class="token punctuation">[</span><span class="token string">"tm"</span><span class="token punctuation">]</span> <span class="token operator">-</span> rev<span class="token punctuation">[</span><span class="token string">"tm"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+                gc_diff <span class="token operator">=</span> <span class="token builtin">abs</span><span class="token punctuation">(</span>fwd<span class="token punctuation">[</span><span class="token string">"gc"</span><span class="token punctuation">]</span> <span class="token operator">-</span> rev<span class="token punctuation">[</span><span class="token string">"gc"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+                
+                <span class="token comment"># 评分标准（分值越高越好）</span>
+                score <span class="token operator">=</span> <span class="token number">100</span> <span class="token operator">-</span> <span class="token number">0.2</span><span class="token operator">*</span>size_diff <span class="token operator">-</span> <span class="token number">2</span><span class="token operator">*</span>tm_diff <span class="token operator">-</span> gc_diff
+                
+                <span class="token comment"># 更新最佳引物对</span>
+                <span class="token keyword">if</span> score <span class="token operator">&gt;</span> best_score<span class="token punctuation">:</span>
+                    best_pair <span class="token operator">=</span> <span class="token punctuation">{</span>
+                        <span class="token string">"forward"</span><span class="token punctuation">:</span> fwd<span class="token punctuation">,</span>
+                        <span class="token string">"reverse"</span><span class="token punctuation">:</span> rev<span class="token punctuation">,</span>
+                        <span class="token string">"product_size"</span><span class="token punctuation">:</span> product_size<span class="token punctuation">,</span>
+                        <span class="token string">"score"</span><span class="token punctuation">:</span> score
+                    <span class="token punctuation">}</span>
+                    best_score <span class="token operator">=</span> score
+                    
+        <span class="token keyword">return</span> best_pair
+
+    <span class="token keyword">def</span> <span class="token function">copy_primers</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> fwd_seq<span class="token punctuation">,</span> rev_seq<span class="token punctuation">,</span> seq<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""将引物序列复制到剪贴板"""</span>
+        <span class="token keyword">try</span><span class="token punctuation">:</span>
+            combined_text <span class="token operator">=</span> <span class="token punctuation">(</span>
+                <span class="token string-interpolation"><span class="token string">f"正向引物 (Forward Primer):\n</span><span class="token interpolation"><span class="token punctuation">{</span>fwd_seq<span class="token punctuation">}</span></span><span class="token string">\n\n"</span></span>
+                <span class="token string-interpolation"><span class="token string">f"反向引物 (Reverse Primer):\n</span><span class="token interpolation"><span class="token punctuation">{</span>rev_seq<span class="token punctuation">}</span></span><span class="token string">\n\n"</span></span>
+                <span class="token string-interpolation"><span class="token string">f"产物序列 :\n</span><span class="token interpolation"><span class="token punctuation">{</span>seq<span class="token punctuation">}</span></span><span class="token string">"</span></span>
+            <span class="token punctuation">)</span>
+            self<span class="token punctuation">.</span>root<span class="token punctuation">.</span>clipboard_clear<span class="token punctuation">(</span><span class="token punctuation">)</span>           <span class="token comment"># 清除剪贴板内容</span>
+            self<span class="token punctuation">.</span>root<span class="token punctuation">.</span>clipboard_append<span class="token punctuation">(</span>combined_text<span class="token punctuation">)</span>  <span class="token comment"># 添加文本</span>
+            self<span class="token punctuation">.</span>root<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token punctuation">)</span>                    <span class="token comment"># 更新剪贴板状态</span>
+            <span class="token comment"># messagebox.showinfo("复制成功", "引物序列已复制到剪贴板！")</span>
+        <span class="token keyword">except</span> Exception <span class="token keyword">as</span> e<span class="token punctuation">:</span>
+            messagebox<span class="token punctuation">.</span>showerror<span class="token punctuation">(</span><span class="token string">"错误"</span><span class="token punctuation">,</span> <span class="token string-interpolation"><span class="token string">f"复制失败：</span><span class="token interpolation"><span class="token punctuation">{</span><span class="token builtin">str</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+
+
+    <span class="token keyword">def</span> <span class="token function">show_primer_result</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> result<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""显示智能引物设计结果（美观版）"""</span>
+        win <span class="token operator">=</span> tk<span class="token punctuation">.</span>Toplevel<span class="token punctuation">(</span>self<span class="token punctuation">.</span>root<span class="token punctuation">)</span>
+        win<span class="token punctuation">.</span>title<span class="token punctuation">(</span><span class="token string">"智能引物设计结果"</span><span class="token punctuation">)</span>
+        
+        <span class="token comment"># 主框架</span>
+        main_frame <span class="token operator">=</span> tk<span class="token punctuation">.</span>Frame<span class="token punctuation">(</span>win<span class="token punctuation">)</span>
+        main_frame<span class="token punctuation">.</span>pack<span class="token punctuation">(</span>padx<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">,</span> pady<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">)</span>
+        
+        <span class="token comment"># 产物信息</span>
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>main_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"◆ 产物信息"</span><span class="token punctuation">,</span> font<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">'Arial'</span><span class="token punctuation">,</span> <span class="token number">11</span><span class="token punctuation">,</span> <span class="token string">'bold'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">,</span> pady<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        
+        info_frame <span class="token operator">=</span> tk<span class="token punctuation">.</span>Frame<span class="token punctuation">(</span>main_frame<span class="token punctuation">)</span>
+        info_frame<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">)</span>
+        
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>info_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"产物大小:"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'e'</span><span class="token punctuation">)</span>
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>info_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string-interpolation"><span class="token string">f"</span><span class="token interpolation"><span class="token punctuation">{</span>result<span class="token punctuation">[</span><span class="token string">'product_size'</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span><span class="token string"> bp"</span></span><span class="token punctuation">,</span> fg<span class="token operator">=</span><span class="token string">"blue"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">)</span>
+        
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>info_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"综合评分:"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'e'</span><span class="token punctuation">)</span>
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>info_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string-interpolation"><span class="token string">f"</span><span class="token interpolation"><span class="token punctuation">{</span>result<span class="token punctuation">[</span><span class="token string">'score'</span><span class="token punctuation">]</span><span class="token punctuation">:</span><span class="token format-spec">.1f</span><span class="token punctuation">}</span></span><span class="token string">/100"</span></span><span class="token punctuation">,</span> fg<span class="token operator">=</span><span class="token string">"blue"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">)</span>
+        
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>info_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"Tm差异:"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'e'</span><span class="token punctuation">)</span>
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>info_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string-interpolation"><span class="token string">f"</span><span class="token interpolation"><span class="token punctuation">{</span><span class="token builtin">abs</span><span class="token punctuation">(</span>result<span class="token punctuation">[</span><span class="token string">'forward'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'tm'</span><span class="token punctuation">]</span> <span class="token operator">-</span> result<span class="token punctuation">[</span><span class="token string">'reverse'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'tm'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token format-spec">.1f</span><span class="token punctuation">}</span></span><span class="token string">°C"</span></span><span class="token punctuation">,</span> fg<span class="token operator">=</span><span class="token string">"blue"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">)</span>
+    
+        <span class="token comment"># 引物序列</span>
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>main_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"◆ 引物序列"</span><span class="token punctuation">,</span> font<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">'Arial'</span><span class="token punctuation">,</span> <span class="token number">11</span><span class="token punctuation">,</span> <span class="token string">'bold'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">,</span> pady<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        
+        primer_frame <span class="token operator">=</span> tk<span class="token punctuation">.</span>Frame<span class="token punctuation">(</span>main_frame<span class="token punctuation">)</span>
+        primer_frame<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">3</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">)</span>
+        
+        <span class="token comment"># 正向引物</span>
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>primer_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"正向引物 (5'→3'):"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'e'</span><span class="token punctuation">)</span>
+        fwd_entry <span class="token operator">=</span> tk<span class="token punctuation">.</span>Entry<span class="token punctuation">(</span>primer_frame<span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">30</span><span class="token punctuation">,</span> font<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">'Courier'</span><span class="token punctuation">,</span> <span class="token number">12</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        fwd_entry<span class="token punctuation">.</span>insert<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> result<span class="token punctuation">[</span><span class="token string">"forward"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">"seq"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+        fwd_entry<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">)</span>
+        fwd_entry<span class="token punctuation">.</span>config<span class="token punctuation">(</span>fg<span class="token operator">=</span><span class="token string">"blue"</span><span class="token punctuation">,</span> state<span class="token operator">=</span><span class="token string">'readonly'</span><span class="token punctuation">)</span>
+        
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>primer_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string-interpolation"><span class="token string">f"GC: </span><span class="token interpolation"><span class="token punctuation">{</span>result<span class="token punctuation">[</span><span class="token string">'forward'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'gc'</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span><span class="token string">%    Tm: </span><span class="token interpolation"><span class="token punctuation">{</span>result<span class="token punctuation">[</span><span class="token string">'forward'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'tm'</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span><span class="token string">°C"</span></span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> padx<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">)</span>
+    
+        <span class="token comment"># 反向引物</span>
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>primer_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"反向引物 (5'→3'):"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'e'</span><span class="token punctuation">,</span> pady<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        rev_entry <span class="token operator">=</span> tk<span class="token punctuation">.</span>Entry<span class="token punctuation">(</span>primer_frame<span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">30</span><span class="token punctuation">,</span> font<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">'Courier'</span><span class="token punctuation">,</span> <span class="token number">12</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        rev_entry<span class="token punctuation">.</span>insert<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> result<span class="token punctuation">[</span><span class="token string">"reverse"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">"seq"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+        rev_entry<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">,</span> pady<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        rev_entry<span class="token punctuation">.</span>config<span class="token punctuation">(</span>fg<span class="token operator">=</span><span class="token string">"blue"</span><span class="token punctuation">,</span> state<span class="token operator">=</span><span class="token string">'readonly'</span><span class="token punctuation">)</span>
+        
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>primer_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string-interpolation"><span class="token string">f"GC: </span><span class="token interpolation"><span class="token punctuation">{</span>result<span class="token punctuation">[</span><span class="token string">'reverse'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'gc'</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span><span class="token string">%    Tm: </span><span class="token interpolation"><span class="token punctuation">{</span>result<span class="token punctuation">[</span><span class="token string">'reverse'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'tm'</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span><span class="token string">°C"</span></span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span> padx<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">)</span>
+    
+        <span class="token comment"># PCR产物序列</span>
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>main_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"◆ PCR产物序列"</span><span class="token punctuation">,</span> font<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">'Arial'</span><span class="token punctuation">,</span> <span class="token number">11</span><span class="token punctuation">,</span> <span class="token string">'bold'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">4</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">,</span> pady<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        
+        product_frame <span class="token operator">=</span> tk<span class="token punctuation">.</span>Frame<span class="token punctuation">(</span>main_frame<span class="token punctuation">)</span>
+        product_frame<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">)</span>
+        
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>product_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"序列 (5'→3'):"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'e'</span><span class="token punctuation">)</span>
+
+        product_text <span class="token operator">=</span> tk<span class="token punctuation">.</span>Text<span class="token punctuation">(</span>product_frame<span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">60</span><span class="token punctuation">,</span> height<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">,</span> font<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">'Courier'</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">,</span> wrap<span class="token operator">=</span><span class="token string">'word'</span><span class="token punctuation">)</span>
+        product_text<span class="token punctuation">.</span>insert<span class="token punctuation">(</span><span class="token string">'1.0'</span><span class="token punctuation">,</span> result<span class="token punctuation">[</span><span class="token string">"product_seq"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+        product_text<span class="token punctuation">.</span>config<span class="token punctuation">(</span>fg<span class="token operator">=</span><span class="token string">"blue"</span><span class="token punctuation">,</span> state<span class="token operator">=</span><span class="token string">'disabled'</span><span class="token punctuation">)</span>
+        product_text<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">)</span>
+    
+        <span class="token comment"># 复制按钮</span>
+        copy_btn <span class="token operator">=</span> tk<span class="token punctuation">.</span>Button<span class="token punctuation">(</span>
+            main_frame<span class="token punctuation">,</span>
+            text<span class="token operator">=</span><span class="token string">"复制引物序列"</span><span class="token punctuation">,</span>
+            command<span class="token operator">=</span><span class="token keyword">lambda</span><span class="token punctuation">:</span> self<span class="token punctuation">.</span>copy_primers<span class="token punctuation">(</span>
+                fwd_entry<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                rev_entry<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                product_text<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"1.0"</span><span class="token punctuation">,</span> <span class="token string">"end-1c"</span><span class="token punctuation">)</span>
+            <span class="token punctuation">)</span><span class="token punctuation">,</span>
+            bg<span class="token operator">=</span><span class="token string">"#4CAF50"</span><span class="token punctuation">,</span>
+            fg<span class="token operator">=</span><span class="token string">"white"</span><span class="token punctuation">,</span>
+            font<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">"Arial"</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token string">"bold"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            padx<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">,</span>
+            pady<span class="token operator">=</span><span class="token number">5</span>
+        <span class="token punctuation">)</span>
+        copy_btn<span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">6</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> pady<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">15</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">)</span>
+    
+        <span class="token comment"># 注意事项</span>
+        tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>main_frame<span class="token punctuation">,</span> text<span class="token operator">=</span><span class="token string">"◆ 注意事项"</span><span class="token punctuation">,</span> fg<span class="token operator">=</span><span class="token string">"red"</span><span class="token punctuation">,</span> font<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">'Arial'</span><span class="token punctuation">,</span> <span class="token number">11</span><span class="token punctuation">,</span> <span class="token string">'bold'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>
+            row<span class="token operator">=</span><span class="token number">7</span><span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">,</span> pady<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token punctuation">)</span>
+    
+        tips <span class="token operator">=</span> <span class="token punctuation">[</span>
+            <span class="token string">"1. 最佳引物长度18-22bp，GC含量40-60%"</span><span class="token punctuation">,</span>
+            <span class="token string">"2. 退火温度(Tm)应在55-65°C之间"</span><span class="token punctuation">,</span>
+            <span class="token string">"3. 避免连续4个以上相同碱基"</span><span class="token punctuation">,</span>
+            <span class="token string">"4. 建议使用Primer-BLAST验证引物特异性"</span>
+        <span class="token punctuation">]</span>
+    
+        <span class="token keyword">for</span> i<span class="token punctuation">,</span> tip <span class="token keyword">in</span> <span class="token builtin">enumerate</span><span class="token punctuation">(</span>tips<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            tk<span class="token punctuation">.</span>Label<span class="token punctuation">(</span>main_frame<span class="token punctuation">,</span> text<span class="token operator">=</span>tip<span class="token punctuation">,</span> anchor<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>grid<span class="token punctuation">(</span>row<span class="token operator">=</span><span class="token number">8</span><span class="token operator">+</span>i<span class="token punctuation">,</span> column<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> sticky<span class="token operator">=</span><span class="token string">'w'</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
+    root <span class="token operator">=</span> tk<span class="token punctuation">.</span>Tk<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    app <span class="token operator">=</span> DNASequenceViewer<span class="token punctuation">(</span>root<span class="token punctuation">)</span>
+    root<span class="token punctuation">.</span>mainloop<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>界面如下：</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251104193407291.png" alt="image-20251104193407291"></p>
+<h3 id="第二步：输入数据"><a href="#第二步：输入数据" class="headerlink" title="第二步：输入数据"></a>第二步：输入数据</h3><ol>
+<li><strong>粘贴基因序列</strong>：将下载的FASTA格式基因序列粘贴到上方文本区域</li>
+<li><strong>输入突变位点</strong>：在指定位置输入突变信息</li>
+<li><strong>设置参数</strong>：根据需要调整引物设计参数</li>
+</ol>
+<h3 id="第三步：执行操作"><a href="#第三步：执行操作" class="headerlink" title="第三步：执行操作"></a>第三步：执行操作</h3><ol>
+<li><p><strong>定位碱基</strong>：点击”<code>定位碱基</code>“按钮确认突变位置</p>
+<blockquote>
+<p>程序会自动识别基因的方向，并显示再序列中的位置</p>
+</blockquote>
+</li>
+<li><p><strong>设计引物</strong>：点击”<code>设计引物</code>“按钮生成引物序列</p>
+</li>
+</ol>
+<h3 id="第四步：获取结果"><a href="#第四步：获取结果" class="headerlink" title="第四步：获取结果"></a>第四步：获取结果</h3><p>点击”<code>复制引物序列</code>“按钮，所有引物信息将复制到剪贴板</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/image-20251104193838633.png" alt="image-20251104193838633"></p>
+<h2 id="示例结果"><a href="#示例结果" class="headerlink" title="示例结果"></a>示例结果</h2><p><strong>正向引物 (Forward Primer):</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">GGATGTAATCAGCTTGTAACTG<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><strong>反向引物 (Reverse Primer):</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">TATTAACATAGGGAACAGCACG<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><strong>产物序列 :</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">GGATGTAATCAGCTTGTAACTGTAATTTAATCAATATATTTTTTAAAGTAATCGACCCAATCCCTGTTTACTATGAAAGTGAACTCATTTATAACAGTCTTACCATCACTTGTAGCTTGGTTCTGAACAGTATGTTCATTAGCAGATGTAATTAATGTGGTTTCGAATGTTTCTGTTGATGACAAGGTCGTACTTTCACCTACGTTTATAAACATTAACGTATGTAGCTGACATAATATTATAAATCAAATAAATATTGGATATTCAATTAGAAAGTTTATTGCCTACAATAAAAAAAAATAGCTTTGAATTAAGTATAAAATATATCATTTAACTCTTCACGTATTACCACTTTGTATTTTTTAACCATTAAAGTGAACATATTGATAACAGTTTAACCACATGGAGCTTGATTCTGAAAATTGTGTCCATTAGAAGCTGTAATAAATGTGCTCCTGGGTTTTTCTGTGGATGATAAGGTCGTGCTGTTCCCTATGTTAATA<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://0HHHHHH0.github.io">HHHH</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://0hhhhhh0.github.io/2025/07/03/kuai-su-yin-wu-she-ji/">https://0hhhhhh0.github.io/2025/07/03/kuai-su-yin-wu-she-ji/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/uploads/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/07/24/18/" title="1.NPC内网穿透——Linux"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">1.NPC内网穿透——Linux</div></div><div class="info-2"><div class="info-item-1"> 历时半个月，浅浅学习了一下重测序数据的分析流程，为防止遗忘，特写此后几篇文章，以便后续回忆参考。   要进行重测序数据分析，首要的是搞一台服务器，恰好课题组有一台服务器，但问题是只能在内网访问，遂采用NPC进行内网穿透，实现异地访问使用。  用到的软件linux-npc.zip - 蓝奏云使用教程共两个步骤1.下载npc客户端后修改 npc.conf文件模板参考修改前 [common] server_addr=填写服务器IP地址:8024 conn_type=tcp vkey=唯一验证密钥  示例如下：修改前  修改后  2.在文件目录中执行以下命令需要修改ip和密钥（不要修改服务端口和删除空格）    基本使用 无配置文件模式（推荐）详细命令行参数  📌 适用于 快速连接 NPS 服务器所有配置均在 Web 管理端完成客户端仅需运行一条命令📌 普通连接（TCP 模式）  ./npc -server=ip:8024 -vkey=web界面中显示的密钥 -type=tcp  📌 TLS 加密连接（安全模式）  ./npc -server=ip:8025 -vkey=web界...</div></div></div></a><a class="pagination-related" href="/2024/12/08/9/" title="记一次清空SMART修复群晖报故障的硬盘"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">记一次清空SMART修复群晖报故障的硬盘</div></div><div class="info-2"><div class="info-item-1">事先说明，虽然这篇文章内容大量注水，但是文中涉及的操作有风险，想要照葫芦画瓢的童鞋，请谨慎对待，切记提前备份重要数据。小姐姐们不见了别找我，我这里可不生产小姐姐    好，让我们进入正题，凡事都有个前因后果，先说说起因 前几天，群晖里一块希捷的2T硬盘报告故障，查看一下SMART信息，发现是End_to_End计数达到阈值，于是把硬盘抽出来接到Windows下用HDTune再次确认，确实见红了 但是用SeaTools扫描，各种长短检测都能通过，希捷这又是什么操作 HDTune忘记截图了，借用网上的一张图说明一下是哪一项见红HDTune忘记截图了，借用网上的一张图说明一下是哪一项见红最后用MHDD扫描过后，发现硬盘并没有坏块，那么是什么原因导致的B8 End_to_End计数增加呢？各种说法都有，有说是硬盘上的缓存坏掉了，有说是SATA线接触不良导致，有说是缓存到磁盘的数据包校验出错，反正各种说法都有，具体硬盘SMART里如何判断这个值的，估计也只有硬盘厂家知道，所以就不要纠结了。但是就这样淘汰掉一块2T的硬盘？是不是太浪费了？记一次清空SMART修复群晖报故障的硬盘  垃圾佬没别...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A0%B9%E6%8D%AESNP%E4%BD%8D%E7%82%B9%E8%BF%9B%E8%A1%8C%E5%BF%AB%E9%80%9F%E5%BC%95%E7%89%A9%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.</span> <span class="toc-text">根据SNP位点进行快速引物设计</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD%E7%89%B9%E7%82%B9"><span class="toc-number">1.2.</span> <span class="toc-text">功能特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E8%A6%81%E6%B1%82"><span class="toc-number">1.3.</span> <span class="toc-text">系统要求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%B8%8E%E5%90%AF%E5%8A%A8"><span class="toc-number">1.4.</span> <span class="toc-text">安装与启动</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">1.4.1.</span> <span class="toc-text">1. 环境准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%BF%9B%E5%85%A5%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95"><span class="toc-number">1.4.2.</span> <span class="toc-text">2. 进入工作目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%90%AF%E5%8A%A8%E5%B7%A5%E5%85%B7"><span class="toc-number">1.4.3.</span> <span class="toc-text">3. 启动工具</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.5.</span> <span class="toc-text">使用步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE"><span class="toc-number">1.5.1.</span> <span class="toc-text">第一步：准备数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E8%BE%93%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-number">1.5.2.</span> <span class="toc-text">第二步：输入数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E6%89%A7%E8%A1%8C%E6%93%8D%E4%BD%9C"><span class="toc-number">1.5.3.</span> <span class="toc-text">第三步：执行操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E8%8E%B7%E5%8F%96%E7%BB%93%E6%9E%9C"><span class="toc-number">1.5.4.</span> <span class="toc-text">第四步：获取结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%E7%BB%93%E6%9E%9C"><span class="toc-number">1.6.</span> <span class="toc-text">示例结果</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/24/indel/" title="记一次清空SMART修复群晖报故障的硬盘">记一次清空SMART修复群晖报故障的硬盘</a><time datetime="2025-12-24T04:56:00.000Z" title="Created 2025-12-24 12:56:00">2025-12-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/gemini/" title="根据SNP位点进行快速引物设计——网页版">根据SNP位点进行快速引物设计——网页版</a><time datetime="2025-12-02T14:26:00.000Z" title="Created 2025-12-02 22:26:00">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/24/latex/" title="LaTeX详细教程+技巧总结">LaTeX详细教程+技巧总结</a><time datetime="2025-11-24T14:26:00.000Z" title="Created 2025-11-24 22:26:00">2025-11-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/10/gwas-ld-block/" title="GWAS + 热点区域识别 + LD Block 分析流程详解">GWAS + 热点区域识别 + LD Block 分析流程详解</a><time datetime="2025-11-10T14:26:00.000Z" title="Created 2025-11-10 22:26:00">2025-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应">从基因到结构：用PyMOL可视化理解分子对接与突变效应</a><time datetime="2025-11-09T14:26:00.000Z" title="Created 2025-11-09 22:26:00">2025-11-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
+   #sidebar_search_box input[type=text]{width:calc(100% - 24px)}
+}</style></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/fish.js" defer data-pjax></script><script type="text/javascript" src="/js/busuanzi.pure.mini.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-10-09</span><a class="blog-slider__title" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">Hexo + Butterfly 个人博客搭建</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/11/10/gwas-ld-block/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-11-10</span><a class="blog-slider__title" href="2025/11/10/gwas-ld-block/" alt="">GWAS + 热点区域识别 + LD Block 分析流程详解</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/11/10/gwas-ld-block/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/07/31/19/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/OIP-C.2E7GSli1t13WJ-Of6Hp9UgHaEi" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-07-31</span><a class="blog-slider__title" href="2025/07/31/19/" alt="">2.重测序数据分析——初步整理</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/07/31/19/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><!-- hexo injector body_end end --></body></html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>HHHH - 总有人间一两风，填我十万八千梦</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta property="og:type" content="website">
+<meta property="og:title" content="HHHH">
+<meta property="og:url" content="https://0hhhhhh0.github.io/index.html">
+<meta property="og:site_name" content="HHHH">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0hhhhhh0.github.io/uploads/avatar.png">
+<meta property="article:author" content="HHHH">
+<meta property="article:tag" content="hexo">
+<meta property="article:tag" content="组学">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="折腾">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0hhhhhh0.github.io/uploads/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "HHHH",
+  "alternateName": [
+    "总有人间一两风，填我十万八千梦",
+    "0hhhhhh0.github.io"
+  ],
+  "url": "https://0hhhhhh0.github.io/"
+}</script><link rel="shortcut icon" href="/uploads/avatar.png"><link rel="canonical" href="https://0hhhhhh0.github.io/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":-1,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'HHHH',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'home'
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@4.5.12/index.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/styles/css/font.css"><link rel="stylesheet" href="/css/mermaid.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="HHHH" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="scarecrow"><div class="scarecrow__hat"><div class="scarecrow__ribbon"></div></div><div class="scarecrow__head"><div class="scarecrow__eye"></div><div class="scarecrow__eye"></div><div class="scarecrow__mouth"></div><div class="scarecrow__pipe"></div></div><div class="scarecrow__body"><div class="scarecrow__glove scarecrow__glove--l"></div><div class="scarecrow__sleeve scarecrow__sleeve--l"></div><div class="scarecrow__bow"></div><div class="scarecrow__shirt"></div><div class="scarecrow__coat"></div><div class="scarecrow__waistcoat"></div><div class="scarecrow__sleeve scarecrow__sleeve--r"></div><div class="scarecrow__glove scarecrow__glove--r"></div><div class="scarecrow__coattails"></div><div class="scarecrow__pants"></div></div><div class="scarecrow__arms"></div><div class="scarecrow__leg">  </div></div></div><script async="async">(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-color: #fbfdff;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url(/uploads/bingimg_20241108_UHD.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/uploads/avatar.png" alt="Logo"><span class="site-name">HHHH</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="site-info"><h1 id="site-title">HHHH</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/12/24/indel/" title="记一次清空SMART修复群晖报故障的硬盘">记一次清空SMART修复群晖报故障的硬盘</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-12-24T04:56:00.000Z" title="Created 2025-12-24 12:56:00">2025-12-24</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/GWAS/">GWAS</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/GWAS/INDEL/">INDEL</a></span></div><div class="content">基于 OpenSpliceAI 的 INDEL 可变剪接影响筛选流程背景与目的在全基因组 INDEL 分析中，大多数变异并不直接影响基因功能。本流程的目标是：  从全基因组 INDEL 出发，逐步筛选出可能影响可变剪接（alternative splicing）的高可信 INDEL 位点。  核心思想包括三点：  仅保留功能相关区域（exonic / splicing / UTR / 近端调控区） 聚焦具有一定结构效应的 中等以上长度 INDEL（≥10 bp） 使用 OpenSpliceAI（牡蛎模型） 对 INDEL 的剪接影响进行定量预测  最终输出的是一个 明确标注是否影响剪接（YES / NO） 的 INDEL 列表。  一、原始 INDEL 注释文件准备1. 原始文件说明 文件名：indel.annotation.xls 实际格式：ASCII 文本（TSV） 分隔符：\t  2. 文件检查head -n 5 indel.annotation.xls ````  ```bash sed -n '1p' indel.annotation.xls | cat -A  确认：...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/12/02/gemini/" title="根据SNP位点进行快速引物设计——网页版">根据SNP位点进行快速引物设计——网页版</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-12-02T14:26:00.000Z" title="Created 2025-12-02 22:26:00">2025-12-02</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/SNP/">SNP</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/SNP/Gemini/">Gemini</a></span></div><div class="content"> Run and deploy your AI Studio app   This contains everything you need to run your app locally.   View your app in AI Studio: https://ai.studio/apps/drive/142qvfoA6tUObrpGFY1mbNTx8p-5CW_NC   🎯 痛点与目标：为何需要快速引物设计？在基因分型（Genotyping）和分子标记开发中，SNP（Single Nucleotide Polymorphism，单核苷酸多态性）是最常用的遗传标记之一。针对某个 SNP 位点设计特异性的 PCR 引物，是后续实验（如 KASP、SNP-RFLP 或简单的 PCR 扩增）的关键第一步。 传统的引物设计软件（如 Primer Premier 或 Primer3）虽然功能强大，但操作流程相对复杂，且通常需要预先下载目标序列。本项目旨在利用 Google Gemini API 的强大能力，结合现代 Web 技术栈 (React/Vite)，构建一个网页版、无需安装...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/11/24/latex/" title="LaTeX详细教程+技巧总结">LaTeX详细教程+技巧总结</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-11-24T14:26:00.000Z" title="Created 2025-11-24 22:26:00">2025-11-24</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Latex/">Latex</a></span></div><div class="content"> 转载自: https://blog.csdn.net/NSJim/article/details/109066847  前言若想直接学习LaTeX数学公式，请参见我的另一篇博客：LaTeX数学公式-详细教程 。 本篇文章介绍LaTeX的基本用法，并有自己的经验和总结。另外，可以从LaTeX的官方文档进行学习，官方文档大部分是英文文档，链接：LaTeX在线文档 ，LaTex宏包文档。 本篇文章内容包含LaTeX工具，LaTeX模板，LaTeX技巧，LaTeX基础，文章架构，字体、大小和颜色，链接，列表，图片，表格，数学公式，算法（伪代码），代码块，论文写作，等等。 LaTeX工具介绍LaTeX工具分为在线工具和本地工具，本地工具又分为前台和后台。在线工具推荐Overleaf，本地工具推荐前台使用TeXStudio，后台推荐使用TeXLive（后台工具有TeXLive，MikTeX，CTeX等）。 各个后台的比较：TeXLive有跨平台的性质，适用于Linux、Mac以及Windows系统；TeXLive是完全安装，大小大概为5G左右；每年有一次更新。TeXStudio只适用于Wi...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/11/10/gwas-ld-block/" title="GWAS + 热点区域识别 + LD Block 分析流程详解">GWAS + 热点区域识别 + LD Block 分析流程详解</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-11-10T14:26:00.000Z" title="Created 2025-11-10 22:26:00">2025-11-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF/">生物信息</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/Linux/">Linux</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/GWAS/">GWAS</a></span></div><div class="content">🧬 一、项目概述在进行 GWAS（全基因组关联分析） 后，我们通常得到一个包含数十万到数百万个 SNP 的结果文件。然而，仅凭曼哈顿图观察显著位点往往无法直观判断“显著 SNP 是否存在聚集（hotspot）”，更难直接选定 LD 分析区域。 本篇文章介绍一套自动化分析流程，用于：  从 GWAS 注释文件中提取特定染色体； 对 SNP 分布进行可视化与统计； 基于密度与显著性筛选“热点区域”； 输出推荐的 LD block 分析区域； 生成一整套图形报告（含基础可视化、热点分布、显著SNP分布、综合分析图）。  该流程适用于任何 GWAS 结果（如 .assoc 或 .anno.xls 文件），并以染色体 NC_047567.1 为示例展示。  ⚙️ 二、环境配置分析依赖 R 及多个可视化与基因组处理包，可通过以下命令一次性安装： # 一键安装所有依赖 conda activate vcftools_env  conda install -c conda-forge r-base=4.3.3 -y &amp;&amp; \ conda install -c conda-for...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应">从基因到结构：用PyMOL可视化理解分子对接与突变效应</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-11-09T14:26:00.000Z" title="Created 2025-11-09 22:26:00">2025-11-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%9B%8B%E7%99%BD%E4%BA%92%E4%BD%9C/">蛋白互作</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%9B%8B%E7%99%BD%E4%BA%92%E4%BD%9C/PyMOL/">PyMOL</a></span></div><div class="content">从基因到结构：用PyMOL可视化理解分子对接与突变效应亲爱的同学们，当我们谈论“结构生物学”或“计算药物设计”时，分子对接和蛋白质突变是两个核心概念。它们一个关乎预测，一个关乎解释。今天，我们将不仅从原理上理解它们，更将借助强大的分子可视化软件PyMOL，将抽象的概念转化为可见的3D结构。 第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”分子对接的本质是在原子层面预测小分子（配体）与其靶标生物大分子（受体）之间的最优结合模式。传统的流程我们比作“钥匙配锁”，但现在，我们迎来了一位强大的AI助手——AlphaFold——它能为许多我们不知道精确结构的“锁”生成高精度的3D模型。 现代分子对接的增强版流程如下： 1. 结构准备与预处理：获取“锁”和“钥匙”的3D蓝图 这是所有计算的基石。蛋白质受体的三维结构是分子对接的起点。其来源主要分为实验解析和计算预测两大类。  a) 传统路径（实验结构）：从PDB数据库下载通过X射线晶体学、冷冻电镜或核磁共振等技术解析的结构。这是金标准，精度最高。然而，并非所有蛋白质，特别是某些膜蛋白或大型复合物，都能被轻易解析出结构。 b) 计算预...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/11/06/rosetta/" title="Rosetta全面使用指南">Rosetta全面使用指南</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-11-06T14:26:00.000Z" title="Created 2025-11-06 22:26:00">2025-11-06</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%9B%8B%E7%99%BD%E4%BA%92%E4%BD%9C/">蛋白互作</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%9B%8B%E7%99%BD%E4%BA%92%E4%BD%9C/PyMOL/">PyMOL</a></span></div><div class="content">Rosetta全面使用指南 转载自：https://www.jianshu.com/p/d96a72d06e26  简介Rosetta是由华盛顿大学Baker实验室开发的一套用于计算蛋白质结构建模和设计的软件套件。 Rosetta软件套件包括用于蛋白质结构计算建模和分析的算法。它使计算生物学取得了显著的科学进步，包括从头蛋白质设计、酶设计、配体对接以及生物大分子和大分子复合物的结构预测。 RoeTeta开发始于华盛顿大学David Baker博士的实验室，作为结构预测工具，但此后已经适应于解决常见的计算大分子问题。 Rosetta的重要作用如下所示： 理解大分子相互作用; 设计定制分子; 寻找构象和序列空间的有效方法; 为各种生物分子表示寻找广泛有用的能量函数 安装准备1. 获取许可证 学术许可证: 访问 Rosetta Commons官网 填写学术许可申请表格 等待审核邮件，通常1-3个工作日   商业许可证: 联系 Rosetta Design Group 了解定价和协议条款    2. 系统要求 计算机配置推荐 处理器: 至少Intel i5以上或AMD同等性能 内存: 最...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/11/05/alphafold-pymol/" title="AlphaFold与PyMOL的示例">AlphaFold与PyMOL的示例</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-11-05T14:26:00.000Z" title="Created 2025-11-05 22:26:00">2025-11-05</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%9B%8B%E7%99%BD%E4%BA%92%E4%BD%9C/">蛋白互作</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%9B%8B%E7%99%BD%E4%BA%92%E4%BD%9C/PyMOL/">PyMOL</a></span></div><div class="content">蛋白质与蛋白质互作是指不同蛋白质之间的相互作用，这种作用可以发生在细胞内或细胞外。蛋白质通过互相结合，形成复杂的细胞机制和信号传导网络，参与多种生物过程，如基因调控、代谢、信号传导等。这种互作是生命活动中的重要组成部分，对维持生物体的正常功能具有重要意义。 那么如何用AlphaFold3预测候选蛋白质与蛋白质互作呢？ 第一步通过Uniport网站获取候选基因的蛋白质序列（以cGAS、STING为例）。获取cGAS蛋白质序列。 &gt;XP_065930211.1 cyclic GMP-AMP synthase-like receptor isoform X1 [Magallana gigas] MVFKCPICKREDFQSEGGLSSHITWKHSGSSDGRGSRPSTGGRGRRDDRDIKARVFKCPICKREDFQSEGGLSSHITWKHSGSSDGRGSRPSTGHGACGRSDNREYNTTVIKCPICKRGDFKSEGGLSCHITTVHPGSANGKGSRPSSCTNGKRDDGARPKTYTPRHRDHERHNSDRDVVRGVARVQRESSQRGSP...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/11/03/dan-bai-pei-ti-xiang-hu-zuo-yong/" title="从可视化到设计：深入理解蛋白-配体相互作用的分子世界">从可视化到设计：深入理解蛋白-配体相互作用的分子世界</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-11-03T14:26:00.000Z" title="Created 2025-11-03 22:26:00">2025-11-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Linux/">Linux</a><i class="fas fa-angle-right article-meta-link"></i><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Linux/PyMOL/">PyMOL</a></span></div><div class="content">从可视化到设计：深入理解蛋白-配体相互作用的分子世界 当你用PyMOL绘制出第一张漂亮的蛋白-配体相互作用图后，是否曾思考：这静态图片背后，隐藏着怎样动态的分子世界？本文将带你从简单的看图，走向深刻的理解。  第一章：基石篇 - 我们必须厘清的核心概念在深入探索之前，我们必须建立正确的世界观。几个基本概念构成了我们理解这一切的基石。 1.1 受体与配体：锁与钥匙的现代诠释 受体：通常是蛋白质大分子，它是结合的“平台”或“锁”。  在我们的项目中：流感病毒的PB2蛋白就是受体。 在PyMOL中：通常是那个庞大的、显示为cartoon或surface的对象。   配体：通常是小分子化合物，它是结合的“客体”或“钥匙”。    在我们的项目中：D715-2441化合物就是配体。 在PyMOL中：通常是那些用sticks显示的、相对较小的分子。    # 在PyMOL中的实际体现 create receptor, 4cb4 and polymer  # 定义受体 create ligand, d715_2441           # 定义配体 show cartoon, recepto...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/11/03/pymol/" title="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片">【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-11-03T04:26:00.000Z" title="Created 2025-11-03 12:26:00">2025-11-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/PyMOL/">PyMOL</a></span></div><div class="content">【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片 转载自：https://blog.csdn.net/qq_37126941/article/details/115793062。 本文将以D715-2441抑制剂与PB2蛋白复合物为例，手把手教你用PyMOL制作专业的结合模式图  摘要本文将带大家使用免费开源的PyMOL软件绘制D715-2441蛋白与与PB2cap配体分子的结合模式图。 我们先来看一张成品图： 研究背景流感病毒PB2蛋白是重要的药物靶点，D715-2441是一个新型抗流感病毒化合物。通过分子对接分析，我们发现以下关键相互作用： 1、化合物D715-2441的芳环夹在氨基酸残基H357和F404之间并形成π-π堆积作用，还与F404形成疏水作用； 2、化合物苯环上的羟基与E361的羧基和K376的N+原子形成氢键作用，另一个羟基与F404的O原子形成氢键作用； 3、化合物吡喃酮环酯基与K339的N+原子和H357的咪唑基形成盐桥作用。 准备工作 PyMOL作图通常是对特定对象进行展示形式、颜色、字体等方面的修饰。PyMOL的精髓在于命令行与鼠...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/10/31/ld-block-lian-suo-bu-ping-heng-fen-xi/" title="LD-Block 连锁不平衡分析">LD-Block 连锁不平衡分析</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-10-31T02:26:00.000Z" title="Created 2025-10-31 10:26:00">2025-10-31</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Linux/">Linux</a></span></div><div class="content">关键词：LD Block分析、连锁不平衡、LDBlockShow、群体遗传学、VCF处理、基因组可视化  使用LDBlockShow进行LD Block分析 在群体遗传学研究中，连锁不平衡（Linkage Disequilibrium, LD）分析是理解基因组结构和识别候选基因的重要工具。本文将介绍如何使用LDBlockShow工具对特定基因组区域进行LD block分析。本文详细介绍如何使用LDBlockShow工具对特定基因组区域进行连锁不平衡（LD）Block分析，涵盖从数据预处理、样本名修正、目标区域提取到最终可视化分析的完整流程。  1. 分析背景与工具准备1.1 分析目标对基因LOC105322102区域（NC_047567.1:32646664-32667511）进行LD Block分析，了解该区域的连锁不平衡结构。 1.2 所需工具安装# 生物信息学工具 conda create -n vcftools_env -c bioconda -c conda-forge \     bcftools \     ldblockshow \     plink \    ...</div></div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/#content-inner">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/#content-inner">6</a><a class="extend next" rel="next" href="/page/2/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/24/indel/" title="记一次清空SMART修复群晖报故障的硬盘">记一次清空SMART修复群晖报故障的硬盘</a><time datetime="2025-12-24T04:56:00.000Z" title="Created 2025-12-24 12:56:00">2025-12-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/gemini/" title="根据SNP位点进行快速引物设计——网页版">根据SNP位点进行快速引物设计——网页版</a><time datetime="2025-12-02T14:26:00.000Z" title="Created 2025-12-02 22:26:00">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/24/latex/" title="LaTeX详细教程+技巧总结">LaTeX详细教程+技巧总结</a><time datetime="2025-11-24T14:26:00.000Z" title="Created 2025-11-24 22:26:00">2025-11-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/10/gwas-ld-block/" title="GWAS + 热点区域识别 + LD Block 分析流程详解">GWAS + 热点区域识别 + LD Block 分析流程详解</a><time datetime="2025-11-10T14:26:00.000Z" title="Created 2025-11-10 22:26:00">2025-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应">从基因到结构：用PyMOL可视化理解分子对接与突变效应</a><time datetime="2025-11-09T14:26:00.000Z" title="Created 2025-11-09 22:26:00">2025-11-09</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>Categories</span>
+            <a class="card-more-btn" href="/categories/" title="View More">
+      <i class="fas fa-angle-right"></i></a>
+          </div>
+          <ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/GWAS/"><span class="card-category-list-name">GWAS</span><span class="card-category-list-count">1</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/GWAS/INDEL/"><span class="card-category-list-name">INDEL</span><span class="card-category-list-count">1</span></a></li></ul></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Latex/"><span class="card-category-list-name">Latex</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Linux/"><span class="card-category-list-name">Linux</span><span class="card-category-list-count">7</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Linux/PyMOL/"><span class="card-category-list-name">PyMOL</span><span class="card-category-list-count">1</span></a></li></ul></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/PCR/"><span class="card-category-list-name">PCR</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/PyMOL/"><span class="card-category-list-name">PyMOL</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/SNP/"><span class="card-category-list-name">SNP</span><span class="card-category-list-count">1</span></a></li>
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>Tags</span></div><div class="card-tag-cloud"><a href="/tags/Linux/" style="font-size: 1.2em; color: #999da3">Linux</a> <a href="/tags/MIUI/" style="font-size: 1.1em; color: #999">MIUI</a> <a href="/tags/R/" style="font-size: 1.1em; color: #999">R</a> <a href="/tags/GWAS/" style="font-size: 1.1em; color: #999">GWAS</a> <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" style="font-size: 1.1em; color: #999">深度学习</a> <a href="/tags/%E7%88%AC%E8%99%AB/" style="font-size: 1.2em; color: #999da3">爬虫</a> <a href="/tags/openipc/" style="font-size: 1.1em; color: #999">openipc</a> <a href="/tags/%E5%AE%9E%E9%AA%8C/" style="font-size: 1.5em; color: #99a9bf">实验</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 1.3em; color: #99a1ac">笔记</a> <a href="/tags/%E7%BB%84%E8%A3%85/" style="font-size: 1.1em; color: #999">组装</a> <a href="/tags/%E8%BD%AC%E8%BD%BD/" style="font-size: 1.4em; color: #99a5b6">转载</a></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>Archives</span>
+      <a class="card-more-btn" href="/archives/"
+            title="View More">
+            <i class="fas fa-angle-right"></i>
+          </a>
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/12/">
+            <span class="card-archive-list-date">
+              December 2025
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/11/">
+            <span class="card-archive-list-date">
+              November 2025
+            </span>
+            <span class="card-archive-list-count">7</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/10/">
+            <span class="card-archive-list-date">
+              October 2025
+            </span>
+            <span class="card-archive-list-count">7</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/09/">
+            <span class="card-archive-list-date">
+              September 2025
+            </span>
+            <span class="card-archive-list-count">5</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/08/">
+            <span class="card-archive-list-date">
+              August 2025
+            </span>
+            <span class="card-archive-list-count">3</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/07/">
+            <span class="card-archive-list-date">
+              July 2025
+            </span>
+            <span class="card-archive-list-count">3</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/12/">
+            <span class="card-archive-list-date">
+              December 2024
+            </span>
+            <span class="card-archive-list-count">3</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/11/">
+            <span class="card-archive-list-date">
+              November 2024
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Website Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article Count :</div><div class="item-count">52</div></div><div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2025-12-24T08:06:00.127Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
+   #sidebar_search_box input[type=text]{width:calc(100% - 24px)}
+}</style></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>window.typedJSFn = {
+  init: str => {
+    window.typed = new Typed('#subtitle', Object.assign({
+      strings: str,
+      startDelay: 300,
+      typeSpeed: 150,
+      loop: true,
+      backSpeed: 50,
+    }, null))
+  },
+  run: subtitleType => {
+    if (true) {
+      if (typeof Typed === 'function') {
+        subtitleType()
+      } else {
+        btf.getScript('https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.min.js').then(subtitleType)
+      }
+    } else {
+      subtitleType()
+    }
+  },
+  processSubtitle: (content, extraContents = []) => {
+    if (true) {
+      const sub = ["<i class=\"fas fa-quote-left\"></i> 总有人间一两风，填我十万八千梦","<i class=\"fas fa-quote-left\"></i> 学无止境","<i class=\"fas fa-quote-left\"></i> 千里之行，始于足下 —— 老子","<i class=\"fas fa-quote-left\"></i> 读书破万卷，下笔如有神","<i class=\"fas fa-quote-left\"></i> 吾日三省吾身","<i class=\"fas fa-quote-left\"></i> 星光不问赶路人，时光不负有心人","<i class=\"fas fa-quote-left\"></i> 人生没有白走的路，每一步都算数","<i class=\"fas fa-quote-left\"></i> 保持热爱，奔赴山海","<i class=\"fas fa-quote-left\"></i> 纸上得来终觉浅，绝知此事要躬行","<i class=\"fas fa-quote-left\"></i> 成功的秘诀在于坚持","<i class=\"fas fa-quote-left\"></i> The best way to predict the future is to invent it","<i class=\"fas fa-quote-left\"></i> 生活是一场马拉松，你需要不断地奔跑","<i class=\"fas fa-quote-left\"></i> 成功不是将来才有的，而是从决定去做的那一刻起，持续累积而成"].slice()
+
+      if (extraContents.length > 0) {
+        sub.unshift(...extraContents)
+      }
+
+      if (typeof content === 'string') {
+        sub.unshift(content)
+      } else if (Array.isArray(content)) {
+        sub.unshift(...content)
+      }
+
+      sub.length > 0 && typedJSFn.init(sub)
+    } else {
+      document.getElementById('subtitle').textContent = typeof content === 'string' ? content :
+        (Array.isArray(content) && content.length > 0 ? content[0] : '')
+    }
+  }
+}
+btf.addGlobalFn('pjaxSendOnce', () => { typed.destroy() }, 'typedDestroy')
+</script><script>function subtitleType () {
+  typedJSFn.processSubtitle(["<i class=\"fas fa-quote-left\"></i> 总有人间一两风，填我十万八千梦","<i class=\"fas fa-quote-left\"></i> 学无止境","<i class=\"fas fa-quote-left\"></i> 千里之行，始于足下 —— 老子","<i class=\"fas fa-quote-left\"></i> 读书破万卷，下笔如有神","<i class=\"fas fa-quote-left\"></i> 吾日三省吾身","<i class=\"fas fa-quote-left\"></i> 星光不问赶路人，时光不负有心人","<i class=\"fas fa-quote-left\"></i> 人生没有白走的路，每一步都算数","<i class=\"fas fa-quote-left\"></i> 保持热爱，奔赴山海","<i class=\"fas fa-quote-left\"></i> 纸上得来终觉浅，绝知此事要躬行","<i class=\"fas fa-quote-left\"></i> 成功的秘诀在于坚持","<i class=\"fas fa-quote-left\"></i> The best way to predict the future is to invent it","<i class=\"fas fa-quote-left\"></i> 生活是一场马拉松，你需要不断地奔跑","<i class=\"fas fa-quote-left\"></i> 成功不是将来才有的，而是从决定去做的那一刻起，持续累积而成"])
+}
+typedJSFn.run(subtitleType)</script><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/fish.js" defer data-pjax></script><script type="text/javascript" src="/js/busuanzi.pure.mini.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-10-09</span><a class="blog-slider__title" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">Hexo + Butterfly 个人博客搭建</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/11/10/gwas-ld-block/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-11-10</span><a class="blog-slider__title" href="2025/11/10/gwas-ld-block/" alt="">GWAS + 热点区域识别 + LD Block 分析流程详解</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/11/10/gwas-ld-block/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/07/31/19/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/OIP-C.2E7GSli1t13WJ-Of6Hp9UgHaEi" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-07-31</span><a class="blog-slider__title" href="2025/07/31/19/" alt="">2.重测序数据分析——初步整理</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/07/31/19/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><!-- hexo injector body_end end --></body></html>

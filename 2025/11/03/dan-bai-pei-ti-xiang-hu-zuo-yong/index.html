@@ -1,0 +1,514 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>从可视化到设计：深入理解蛋白-配体相互作用的分子世界 | HHHH</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="从可视化到设计：深入理解蛋白-配体相互作用的分子世界 当你用PyMOL绘制出第一张漂亮的蛋白-配体相互作用图后，是否曾思考：这静态图片背后，隐藏着怎样动态的分子世界？本文将带你从简单的看图，走向深刻的理解。  第一章：基石篇 - 我们必须厘清的核心概念在深入探索之前，我们必须建立正确的世界观。几个基本概念构成了我们理解这一切的基石。 1.1 受体与配体：锁与钥匙的现代诠释 受体：通常是蛋白质大分子">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从可视化到设计：深入理解蛋白-配体相互作用的分子世界">
+<meta property="og:url" content="https://0hhhhhh0.github.io/2025/11/03/dan-bai-pei-ti-xiang-hu-zuo-yong/index.html">
+<meta property="og:site_name" content="HHHH">
+<meta property="og:description" content="从可视化到设计：深入理解蛋白-配体相互作用的分子世界 当你用PyMOL绘制出第一张漂亮的蛋白-配体相互作用图后，是否曾思考：这静态图片背后，隐藏着怎样动态的分子世界？本文将带你从简单的看图，走向深刻的理解。  第一章：基石篇 - 我们必须厘清的核心概念在深入探索之前，我们必须建立正确的世界观。几个基本概念构成了我们理解这一切的基石。 1.1 受体与配体：锁与钥匙的现代诠释 受体：通常是蛋白质大分子">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0hhhhhh0.github.io/uploads/avatar.png">
+<meta property="article:published_time" content="2025-11-03T14:26:00.000Z">
+<meta property="article:modified_time" content="2025-11-03T14:32:15.000Z">
+<meta property="article:author" content="HHHH">
+<meta property="article:tag" content="hexo">
+<meta property="article:tag" content="组学">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="折腾">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0hhhhhh0.github.io/uploads/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "从可视化到设计：深入理解蛋白-配体相互作用的分子世界",
+  "url": "https://0hhhhhh0.github.io/2025/11/03/dan-bai-pei-ti-xiang-hu-zuo-yong/",
+  "image": "https://0hhhhhh0.github.io/uploads/avatar.png",
+  "datePublished": "2025-11-03T14:26:00.000Z",
+  "dateModified": "2025-11-03T14:32:15.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "HHHH",
+      "url": "https://0HHHHHH0.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/uploads/avatar.png"><link rel="canonical" href="https://0hhhhhh0.github.io/2025/11/03/dan-bai-pei-ti-xiang-hu-zuo-yong/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":-1,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '从可视化到设计：深入理解蛋白-配体相互作用的分子世界',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@4.5.12/index.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/styles/css/font.css"><link rel="stylesheet" href="/css/mermaid.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="HHHH" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="scarecrow"><div class="scarecrow__hat"><div class="scarecrow__ribbon"></div></div><div class="scarecrow__head"><div class="scarecrow__eye"></div><div class="scarecrow__eye"></div><div class="scarecrow__mouth"></div><div class="scarecrow__pipe"></div></div><div class="scarecrow__body"><div class="scarecrow__glove scarecrow__glove--l"></div><div class="scarecrow__sleeve scarecrow__sleeve--l"></div><div class="scarecrow__bow"></div><div class="scarecrow__shirt"></div><div class="scarecrow__coat"></div><div class="scarecrow__waistcoat"></div><div class="scarecrow__sleeve scarecrow__sleeve--r"></div><div class="scarecrow__glove scarecrow__glove--r"></div><div class="scarecrow__coattails"></div><div class="scarecrow__pants"></div></div><div class="scarecrow__arms"></div><div class="scarecrow__leg">  </div></div></div><script async="async">(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-color: #fbfdff;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/uploads/avatar.png" alt="Logo"><span class="site-name">HHHH</span></a><a class="nav-page-title" href="/"><span class="site-name">从可视化到设计：深入理解蛋白-配体相互作用的分子世界</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">从可视化到设计：深入理解蛋白-配体相互作用的分子世界</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-03T14:26:00.000Z" title="Created 2025-11-03 22:26:00">2025-11-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-11-03T14:32:15.000Z" title="Updated 2025-11-03 22:32:15">2025-11-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/PyMOL/">PyMOL</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="ai-summary"><div class="ai-explanation" style="display: block;" data-summary="这篇文章从可视化工具PyMOL入手，深入探讨了蛋白-配体相互作用的分子世界。文章首先阐述了受体与配体的基本概念及其在PyMOL中的表现形式，强调PyMOL作为可视化与分析工具的功能边界。随后揭示分子相互作用的动态本质，包括配体构象变化和蛋白结构重排等由物理化学原理驱动的现象。接着介绍分子对接和分子动力学等预测软件的工作原理及其与PyMOL的互补关系。第四章重点讨论AI技术与PyMOL结合的新型工作流，展示AI在结构预测、关键残基识别和快速对接等方面的应用优势，同时也指出AI结果需要人工验证的原则。最后整合传统与现代科研工作流，提出未来AI与物理模型深度融合的发展方向。全文通过概念阐述与实例代码相结合的方式，帮助读者从简单的分子可视化走向对蛋白质-配体相互作用的深层次理解。">AI正在绞尽脑汁想思路ING···</div><div class="ai-title"> <div class="ai-title-left"> <i class="fa-brands fa-slack"></i><div class="ai-title-text">AI摘要</div></div><div class="ai-tag" id="ai-tag">deepseek-ai/DeepSeek-V3</div></div></div><h2 id="从可视化到设计：深入理解蛋白-配体相互作用的分子世界"><a href="#从可视化到设计：深入理解蛋白-配体相互作用的分子世界" class="headerlink" title="从可视化到设计：深入理解蛋白-配体相互作用的分子世界"></a><strong>从可视化到设计：深入理解蛋白-配体相互作用的分子世界</strong></h2><blockquote>
+<p>当你用PyMOL绘制出第一张漂亮的蛋白-配体相互作用图后，是否曾思考：这静态图片背后，隐藏着怎样动态的分子世界？本文将带你从简单的看图，走向深刻的理解。</p>
+</blockquote>
+<h3 id="第一章：基石篇-我们必须厘清的核心概念"><a href="#第一章：基石篇-我们必须厘清的核心概念" class="headerlink" title="第一章：基石篇 - 我们必须厘清的核心概念"></a><strong>第一章：基石篇 - 我们必须厘清的核心概念</strong></h3><p>在深入探索之前，我们必须建立正确的世界观。几个基本概念构成了我们理解这一切的基石。</p>
+<h4 id="1-1-受体与配体：锁与钥匙的现代诠释"><a href="#1-1-受体与配体：锁与钥匙的现代诠释" class="headerlink" title="1.1 受体与配体：锁与钥匙的现代诠释"></a><strong>1.1 受体与配体：锁与钥匙的现代诠释</strong></h4><ul>
+<li><p><strong>受体</strong>：通常是蛋白质大分子，它是结合的“平台”或“锁”。</p>
+<ul>
+<li><em>在我们的项目中</em>：流感病毒的<strong>PB2蛋白</strong>就是受体。</li>
+<li><em>在PyMOL中</em>：通常是那个庞大的、显示为<code>cartoon</code>或<code>surface</code>的对象。</li>
+</ul>
+</li>
+<li><p><strong>配体</strong>：通常是小分子化合物，它是结合的“客体”或“钥匙”。  </p>
+<ul>
+<li><em>在我们的项目中</em>：<strong>D715-2441化合物</strong>就是配体。</li>
+<li><em>在PyMOL中</em>：通常是那些用<code>sticks</code>显示的、相对较小的分子。</li>
+</ul>
+</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 在PyMOL中的实际体现</span>
+create receptor<span class="token punctuation">,</span> 4cb4 <span class="token keyword">and</span> polymer  <span class="token comment"># 定义受体</span>
+create ligand<span class="token punctuation">,</span> d715_2441           <span class="token comment"># 定义配体</span>
+show cartoon<span class="token punctuation">,</span> receptor             <span class="token comment"># 受体显示为卡通图</span>
+show sticks<span class="token punctuation">,</span> ligand                <span class="token comment"># 配体显示为棒状图</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>简单比喻</strong>：🔒 <strong>锁=受体</strong>， 🔑 <strong>钥匙=配体</strong>， 🎯 <strong>锁眼=结合口袋</strong></p>
+<h4 id="1-2-PyMOL的真实身份：分子的“Photoshop”"><a href="#1-2-PyMOL的真实身份：分子的“Photoshop”" class="headerlink" title="1.2 PyMOL的真实身份：分子的“Photoshop”"></a><strong>1.2 PyMOL的真实身份：分子的“Photoshop”</strong></h4><p>这是最关键的认识：<strong>PyMOL是一个顶级的可视化与分析工具，而不是预测工具</strong>。</p>
+<p><strong>PyMOL能做什么</strong>：</p>
+<ul>
+<li>✅ <strong>可视化</strong>：将三维结构变成我们能理解的图像</li>
+<li>✅ <strong>测量</strong>：测量原子间的距离、角度、二面角</li>
+<li>✅ <strong>分析</strong>：分析相互作用的几何关系</li>
+<li>✅ <strong>渲染</strong>：生成发表质量的图片和动画</li>
+</ul>
+<p><strong>PyMOL不能做什么</strong>：</p>
+<ul>
+<li>❌ <strong>预测</strong>配体如何与蛋白结合</li>
+<li>❌ <strong>模拟</strong>分子在结合过程中的运动</li>
+<li>❌ <strong>计算</strong>结合强度（自由能）</li>
+</ul>
+<p><strong>记住</strong>：PyMOL让你<strong>观察和理解</strong>已有的结构，但不能<strong>预测</strong>新的情况。</p>
+<h3 id="第二章：机理篇-分子相互作用的动态本质"><a href="#第二章：机理篇-分子相互作用的动态本质" class="headerlink" title="第二章：机理篇 - 分子相互作用的动态本质"></a><strong>第二章：机理篇 - 分子相互作用的动态本质</strong></h3><p>当我们看到文献中“H357咪唑环旋转”、“K376侧链伸展”这样的描述时，这些结论是如何得出的？</p>
+<h4 id="2-1-什么在变化？如何变化？"><a href="#2-1-什么在变化？如何变化？" class="headerlink" title="2.1 什么在变化？如何变化？"></a><strong>2.1 什么在变化？如何变化？</strong></h4><p>在结合过程中，蛋白和配体都不是僵硬的积木，而是动态调整的舞伴：</p>
+<p><strong>配体的变化</strong>：</p>
+<ul>
+<li><strong>构象变化</strong>：化学键旋转，分子呈现不同的三维形状</li>
+<li><strong>官能团取向</strong>：羟基、羧基等极性基团调整方向以形成最佳氢键</li>
+<li><strong>电荷分布</strong>：电子云重新分布以适应蛋白的静电环境</li>
+</ul>
+<p><strong>蛋白的变化</strong>：</p>
+<ul>
+<li><strong>侧链重排</strong>：氨基酸侧链旋转到有利位置<ul>
+<li><em>示例</em>：H357的咪唑环旋转以形成π-π堆积</li>
+<li><em>示例</em>：F404的苯环调整角度与配体芳环平行</li>
+</ul>
+</li>
+<li><strong>主链微调</strong>：蛋白质骨架发生微小移动</li>
+<li><strong>结合口袋形状变化</strong>：整个口袋可能“收缩”或“扩张”</li>
+</ul>
+<h4 id="2-2-为什么会发生这些变化？"><a href="#2-2-为什么会发生这些变化？" class="headerlink" title="2.2 为什么会发生这些变化？"></a><strong>2.2 为什么会发生这些变化？</strong></h4><p>这些变化不是随意的，而是由基本的物理化学原理驱动：</p>
+<ol>
+<li><strong>能量优化原则</strong>：系统总是趋向于能量最低的状态</li>
+<li><strong>空间互补性</strong>：避免原子碰撞，寻求最大接触面积</li>
+<li><strong>电子互补性</strong>：正负电荷区域相互吸引</li>
+<li><strong>疏水效应</strong>：疏水区域聚集，排出水分子</li>
+</ol>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 在PyMOL中验证这些变化的证据</span>
+distance pi_pi_dist<span class="token punctuation">,</span> his357<span class="token operator">//</span>CE1<span class="token punctuation">,</span> ligand<span class="token operator">//</span>C4    <span class="token comment"># 测量π-π堆积距离（应为3.4-3.8Å）</span>
+angle stacking_angle<span class="token punctuation">,</span> his357<span class="token operator">//</span>CG<span class="token operator">-</span>CD2<span class="token punctuation">,</span> ligand<span class="token operator">//</span>C1<span class="token operator">-</span>C4  <span class="token comment"># 测量芳环平面夹角（应&lt;30°）</span>
+distance h_bond<span class="token punctuation">,</span> k376<span class="token operator">//</span>NZ<span class="token punctuation">,</span> ligand<span class="token operator">//</span>O1          <span class="token comment"># 测量氢键距离（应为2.6-3.2Å）</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="第三章：工具篇-揭开预测软件的神秘面纱"><a href="#第三章：工具篇-揭开预测软件的神秘面纱" class="headerlink" title="第三章：工具篇 - 揭开预测软件的神秘面纱"></a><strong>第三章：工具篇 - 揭开预测软件的神秘面纱</strong></h3><p>既然PyMOL不能预测，那么“H357咪唑环旋转”这样的结论从何而来？</p>
+<h4 id="3-1-分子对接软件：预测结合模式的“预言家”"><a href="#3-1-分子对接软件：预测结合模式的“预言家”" class="headerlink" title="3.1 分子对接软件：预测结合模式的“预言家”"></a><strong>3.1 分子对接软件：预测结合模式的“预言家”</strong></h4><p><strong>代表性工具</strong>：</p>
+<ul>
+<li><strong>AutoDock Vina</strong>：免费、快速、易用</li>
+<li><strong>DOCK6</strong>：学术免费、精度高（我们文献中使用）</li>
+<li><strong>Schrödinger Glide</strong>：商业软件、工业标准</li>
+</ul>
+<p><strong>工作原理</strong>：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 简化的对接流程</span>
+<span class="token number">1</span>. 准备蛋白结构 → protein.pdbqt
+<span class="token number">2</span>. 准备配体结构 → ligand.pdbqt  
+<span class="token number">3</span>. 定义结合口袋 → config.txt
+<span class="token number">4</span>. 运行对接计算 → vina <span class="token parameter variable">--receptor</span> protein.pdbqt <span class="token parameter variable">--ligand</span> ligand.pdbqt
+<span class="token number">5</span>. 获得预测结果 → out.pdbqt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>预测过程</strong>：</p>
+<ol>
+<li><strong>构象搜索</strong>：系统旋转配体的可旋转键</li>
+<li><strong>位置采样</strong>：在口袋中尝试数百万个位置和朝向</li>
+<li><strong>打分评估</strong>：用打分函数评估每个构象的结合能力</li>
+<li><strong>结果排序</strong>：输出能量最优的结合模式</li>
+</ol>
+<h4 id="3-2-分子动力学软件：验证稳定性的“时间机器”"><a href="#3-2-分子动力学软件：验证稳定性的“时间机器”" class="headerlink" title="3.2 分子动力学软件：验证稳定性的“时间机器”"></a><strong>3.2 分子动力学软件：验证稳定性的“时间机器”</strong></h4><p><strong>代表性工具</strong>：</p>
+<ul>
+<li><strong>GROMACS</strong>：免费、高性能、社区强大</li>
+<li><strong>AMBER</strong>：学术界常用、力场精度高</li>
+<li><strong>NAMD</strong>：擅长大体系模拟</li>
+</ul>
+<p><strong>工作原理</strong>：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 分子动力学模拟流程</span>
+gmx pdb2gmx <span class="token parameter variable">-f</span> complex.pdb <span class="token parameter variable">-o</span> processed.gro    <span class="token comment"># 结构准备</span>
+gmx mdrun <span class="token parameter variable">-s</span> simulation.tpr <span class="token parameter variable">-deffnm</span> md_results <span class="token comment"># 运行模拟</span>
+gmx energy <span class="token parameter variable">-f</span> md_results.edr <span class="token parameter variable">-o</span> energy.xvg     <span class="token comment"># 能量分析</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>能告诉我们什么</strong>：</p>
+<ul>
+<li>预测的结合模式在生理条件下是否稳定？</li>
+<li>蛋白-配体复合物如何随时间波动？</li>
+<li>相互作用的持续时间是多少？</li>
+</ul>
+<h2 id="第四章：AI-PyMOL：智能化的分子可视化新工作流"><a href="#第四章：AI-PyMOL：智能化的分子可视化新工作流" class="headerlink" title="第四章：AI + PyMOL：智能化的分子可视化新工作流"></a><strong>第四章：AI + PyMOL：智能化的分子可视化新工作流</strong></h2><h3 id="4-1-传统流程-vs-AI增强流程"><a href="#4-1-传统流程-vs-AI增强流程" class="headerlink" title="4.1 传统流程 vs AI增强流程"></a><strong>4.1 传统流程 vs AI增强流程</strong></h3><p><strong>传统PyMOL工作流</strong>：</p>
+<pre class="line-numbers language-none"><code class="language-none">准备结构 → 手动分析 → 绘制相互作用 → 美化出图
+（耗时：数小时至数天，依赖个人经验）<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><strong>AI增强的PyMOL工作流</strong>：</p>
+<pre class="line-numbers language-none"><code class="language-none">AI预测结构 → AI分析相互作用 → PyMOL验证美化 → 智能出图
+（耗时：分钟级，结果更准确）<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h3 id="4-2-具体应用场景"><a href="#4-2-具体应用场景" class="headerlink" title="4.2 具体应用场景"></a><strong>4.2 具体应用场景</strong></h3><h4 id="1-当没有晶体结构时：用AI预测"><a href="#1-当没有晶体结构时：用AI预测" class="headerlink" title="1. 当没有晶体结构时：用AI预测"></a><strong>1. 当没有晶体结构时：用AI预测</strong></h4><pre class="line-numbers language-none"><code class="language-none"># 传统：无法处理
+# AI方案：使用AlphaFold2预测结构
+# 然后在PyMOL中直接使用预测结果
+load alphafold_predicted_structure.pdb
+show cartoon
+color blue<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="2-当不知道关键残基时：AI自动识别"><a href="#2-当不知道关键残基时：AI自动识别" class="headerlink" title="2. 当不知道关键残基时：AI自动识别"></a><strong>2. 当不知道关键残基时：AI自动识别</strong></h4><pre class="line-numbers language-none"><code class="language-none"># 传统：手动查看、猜测哪些残基重要
+# AI方案：运行结合位点预测算法
+# PyMOL中直接显示AI识别的重要残基
+create important_residues, resi 157+204+338+357
+show sticks, important_residues
+color red, important_residues<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="3-当配体结合模式未知时：AI快速对接"><a href="#3-当配体结合模式未知时：AI快速对接" class="headerlink" title="3. 当配体结合模式未知时：AI快速对接"></a><strong>3. 当配体结合模式未知时：AI快速对接</strong></h4><pre class="line-numbers language-none"><code class="language-none"># 传统：手动对接或依赖服务器
+# AI方案：使用DiffDock或EquiBind秒级预测
+load ai_docked_pose.pdb  # AI预测的结合模式
+show sticks, organic
+color green, organic<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-3-实际工作流程示例"><a href="#4-3-实际工作流程示例" class="headerlink" title="4.3 实际工作流程示例"></a><strong>4.3 实际工作流程示例</strong></h3><p><strong>场景：分析D715-2441与PB2蛋白的相互作用</strong></p>
+<pre class="line-numbers language-none"><code class="language-none"># 第一步：AI预测（在外部完成）
+# 使用AlphaFold2预测PB2结构（如果需要）
+# 使用DiffDock预测D715-2441结合模式
+
+# 第二步：PyMOL中加载AI结果
+load pb2_alphafold.pdb
+load d715_dockresult.pdb
+
+# 第三步：AI辅助的分析
+create key_sites, resi 339+357+361+404  # AI识别的重要残基
+show sticks, key_sites
+show sticks, d715_dockresult
+
+# 第四步：传统PyMOL美化
+color gray, pb2_alphafold
+color marine, key_sites  
+color orange, d715_dockresult
+bg_color white<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-4-可用的AI工具推荐"><a href="#4-4-可用的AI工具推荐" class="headerlink" title="4.4 可用的AI工具推荐"></a><strong>4.4 可用的AI工具推荐</strong></h3><table>
+<thead>
+<tr>
+<th align="left">工具类型</th>
+<th align="left">推荐工具</th>
+<th align="left">与PyMOL配合方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">结构预测</td>
+<td align="left">AlphaFold2, RoseTTAFold</td>
+<td align="left">预测后导入PyMOL查看</td>
+</tr>
+<tr>
+<td align="left">分子对接</td>
+<td align="left">DiffDock, EquiBind</td>
+<td align="left">快速得到结合模式后导入</td>
+</tr>
+<tr>
+<td align="left">结合位点</td>
+<td align="left">DeepSite, P2Rank</td>
+<td align="left">识别重要残基，在PyMOL中标记</td>
+</tr>
+<tr>
+<td align="left">相互作用</td>
+<td align="left">各种AI分析工具</td>
+<td align="left">生成相互作用列表，在PyMOL中绘制</td>
+</tr>
+</tbody></table>
+<h3 id="4-5-优势总结"><a href="#4-5-优势总结" class="headerlink" title="4.5 优势总结"></a><strong>4.5 优势总结</strong></h3><ol>
+<li><strong>速度极快</strong>：从小时级到分钟级</li>
+<li><strong>准确性高</strong>：AI在很多任务上超越传统方法</li>
+<li><strong>自动化强</strong>：减少手动操作和主观判断</li>
+<li><strong>结果可靠</strong>：基于大数据训练，避免个人经验偏差</li>
+</ol>
+<h3 id="4-6-注意事项"><a href="#4-6-注意事项" class="headerlink" title="4.6 注意事项"></a><strong>4.6 注意事项</strong></h3><ul>
+<li><strong>AI不是万能</strong>：仍需用PyMOL人工验证合理性</li>
+<li><strong>数据质量</strong>：垃圾进，垃圾出</li>
+<li><strong>理解原理</strong>：不要盲目相信AI结果</li>
+<li><strong>结合使用</strong>：AI提供候选，人工最终确认</li>
+</ul>
+<p><strong>核心思想</strong>：让AI做它擅长的预测和筛选，让PyMOL做它擅长的可视化和验证，两者结合，效率倍增。</p>
+<h3 id="第五章：整合篇-现代科研的真实工作流"><a href="#第五章：整合篇-现代科研的真实工作流" class="headerlink" title="第五章：整合篇 - 现代科研的真实工作流"></a><strong>第五章：整合篇 - 现代科研的真实工作流</strong></h3><p>了解了各个工具后，让我们看看它们如何在现代科研中协同工作。</p>
+<h4 id="5-1-传统科研工作流"><a href="#5-1-传统科研工作流" class="headerlink" title="5.1 传统科研工作流"></a><strong>5.1 传统科研工作流</strong></h4><pre class="line-numbers language-none"><code class="language-none">蛋白准备 → 分子对接 → 动力学验证 → PyMOL分析 → 实验验证<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="5-2-AI增强工作流"><a href="#5-2-AI增强工作流" class="headerlink" title="5.2 AI增强工作流"></a><strong>5.2 AI增强工作流</strong></h4><pre class="line-numbers language-none"><code class="language-none">AI结构预测 → AI快速对接 → 传统方法验证 → AI结果分析 → 实验验证<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="5-3-在PyMOL中的完整实践"><a href="#5-3-在PyMOL中的完整实践" class="headerlink" title="5.3 在PyMOL中的完整实践"></a><strong>5.3 在PyMOL中的完整实践</strong></h4><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 阶段1：准备工作</span>
+fetch 4cb4                          <span class="token comment"># 获取蛋白结构</span>
+load d715_2441_ai_docked<span class="token punctuation">.</span>pdb        <span class="token comment"># 加载AI预测的结合模式</span>
+
+<span class="token comment"># 阶段2：基础分析</span>
+create receptor<span class="token punctuation">,</span> 4cb4
+create ligand<span class="token punctuation">,</span> d715_2441
+show cartoon<span class="token punctuation">,</span> receptor
+show sticks<span class="token punctuation">,</span> ligand
+show sticks<span class="token punctuation">,</span> resi <span class="token number">357</span><span class="token operator">+</span><span class="token number">361</span><span class="token operator">+</span><span class="token number">376</span><span class="token operator">+</span><span class="token number">404</span>   <span class="token comment"># 显示关键残基</span>
+
+<span class="token comment"># 阶段3：相互作用分析</span>
+distance h_bond1<span class="token punctuation">,</span> <span class="token punctuation">(</span>resi <span class="token number">361</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>ligand<span class="token punctuation">)</span>  <span class="token comment"># 氢键</span>
+distance pi_pi<span class="token punctuation">,</span> <span class="token punctuation">(</span>resi <span class="token number">357</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>ligand<span class="token punctuation">)</span>    <span class="token comment"># π-π堆积</span>
+<span class="token builtin">set</span> dash_radius<span class="token punctuation">,</span> <span class="token number">0.08</span>                  <span class="token comment"># 美化虚线</span>
+
+<span class="token comment"># 阶段4：结果呈现</span>
+bg_color white
+<span class="token builtin">set</span> cartoon_transparency<span class="token punctuation">,</span> <span class="token number">0.3</span>
+ray <span class="token number">2000</span><span class="token punctuation">,</span> <span class="token number">2000</span>
+png publication_figure<span class="token punctuation">.</span>png<span class="token punctuation">,</span> dpi<span class="token operator">=</span><span class="token number">300</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="总结与展望"><a href="#总结与展望" class="headerlink" title="总结与展望"></a><strong>总结与展望</strong></h3><p>通过这次从概念到实践的探索，我们应该认识到：</p>
+<ol>
+<li><strong>明确工具边界</strong>：PyMOL是卓越的可视化工具，但不是预测工具</li>
+<li><strong>理解动态本质</strong>：蛋白-配体结合是动态调整的过程</li>
+<li><strong>善用计算生态</strong>：根据不同需求选择合适的计算工具</li>
+<li><strong>拥抱技术革命</strong>：AI正在重塑药物发现的每一个环节</li>
+</ol>
+<p><strong>未来的研究方向</strong>：</p>
+<ul>
+<li>AI预测与物理模型的深度融合</li>
+<li>自动化、一体化的药物发现平台</li>
+<li>多尺度建模从量子到细胞水平的贯通</li>
+</ul>
+<p>当我们下次再看到一张漂亮的蛋白-配体相互作用图时，我们看到的不再只是一张静态图片，而是一个动态分子世界的精彩瞬间，以及背后一整套强大的计算生物学方法学支撑。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://0HHHHHH0.github.io">HHHH</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://0hhhhhh0.github.io/2025/11/03/dan-bai-pei-ti-xiang-hu-zuo-yong/">https://0hhhhhh0.github.io/2025/11/03/dan-bai-pei-ti-xiang-hu-zuo-yong/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/uploads/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/11/05/alphafold-pymol/" title="AlphaFold与PyMOL的示例"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">AlphaFold与PyMOL的示例</div></div><div class="info-2"><div class="info-item-1">蛋白质与蛋白质互作是指不同蛋白质之间的相互作用，这种作用可以发生在细胞内或细胞外。蛋白质通过互相结合，形成复杂的细胞机制和信号传导网络，参与多种生物过程，如基因调控、代谢、信号传导等。这种互作是生命活动中的重要组成部分，对维持生物体的正常功能具有重要意义。 那么如何用AlphaFold3预测候选蛋白质与蛋白质互作呢？ 第一步通过Uniport网站获取候选基因的蛋白质序列（以cGAS、STING为例）。获取cGAS蛋白质序列。 &gt;XP_065930211.1 cyclic GMP-AMP synthase-like receptor isoform X1 [Magallana gigas] MVFKCPICKREDFQSEGGLSSHITWKHSGSSDGRGSRPSTGGRGRRDDRDIKARVFKCPICKREDFQSEGGLSSHITWKHSGSSDGRGSRPSTGHGACGRSDNREYNTTVIKCPICKRGDFKSEGGLSCHITTVHPGSANGKGSRPSSCTNGKRDDGARPKTYTPRHRDHERHNSDRDVVRGVARVQRESSQRGSP...</div></div></div></a><a class="pagination-related" href="/2025/11/03/pymol/" title="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</div></div><div class="info-2"><div class="info-item-1">【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片 转载自：https://blog.csdn.net/qq_37126941/article/details/115793062。 本文将以D715-2441抑制剂与PB2蛋白复合物为例，手把手教你用PyMOL制作专业的结合模式图  摘要本文将带大家使用免费开源的PyMOL软件绘制D715-2441蛋白与与PB2cap配体分子的结合模式图。 我们先来看一张成品图： 研究背景流感病毒PB2蛋白是重要的药物靶点，D715-2441是一个新型抗流感病毒化合物。通过分子对接分析，我们发现以下关键相互作用： 1、化合物D715-2441的芳环夹在氨基酸残基H357和F404之间并形成π-π堆积作用，还与F404形成疏水作用； 2、化合物苯环上的羟基与E361的羧基和K376的N+原子形成氢键作用，另一个羟基与F404的O原子形成氢键作用； 3、化合物吡喃酮环酯基与K339的N+原子和H357的咪唑基形成盐桥作用。 准备工作 PyMOL作图通常是对特定对象进行展示形式、颜色、字体等方面的修饰。PyMOL的精髓在于命令行与鼠...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E5%8F%AF%E8%A7%86%E5%8C%96%E5%88%B0%E8%AE%BE%E8%AE%A1%EF%BC%9A%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%9B%8B%E7%99%BD-%E9%85%8D%E4%BD%93%E7%9B%B8%E4%BA%92%E4%BD%9C%E7%94%A8%E7%9A%84%E5%88%86%E5%AD%90%E4%B8%96%E7%95%8C"><span class="toc-number">1.</span> <span class="toc-text">从可视化到设计：深入理解蛋白-配体相互作用的分子世界</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E5%9F%BA%E7%9F%B3%E7%AF%87-%E6%88%91%E4%BB%AC%E5%BF%85%E9%A1%BB%E5%8E%98%E6%B8%85%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="toc-number">1.1.</span> <span class="toc-text">第一章：基石篇 - 我们必须厘清的核心概念</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1-%E5%8F%97%E4%BD%93%E4%B8%8E%E9%85%8D%E4%BD%93%EF%BC%9A%E9%94%81%E4%B8%8E%E9%92%A5%E5%8C%99%E7%9A%84%E7%8E%B0%E4%BB%A3%E8%AF%A0%E9%87%8A"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1 受体与配体：锁与钥匙的现代诠释</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-PyMOL%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BA%AB%E4%BB%BD%EF%BC%9A%E5%88%86%E5%AD%90%E7%9A%84%E2%80%9CPhotoshop%E2%80%9D"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2 PyMOL的真实身份：分子的“Photoshop”</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E6%9C%BA%E7%90%86%E7%AF%87-%E5%88%86%E5%AD%90%E7%9B%B8%E4%BA%92%E4%BD%9C%E7%94%A8%E7%9A%84%E5%8A%A8%E6%80%81%E6%9C%AC%E8%B4%A8"><span class="toc-number">1.2.</span> <span class="toc-text">第二章：机理篇 - 分子相互作用的动态本质</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-%E4%BB%80%E4%B9%88%E5%9C%A8%E5%8F%98%E5%8C%96%EF%BC%9F%E5%A6%82%E4%BD%95%E5%8F%98%E5%8C%96%EF%BC%9F"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1 什么在变化？如何变化？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E5%8F%91%E7%94%9F%E8%BF%99%E4%BA%9B%E5%8F%98%E5%8C%96%EF%BC%9F"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.2 为什么会发生这些变化？</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%B7%A5%E5%85%B7%E7%AF%87-%E6%8F%AD%E5%BC%80%E9%A2%84%E6%B5%8B%E8%BD%AF%E4%BB%B6%E7%9A%84%E7%A5%9E%E7%A7%98%E9%9D%A2%E7%BA%B1"><span class="toc-number">1.3.</span> <span class="toc-text">第三章：工具篇 - 揭开预测软件的神秘面纱</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-%E5%88%86%E5%AD%90%E5%AF%B9%E6%8E%A5%E8%BD%AF%E4%BB%B6%EF%BC%9A%E9%A2%84%E6%B5%8B%E7%BB%93%E5%90%88%E6%A8%A1%E5%BC%8F%E7%9A%84%E2%80%9C%E9%A2%84%E8%A8%80%E5%AE%B6%E2%80%9D"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1 分子对接软件：预测结合模式的“预言家”</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-%E5%88%86%E5%AD%90%E5%8A%A8%E5%8A%9B%E5%AD%A6%E8%BD%AF%E4%BB%B6%EF%BC%9A%E9%AA%8C%E8%AF%81%E7%A8%B3%E5%AE%9A%E6%80%A7%E7%9A%84%E2%80%9C%E6%97%B6%E9%97%B4%E6%9C%BA%E5%99%A8%E2%80%9D"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2 分子动力学软件：验证稳定性的“时间机器”</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9AAI-PyMOL%EF%BC%9A%E6%99%BA%E8%83%BD%E5%8C%96%E7%9A%84%E5%88%86%E5%AD%90%E5%8F%AF%E8%A7%86%E5%8C%96%E6%96%B0%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">2.</span> <span class="toc-text">第四章：AI + PyMOL：智能化的分子可视化新工作流</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E4%BC%A0%E7%BB%9F%E6%B5%81%E7%A8%8B-vs-AI%E5%A2%9E%E5%BC%BA%E6%B5%81%E7%A8%8B"><span class="toc-number">2.1.</span> <span class="toc-text">4.1 传统流程 vs AI增强流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E5%85%B7%E4%BD%93%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">2.2.</span> <span class="toc-text">4.2 具体应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%BD%93%E6%B2%A1%E6%9C%89%E6%99%B6%E4%BD%93%E7%BB%93%E6%9E%84%E6%97%B6%EF%BC%9A%E7%94%A8AI%E9%A2%84%E6%B5%8B"><span class="toc-number">2.2.1.</span> <span class="toc-text">1. 当没有晶体结构时：用AI预测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%BD%93%E4%B8%8D%E7%9F%A5%E9%81%93%E5%85%B3%E9%94%AE%E6%AE%8B%E5%9F%BA%E6%97%B6%EF%BC%9AAI%E8%87%AA%E5%8A%A8%E8%AF%86%E5%88%AB"><span class="toc-number">2.2.2.</span> <span class="toc-text">2. 当不知道关键残基时：AI自动识别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%BD%93%E9%85%8D%E4%BD%93%E7%BB%93%E5%90%88%E6%A8%A1%E5%BC%8F%E6%9C%AA%E7%9F%A5%E6%97%B6%EF%BC%9AAI%E5%BF%AB%E9%80%9F%E5%AF%B9%E6%8E%A5"><span class="toc-number">2.2.3.</span> <span class="toc-text">3. 当配体结合模式未知时：AI快速对接</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E5%AE%9E%E9%99%85%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B%E7%A4%BA%E4%BE%8B"><span class="toc-number">2.3.</span> <span class="toc-text">4.3 实际工作流程示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E5%8F%AF%E7%94%A8%E7%9A%84AI%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90"><span class="toc-number">2.4.</span> <span class="toc-text">4.4 可用的AI工具推荐</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-%E4%BC%98%E5%8A%BF%E6%80%BB%E7%BB%93"><span class="toc-number">2.5.</span> <span class="toc-text">4.5 优势总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-6-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">2.6.</span> <span class="toc-text">4.6 注意事项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9A%E6%95%B4%E5%90%88%E7%AF%87-%E7%8E%B0%E4%BB%A3%E7%A7%91%E7%A0%94%E7%9A%84%E7%9C%9F%E5%AE%9E%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">2.7.</span> <span class="toc-text">第五章：整合篇 - 现代科研的真实工作流</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-1-%E4%BC%A0%E7%BB%9F%E7%A7%91%E7%A0%94%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">2.7.1.</span> <span class="toc-text">5.1 传统科研工作流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-2-AI%E5%A2%9E%E5%BC%BA%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">2.7.2.</span> <span class="toc-text">5.2 AI增强工作流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3-%E5%9C%A8PyMOL%E4%B8%AD%E7%9A%84%E5%AE%8C%E6%95%B4%E5%AE%9E%E8%B7%B5"><span class="toc-number">2.7.3.</span> <span class="toc-text">5.3 在PyMOL中的完整实践</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%E4%B8%8E%E5%B1%95%E6%9C%9B"><span class="toc-number">2.8.</span> <span class="toc-text">总结与展望</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/24/indel/" title="记一次清空SMART修复群晖报故障的硬盘">记一次清空SMART修复群晖报故障的硬盘</a><time datetime="2025-12-24T04:56:00.000Z" title="Created 2025-12-24 12:56:00">2025-12-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/gemini/" title="根据SNP位点进行快速引物设计——网页版">根据SNP位点进行快速引物设计——网页版</a><time datetime="2025-12-02T14:26:00.000Z" title="Created 2025-12-02 22:26:00">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/24/latex/" title="LaTeX详细教程+技巧总结">LaTeX详细教程+技巧总结</a><time datetime="2025-11-24T14:26:00.000Z" title="Created 2025-11-24 22:26:00">2025-11-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/10/gwas-ld-block/" title="GWAS + 热点区域识别 + LD Block 分析流程详解">GWAS + 热点区域识别 + LD Block 分析流程详解</a><time datetime="2025-11-10T14:26:00.000Z" title="Created 2025-11-10 22:26:00">2025-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应">从基因到结构：用PyMOL可视化理解分子对接与突变效应</a><time datetime="2025-11-09T14:26:00.000Z" title="Created 2025-11-09 22:26:00">2025-11-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
+   #sidebar_search_box input[type=text]{width:calc(100% - 24px)}
+}</style></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/fish.js" defer data-pjax></script><script type="text/javascript" src="/js/busuanzi.pure.mini.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-10-09</span><a class="blog-slider__title" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">Hexo + Butterfly 个人博客搭建</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/11/10/gwas-ld-block/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-11-10</span><a class="blog-slider__title" href="2025/11/10/gwas-ld-block/" alt="">GWAS + 热点区域识别 + LD Block 分析流程详解</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/11/10/gwas-ld-block/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/07/31/19/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/OIP-C.2E7GSli1t13WJ-Of6Hp9UgHaEi" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-07-31</span><a class="blog-slider__title" href="2025/07/31/19/" alt="">2.重测序数据分析——初步整理</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/07/31/19/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><!-- hexo injector body_end end --></body></html>

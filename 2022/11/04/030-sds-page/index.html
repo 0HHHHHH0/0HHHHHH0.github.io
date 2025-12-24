@@ -1,0 +1,343 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>SDS-PAGE（聚丙烯酰胺）蛋白电泳原理详解 | HHHH</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="WB流程 首先通过SDS-PAGE聚丙烯酰胺凝胶电泳使蛋白质样本分离，再将凝胶上的蛋白电泳转移到固相载体上（NC膜或者PVDF膜），方便后续印迹显影操作，然后使用封闭液将封闭非特异位点，以避免抗体的非特异性吸附，这样固定的蛋白质即可与特异性的多克隆或单克隆抗体相互作用。最后通过化学发光法或荧光方法进行蛋白条带显影。   其中SDS聚丙烯酰胺凝胶电泳条件是关系到蛋白条带是否均一、整齐、干净的关键步">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SDS-PAGE（聚丙烯酰胺）蛋白电泳原理详解">
+<meta property="og:url" content="https://0hhhhhh0.github.io/2022/11/04/030-sds-page/index.html">
+<meta property="og:site_name" content="HHHH">
+<meta property="og:description" content="WB流程 首先通过SDS-PAGE聚丙烯酰胺凝胶电泳使蛋白质样本分离，再将凝胶上的蛋白电泳转移到固相载体上（NC膜或者PVDF膜），方便后续印迹显影操作，然后使用封闭液将封闭非特异位点，以避免抗体的非特异性吸附，这样固定的蛋白质即可与特异性的多克隆或单克隆抗体相互作用。最后通过化学发光法或荧光方法进行蛋白条带显影。   其中SDS聚丙烯酰胺凝胶电泳条件是关系到蛋白条带是否均一、整齐、干净的关键步">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-718805fe00173970a339831cf7429c40_1440w.jpg">
+<meta property="article:published_time" content="2022-11-04T22:55:38.000Z">
+<meta property="article:modified_time" content="2022-11-04T22:55:38.000Z">
+<meta property="article:author" content="HHHH">
+<meta property="article:tag" content="实验">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-718805fe00173970a339831cf7429c40_1440w.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "SDS-PAGE（聚丙烯酰胺）蛋白电泳原理详解",
+  "url": "https://0hhhhhh0.github.io/2022/11/04/030-sds-page/",
+  "image": "https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-718805fe00173970a339831cf7429c40_1440w.jpg",
+  "datePublished": "2022-11-04T22:55:38.000Z",
+  "dateModified": "2022-11-04T22:55:38.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "HHHH",
+      "url": "https://0HHHHHH0.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/uploads/avatar.png"><link rel="canonical" href="https://0hhhhhh0.github.io/2022/11/04/030-sds-page/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":-1,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SDS-PAGE（聚丙烯酰胺）蛋白电泳原理详解',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@4.5.12/index.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/styles/css/font.css"><link rel="stylesheet" href="/css/mermaid.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="HHHH" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="scarecrow"><div class="scarecrow__hat"><div class="scarecrow__ribbon"></div></div><div class="scarecrow__head"><div class="scarecrow__eye"></div><div class="scarecrow__eye"></div><div class="scarecrow__mouth"></div><div class="scarecrow__pipe"></div></div><div class="scarecrow__body"><div class="scarecrow__glove scarecrow__glove--l"></div><div class="scarecrow__sleeve scarecrow__sleeve--l"></div><div class="scarecrow__bow"></div><div class="scarecrow__shirt"></div><div class="scarecrow__coat"></div><div class="scarecrow__waistcoat"></div><div class="scarecrow__sleeve scarecrow__sleeve--r"></div><div class="scarecrow__glove scarecrow__glove--r"></div><div class="scarecrow__coattails"></div><div class="scarecrow__pants"></div></div><div class="scarecrow__arms"></div><div class="scarecrow__leg">  </div></div></div><script async="async">(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-color: #fbfdff;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-718805fe00173970a339831cf7429c40_1440w.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/uploads/avatar.png" alt="Logo"><span class="site-name">HHHH</span></a><a class="nav-page-title" href="/"><span class="site-name">SDS-PAGE（聚丙烯酰胺）蛋白电泳原理详解</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">SDS-PAGE（聚丙烯酰胺）蛋白电泳原理详解</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-11-04T22:55:38.000Z" title="Created 2022-11-05 06:55:38">2022-11-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-11-04T22:55:38.000Z" title="Updated 2022-11-05 06:55:38">2022-11-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%9B%8B%E7%99%BD%E7%BB%84/">蛋白组</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="ai-summary"><div class="ai-explanation" style="display: block;" data-summary="转自https://zhuanlan.zhihu.com/p/315353321">AI正在绞尽脑汁想思路ING···</div><div class="ai-title"> <div class="ai-title-left"> <i class="fa-brands fa-slack"></i><div class="ai-title-text">AI摘要</div></div><div class="ai-tag" id="ai-tag">deepseek-ai/DeepSeek-V3</div></div></div><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-94435d28b337a80366f73f71e9d7fb14_1440w.jpg"></p>
+<h2 id="WB流程"><a href="#WB流程" class="headerlink" title="WB流程"></a>WB流程</h2><blockquote>
+<p>首先通过SDS-PAGE聚丙烯酰胺凝胶电泳使蛋白质样本分离，再将凝胶上的蛋白电泳转移到固相载体上（NC膜或者PVDF膜），方便后续印迹显影操作，然后使用封闭液将封闭非特异位点，以避免抗体的非特异性吸附，这样固定的蛋白质即可与特异性的多克隆或单克隆抗体相互作用。最后通过化学发光法或荧光方法进行蛋白条带显影。</p>
+</blockquote>
+<blockquote>
+<p>其中SDS聚丙烯酰胺凝胶电泳条件是关系到蛋白条带是否均一、整齐、干净的关键步骤。</p>
+</blockquote>
+<h2 id="SDS-PAGE聚丙烯酰胺凝胶电泳的原理和步骤"><a href="#SDS-PAGE聚丙烯酰胺凝胶电泳的原理和步骤" class="headerlink" title="SDS-PAGE聚丙烯酰胺凝胶电泳的原理和步骤"></a>SDS-PAGE聚丙烯酰胺凝胶电泳的原理和步骤</h2><p><strong>SDS-PAGE</strong> （十二烷基硫酸钠–聚丙烯酰胺，sodium dodecyl sulfate – polyacrylamide gel electrophoresis）凝胶电泳是一种可以根据蛋白质的分子量分离样本中蛋白的技术。在电荷的影响下分离大分子称为电泳（electrophoresis）。在SDS-PAGE中使用的凝胶是聚丙烯酰胺（polyacrylamide），使蛋白质呈线性化的试剂是SDS。 因此得名SDS-PAGE。</p>
+<h3 id="一、SDS-PAGE的原理"><a href="#一、SDS-PAGE的原理" class="headerlink" title="一、SDS-PAGE的原理:"></a>一、SDS-PAGE的原理:</h3><p>首先准备一套蛋白电泳设备，蛋白质样品和marker上样到凝胶孔中，设置电压，启动电泳程序。通常样本中会添加一种还原剂，如巯基乙醇或二硫苏糖醇(DTT)(在洗涤剂的存在下，如SDS），可以打开折叠蛋白质的二硫键；而样本中加入的SDS洗涤剂可以给所有蛋白质加上负电荷，从而将它们线性化成多肽。聚丙烯酰胺则是多肽电泳分离的介质。多肽在电场的作用下向阳极方向泳动。</p>
+<p>蛋白电泳的迁移率与一下三个因素有关：</p>
+<p>①　形状—所有的蛋白质在用还原剂处理后都处于一级结构中。 因此，形状不影响蛋白质的分离。</p>
+<p>②　电荷—经过SDS处理后，所有的蛋白质都是负电荷， 因此，电荷不影响分离。</p>
+<p>③　大小—蛋白质的分离完全与它们的分子量大小有关。</p>
+<p>在电泳中，分子量越小的多肽移动得越快，因为它们遇到的阻力更小。分子量越大的多肽移动得更慢，因为它们遇到的阻力更大。因此蛋白质完全是因为分子量大小的不同而分开（如图1）。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-26a9bacb485bfc577ab19e732af15c7b_720w.webp"></p>
+<h3 id="二、SDS-PAGE电泳中各主要试剂的作用："><a href="#二、SDS-PAGE电泳中各主要试剂的作用：" class="headerlink" title="二、SDS-PAGE电泳中各主要试剂的作用："></a>二、SDS-PAGE电泳中各主要试剂的作用：</h3><h5 id="1-β-巯基乙醇-二硫苏糖醇（DTT）"><a href="#1-β-巯基乙醇-二硫苏糖醇（DTT）" class="headerlink" title="1. β-巯基乙醇/二硫苏糖醇（DTT）"></a>1. β-巯基乙醇/二硫苏糖醇（DTT）</h5><p>β-巯基乙醇或二硫苏糖醇（DTT）做为还原剂添加入样品中，可以还原（分解）存在于蛋白质的肽链上半胱氨酸残基之间的二硫键(S-S键)。S-S键使蛋白质折叠形成二级结构。因为蛋白的构象会干扰电泳的迁移率。所以，当电泳时，消除蛋白构象对迁移率的干扰非常重要。β-巯基乙醇还原蛋白的二硫键为游离的-SH，样本中所有的蛋白都变成线性的一级结构，使其电泳迁移率只与蛋白分子量有关（图1）。</p>
+<h5 id="2-十二烷基硫酸钠-SDS"><a href="#2-十二烷基硫酸钠-SDS" class="headerlink" title="2. 十二烷基硫酸钠 (SDS)"></a>2. 十二烷基硫酸钠 (SDS)</h5><p>在制备SDS-PAGE样品时，将SDS混合在样品缓冲液中。 蛋白样本用β-巯基乙醇处理后解聚成单一线性；用SDS处理后，所有蛋白质均只带负电荷。 SDS可以使所有的蛋白质分子均匀的带上负电荷(图01)。 因此，当施加电压时，所有的蛋白质都向凝胶的正极迁移。 因为，不同大小的蛋白质得到的负电荷与其分子量成正比，它们只因为分子量大小的不同而分离开，而不是因为带电荷的多少或者蛋白构象。 在凝胶中也存在SDS，这是为了确保所有的蛋白质在整个凝胶中保持荷载负电荷。</p>
+<h5 id="3-溴酚蓝-BPB"><a href="#3-溴酚蓝-BPB" class="headerlink" title="3. 溴酚蓝 (BPB)"></a>3. 溴酚蓝 (BPB)</h5><p>溴酚蓝是电泳中的示踪染料，用于监测各个蛋白分子电泳过程的进展。 BPB与样品蛋白混合后上样，当电泳开始时，BPB与蛋白质一起迁移，但速度更快，会比样品中的任何蛋白质更快到达凝胶的末端，甚至缓冲液中的甘氨酸分子也在BPB之后到达末端。 BPB带有轻微的负电荷，这就是为什么它可以向阳极迁移，同时又可以作为蛋白质分子的示踪染料。</p>
+<h5 id="4-聚丙烯酰胺凝胶"><a href="#4-聚丙烯酰胺凝胶" class="headerlink" title="4. 聚丙烯酰胺凝胶"></a>4. 聚丙烯酰胺凝胶</h5><p>聚丙烯酰胺凝胶是通过使用少量的交联剂（如N，N‘-亚甲基双丙烯酰胺）使单体丙烯酰胺在水中的聚合而成。因此，丙烯酰胺（Acrylamide）和双丙烯酰胺(Bis-acrylamide)共聚形成了丙烯酰胺的直链与双丙烯酰胺的相互联结形成三维网络结构。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-54f1bccefd52213e7ecf9d969972e929_b.jpg"></p>
+<p>有其他的交联剂可以代替双丙烯酰胺（bisacrylamide），如：</p>
+<p>² 哌嗪二丙烯酸酯 (PDA) –-可以用于降低SDS-PAGE胶的银染背景；</p>
+<p>² N,N’- 酒石酸双丙烯铣胺 (DATD) –一种可以破坏交联剂而使凝胶可溶的试剂；</p>
+<p>丙烯酰胺和双丙烯酰胺的比例决定了凝胶的孔径。 因此，在不连续凝胶体系中，会有不同浓度和pH的浓缩胶和分离胶。</p>
+<h3 id="三、那么，浓缩胶是如何工作的呢？"><a href="#三、那么，浓缩胶是如何工作的呢？" class="headerlink" title="三、那么，浓缩胶是如何工作的呢？"></a>三、那么，浓缩胶是如何工作的呢？</h3><p>浓缩胶的目的是将需要分离的蛋白质混合物聚集在浓缩胶和分离胶的分界线上。 因此，所有的蛋白质首先被压缩累积在分界线上，然后，在大约同一时间进入分离凝胶，无论蛋白质的大小是多少。</p>
+<p>2种分子与此有关：</p>
+<p>①　紧随其后的来自Tris-Gly电泳缓冲液的甘氨酸分子</p>
+<p>②　具备牵引作用的来自Tris-HCL 电泳缓冲液的氯化物离子</p>
+<p>当施加电压后，甘氨酸分子（最简单的氨基酸）和Cl-开始通过凝胶向正极迁移。 由于甘氨酸分子在浓缩胶中以两性离子的形式存在，其电泳迁移速率非常慢。 氯离子比甘氨酸分子迁移得更快，产生了不平衡的正反离子区域，从而在氯离子和甘氨酸离子之间形成了很大的电压梯度。 在甘氨酸分子（最慢的)和氯离子(最快的）之间存在样本混合物中的所有蛋白质（图03）。样品分子在氯化物和甘氨酸之间中间迁移，逐渐被压缩成非常薄而清晰的蛋白层，方便后面更好的蛋白分离。</p>
+<p>在这个阶段，样本蛋白分子处于两种离子（后面的甘氨酸和前面的氯离子Cl-）之间，在浓缩胶和分离胶之间形成薄薄的一层。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-6c85facd823b6328166fe18f1ffe34d2_720w.webp"></p>
+<p>当蛋白分子到达分离胶界面时发生了什么？</p>
+<p>当到达分离胶时，pH值增大，孔径急剧减小。在更高的pH值下，甘氨酸分子不再以两性离子的形式存在，它们在这个阶段就会电离，并开始比在浓缩胶中时迁移得更快。 氯离子Cl-很快就会向阳极迁移。 因此，一旦蛋白质不堆积，甘氨酸分子很快难以束缚样品蛋白质分子，蛋白质分子开始在电流的作用下按照分子量大小自由的分离(图4)。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-de6189d4cd377cffe335c8f9117c453d_720w.webp"></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>浓缩胶</th>
+<th>分离胶</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>聚丙烯酰胺浓度</td>
+<td>低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>孔径大小</td>
+<td>更大</td>
+<td>更小</td>
+</tr>
+<tr>
+<td>Tris-HCl 的pH值</td>
+<td>6.8</td>
+<td>8.8</td>
+</tr>
+<tr>
+<td>目的</td>
+<td>使多肽链积聚在浓缩胶和分离胶的界线上</td>
+<td>根据分子量大小分离多肽分子</td>
+</tr>
+</tbody></table>
+<p><strong>过硫酸铵（APS）和TEMED</strong></p>
+<p>凝胶的聚合是通过自由基机制发生的。 TEMED(N，N，N，N-四甲基乙二胺)作为催化剂，生成硫酸盐自由基。过硫酸铵是提供形成自由基的硫酸盐基团的。 这些用于自由基生成的硫酸盐由过硫酸铵提供，如图02所示。</p>
+<h3 id="四、SDS-PAGE凝胶电泳的主要步骤："><a href="#四、SDS-PAGE凝胶电泳的主要步骤：" class="headerlink" title="四、SDS-PAGE凝胶电泳的主要步骤："></a>四、SDS-PAGE凝胶电泳的主要步骤：</h3><h5 id="1-先制备和灌注分离胶"><a href="#1-先制备和灌注分离胶" class="headerlink" title="1. 先制备和灌注分离胶:"></a>1. 先制备和灌注分离胶:</h5><p>制备分离胶需要两块玻璃板，一个短板，一个长板，将两块玻璃板夹在制胶架上（图5），灌胶完成后，加异丙醇赶走凝胶上面的气泡。关于灌胶的高度，这可以通过放置梳子确定，一般大约梳子下1cm,用笔标记制胶的高度，开始灌胶，加异丙醇封胶。等待胶凝固后，倒掉上层异丙醇，用吸水纸吸干异丙醇。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-2d20b9a30f6ac4b7bf76264825c6580b_720w.webp"></p>
+<h5 id="2-再制备和灌注浓缩胶"><a href="#2-再制备和灌注浓缩胶" class="headerlink" title="2. 再制备和灌注浓缩胶:"></a>2. 再制备和灌注浓缩胶:</h5><p>当下层的分离胶凝固后，就可以开始直接加积层胶至玻璃最上层，然后插入梳子。等待积层胶凝固后，小心拔出梳子，避免用力过猛破坏了凝胶上样孔。</p>
+<h5 id="3-点样至凝胶孔中："><a href="#3-点样至凝胶孔中：" class="headerlink" title="3. 点样至凝胶孔中："></a>3. 点样至凝胶孔中：</h5><p>用微量移液器向凝胶孔中依次加入蛋白marker和样本，蛋白marker是已知蛋白条带分子量的预染蛋白，可作为标定蛋白大小的标尺参考。然后依次点入其他样本至凝胶孔中。每孔的样本上样量保持一致（主要是质量一致），加样时要小心，确保不损坏加样孔的尺寸或不将样品溢出孔外，更不能把样本加到孔外。 在这个阶段，蛋白质的样品是蓝色的，因为在制备样品时使用了电泳指示剂染料–溴酚蓝</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-4c63a7a570cd2369994aff563d2963dc_720w.webp"></p>
+<h5 id="4-设定电泳条件，启动电泳："><a href="#4-设定电泳条件，启动电泳：" class="headerlink" title="4. 设定电泳条件，启动电泳："></a>4. 设定电泳条件，启动电泳：</h5><p>将凝胶和玻璃板浸入电泳缓冲液中后，就可以开始设定电压和时间，开始电泳了。 当示踪染料到达或穿过凝胶时，停止电泳。</p>
+<h5 id="5-分析蛋白条带"><a href="#5-分析蛋白条带" class="headerlink" title="5. 分析蛋白条带"></a>5. 分析蛋白条带</h5><p>考马斯亮蓝染色或者进行蛋白转膜以进行后续的免疫印迹实验；</p>
+<p>用去离子水冲洗凝胶3-5次，以去除SDS和缓冲液。 它可能会阻碍染料（0.1%考马斯蓝）与蛋白质的结合。 然后将凝胶浸泡在考马斯蓝染液中染色，室温，摇床孵育。 一般蛋白质条带会在几分钟内开始出现，但完全染色大约需要1小时（图06）</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://0HHHHHH0.github.io">HHHH</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://0hhhhhh0.github.io/2022/11/04/030-sds-page/">https://0hhhhhh0.github.io/2022/11/04/030-sds-page/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%AE%9E%E9%AA%8C/">实验</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-718805fe00173970a339831cf7429c40_1440w.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2022/11/08/031-pcr-shi-yan/" title="PCR实验最常见的9个问题及解决方案"><img class="cover" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Coronavirus-2.44.32-PM-1400x800.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">PCR实验最常见的9个问题及解决方案</div></div><div class="info-2"><div class="info-item-1">1. 如何有效设计引物 使用Oligo或Primer设计引物，  在保守区内设计  长度一般在18-27bp  上下游引物Tm值最好是60-75℃  GC含量=40%-60%  引物自身及引物之间不应存在互补序列，避免发夹结构   2. PCR电泳无扩增条带 酶失活或在反应体系中未加入酶。TaqDNA聚合酶因保存或运输不当而失活，往往通过更换新酶或用另一来源的酶以获得满意的结果。  模板含有杂质。特别是对甲醛固定及石蜡包埋的组织常含甲酸，造成DNA脱嘌呤而影响PCR的结果。  变性温度是否准确：PCR仪指示温度与实际温度是否相符，过高酶在前几个循环就迅速失活；过低则模板变性不彻底。  反应系统中污染了蛋白酶及核酸酶，应在未加Taq酶以前，将反应体系95℃加热5-10分钟。  引物变质失效。人工合成的引物是否正确。是否纯化，或因储存条件不当而失活。  引物错误。利用BLAST检查引物特异性或重新设计引物。  DNA凝胶电泳时加入阳性对照，确保不是DNA凝胶和PCR程序的问题。   3. PCR产物量过少 退火温度不合适。以2度为梯度设计梯度PCR反应优化退火温度。  DNA模板量太...</div></div></div></a><a class="pagination-related" href="/2022/11/04/029-western-blot/" title="Western blot 原理和详细操作步骤"><img class="cover" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/R-C.jpeg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Western blot 原理和详细操作步骤</div></div><div class="info-2"><div class="info-item-1">Western blot 原理  Western blot（也称为蛋白质免疫印迹）是一种常用于研究中分离和鉴定蛋白质的技术。它利用 SDS-聚丙烯酰胺凝胶电泳 (SDS-PAGE) 来分离指定样品中包含的各种蛋白质，然后将分离的蛋白质转移到硝酸纤维素或 PVDF 膜上，接下来将膜与对感目标蛋白质的特异抗体一起孵育。在洗膜过程中，未结合的抗体被洗掉，只留下与目标蛋白质结合的抗体，最后通过显影胶片或荧光扫描来检测结合的抗体。   由于抗体仅与目标蛋白质结合，因此一般只能看到一条清晰的带，条带的粗细对应于蛋白质量。通过分析特定反应的位置和强度，可以获得目标蛋白在给定细胞或组织匀浆中的表达信息。由于凝胶电泳的高分辨率和免疫的强特异性和高灵敏度，Western印迹分析可检测低至1ng的靶蛋白。该方法广泛应用于分子生物学、生物化学、免疫遗传学等分子生物学领域。  操作步骤一、准备样品 制冰，准备冰盒。  配制细胞裂解液：根据细胞数量确定所需裂解液：50ul/六孔板一孔 。    裂解液配方：100ul碧云天裂解液+1ul蛋白酶抑制剂混合物+1ul PMSF  按实验需要准备好细胞：去掉培养基...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2022/11/04/029-western-blot/" title="Western blot 原理和详细操作步骤"><img class="cover" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/R-C.jpeg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-05</div><div class="info-item-2">Western blot 原理和详细操作步骤</div></div><div class="info-2"><div class="info-item-1">Western blot 原理  Western blot（也称为蛋白质免疫印迹）是一种常用于研究中分离和鉴定蛋白质的技术。它利用 SDS-聚丙烯酰胺凝胶电泳 (SDS-PAGE) 来分离指定样品中包含的各种蛋白质，然后将分离的蛋白质转移到硝酸纤维素或 PVDF 膜上，接下来将膜与对感目标蛋白质的特异抗体一起孵育。在洗膜过程中，未结合的抗体被洗掉，只留下与目标蛋白质结合的抗体，最后通过显影胶片或荧光扫描来检测结合的抗体。   由于抗体仅与目标蛋白质结合，因此一般只能看到一条清晰的带，条带的粗细对应于蛋白质量。通过分析特定反应的位置和强度，可以获得目标蛋白在给定细胞或组织匀浆中的表达信息。由于凝胶电泳的高分辨率和免疫的强特异性和高灵敏度，Western印迹分析可检测低至1ng的靶蛋白。该方法广泛应用于分子生物学、生物化学、免疫遗传学等分子生物学领域。  操作步骤一、准备样品 制冰，准备冰盒。  配制细胞裂解液：根据细胞数量确定所需裂解液：50ul/六孔板一孔 。    裂解液配方：100ul碧云天裂解液+1ul蛋白酶抑制剂混合物+1ul PMSF  按实验需要准备好细胞：去掉培养基...</div></div></div></a><a class="pagination-related" href="/2022/11/08/031-pcr-shi-yan/" title="PCR实验最常见的9个问题及解决方案"><img class="cover" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Coronavirus-2.44.32-PM-1400x800.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-08</div><div class="info-item-2">PCR实验最常见的9个问题及解决方案</div></div><div class="info-2"><div class="info-item-1">1. 如何有效设计引物 使用Oligo或Primer设计引物，  在保守区内设计  长度一般在18-27bp  上下游引物Tm值最好是60-75℃  GC含量=40%-60%  引物自身及引物之间不应存在互补序列，避免发夹结构   2. PCR电泳无扩增条带 酶失活或在反应体系中未加入酶。TaqDNA聚合酶因保存或运输不当而失活，往往通过更换新酶或用另一来源的酶以获得满意的结果。  模板含有杂质。特别是对甲醛固定及石蜡包埋的组织常含甲酸，造成DNA脱嘌呤而影响PCR的结果。  变性温度是否准确：PCR仪指示温度与实际温度是否相符，过高酶在前几个循环就迅速失活；过低则模板变性不彻底。  反应系统中污染了蛋白酶及核酸酶，应在未加Taq酶以前，将反应体系95℃加热5-10分钟。  引物变质失效。人工合成的引物是否正确。是否纯化，或因储存条件不当而失活。  引物错误。利用BLAST检查引物特异性或重新设计引物。  DNA凝胶电泳时加入阳性对照，确保不是DNA凝胶和PCR程序的问题。   3. PCR产物量过少 退火温度不合适。以2度为梯度设计梯度PCR反应优化退火温度。  DNA模板量太...</div></div></div></a><a class="pagination-related" href="/2022/11/12/032-xiao-mu-shuang-za-jiao/" title="酵母双杂交"><img class="cover" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/R-C_1.jpeg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-13</div><div class="info-item-2">酵母双杂交</div></div><div class="info-2"><div class="info-item-1"> 酵母双杂交系统是在真核模式生物酵母中进行的，研究活细胞内蛋白质相互作用，对蛋白质之间微弱的、瞬间的作用也能够通过报告基因的表达产物敏感地检测得到，它是一种具有很高灵敏度的研究蛋白质之间关系的技术。大量的研究文献表明，酵母双杂交技术既可以用来研究哺乳动物基因组编码的蛋白质之间的互作，也可以用来研究高等植物基因组编码的蛋白质之间的互作。   一、实验目的：验证PGBKT7-A与PGADT7-B是否为相互作用的关系 二、实验原理：Y2H的建立是基于对真核生物调控转录起始过程的认识，细胞起始基因转录需要有反式转录激活因子的参与;酵母转录因子 GAL4在结构上是组件式的，往往由功能上相互独立的结构域构成，其中有DNA结合功能域（DNA binding domain,DNA-BD）和转录激活结构域（activation domain，DNA-AD）;这两个结合域分开时仍分别具有功能，但不能激活转录。只有当被分开的两者通过适当的途径在空间上较为接近时，才能重新呈现完整的GAL4转录因子活性，使启动子下游基因得到转录。  GAL4是酵母（Saccharomyces cerevisiae）转录激...</div></div></div></a><a class="pagination-related" href="/2022/11/15/033-mian-yi-gong-chen-dian-co-ip/" title="免疫共沉淀（Co-IP）"><img class="cover" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/2019112816321619760.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-15</div><div class="info-item-2">免疫共沉淀（Co-IP）</div></div><div class="info-2"><div class="info-item-1"> 蛋白间相互作用是细胞各种基本功能的主要完成者，参与几乎所有的重要生命活动。因此，蛋白-蛋白相互作用研究以及建立相互作用的关系网络图，具有十分重要的意义，也是目前蛋白质研究领域的热点。   Co-IP（免疫共沉淀，co-inmunoprecipitation）是经典的利用抗体从样品中捕获靶蛋白及其互作蛋白、复合体的一项技术，能够特异性富集所研究的目的蛋白。由于过程中采用了非变性条件，保留了互作及复合体的细胞内状态。相对于酵母双杂交、pull down等方法，其特色之一便是捕获的蛋白互作发生在所研究的特定组织细胞内，保存了互作蛋白及复合体的“内源”状态。  一、Co-IP实验原理：以抗体和抗原之间的专一性作用为基础的用于研究蛋白质相互作用的经典方法，是确定两种蛋白质在完整细胞内生理性相互作用的有效方法。 当细胞在非变性条件下被裂解时，完整细胞内存在的许多蛋白质－蛋白质间的相互作用被保留了下来。如果用蛋白质X的抗体免疫沉淀X，那么与X在体内结合的蛋白质Y也能沉淀下来。  二、Co-IP实验优势：a) 取材可以选择该目的蛋白所在物种、特定组织、细胞，因此CoIP能够反应该蛋白在天然组织...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#WB%E6%B5%81%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">WB流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SDS-PAGE%E8%81%9A%E4%B8%99%E7%83%AF%E9%85%B0%E8%83%BA%E5%87%9D%E8%83%B6%E7%94%B5%E6%B3%B3%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A5%E9%AA%A4"><span class="toc-number">2.</span> <span class="toc-text">SDS-PAGE聚丙烯酰胺凝胶电泳的原理和步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81SDS-PAGE%E7%9A%84%E5%8E%9F%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">一、SDS-PAGE的原理:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81SDS-PAGE%E7%94%B5%E6%B3%B3%E4%B8%AD%E5%90%84%E4%B8%BB%E8%A6%81%E8%AF%95%E5%89%82%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9A"><span class="toc-number">2.2.</span> <span class="toc-text">二、SDS-PAGE电泳中各主要试剂的作用：</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-%CE%B2-%E5%B7%AF%E5%9F%BA%E4%B9%99%E9%86%87-%E4%BA%8C%E7%A1%AB%E8%8B%8F%E7%B3%96%E9%86%87%EF%BC%88DTT%EF%BC%89"><span class="toc-number">2.2.0.1.</span> <span class="toc-text">1. β-巯基乙醇&#x2F;二硫苏糖醇（DTT）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-%E5%8D%81%E4%BA%8C%E7%83%B7%E5%9F%BA%E7%A1%AB%E9%85%B8%E9%92%A0-SDS"><span class="toc-number">2.2.0.2.</span> <span class="toc-text">2. 十二烷基硫酸钠 (SDS)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-%E6%BA%B4%E9%85%9A%E8%93%9D-BPB"><span class="toc-number">2.2.0.3.</span> <span class="toc-text">3. 溴酚蓝 (BPB)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-%E8%81%9A%E4%B8%99%E7%83%AF%E9%85%B0%E8%83%BA%E5%87%9D%E8%83%B6"><span class="toc-number">2.2.0.4.</span> <span class="toc-text">4. 聚丙烯酰胺凝胶</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E9%82%A3%E4%B9%88%EF%BC%8C%E6%B5%93%E7%BC%A9%E8%83%B6%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84%E5%91%A2%EF%BC%9F"><span class="toc-number">2.3.</span> <span class="toc-text">三、那么，浓缩胶是如何工作的呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81SDS-PAGE%E5%87%9D%E8%83%B6%E7%94%B5%E6%B3%B3%E7%9A%84%E4%B8%BB%E8%A6%81%E6%AD%A5%E9%AA%A4%EF%BC%9A"><span class="toc-number">2.4.</span> <span class="toc-text">四、SDS-PAGE凝胶电泳的主要步骤：</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-%E5%85%88%E5%88%B6%E5%A4%87%E5%92%8C%E7%81%8C%E6%B3%A8%E5%88%86%E7%A6%BB%E8%83%B6"><span class="toc-number">2.4.0.1.</span> <span class="toc-text">1. 先制备和灌注分离胶:</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-%E5%86%8D%E5%88%B6%E5%A4%87%E5%92%8C%E7%81%8C%E6%B3%A8%E6%B5%93%E7%BC%A9%E8%83%B6"><span class="toc-number">2.4.0.2.</span> <span class="toc-text">2. 再制备和灌注浓缩胶:</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-%E7%82%B9%E6%A0%B7%E8%87%B3%E5%87%9D%E8%83%B6%E5%AD%94%E4%B8%AD%EF%BC%9A"><span class="toc-number">2.4.0.3.</span> <span class="toc-text">3. 点样至凝胶孔中：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-%E8%AE%BE%E5%AE%9A%E7%94%B5%E6%B3%B3%E6%9D%A1%E4%BB%B6%EF%BC%8C%E5%90%AF%E5%8A%A8%E7%94%B5%E6%B3%B3%EF%BC%9A"><span class="toc-number">2.4.0.4.</span> <span class="toc-text">4. 设定电泳条件，启动电泳：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-%E5%88%86%E6%9E%90%E8%9B%8B%E7%99%BD%E6%9D%A1%E5%B8%A6"><span class="toc-number">2.4.0.5.</span> <span class="toc-text">5. 分析蛋白条带</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/24/indel/" title="记一次清空SMART修复群晖报故障的硬盘">记一次清空SMART修复群晖报故障的硬盘</a><time datetime="2025-12-24T04:56:00.000Z" title="Created 2025-12-24 12:56:00">2025-12-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/gemini/" title="根据SNP位点进行快速引物设计——网页版">根据SNP位点进行快速引物设计——网页版</a><time datetime="2025-12-02T14:26:00.000Z" title="Created 2025-12-02 22:26:00">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/24/latex/" title="LaTeX详细教程+技巧总结">LaTeX详细教程+技巧总结</a><time datetime="2025-11-24T14:26:00.000Z" title="Created 2025-11-24 22:26:00">2025-11-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/10/gwas-ld-block/" title="GWAS + 热点区域识别 + LD Block 分析流程详解">GWAS + 热点区域识别 + LD Block 分析流程详解</a><time datetime="2025-11-10T14:26:00.000Z" title="Created 2025-11-10 22:26:00">2025-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应">从基因到结构：用PyMOL可视化理解分子对接与突变效应</a><time datetime="2025-11-09T14:26:00.000Z" title="Created 2025-11-09 22:26:00">2025-11-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
+   #sidebar_search_box input[type=text]{width:calc(100% - 24px)}
+}</style></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/fish.js" defer data-pjax></script><script type="text/javascript" src="/js/busuanzi.pure.mini.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-10-09</span><a class="blog-slider__title" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">Hexo + Butterfly 个人博客搭建</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/11/10/gwas-ld-block/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-11-10</span><a class="blog-slider__title" href="2025/11/10/gwas-ld-block/" alt="">GWAS + 热点区域识别 + LD Block 分析流程详解</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/11/10/gwas-ld-block/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/07/31/19/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/OIP-C.2E7GSli1t13WJ-Of6Hp9UgHaEi" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-07-31</span><a class="blog-slider__title" href="2025/07/31/19/" alt="">2.重测序数据分析——初步整理</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/07/31/19/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><!-- hexo injector body_end end --></body></html>

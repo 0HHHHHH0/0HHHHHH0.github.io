@@ -1,0 +1,1312 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Planck-Pi学习 | HHHH</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="1. 配置编译环境1.1 编译过程中需要的依赖 sudo apt update sudo apt install xz-utils nano wget unzip build-essential git bc swig libncurses5-dev libpython3-dev libssl-dev pkg-config zlib1g-dev libusb-dev libusb-1.0-0-de">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Planck-Pi学习">
+<meta property="og:url" content="https://0hhhhhh0.github.io/2025/10/26/planck-pi/index.html">
+<meta property="og:site_name" content="HHHH">
+<meta property="og:description" content="1. 配置编译环境1.1 编译过程中需要的依赖 sudo apt update sudo apt install xz-utils nano wget unzip build-essential git bc swig libncurses5-dev libpython3-dev libssl-dev pkg-config zlib1g-dev libusb-dev libusb-1.0-0-de">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0hhhhhh0.github.io/uploads/avatar.png">
+<meta property="article:published_time" content="2025-10-26T01:26:00.000Z">
+<meta property="article:modified_time" content="2025-10-26T01:32:15.000Z">
+<meta property="article:author" content="HHHH">
+<meta property="article:tag" content="hexo">
+<meta property="article:tag" content="组学">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="折腾">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0hhhhhh0.github.io/uploads/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Planck-Pi学习",
+  "url": "https://0hhhhhh0.github.io/2025/10/26/planck-pi/",
+  "image": "https://0hhhhhh0.github.io/uploads/avatar.png",
+  "datePublished": "2025-10-26T01:26:00.000Z",
+  "dateModified": "2025-10-26T01:32:15.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "HHHH",
+      "url": "https://0HHHHHH0.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/uploads/avatar.png"><link rel="canonical" href="https://0hhhhhh0.github.io/2025/10/26/planck-pi/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":-1,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Planck-Pi学习',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@4.5.12/index.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/styles/css/font.css"><link rel="stylesheet" href="/css/mermaid.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="HHHH" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="scarecrow"><div class="scarecrow__hat"><div class="scarecrow__ribbon"></div></div><div class="scarecrow__head"><div class="scarecrow__eye"></div><div class="scarecrow__eye"></div><div class="scarecrow__mouth"></div><div class="scarecrow__pipe"></div></div><div class="scarecrow__body"><div class="scarecrow__glove scarecrow__glove--l"></div><div class="scarecrow__sleeve scarecrow__sleeve--l"></div><div class="scarecrow__bow"></div><div class="scarecrow__shirt"></div><div class="scarecrow__coat"></div><div class="scarecrow__waistcoat"></div><div class="scarecrow__sleeve scarecrow__sleeve--r"></div><div class="scarecrow__glove scarecrow__glove--r"></div><div class="scarecrow__coattails"></div><div class="scarecrow__pants"></div></div><div class="scarecrow__arms"></div><div class="scarecrow__leg">  </div></div></div><script async="async">(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-color: #fbfdff;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/uploads/avatar.png" alt="Logo"><span class="site-name">HHHH</span></a><a class="nav-page-title" href="/"><span class="site-name">Planck-Pi学习</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Planck-Pi学习</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-10-26T01:26:00.000Z" title="Created 2025-10-26 09:26:00">2025-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-10-26T01:32:15.000Z" title="Updated 2025-10-26 09:32:15">2025-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="ai-summary"><div class="ai-explanation" style="display: block;" data-summary="这篇文章主要介绍了Planck-Pi的开发环境配置与系统编译过程。文章首先详细说明了编译环境所需的依赖安装步骤，包括交叉编译工具链的下载、解压与配置方法。接着讲解了TF卡分区的具体操作，包括使用gparted工具创建多个分区以及分区上传命令的使用。随后重点阐述了u-boot、Linux内核和rootfs的编译流程，包括源码获取、配置修改（如Makefile中的ARCH和CROSS_COMPILE设置）、使用menuconfig进行图形化配置等关键步骤。最后还介绍了TF卡设备树信息的配置方法，确保内核能够正常运行并识别硬件设备。全文为Planck-Pi开发者提供了完整的系统构建指南。">AI正在绞尽脑汁想思路ING···</div><div class="ai-title"> <div class="ai-title-left"> <i class="fa-brands fa-slack"></i><div class="ai-title-text">AI摘要</div></div><div class="ai-tag" id="ai-tag">deepseek-ai/DeepSeek-V3</div></div></div><h1 id="1-配置编译环境"><a href="#1-配置编译环境" class="headerlink" title="1. 配置编译环境"></a>1. 配置编译环境</h1><pre class="line-numbers language-none"><code class="language-none">1.1 编译过程中需要的依赖
+sudo apt update
+sudo apt install xz-utils nano wget unzip build-essential git bc swig libncurses5-dev libpython3-dev libssl-dev pkg-config zlib1g-dev libusb-dev libusb-1.0-0-dev python3-pip gawk bison flex -y
+sudo apt install python python-dev lib32ncurses5 lib32z1 vim dwarves -y<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="1-2-交叉编译工具链"><a href="#1-2-交叉编译工具链" class="headerlink" title="1.2 交叉编译工具链"></a>1.2 交叉编译工具链</h2><pre class="line-numbers language-none"><code class="language-none"># 下载
+wget http://releases.linaro.org/components/toolchain/binaries/7.2-2017.11/arm-linux-gnueabi/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi.tar.xz
+
+$ wget https://releases.linaro.org/components/toolchain/binaries/7.5-2019.12/arm-linux-gnueabi/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabi.tar.xz
+# 解压
+sudo mkdir /usr/local/arm
+sudo tar -vxf gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi.tar.xz -C /usr/local/arm
+# 配置
+sudo nano /etc/profile
+# 在末尾添加
+PATH=$PATH:/usr/local/arm/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi/bin
+# 使之生效
+source /etc/profile 
+# 验证
+arm-linux-gnueabi-gcc -v<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="1-3-TF卡分区"><a href="#1-3-TF卡分区" class="headerlink" title="1.3 TF卡分区"></a>1.3 TF卡分区</h2><pre class="line-numbers language-none"><code class="language-none"># 可以使用gparted进行分区
+sudo apt-get install gparted -y
+分3个分区
+
+volume	1M		FAT16
+boot	32M		EXT4
+rootfs	--		EXT4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="1-4-TF卡上传命令"><a href="#1-4-TF卡上传命令" class="headerlink" title="1.4 TF卡上传命令"></a>1.4 TF卡上传命令</h2><pre class="line-numbers language-none"><code class="language-none"># volume	1M
+sudo dd if=/home/hhhh/Downloads/Planck-Pi/Planck-Pi/buildroot/output/images/u-boot-sunxi-with-spl.bin of=/dev/sdc bs=1024 seek=8
+
+# boot	32M
+
+setenv bootcmd "load mmc 0:2 0x80008000 zImage; load mmc 0:2 0x80C00000 suniv-f1c100s-generic.dtb; bootz 0x80008000 - 0x80C00000"
+或
+setenv bootcmd "load mmc 0:2 0x80008000 zImage; load mmc 0:2 0x80C00000 suniv-f1c100s-licheepi-nano.dtb; bootz 0x80008000 - 0x80C00000"
+
+# 设置启动参数，使用第三分区
+setenv bootargs "console=tty0 console=ttyS0,115200 root=/dev/mmcblk0p3 rootwait rw"
+
+# 保存并启动
+saveenv
+boot<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-none"><code class="language-none"># kernel
+sudo cp /home/hhhh/Downloads/Planck-Pi/buildroot/linux/arch/arm/boot/dts/allwinner/suniv-f1c100s-licheepi-nano.dtb .
+
+sudo mv suniv-f1c100s-licheepi-nano.dtb suniv-f1c100s-generic.dtb
+
+sudo cp /home/hhhh/Downloads/Planck-Pi/buildroot/linux/arch/arm/boot/zImage .<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-none"><code class="language-none"># rootfs 复制rootfs文件到第三个分区
+sudo mount /dev/sdc3 /mnt
+sudo tar -xf rootfs.tar -C /mnt
+
+sudo umount /mnt
+
+sync<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h1 id="2-uboot，kernel和rootfs编译"><a href="#2-uboot，kernel和rootfs编译" class="headerlink" title="2.uboot，kernel和rootfs编译"></a>2.uboot，kernel和rootfs编译</h1><p>一部分来自<code> https://github.com/916BGAI/Planck-Pi</code>，包含uboot，kernel和rootfs</p>
+<pre class="line-numbers language-none"><code class="language-none">git clone -b linux_6.5.2 --single-branch https://github.com/916BGAI/Planck-Pi.git
+cd Planck-Pi/
+git submodule update --init --recursive<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>u-boot源码 （2）</p>
+<pre class="line-numbers language-none"><code class="language-none">git clone https://github.com/Lichee-Pi/u-boot.git -b nano-v2018.01
+cd u-boot
+//git branch -a
+//git checkout nano-v2018.01<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p><strong>Compile命令</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">cd u-boot
+make planck_pi_defconfig
+make menuconfig
+make -j65535
+cd linux
+make planck_pi_defconfig
+make menuconfig
+make -j65535
+cd Buildroot
+make planck_pi_defconfig
+make menuconfig
+make<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="1-u-boot"><a href="#1-u-boot" class="headerlink" title="1.u-boot"></a>1.u-boot</h2><p>为了方便后边编译在248行添加 目标构架是arm，交叉编译器是</p>
+<pre class="line-numbers language-none"><code class="language-none">vim Makefile
+
+ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>在uboot根目录进行编译配置为不带spi，来在根目录生成.config</p>
+<pre class="line-numbers language-none"><code class="language-none">make licheepi_nano_defconfig<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>图形化配置</p>
+<pre class="line-numbers language-none"><code class="language-none">make menuconfig
+#Enable boot arguments
+console=ttyS0,115200 panic=5 rootwait root=/dev/mmcblk0p2 earlyprintk rw
+#bootcmd value
+load mmc 0:1 0x80008000 zImage;load mmc 0:1 0x80c08000 suniv-f1c100s-licheepi-nano.dtb;bootz 0x80008000 - 0x80c08000;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>回到uboot根目录进行编译</p>
+<pre class="line-numbers language-none"><code class="language-none">make -j4<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>确定已经生成了u-boot-sunxi-with-spl.bin文件</p>
+<pre class="line-numbers language-none"><code class="language-none">sudo dd if=u-boot-sunxi-with-spl.bin of=/dev/sdb bs=1024 seek=8<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="2-linux-kernel"><a href="#2-linux-kernel" class="headerlink" title="2. linux kernel"></a>2. linux kernel</h2><p>事实上对于F1C100S/F1C200S，Linux官方源码已经对licheepi nano进行支持。所以我们完全可以通过licheepi nano的配置文件进行移植。</p>
+<h3 id="2-1-下载内核源码"><a href="#2-1-下载内核源码" class="headerlink" title="2.1. 下载内核源码#"></a>2.1. 下载内核源码<a href="https://www.cnblogs.com/twzy/p/15355842.html#1.1.-%E4%B8%8B%E8%BD%BD%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81">#</a></h3><p>进入Linux系统官网：<a href="https://www.kernel.org/">https://www.kernel.org/</a></p>
+<p>[<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20210930145110377-1315647665.png" alt="img"></p>
+<p>这里面列出的都是一些主要版本，如主线版本，上时间支持版本，个人推荐使用最新的长时间支持版本（5.10.69）。但是因为我这个项目是在参考一位大神的文档的基础上构建的，所以使用的是5.7.1版本，接下来就给一个选择其他版本的方式。选择任意一项点击 [browse]</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202109/483434-20210930145220044-1573759475.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20210930145220044-1573759475.png" alt="img"></a></p>
+<p>在新打开页面选择 【summary】点击【tag】中的【…】切换下载</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202109/483434-20210930145316299-265231365.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20210930145316299-265231365.png" alt="img"></a></p>
+<p> 如果想要直接下载5.7.1版本，请直接使用下面的连接</p>
+<p><a href="https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/linux-5.7.1.tar.gz">https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/linux-5.7.1.tar.gz</a></p>
+<p>下载后完成后，将代码复制到Ubuntu虚拟机并解压源码。</p>
+<h3 id="2-2-配置编译"><a href="#2-2-配置编译" class="headerlink" title="2.2.配置编译#"></a>2.2.配置编译<a href="https://www.cnblogs.com/twzy/p/15355842.html#1.2.%E9%85%8D%E7%BD%AE%E7%BC%96%E8%AF%91">#</a></h3><p>与上一篇中编译u-boot一样，我们也需要配置对Linux编译进行配置：</p>
+<ul>
+<li>指定架构类型</li>
+<li>指定交叉编译工具</li>
+<li>项目配置</li>
+</ul>
+<p>指定架构，就这个很好理解，就是指定CPU类型，就是配置为Arm就行，交叉编译工具即为上一篇已经安装好的编译工具。</p>
+<p>用VS打开Linux内核代码，找到<strong>Makefile</strong>文件：</p>
+<p>修改如下配置：</p>
+<pre class="line-numbers language-none"><code class="language-none">ARCH              ?= arm
+CROSS_COMPILE     ?=arm-linux-gnueabi-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>如果没找到ARCH 或 CROSS_COMPILE字段，自己手动添加也行，如下图所示：</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202109/483434-20210930151530833-1001068341.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20210930151530833-1001068341.png" alt="img"></a></p>
+<blockquote>
+<p> 事实上这两个字段可以不用指定，在进行make的时候加上对应的参数就行，这里为了避免麻烦，所以直接放到了makefile文件中</p>
+</blockquote>
+<p>接下来就是指定项目配置了，这个操作就是让Linux内核认F1C100S/F1C200S这颗soc。</p>
+<p>进入内核源码中的<strong>arch/arm/configs</strong>目录中，可以看到有很多开发板的配置文件，其中<strong>sunxi_defconfig</strong>是全志的配置文件，但是该配置文件非常不全，需要额外配置大量的选项，一般选项多大上千个，这里先使用licheepi_nano的配置文件。</p>
+<p><a href="https://files.cnblogs.com/files/twzy/linux-licheepi_nano_defconfig.zip"> https://files.cnblogs.com/files/twzy/linux-licheepi_nano_defconfig.zip</a></p>
+<p>下载该文件，解压出<strong>linux-licheepi_nano_defconfig</strong>，然后将其放到arch/arm/configs/目录下</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202109/483434-20210930154001937-799886630.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20210930154001937-799886630.png" alt="img"></a></p>
+<p> 然后通过终端进入Linux-5.7.1根目录，输入命令：</p>
+<pre class="line-numbers language-none"><code class="language-none">make menuconfig<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211005103913552-1730316057.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211005103913552-1730316057.png" alt="img"></a></p>
+<p> 进入图形配置界面，如图所示：</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211005104057991-2077580949.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211005104057991-2077580949.png" alt="img"></a></p>
+<p>该界面和u-boot配置一样，所以操作方式也是一样的，上下键移动选项，使用空格键进行选中或取消选择，同样通过空格键或回车键，进入子选项配置，通过Tab键选择保存和退出即可返回上级菜单或命令行界面，也可以直接双击Esc键返回上级目录。</p>
+<h3 id="3-3-配置TF卡设备树信息"><a href="#3-3-配置TF卡设备树信息" class="headerlink" title="3.3 配置TF卡设备树信息#"></a>3.3 配置TF卡设备树信息<a href="https://www.cnblogs.com/twzy/p/15355842.html#1.3-%E9%85%8D%E7%BD%AEtf%E5%8D%A1%E8%AE%BE%E5%A4%87%E6%A0%91%E4%BF%A1%E6%81%AF">#</a></h3><p>我们在完成内核配置后还需要配置TF卡的设备树配置，否则即便是能正常运行内核，在加载文件系统的时候还是会有问题，在这里配置很简单：</p>
+<p>在<strong>linux-5.7.1/arch/arm/boot/dts</strong> 目录下，分别修改<strong>suniv-f1c100s.dtsi</strong>、<strong>suniv-f1c100s-licheepi-nano.dts</strong> 两个文件（记住这两个文件、以后我们修改的地方多了^_^）</p>
+<p>修改<strong>suniv-f1c100s.dtsi</strong>文件</p>
+<p>首先添加头文件(如果有则忽略)</p>
+<pre class="line-numbers language-none"><code class="language-none">#include &lt;dt-bindings/clock/suniv-ccu-f1c100s.h&gt;
+#include &lt;dt-bindings/reset/suniv-ccu-f1c100s.h&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>在soc-&gt;pio 下添加如下代码</p>
+<pre class="line-numbers language-none"><code class="language-none">mmc0_pins: mmc0-pins {
+                pins = "PF0", "PF1", "PF2", "PF3", "PF4", "PF5";
+                function = "mmc0";
+            };<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>soc下添加如下代码</p>
+<pre class="line-numbers language-none"><code class="language-none">mmc0: mmc@1c0f000 {
+            compatible = "allwinner,suniv-f1c100s-mmc",
+                     "allwinner,sun7i-a20-mmc";
+            reg = &lt;0x01c0f000 0x1000&gt;;
+            clocks = &lt;&amp;ccu CLK_BUS_MMC0&gt;,
+                 &lt;&amp;ccu CLK_MMC0&gt;,
+                 &lt;&amp;ccu CLK_MMC0_OUTPUT&gt;,
+                 &lt;&amp;ccu CLK_MMC0_SAMPLE&gt;;
+            clock-names = "ahb",
+                          "mmc",
+                          "output",
+                          "sample";
+            resets = &lt;&amp;ccu RST_BUS_MMC0&gt;;
+            reset-names = "ahb";
+            interrupts = &lt;23&gt;;
+            pinctrl-names = "default";
+            pinctrl-0 = &lt;&amp;mmc0_pins&gt;;
+            status = "disabled";
+            #address-cells = &lt;1&gt;;
+            #size-cells = &lt;0&gt;;
+        };<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>如图，图中的配置可能与读者实际内容不一致，这是因为我改了很多东西，忽略即可，只需要关注红色框中的内容即可。</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009162310863-1685576565.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009162310863-1685576565.png" alt="img"></a></p>
+<p> 修改<strong>suniv-f1c100s-licheepi-nano.dts</strong>文件，在根节点添加如下代码</p>
+<pre class="line-numbers language-none"><code class="language-none">reg_vcc3v3: vcc3v3 {
+        compatible = "regulator-fixed";
+        regulator-name = "vcc3v3";
+        regulator-min-microvolt = &lt;3300000&gt;;
+        regulator-max-microvolt = &lt;3300000&gt;;
+    };<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>外部添加mmc0使能代码</p>
+<pre class="line-numbers language-none"><code class="language-none">&amp;mmc0 {
+        vmmc-supply = &lt;&amp;reg_vcc3v3&gt;;
+        bus-width = &lt;4&gt;;
+        broken-cd;
+        status = "okay";
+};<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>位置如下图</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202201/483434-20220114080223936-810553130.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20220114080223936-810553130.png" alt="img"></a></p>
+<p>接下来执行make命令开始编译内核和设备树相关的文件了</p>
+<pre class="line-numbers language-none"><code class="language-none">make<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>首次进行编译，通常会需要很长时间，编译完成后，就会在在<strong>arch/arm/boot</strong>目录下生成内核文件：<strong>zImage</strong>，在<strong>arch/arm/boot/dts</strong>目录下设备树文件：<strong>suniv-f1c100s-licheepi-nano.dtb</strong> 。</p>
+<p>在编译过程中，因为所配置Ubuntu系统的差异，可能会因缺少某些组件导致编译报错，不要慌，将对应的错误关键信息复制到搜索引擎后安装即可，一下是作者碰到的两个编译报错，如果有必要可以提前安装：</p>
+<p> <strong>linux-内核编译配置 lexer.lex.c错误</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">wu@ubuntu:~/linux-5.4.8$ make exynos_defconfig
+HOSTCC scripts/basic/fixdep
+HOSTCC scripts/kconfig/conf.o
+HOSTCC scripts/kconfig/confdata.o
+HOSTCC scripts/kconfig/expr.o
+LEX scripts/kconfig/lexer.lex.c
+/bin/sh: 1: flex: not found
+scripts/Makefile.host:9: recipe for target ‘scripts/kconfig/lexer.lex.c’ failed
+make[1]: * [scripts/kconfig/lexer.lex.c] Error 127
+Makefile:567: recipe for target ‘exynos_defconfig’ failed
+make: * [exynos_defconfig] Error 2 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>解决方法：</p>
+<pre class="line-numbers language-none"><code class="language-none">sudo apt-get install bison
+sudo apt-get install flex<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><strong>编译Linux内核时遇到：“error : openssl/bio.h :No such file or folder”</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">scripts/extract-cert.c:21:25: fatal error: openssl/bio.h: No such file or directory
+compilation terminated.
+scripts/Makefile.host:90: recipe for target 'scripts/extract-cert' failed
+make[1]: * [scripts/extract-cert] Error 1
+Makefile:556: recipe for target 'scripts' failed
+make: * [scripts] Error 2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>安装openssl：</p>
+<pre class="line-numbers language-none"><code class="language-none">sudo apt install libssl-dev<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<h3 id="3-4-内核复制与执行"><a href="#3-4-内核复制与执行" class="headerlink" title="3.4 内核复制与执行#"></a>3.4 内核复制与执行<a href="https://www.cnblogs.com/twzy/p/15355842.html#1.5-%E5%86%85%E6%A0%B8%E5%A4%8D%E5%88%B6%E4%B8%8E%E6%89%A7%E8%A1%8C">#</a></h3><p>那么，我们将刚才生成好的zImage和dtb文件复制到TF卡的BOOT分区中</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009082706512-1631849134.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009082706512-1631849134.png" alt="img"></a></p>
+<p>退出TF卡，插入开发板，上电，按重启，我们就可以看到u-boot启动完成后，自动进入了内核启动环节，但是启动后一会就报错了，因为挂载文件系统产生错误。</p>
+<pre class="line-numbers language-none"><code class="language-none">U-Boot SPL 2018.01-05679-g013ca457fd-dirty (Sep 28 2021 - 15:29:32)
+DRAM: 32 MiB
+Trying to boot from MMC1
+
+
+U-Boot 2018.01-05679-g013ca457fd-dirty (Sep 28 2021 - 15:29:32 +0800) Allwinner Technology
+
+CPU:   Allwinner F Series (SUNIV)
+Model: Snail Card
+DRAM:  32 MiB
+MMC:   SUNXI SD/MMC: 0
+*** Warning - bad CRC, using default environment
+
+In:    serial@1c25000
+Out:   serial@1c25000
+Err:   serial@1c25000
+Net:   No ethernet found.
+starting USB...
+No controllers found
+Hit any key to stop autoboot:  0 
+reading zImage
+4515448 bytes read in 231 ms (18.6 MiB/s)
+reading suniv-f1c100s-licheepi-nano.dtb
+6105 bytes read in 26 ms (228.5 KiB/s)
+## Flattened Device Tree blob at 80c00000
+   Booting using the fdt blob at 0x80c00000
+   Loading Device Tree to 816fb000, end 816ff7d8 ... OK
+
+Starting kernel ...
+
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Linux version 5.7.1 (twzy@ubuntu) (gcc version 7.2.1 20171011 (Linaro GCC 7.2-2017.11), GNU ld (Linaro_Binutils-2017.11) 2.28.2.20170706) #55 Tue Sep 28 21:04:24 CST 2021
+[    0.000000] CPU: ARM926EJ-S [41069265] revision 5 (ARMv5TEJ), cr=0005317f
+[    0.000000] CPU: VIVT data cache, VIVT instruction cache
+[    0.000000] OF: fdt: Machine model: LinuxCard by Kevin
+[    0.000000] Memory policy: Data cache writeback
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 8128
+[    0.000000] Kernel command line: console=tty0 console=ttyS0,115200 panic=5 rootwait root=/dev/mmcblk0p2  rw
+[    0.000000] Dentry cache hash table entries: 4096 (order: 2, 16384 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 2048 (order: 1, 8192 bytes, linear)
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[    0.000000] Memory: 21496K/32768K available (7168K kernel code, 403K rwdata, 1664K rodata, 1024K init, 246K bss, 11272K reserved, 0K cma-reserved, 0K highmem)
+[    0.000000] SLUB: HWalign=32, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+
+ …………………
+
+[    6.598874] Run /etc/init as init process
+[    6.603993] Run /bin/init as init process
+[    6.609078] Run /bin/sh as init process
+[    6.613763] Kernel panic - not syncing: No working init found.  Try passing init= option to kernel. See Linux Documentation/admin-guide/init.rst for guidance.
+[    6.629985] CPU: 0 PID: 1 Comm: swapper Not tainted 5.7.1 #55
+[    6.636727] Hardware name: Allwinner suniv Family
+[    6.642216] [&lt;c010d604&gt;] (unwind_backtrace) from [&lt;c010ab60&gt;] (show_stack+0x10/0x14)
+[    6.651031] [&lt;c010ab60&gt;] (show_stack) from [&lt;c01165a4&gt;] (panic+0xe8/0x2e4)
+[    6.658951] [&lt;c01165a4&gt;] (panic) from [&lt;c071d080&gt;] (kernel_init+0xd8/0x110)
+[    6.666960] [&lt;c071d080&gt;] (kernel_init) from [&lt;c0100140&gt;] (ret_from_fork+0x14/0x34)
+[    6.675547] Exception stack(0xc1835fb0 to 0xc1835ff8)
+[    6.681293] 5fa0:                                     00000000 00000000 00000000 00000000
+[    6.690714] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[    6.700102] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[    6.707633] Rebooting in 5 seconds..
+[   12.687513] Reboot failed -- System halted<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>内核移植就基本结束了，要想让小板真正的运行起来，还需要Linux的文件系统，那开始吧。</p>
+<h2 id="3-文件系统移植-buildroot"><a href="#3-文件系统移植-buildroot" class="headerlink" title="3.文件系统移植-buildroot"></a>3.<a href="https://www.cnblogs.com/twzy/p/15355842.html#2.%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%A7%BB%E6%A4%8D">文件系统移植</a>-buildroot</h2><p> 根文件系统(rootfs)是内核启动后挂载的第一个文件系统，如果没有根文件系统，内核将无法开启shell以及其他进程。</p>
+<blockquote>
+<p>实际上内核启动后会先挂载一个虚拟的文件系统，这个虚拟文件系统是在内存中运行的，其主要运行核心进程，虚拟文件系统挂载之后才挂载硬盘（TF卡或者emmc）上的根文件系统。</p>
+</blockquote>
+<p>制作文件系统也有很多方式，如通过busyBox、Buildroot等工具制作。</p>
+<p>本次使用Buildroot，制作过程相对简单，兼容性好，由于根文件系统制作比较简单。</p>
+<p>进入buildroot官网<a href="https://buildroot.org/downloads">https://buildroot.org/downloads</a></p>
+<p>这里选择buildroot2018.2.11版本，将下载好软件包传入Ubuntu系统中，然后解压并进入源码目录中，输入清理命令。主要用于初始化一些设置，命令如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">make clean<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>然后输入以下命令进入配置界面</p>
+<pre class="line-numbers language-none"><code class="language-none">make menuconfig<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>此时会终端进入图形配置界面，如图：</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009144509521-972063330.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009144509521-972063330.png" alt="img"></a></p>
+<h3 id="3-1-Target-options配置"><a href="#3-1-Target-options配置" class="headerlink" title="3.1 Target options配置#"></a><strong>3.1 Target options配置</strong><a href="https://www.cnblogs.com/twzy/p/15355842.html#2.1-target-options%E9%85%8D%E7%BD%AE">#</a></h3><p>先选择<strong>Target options</strong>选项，进行对应芯片soc相关的配置，如图：</p>
+<p> <a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009144541062-504084831.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009144541062-504084831.png" alt="img"></a></p>
+<p>配置如图所示，下面是对其的解释</p>
+<ul>
+<li>第一个选项为架构选择，这里选择ARM架构小端模式，</li>
+<li>第二个为输出的二进制文件格式，这里选择EFL格式，</li>
+<li>第三个为架构体系，这里选择arm926t，因为F1C200S/F1C100S的架构就是这个架构，</li>
+<li>第四个为矢量浮点处理器，这里不勾选，因为对于F1C200S/F1C100S而言，其内部没有浮点运算单元，只能进行软浮点运算，也就是模拟浮点预运算。</li>
+<li>第五个为应用程序二进制接口，这里选择EABI，原因是该格式支持软件浮点和硬件实现浮点功能混用。</li>
+<li>第六个为浮点运算规则，这里使用软件浮点</li>
+<li>第七个选择指令集，这里选择ARM指令集，因为thumb主要针对Cortex M系列而言的，对于运行操作系统的A系列以及ARM9和ARM11而言，使用的都是32位的ARM指令集。</li>
+</ul>
+<p>按【Tab键】选择**<save>**进行保存，按【Esc键】回到上一级配置界面。</save></p>
+<h3 id="3-2-Build-options配置"><a href="#3-2-Build-options配置" class="headerlink" title="3.2 Build options配置#"></a><strong>3.2 Build options配置</strong><a href="https://www.cnblogs.com/twzy/p/15355842.html#2.2-build-options%E9%85%8D%E7%BD%AE">#</a></h3><p>进入第二个<strong>Build options</strong>选项，配置如图</p>
+<p> <a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009150105319-120500590.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009150105319-120500590.png" alt="img"></a></p>
+<p>按T【ab键】选择**<save>**进行保存，按【Esc键】回到上一级配置界面。</save></p>
+<h3 id="3-3-Toolchain配置"><a href="#3-3-Toolchain配置" class="headerlink" title="3.3 Toolchain配置#"></a><strong>3.3 Toolchain配置</strong><a href="https://www.cnblogs.com/twzy/p/15355842.html#2.3-toolchain%E9%85%8D%E7%BD%AE">#</a></h3><p>进入第三个<strong>Toolchain</strong>选项，配置如图：</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009150540766-1755147867.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009150540766-1755147867.png" alt="img"></a></p>
+<p>这里我们选择一些C\C++相关的库，这样我们就可以在开发板上直接编译程序了，保存返回。</p>
+<h3 id="3-4-System-configuration配置-https-www-cnblogs-com-twzy-p-15355842-html-2-4-system-configuration配置"><a href="#3-4-System-configuration配置-https-www-cnblogs-com-twzy-p-15355842-html-2-4-system-configuration配置" class="headerlink" title="3.4 System configuration配置[#](https://www.cnblogs.com/twzy/p/15355842.html#2.4 system-configuration配置)"></a><strong>3.4 System configuration配置</strong>[#](<a href="https://www.cnblogs.com/twzy/p/15355842.html#2.4">https://www.cnblogs.com/twzy/p/15355842.html#2.4</a> system-configuration配置)</h3><p>对于<strong>System configuration</strong>选项，这里主要是配置一些系统登录时候显示的内容，配置如图</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009151624384-1186247221.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009151624384-1186247221.png" alt="img"></a></p>
+<p>这里主要配置了登录时候显示的内容和root账号登录密码，接下来保存配置并且退回到命令行界面。</p>
+<p>然后执行构建文件系统命令：</p>
+<pre class="line-numbers language-none"><code class="language-none">make<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>因为是首次编译，而且buildroot在制作文件系统的时候需要联网获取组件，所以会编译很久，那么“去和妲己玩耍吧”</p>
+<p>当你终于被别人坑的自闭的时候，文件系统大概也许可能已经编译完毕了。</p>
+<h3 id="3-5-文件系统移植与执行"><a href="#3-5-文件系统移植与执行" class="headerlink" title="3.5 文件系统移植与执行#"></a>3.5 文件系统移植与执行<a href="https://www.cnblogs.com/twzy/p/15355842.html#2.5-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%A7%BB%E6%A4%8D%E4%B8%8E%E6%89%A7%E8%A1%8C">#</a></h3><p>此时在源码的<strong>output/images</strong>目录下有一个rootfs.tar，这个文件就是最终生成的根文件系统镜像，现在只需要将该镜像解压到TF卡的第二分区即可。插入TF卡到电脑端，进入<strong>out/images</strong>目录，然后输入</p>
+<pre class="line-numbers language-none"><code class="language-none"># sudo tar -xvf rootfs.tar -C /media/&lt;你的用户名&gt;/rootfs/
+# 墨云的账号是twzy
+sudo tar -xvf rootfs.tar -C /media/twzy/rootfs/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>此时可以看到TF卡的rootfs分区中有文件系统了</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009172303012-746246639.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009172303012-746246639.png" alt="img"></a></p>
+<p>插入开发板，连接好串口，打开串口助手或者其他串口终端软件，可以看到根文件系统成功挂载，同时进入shell交互，用户名默认为root，密码：123456，进入root账号后</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009172655126-653041256.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009172655126-653041256.png" alt="img"></a></p>
+<p>那么恭喜，你已经拥有了自己的Linux发行版。</p>
+<p>至此我们完成了全部的系统移植任务，从下一篇开始我们将会升级我们的硬件设备和做一些更加有意义的东西，期待吗？</p>
+<h3 id="3-6-升级逼格-https-www-cnblogs-com-twzy-p-15355842-html-2-6-升级逼格"><a href="#3-6-升级逼格-https-www-cnblogs-com-twzy-p-15355842-html-2-6-升级逼格" class="headerlink" title="3.6 升级逼格[#](https://www.cnblogs.com/twzy/p/15355842.html#2.6 升级逼格)"></a>3.6 升级逼格[#](<a href="https://www.cnblogs.com/twzy/p/15355842.html#2.6">https://www.cnblogs.com/twzy/p/15355842.html#2.6</a> 升级逼格)</h3><p>我们发现登录进自制的Linux系统后，命令行前置无论怎样只显示一个**#**号，逼格略低呀，怎么处理呢？</p>
+<p>修改/etc/profile文件</p>
+<pre class="line-numbers language-none"><code class="language-none">vi /etc/profile<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>写入</p>
+<pre class="line-numbers language-none"><code class="language-none">export PS1='[\u@\h: \w\a\]$'<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009172755348-361576513.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009172755348-361576513.png" alt="img"></a></p>
+<p>重启小板，就可以看到与与常规Linux一样的操作体验了，只是root账号的时候还是显示 <strong>$</strong> 符号</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009173048942-1924983487.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009173048942-1924983487.png" alt="img"></a></p>
+<p>需要注意的是，在开发板运行过程中，如果想要重启，请先执行</p>
+<pre class="line-numbers language-none"><code class="language-none">poweroff<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>命令正常关闭系统后，在按重启按钮，否则有很大概率回造成文件系统损坏。</p>
+<h2 id="4-Debian文件系统制作-以及WIFI配置、交换分区配置"><a href="#4-Debian文件系统制作-以及WIFI配置、交换分区配置" class="headerlink" title="4. Debian文件系统制作,以及WIFI配置、交换分区配置"></a>4. <a href="https://www.cnblogs.com/twzy/p/15160824.html">Debian文件系统制作,以及WIFI配置、交换分区配置</a></h2><p>该片文章将完整记录一个Debian的最小文件系统的生成，以及自定义配置WIFI组件、网络组件和交换分区配置</p>
+<blockquote>
+<p>本文章参考：<br><a href="https://whycan.com/t_4236.html">https://whycan.com/t_4236.html</a><br><a href="http://www.leux.cn/doc/debootstrap.html%EF%BC%88%E8%AF%A5%E7%BD%91%E7%AB%99%E5%9C%A8%E5%A4%87%E6%A1%88%E4%B8%AD%EF%BC%8C%E5%8F%AF%E8%83%BD%E6%9A%82%E6%97%B6%E6%97%A0%E6%B3%95%E6%9F%A5%E7%9C%8B%E4%BA%86%EF%BC%89">http://www.leux.cn/doc/debootstrap.html（该网站在备案中，可能暂时无法查看了）</a><br>帖子整理完成。</p>
+</blockquote>
+<p>构建debian文件系统，作为记录，最小rootfs在180MB左右。</p>
+<h3 id="4-1-配置构建环境"><a href="#4-1-配置构建环境" class="headerlink" title="4.1 配置构建环境#"></a>4.1 配置构建环境<a href="https://www.cnblogs.com/twzy/p/15160824.html#1.1-%E9%85%8D%E7%BD%AE%E6%9E%84%E5%BB%BA%E7%8E%AF%E5%A2%83">#</a></h3><p>安装构建文件系统的工具，一个是用来chroot，一个是用来构建文件系统</p>
+<pre class="line-numbers language-none"><code class="language-none">sudo apt install qemu-user-static -y
+sudo apt install debootstrap -y
+mkdir rootfs<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>构建文件系统之前，你要知道你想要构建哪个版本的文件系统，我从 <a href="https://www.debian.org/mirror/list.zh-cn.html%E8%BF%99%E9%87%8C%EF%BC%8C">https://www.debian.org/mirror/list.zh-cn.html</a> 这里，选择了我访问速度快的源，并且该源有armel。</p>
+<p><code>armhf (支持硬件浮点)</code><br><code>armel (软浮点)</code></p>
+<p>我看华为源挺快的，就用这个了mirrors.huaweicloud.com，然后就是debian的版本，我尝试一下最新的，buster</p>
+<pre class="line-numbers language-none"><code class="language-none">sudo debootstrap --foreign --arch=armel --verbose \
+    trixie \
+    rootfs-debian13 \
+    http://mirrors.aliyun.com/debian/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>构建完成之后，需要chroot进去修改密码等配置</p>
+<pre class="line-numbers language-none"><code class="language-none">cd rootfs-debian13
+sudo mount --bind /dev dev/
+sudo mount --bind /sys sys/
+sudo mount --bind /proc proc/
+sudo mount --bind /dev/pts dev/pts/
+cd ..
+sudo cp /usr/bin/qemu-arm-static rootfs-debian13/usr/bin/
+sudo chmod +x rootfs-debian13/usr/bin/qemu-arm-static
+sudo LC_ALL=C LANGUAGE=C LANG=C chroot rootfs-debian13 /debootstrap/debootstrap --second-stage --verbose
+sudo LC_ALL=C LANGUAGE=C LANG=C chroot rootfs-debian13<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>最后一条命令chroot完成，<br>此时可以先apt-get等给你的文件系统安装你需要的软件包</p>
+<p>为了提高下载速度，我们首先修改源</p>
+<pre class="line-numbers language-none"><code class="language-none">vi /etc/apt/sources.list<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>改为(注意要换其他源用http方式可以访问的，要不然还得处理https的内容):</p>
+<pre class="line-numbers language-none"><code class="language-none">deb http://mirrors.huaweicloud.com/debian buster main<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>改完以后执行：</p>
+<pre class="line-numbers language-none"><code class="language-none">apt-get update<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>使源生效</p>
+<p>安装网络相关的库</p>
+<pre class="line-numbers language-none"><code class="language-none">apt-get install wpasupplicant #安装WIFI配置相关的组件
+apt-get install net-tools     #安装网络基础组件、如使用ifconfig等
+apt-get install udhcpc        #当wifi连接成功后，需要用这个组件去获取IP地址
+
+## 其他组件
+apt install gpiod i2c-tools lrzsz net-tools usbutils ssh wireless-tools sudo vim openssh-server htop pciutils usbutils acpid -y<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-2-配置账号"><a href="#4-2-配置账号" class="headerlink" title="4.2 配置账号#"></a>4.2 配置账号<a href="https://www.cnblogs.com/twzy/p/15160824.html#1.2-%E9%85%8D%E7%BD%AE%E8%B4%A6%E5%8F%B7">#</a></h3><p>修改root登录密码的方式如下</p>
+<pre class="line-numbers language-none"><code class="language-none">passwd root<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>添加用户</p>
+<pre class="line-numbers language-none"><code class="language-none">groupadd &lt;用户组&gt;
+useradd -m -g &lt;用户组&gt; -s /bin/bash &lt;用户名&gt;
+passwd &lt;用户名&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-3-新增账号sudo配置"><a href="#4-3-新增账号sudo配置" class="headerlink" title="4.3 新增账号sudo配置#"></a>4.3 新增账号sudo配置<a href="https://www.cnblogs.com/twzy/p/15160824.html#1.3-%E6%96%B0%E5%A2%9E%E8%B4%A6%E5%8F%B7sudo%E9%85%8D%E7%BD%AE">#</a></h3><p>对于出现</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;用户名&gt; is not in the sudoers file.  This incident will be reported.<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>切换到超级用户：</p>
+<pre class="line-numbers language-none"><code class="language-none">$ su<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>打开<code>/etc/sudoers</code>文件：</p>
+<pre class="line-numbers language-none"><code class="language-none"># vi /etc/sudoers<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>修改文件内容<br><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211018174205921-1211442453.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211018174205921-1211442453.png" alt="img"></a></p>
+<p>保存退出</p>
+<p>修改主机名，否则将会以当前编译的系统的主机名进行设置(如：笔者为Ubuntu，相当的尴尬)</p>
+<pre class="line-numbers language-none"><code class="language-none">HOSTNAME=&lt;你的主机名&gt;
+echo $HOSTNAME &gt; /etc/hostname
+echo $HOSTNAME &gt; /proc/sys/kernel/hostname
+sed -i '/localhost/s/$/\t'"$HOSTNAME"'/g' /etc/hosts
+
+
+
+# 设置主机名
+HOSTNAME=NanoLinux
+echo $HOSTNAME &gt; /etc/hostname
+echo $HOSTNAME &gt; /proc/sys/kernel/hostname
+
+# 更新hosts文件
+sed -i '/127.0.0.1\s*localhost/s/$/\t'"$HOSTNAME"'/g' /etc/hosts
+sed -i '/::1\s*localhost/s/$/\t'"$HOSTNAME"'/g' /etc/hosts
+
+# 或者更安全的方法，直接编辑hosts文件
+cat &gt; /etc/hosts &lt;&lt; 'EOF'
+127.0.0.1   localhost NanoLinux
+::1         localhost NanoLinux ip6-localhost ip6-loopback
+
+# 如果需要，可以添加其他网络配置
+# 192.168.1.100  NanoLinux
+EOF<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-4-配置时区"><a href="#4-4-配置时区" class="headerlink" title="4.4 配置时区#"></a>4.4 配置时区<a href="https://www.cnblogs.com/twzy/p/15160824.html#1.4-%E9%85%8D%E7%BD%AE%E6%97%B6%E5%8C%BA">#</a></h3><p>修改系统默认时区</p>
+<pre class="line-numbers language-none"><code class="language-none">cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="4-5-配置SSH"><a href="#4-5-配置SSH" class="headerlink" title="4.5 配置SSH#"></a>4.5 配置SSH<a href="https://www.cnblogs.com/twzy/p/15160824.html#1.5-%E9%85%8D%E7%BD%AEssh">#</a></h3><p>如果要使用SSH服务，并且允许SSH客户端以root方式登录需要进行一下设置。</p>
+<pre class="line-numbers language-none"><code class="language-none">nano /etc/ssh/sshd_config<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>添加</p>
+<pre class="line-numbers language-none"><code class="language-none">PermitRootLogin yes<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="4-6-其他配置"><a href="#4-6-其他配置" class="headerlink" title="4.6 其他配置"></a>4.6 其他配置</h3><h4 id="4-6-1-增加开机自启脚本"><a href="#4-6-1-增加开机自启脚本" class="headerlink" title="4.6.1 增加开机自启脚本"></a>4.6.1 增加开机自启脚本</h4><p>文件系统中的<code>/etc/init.d</code>负责linux的服务的开启和关闭等，为了能使系统开机自动运行一些脚本和命令，这里介绍如何新添加一个自启动项。</p>
+<p>首先我们创建一个文件<code>/etc/init.d/runOnBoot</code>，内容如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">#!/bin/sh /etc/init.d/runOnBoot
+### BEGIN INIT INFO
+# Provides: runOnBoot Required-Start: $local_fs $syslog $network
+# Required-Stop: $local_fs $syslog $network Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6 Short-Description: runOnBoot startup Description:
+# runOnBoot auto startup 1.0
+### END INIT INFO
+
+#------------------------------------------------------------------------------
+swapon /opt/images/swap
+
+mkdir /sys/kernel/config/usb_gadget/gg
+cd /sys/kernel/config/usb_gadget/gg
+echo "0x0502" &gt; idVendor
+echo "0x3235" &gt; idProduct
+mkdir functions/rndis.rn0
+mkdir configs/c1.1
+ln -s functions/rndis.rn0 configs/c1.1/
+echo "musb-hdrc.1.auto" &gt; UDC
+ifconfig usb0 192.168.137.2
+ifconfig usb0 up
+route add default gw 192.168.137.1
+
+
+# Demo to run a script ↓
+# script_path=/home/start.sh
+# if [ ! -r ${script_path} ]; then
+#     echo ${script_path} not existing;
+# fi
+# . ${myStart_spaddr}
+
+#------------------------------------------------------------------------------<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>给文件添加可执行权限：</p>
+<pre class="line-numbers language-none"><code class="language-none">chmod +x /etc/init.d/runOnBoot<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>最后要添加软链接：</p>
+<pre class="line-numbers language-none"><code class="language-none">ln -s /etc/init.d/runOnBoot /etc/rc2.d/S99runOnBoot<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<blockquote>
+<p><code>/etc/rc.d/rc0.d/</code>～<code>/etc/rc.d/rc6.d/</code>文件夹的含义不同，S开头代表是开启时处理的脚本，按照后面紧跟的数字进行按顺序启动，S99则是最后进行启动。</p>
+</blockquote>
+<p>重启即可看到命令和脚本自动执行了。</p>
+<h4 id="4-6-2-解决root-fs分区开机后被挂载为Read-Only的问题"><a href="#4-6-2-解决root-fs分区开机后被挂载为Read-Only的问题" class="headerlink" title="4.6.2 解决root-fs分区开机后被挂载为Read-Only的问题"></a>4.6.2 解决root-fs分区开机后被挂载为<em>Read-Only</em>的问题</h4><p>新配置的文件系统需要添加fstab进行对应分区的自动挂载，修改<code>/etc/fstab</code>文件：</p>
+<pre class="line-numbers language-none"><code class="language-none"># &lt;file system&gt;	&lt;mount pt&gt;	&lt;type&gt;	&lt;options&gt;	&lt;dump&gt;	&lt;pass&gt;
+/dev/root	/		ext2	rw,noauto	0	1
+proc		/proc		proc	defaults	0	0
+devpts		/dev/pts	devpts	defaults,gid=5,mode=620,ptmxmode=0666	0	0
+tmpfs		/dev/shm	tmpfs	mode=0777	0	0
+tmpfs		/tmp		tmpfs	mode=1777	0	0
+tmpfs		/run		tmpfs	mode=0755,nosuid,nodev	0	0
+sysfs		/sys		sysfs	defaults	0	0
+/opt/images/swap swap swap defaults 0 0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="4-6-3-添加USB-OTG-Gadget-RNDIS功能"><a href="#4-6-3-添加USB-OTG-Gadget-RNDIS功能" class="headerlink" title="4.6.3 添加USB-OTG &amp; Gadget-RNDIS功能"></a>4.6.3 添加USB-OTG &amp; Gadget-RNDIS功能</h4><blockquote>
+<p><strong>参考资料：</strong></p>
+<ul>
+<li><a href="https://whycan.com/t_6242.html">全志平台上通过configfs(libcomposite)配置RNDIS Gadget(u_ether)及Windows下的驱动</a></li>
+<li><a href="https://linux-sunxi.org/USB_Gadget/Ethernet#Mainline_kernel_.28via_configfs.29">USB Gadget/Ethernet - linux-sunxi.org</a></li>
+<li><a href="https://www.lotlab.org/2018/07/29/record-of-using-licheepi-part-2-using-linux-gadget/">LicheePi入坑记录2——使用 Linux Gadget 复合设备共享网络与虚拟串口 – LotLab</a></li>
+</ul>
+</blockquote>
+<p><strong>USB Gadget</strong>（小饰品），就是指所开发的电子设备以USB-device的模式通过USB连接到主机，比如手机用USB线插入PC后，手机就是USB Gadget。</p>
+<p>在本开发板中，可以利用USB Gadget把USB模拟成虚拟网卡、虚拟串口、MTP设备等等非常方便，下面介绍具体的配置方法。</p>
+<p><strong>RNDIS功能开发方法：</strong></p>
+<p>首先需要在内核中开启了相关选项：</p>
+<pre class="line-numbers language-none"><code class="language-none">Device Drivers  ---&gt;
+       [*] USB support  ---&gt;
+       &lt;M&gt; Inventra Highspeed Dual Role Controller (TI, ADI, AW, ...)
+               MUSB Mode Selection (Dual Role mode)  ---&gt;
+               *** Platform Glue Layer ***
+           &lt;M&gt; Allwinner (sunxi)
+               *** MUSB DMA mode ***
+           [*] Disable DMA (always use PIO)
+       USB Physical Layer drivers  ---&gt;
+           &lt;M&gt; NOP USB Transceiver Driver
+       &lt;M&gt;   USB Gadget Support  ---&gt;
+           &lt;M&gt;   USB Gadget functions configurable through configfs
+           [*]     RNDIS<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>然后在文件系统中添加一些配置文件：</p>
+<pre class="line-numbers language-none"><code class="language-none">cd /sys/kernel/config/usb_gadget
+mkdir gg
+cd gg/
+echo "0x0502" &gt; idVendor
+echo "0x3235" &gt; idProduct
+mkdir functions/rndis.rn0
+mkdir configs/c1.1
+ln -s functions/rndis.rn0 configs/c1.1/
+echo "musb-hdrc.1.auto" &gt; UDC<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>启用usb0网卡并设置一个ip地址：</p>
+<pre class="line-numbers language-none"><code class="language-none">ifconfig usb0 192.168.137.2
+ifconfig usb0 up<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<blockquote>
+<p>这里使用137网段的原因是希望后面通过Windows的网络共享功能让板卡通过USB连上互联网，而Windows的共享网段固定是<code>192.168.137.1</code> 。</p>
+</blockquote>
+<p>在Windows端安装驱动，手动选择网络适配器，然后添加下面的驱动：</p>
+<p><a href="https://camo.githubusercontent.com/aeed230791de077ccfffea18231ebb213b8635108d9a4d3649da6b283a0887de/68747470733a2f2f70656e677a68696875692d6d61726b646f776e2e6f73732d636e2d7368616e676861692e616c6979756e63732e636f6d2f696d672f32303232303430333139323231302e706e67"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/68747470733a2f2f70656e677a68696875692d6d61726b646f776e2e6f73732d636e2d7368616e676861692e616c6979756e63732e636f6d2f696d672f32303232303430333139323231302e706e67" alt="image-20220403192210458"></a></p>
+<p>之后会在网络适配器中发现新的网卡设备，配置固定ip如下：</p>
+<p><a href="https://camo.githubusercontent.com/68baa5622b7bdde7696220bfd3728bf1acbefba8db09b10820fb4003aa080cc4/68747470733a2f2f70656e677a68696875692d6d61726b646f776e2e6f73732d636e2d7368616e676861692e616c6979756e63732e636f6d2f696d672f32303232303430333139323333352e706e67"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/68747470733a2f2f70656e677a68696875692d6d61726b646f776e2e6f73732d636e2d7368616e676861692e616c6979756e63732e636f6d2f696d672f32303232303430333139323333352e706e67" alt="image-20220403192335548"></a></p>
+<p>此时通过ping命令应该可以相互ping通了，但是在板卡上可能还是无法连接互联网，需要配置一下默认网关和DNS服务器：</p>
+<pre class="line-numbers language-none"><code class="language-none">route add default gw 192.168.137.1
+#但是这样重启以后就不能用了，需要添加到自启脚本中<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>DNS记录在<code>/etc/resolv.conf</code>这个文件里，可以按<code>resolv.conf</code>文件的格式修改DNS。</p>
+<pre class="line-numbers language-none"><code class="language-none">nano /etc/resolv.conf
+
+修改为：
+nameserver 8.8.8.8<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>如果可以ping通<a href="http://www.baidu.com就说明配置完成了./">www.baidu.com就说明配置完成了。</a></p>
+<h4 id="4-6-4-启用swap"><a href="#4-6-4-启用swap" class="headerlink" title="4.6.4 启用swap"></a>4.6.4 启用swap</h4><p>芯片的SiP内存只有64MB，大部分情况下都不够用，所以需要开启swap使用内存卡的一部分空间来作为交换内存。</p>
+<p>通过free -m来查看下内存使用状况：</p>
+<pre class="line-numbers language-none"><code class="language-none"># free -m
+              total        used        free      shared  buff/cache   available
+Mem:             54          15           6           0          31          34
+Swap:             0           0           0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>创建一个自定义的目录<code>/opt/images/</code>：</p>
+<pre class="line-numbers language-none"><code class="language-none">mkdir /opt/images/
+rm -rf /opt/images/swap<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>创建一个需要内存大小的文件，如512M：</p>
+<pre class="line-numbers language-none"><code class="language-none"># dd if=/dev/zero of=/opt/images/swap bs=1024 count=512000
+2048000+0 records in
+2048000+0 records out
+2097152000 bytes (2.1 GB, 2.0 GiB) copied, 30.3635 s, 69.1 MB/s<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>把创建的文件变成SWAP分区并启用：</p>
+<pre class="line-numbers language-none"><code class="language-none">mkswap /opt/images/swap
+swapon /opt/images/swap<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><code>free -m</code>看看SWAP是否生效，ok的话设置开机自动挂载swap：</p>
+<pre class="line-numbers language-none"><code class="language-none">nano /etc/fstab
+
+添加一行：
+/opt/images/swap swap swap defaults 0 0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>进入文件系统并添加压缩包打包相关文件：</p>
+<pre class="line-numbers language-none"><code class="language-none">cd rootfs-debian
+tar cvf ../rootfs-debian.tar . <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>生成的<code>rootfs-debian.tar</code>任意解压到SD卡的文件系统分区即可。</p>
+<p>或者直接插上SD卡拷贝所有文件（需要在VMware宿主机打开终端操作），在挂载的SD卡root-fs磁盘打开终端，输入：</p>
+<pre class="line-numbers language-none"><code class="language-none">sudo cp -Rf path/to/rootfs-debian/* ./<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>然后插上板卡即可启动。</p>
+<p>后续配置，在超级用户权限下执行如下两个命令：</p>
+<pre class="line-numbers language-none"><code class="language-none">chown root:root /usr/bin/sudo
+chmod 4755 /usr/bin/sudo
+
+nano /etc/hosts 
+在localhost后面添加一个自己的用户名如pi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-7-rootfs打包"><a href="#4-7-rootfs打包" class="headerlink" title="4.7 rootfs打包#"></a>4.7 rootfs打包<a href="https://www.cnblogs.com/twzy/p/15160824.html#1.6-rootfs%E6%89%93%E5%8C%85">#</a></h3><p>当所有的内容制作完成，就可以清理缓存，打包之后就可以替换你的文件系统了</p>
+<pre class="line-numbers language-none"><code class="language-none">apt clean #删除安装包 
+exit  #退出chroot
+rm rootfs-debian13/usr/bin/qemu-arm-static<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>卸载刚在挂载的文件夹。</p>
+<pre class="line-numbers language-none"><code class="language-none">cd rootfs-debian13
+sudo umount   dev/pts/
+sudo umount   dev/
+sudo umount   sys/
+sudo umount   proc/
+sudo umount   dev/pts/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>打包文件。</p>
+<pre class="line-numbers language-none"><code class="language-none"># cd rootfs-debian13  #进到文件系统目录,如果已经在该文件夹下，可以忽略
+tar cvf ../rootfs-debian13.tar .    #要注意那个.  代表当前目录<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>生成的rootfs-debian13.tar任意解压到文件系统即可</p>
+<h3 id="4-8-使用wpa-supplicant连接wifi"><a href="#4-8-使用wpa-supplicant连接wifi" class="headerlink" title="4.8. 使用wpa_supplicant连接wifi#"></a>4.8. 使用wpa_supplicant连接wifi<a href="https://www.cnblogs.com/twzy/p/15160824.html#2-%E4%BD%BF%E7%94%A8wpa-supplicant%E8%BF%9E%E6%8E%A5wifi">#</a></h3><p>创建配置文件</p>
+<pre class="line-numbers language-none"><code class="language-none">vi /etc/wpa_supplicant.conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>输入内容：</p>
+<pre class="line-numbers language-none"><code class="language-none">network={
+  ssid="我的热点"
+  psk="我的密码"
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>然后执行命令</p>
+<pre class="line-numbers language-none"><code class="language-none">wpa_supplicant -B -d -i wlan0 -c /etc/wpa_supplicant.conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p> 示例如下</p>
+<pre class="line-numbers language-none"><code class="language-none">root@dika-pc:~# wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant.conf
+Successfully initialized wpa_supplicant
+rfkill: Cannot open RFKILL control device
+root@dika-pc:~# [  444.817608] wlan0: authenticate with e4:67:1e:02:33:c0
+[  444.843208] wlan0: send auth to e4:67:1e:02:33:c0 (try 1/3)
+[  444.900867] wlan0: authenticated
+[  444.935561] wlan0: associate with e4:67:1e:02:33:c0 (try 1/3)
+[  444.986874] wlan0: RX AssocResp from e4:67:1e:02:33:c0 (capab=0x411 status=0 aid=4)
+[  445.033483] wlan0: associated
+[  446.047125] IPv6: ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
+^C<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>执行dhcp命名，获取IP地址</p>
+<pre class="line-numbers language-none"><code class="language-none">root@dika-pc:~# udhcpc -i wlan0
+udhcpc: started, v1.30.1
+udhcpc: sending discover
+udhcpc: sending select for 172.16.1.106
+udhcpc: lease of 172.16.1.106 obtained, lease time 43200
+root@dika-pc:~# ping www.dika.ren
+PING www.dika.ren (149.129.80.46) 56(84) bytes of data.
+64 bytes from 149.129.80.46: icmp_seq=3 ttl=45 time=217 ms
+64 bytes from 149.129.80.46: icmp_seq=4 ttl=45 time=417 ms
+64 bytes from 149.129.80.46: icmp_seq=5 ttl=45 time=102 ms
+64 bytes from 149.129.80.46: icmp_seq=6 ttl=45 time=108 ms
+^C
+--- www.dika.ren ping statistics ---
+6 packets transmitted, 4 received, 33.3333% packet loss, time 346ms
+rtt min/avg/max/mdev = 102.009/211.020/417.367/127.586 ms<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-9-增加swap分区"><a href="#4-9-增加swap分区" class="headerlink" title="4.9 增加swap分区#"></a>4.9 增加swap分区<a href="https://www.cnblogs.com/twzy/p/15160824.html#3-%E5%A2%9E%E5%8A%A0swap%E5%88%86%E5%8C%BA">#</a></h3><p>在使用一些软件的过程中，会遇到系统崩溃，尤其是使用 apt-get install 的时候，所以需要加入swap分区，可以简单理解为虚拟内存。</p>
+<p>使用</p>
+<pre class="line-numbers language-none"><code class="language-none">free<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>查看当前swap大小，<br>使用如下命令创建你想要添加swap分区的大小</p>
+<pre class="line-numbers language-none"><code class="language-none">dd if=/dev/zero of=/swap1 bs=1M count=512  #改成你要设置的SWAP大小，512就是512MB<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>设置swap分区文件</p>
+<pre class="line-numbers language-none"><code class="language-none">mkswap /swap1<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>激活swap分区</p>
+<pre class="line-numbers language-none"><code class="language-none">swapon /swap1<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>此时使用free命令就能看到创建好的swap分区，但这只是临时性的， 重启会失效，需要配置一下，下次开机时候要开swap</p>
+<pre class="line-numbers language-none"><code class="language-none">vi /etc/fstab<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>操作，在最后一行添加 </p>
+<pre class="line-numbers language-none"><code class="language-none">/swap1 swap swap defaults 0 0<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h2 id="5-planck-pi操作"><a href="#5-planck-pi操作" class="headerlink" title="5. planck-pi操作"></a>5. planck-pi操作</h2><p>通过串口连接pc进行操作</p>
+<h3 id="5-1-修改主机名"><a href="#5-1-修改主机名" class="headerlink" title="5.1 修改主机名"></a>5.1 修改主机名</h3><pre class="line-numbers language-none"><code class="language-none">HOSTNAME=lycraftpi			#lycraftpi可以换成别的名字
+echo $HOSTNAME &gt; /etc/hostname
+echo $HOSTNAME &gt; /proc/sys/kernel/hostname
+sed -i '/localhost/s/$/\t'"$HOSTNAME"'/g' /etc/hosts
+# 查看Debian版本号
+cat /etc/os-release<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="5-2-配置永久静态ip"><a href="#5-2-配置永久静态ip" class="headerlink" title="5.2 配置永久静态ip"></a>5.2 配置永久静态ip</h3><pre class="line-numbers language-none"><code class="language-none">vim /etc/network/interfaces
+
+# 添加以下内容
+allow-hotplug usb0
+auto usb0
+iface usb0 inet static
+address 192.168.2.100
+netmask 255.255.255.0
+gateway 192.168.2.1
+
+# 启用网卡
+ifup usb0
+
+# 开机自启
+vim /etc/init.d/rcS
+
+# 添加以下内容
+ifup lo
+ifup usb0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>配置DNS</p>
+<pre class="line-numbers language-none"><code class="language-none">vim /etc/resolv.conf
+# 在nameserver下添加
+nameserver 223.5.5.5		#阿里的DNS<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h2 id="6-PC上的操作"><a href="#6-PC上的操作" class="headerlink" title="6. PC上的操作"></a>6. PC上的操作</h2><h3 id="6-1-linux虚拟机ssh连接pi"><a href="#6-1-linux虚拟机ssh连接pi" class="headerlink" title="6.1 linux虚拟机ssh连接pi"></a>6.1 linux虚拟机ssh连接pi</h3><pre class="line-numbers language-none"><code class="language-none">sudo vim /etc/network/interfaces
+
+# 添加以下内容
+allow-hotplug ens35u1
+auto ens35u1
+iface ens35u1 inet static
+address 192.168.2.1
+netmask 255.255.255.0
+
+# 重启下
+
+# 输入以下指令后planckpi就可以上网了
+echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward &gt; /dev/null
+sudo iptables -P FORWARD ACCEPT
+sudo iptables -A POSTROUTING -t nat -j MASQUERADE -s 192.168.2.0/24<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>接下来通过ssh连接到planckpi玩耍吧</p>
+<pre class="line-numbers language-none"><code class="language-none">ssh root@192.168.2.100
+
+ping www.baidu.com<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h3 id="6-2-Windows下ssh连接pi"><a href="#6-2-Windows下ssh连接pi" class="headerlink" title="6.2 Windows下ssh连接pi"></a>6.2 Windows下ssh连接pi</h3><p>~待填坑</p>
+<h1 id="3-简化命令"><a href="#3-简化命令" class="headerlink" title="3. 简化命令"></a>3. 简化命令</h1><pre class="line-numbers language-none"><code class="language-none">sudo docker pull ubuntu:latest
+sudo docker run -it --name F1C200s_env --network host \
+-p 8022:22 \
+-v /tmp/F1C200s_env/workspace:/workspace \
+--privileged \
+ubuntu:latest
+
+sed -i 's@//.*archive.ubuntu.com@//mirrors.aliyun.com@g' /etc/apt/sources.list
+sed -i 's@//.*security.ubuntu.com@//mirrors.aliyun.com@g' /etc/apt/sources.list
+
+apt update
+apt install sudo wget git unzip -y
+apt install libncurses-dev gcc gcc-arm-linux-gnueabi make bison flex bc libssl-dev python3 python3-setuptools python3-dev swig bzip2 file g++ cpio rsync -y
+
+workspace_path=/workspace
+cd ~/
+
+export ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<h2 id="3-1-uboot"><a href="#3-1-uboot" class="headerlink" title="3.1.uboot"></a>3.1.uboot</h2><pre class="line-numbers language-none"><code class="language-none">git clone --depth=1 https://github.com/u-boot/u-boot.git
+cd u-boot
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- licheepi_nano_defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- menuconfig
+#load mmc 0:1 0x80008000 zImage;load mmc 0:1 0x80c08000 suniv-f1c100s-licheepi-nano.dtb;bootz 0x80008000 - 0x80c08000;
+#console=ttyS0,115200 panic=5 rootwait root=/dev/mmcblk0p2 earlyprintk rw
+make -j $(nproc)
+cp u-boot-sunxi-with-spl.bin  ${workspace_path}/
+sudo dd if=/tmp/F1C200s_env/workspace/u-boot-sunxi-with-spl.bin of=/dev/sdb bs=1024 seek=8<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="3-2-linux"><a href="#3-2-linux" class="headerlink" title="3.2.linux"></a>3.2.linux</h2><pre class="line-numbers language-none"><code class="language-none">git clone --depth=1 https://mirrors.tuna.tsinghua.edu.cn/git/linux.git
+
+wget https://files.cnblogs.com/files/twzy/linux-licheepi_nano_defconfig.zip
+unzip linux-licheepi_nano_defconfig.zip
+cp linux-licheepi_nano_defconfig linux/arch/arm/configs/
+cd linux 
+
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- linux-licheepi_nano_defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- menuconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- -j $(nproc)
+
+cp arch/arm/boot/zImage ${workspace_path}/
+cp arch/arm/boot/dts/allwinner/suniv-f1c100s-licheepi-nano.dtb ${workspace_path}/
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="3-3-1-busybox"><a href="#3-3-1-busybox" class="headerlink" title="3.3.1 busybox"></a>3.3.1 busybox</h2><pre class="line-numbers language-none"><code class="language-none">git clone --depth=1 git://busybox.net/busybox.git
+cd busybox
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- menuconfig
+
+#Settings ----&gt;
+	Build Options      [*]Build static binary(no shared libs)
+	
+	
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- -j $(nproc)
+make install
+cd _install
+
+mkdir etc dev mnt tmp sys proc root
+
+cat &gt;etc/fstab &lt;&lt;EOF
+proc        /proc           proc        defaults        0        0
+tmpfs       /tmp            tmpfs       defaults        0        0
+sysfs       /sys            sysfs       defaults        0        0
+EOF
+
+mkdir -p etc/init.d/
+
+cat &gt;etc/init.d/rcS &lt;&lt;EOF
+echo -e "Welcome to nanoLinux"
+/bin/mount -a
+echo -e "Remounting the root filesystem"
+mount  -o  remount,rw  /
+mkdir -p /dev/pts
+mount -t devpts devpts /dev/pts
+echo /sbin/mdev &gt; /proc/sys/kernel/hotplug
+mdev -s
+EOF
+chmod 755 etc/init.d/rcS 
+
+cat &gt;etc/inittab &lt;&lt;EOF
+::sysinit:/etc/init.d/rcS
+::respawn:-/bin/sh
+::askfirst:-/bin/sh
+::ctrlaltdel:/bin/umount -a -r
+EOF
+chmod 755 etc/inittab
+
+mknod dev/console c 5 1
+mknod dev/null c 1 3
+mknod dev/tty1 c 4 1 
+
+dd if=/dev/zero of=root/swap bs=1M count=512
+mkswap root/swap
+swapon root/swap
+
+echo "/root/swap swap swap defaults 0 0" &gt;&gt; etc/fstab
+
+
+cd /home/hhhh/Downloads/Planck-Pi/buildroot/linux
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- modules_install INSTALL_MOD_PATH=${workspace_path}/
+
+tar -czvf rootfs.tar.gz *
+mv rootfs.tar.gz ${workspace_path}/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="3-3-2-buildroot"><a href="#3-3-2-buildroot" class="headerlink" title="3.3.2 buildroot"></a>3.3.2 buildroot</h2><pre class="line-numbers language-none"><code class="language-none">git clone --depth=1 https://github.com/buildroot/buildroot.git
+cd buildroot
+cat &gt;configs/nano_linux_defconfig &lt;&lt;EOF
+BR2_arm=y
+BR2_PACKAGE_GLIBC_UTILS=y
+BR2_TOOLCHAIN_BUILDROOT_CXX=y
+BR2_PACKAGE_HOST_GDB=y
+BR2_CCACHE=y
+BR2_ENABLE_LTO=y
+BR2_TARGET_GENERIC_HOSTNAME="nanoLinux"
+BR2_TARGET_GENERIC_ISSUE="Welcome to Buildroot for the NanoLinux"
+BR2_TARGET_GENERIC_GETTY_PORT="ttyS0"
+BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
+BR2_SYSTEM_ENABLE_NLS=y
+BR2_TARGET_TZ_INFO=y
+BR2_PACKAGE_BZIP2=y
+BR2_PACKAGE_ZIP=y
+BR2_PACKAGE_LIBGPIOD=y
+BR2_PACKAGE_LIBGPIOD_TOOLS=y
+BR2_PACKAGE_LIBEVENT=y
+BR2_PACKAGE_LRZSZ=y
+BR2_PACKAGE_OPENSSH=y
+BR2_PACKAGE_RSYNC=y
+BR2_PACKAGE_SUDO=y
+BR2_PACKAGE_NANO=y
+EOF
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- nano_linux_defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- -j $(nproc)
+cp output/images/rootfs.tar ${workspace_path}/
+
+
+modprobe sunxi
+modprobe configfs
+modprobe libcomposite
+modprobe u_ether
+modprobe usb_f_rndis
+mount -t configfs none /sys/kernel/config/
+
+cd /sys/kernel/config/usb_gadget
+mkdir g1
+cd g1
+echo "0x1d6b" &gt; idVendor
+echo "0x0104" &gt; idProduct
+mkdir functions/rndis.rn0
+mkdir configs/c1.1
+ln -s functions/rndis.rn0 configs/c1.1/
+echo "musb-hdrc.1.auto" &gt; UDC
+
+ifconfig usb0 up
+ifconfig usb0 192.168.137.2 netmask 255.255.255.0
+route add default gw 192.168.137.1
+mkdir /uboot
+mount /dev/mmcblk0p1 /uboot
+
+#include &lt;dt-bindings/gpio/gpio.h&gt;
+#include &lt;dt-bindings/leds/common.h&gt;
+leds {
+    compatible = "gpio-leds";
+
+    led-0 {
+        function = LED_FUNCTION_STATUS;
+        color = &lt;LED_COLOR_ID_GREEN&gt;;
+        gpios = &lt;&amp;pio 4 6 GPIO_ACTIVE_LOW&gt;; /* PE6 */
+        linux,default-trigger = "heartbeat";
+    };
+
+};<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="3-4-Debian"><a href="#3-4-Debian" class="headerlink" title="3.4 Debian"></a>3.4 Debian</h2><pre class="line-numbers language-none"><code class="language-none">apt update
+apt install debootstrap qemu-user-static 
+mkdir rootfs
+
+debootstrap --foreign --verbose --arch=armel bookworm rootfs http://mirrors.huaweicloud.com/debian/
+cd rootfs
+mount --bind /dev dev/
+mount --bind /sys sys/
+mount --bind /proc proc/
+mount --bind /dev/pts dev/pts/
+cd ..
+cp /usr/bin/qemu-arm-static rootfs/usr/bin/
+chmod +x rootfs/usr/bin/qemu-arm-static
+LC_ALL=C LANGUAGE=C LANG=C chroot rootfs /debootstrap/debootstrap --second-stage --verbose
+LC_ALL=C LANGUAGE=C LANG=C chroot rootfs
+
+apt install gpiod i2c-tools lrzsz<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="4-点个灯吧"><a href="#4-点个灯吧" class="headerlink" title="4. 点个灯吧#"></a>4. 点个灯吧<a href="https://www.cnblogs.com/twzy/p/15355842.html#3.-%E7%82%B9%E4%B8%AA%E7%81%AF%E5%90%A7">#</a></h1><p>还记得我们在第一篇中提到过的我们自制小开发板的唯一的那个外设——LED灯吗？</p>
+<p>那我们就利用Linux提供的GPIO系统通过shell命令进行点灯实验吧。</p>
+<p>我们首先需要回到文件系统制作菜单</p>
+<pre class="line-numbers language-none"><code class="language-none">Device Drivers -&gt; 
+        GPIO Support -&gt;
+                /sys/class/gpio/… (sysfs interface)。<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>按如下方式进行配置，然后编译完rootfs，重新写入小板</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009173731029-1575334130.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009173731029-1575334130.png" alt="img"></a></p>
+<p> <a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009163731073-1479927383.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009163731073-1479927383.png" alt="img"></a></p>
+<p>通过硬件可知LED灯连接的是<strong>PE6</strong>接口，低电平亮灯</p>
+<p>这里我们先要了解一下GPIO编号和值的计算方式</p>
+<blockquote>
+<p>引脚编号 = 控制引脚的寄存器基数 + 控制引脚寄存器位数<br>批注：<br>引脚编号是gpiochipxxx下的base + 第几个GPIO，也就是base加偏移，偏移的是位数。<br>例如gpiochip34 下的第1个GPIO那么编号就是34 + 1 = 35</p>
+</blockquote>
+<p>对于F1C200S/F1C100S这里：A=0、B=1、C=2D=3、E=4 ……、32是固定值、6就是偏移量</p>
+<p>举个栗子（如果使想用 PE6，那么引脚编号就可能等于 4 x 32 + 6 = 134。</p>
+<p>这是一些参考命令</p>
+<pre class="line-numbers language-none"><code class="language-none"># 1、导出
+echo 134 &gt; /sys/class/gpio/export
+# 2、设置方向
+echo out &gt; /sys/class/gpio/gpio134/direction
+# 3、查看方向
+cat /sys/class/gpio/gpio134/direction
+# 4、设置输出（对于LED 设置1 为高电平即LED灯灭，设置0 为低电平，LED灯亮）
+echo 1 &gt; /sys/class/gpio/gpio134/value
+# 5、查看输出值
+cat /sys/class/gpio/gpio134/value
+# 6、取消导出
+echo 134 &gt; /sys/class/gpio/unexport<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>输入如下命令：</p>
+<pre class="line-numbers language-none"><code class="language-none">echo 134 &gt; /sys/class/gpio/export
+echo out &gt; /sys/class/gpio/gpio134/direction # 灯亮 （默认设置为高电平）
+echo 0 &gt; /sys/class/gpio/gpio134/value        # 灯灭 
+echo 1 &gt; /sys/class/gpio/gpio134/value        # 灯亮
+
+echo 134 &gt; /sys/class/gpio/unexport<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>效果如下：</p>
+<p><a href="https://img2020.cnblogs.com/blog/483434/202110/483434-20211009173632837-1965450968.png"><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/483434-20211009173632837-1965450968.png" alt="img"></a></p>
+<p> 我们这里借助Linux内建的GPIO子系统进行了电灯实验，但是真正Linux灵魂点灯是要通过驱动方式来实现的，但是谁让我是小白呢，以后再说吧。</p>
+<h1 id="5-OLED屏"><a href="#5-OLED屏" class="headerlink" title="5. OLED屏"></a>5. OLED屏</h1><pre><code>i2cset -y 0 0x3c 0x00 0xae
+i2cset -y 0 0x3c 0x00 0x00
+i2cset -y 0 0x3c 0x00 0x10
+i2cset -y 0 0x3c 0x00 0x20
+i2cset -y 0 0x3c 0x00 0x81
+i2cset -y 0 0x3c 0x00 0x6f
+i2cset -y 0 0x3c 0x00 0xa0
+i2cset -y 0 0x3c 0x00 0xc0
+i2cset -y 0 0x3c 0x00 0xa4
+i2cset -y 0 0x3c 0x00 0xa6
+i2cset -y 0 0x3c 0x00 0xd5
+i2cset -y 0 0x3c 0x00 0x91
+i2cset -y 0 0x3c 0x00 0xd9
+i2cset -y 0 0x3c 0x00 0x22
+i2cset -y 0 0x3c 0x00 0xdb
+i2cset -y 0 0x3c 0x00 0x3f
+i2cset -y 0 0x3c 0x00 0xa8
+i2cset -y 0 0x3c 0x00 0x4f
+i2cset -y 0 0x3c 0x00 0xd3
+i2cset -y 0 0x3c 0x00 0x68
+i2cset -y 0 0x3c 0x00 0xdc
+i2cset -y 0 0x3c 0x00 0x00
+i2cset -y 0 0x3c 0x00 0xad
+i2cset -y 0 0x3c 0x00 0x8a
+i2cset -y 0 0x3c 0x00 0xaf
+i2cset -y 0 0x3c 0x00 0xaf
+</code></pre>
+<pre><code>OLED_WR_Byte(0xAE,OLED_CMD); /*display off*/
+OLED_WR_Byte(0x00,OLED_CMD); /*set lower column address*/
+OLED_WR_Byte(0x10,OLED_CMD); /*set higher column address*/
+OLED_WR_Byte(0x20,OLED_CMD); /* Set Memory addressing mode (0x20/0x21) */
+OLED_WR_Byte(0x81,OLED_CMD); /*contract control*/
+OLED_WR_Byte(0x6f,OLED_CMD); /*b0*/
+OLED_WR_Byte(0xA0,OLED_CMD); /*set segment remap*/
+OLED_WR_Byte(0xC0,OLED_CMD); /*Com scan direction*/
+OLED_WR_Byte(0xA4,OLED_CMD); /*Disable Entire Display On (0xA4/0xA5)*/
+OLED_WR_Byte(0xA6,OLED_CMD); /*normal / reverse*/
+OLED_WR_Byte(0xD5,OLED_CMD); /*set osc division*/
+OLED_WR_Byte(0x91,OLED_CMD);
+OLED_WR_Byte(0xD9,OLED_CMD); /*set pre-charge period*/
+OLED_WR_Byte(0x22,OLED_CMD);
+OLED_WR_Byte(0xdb,OLED_CMD); /*set vcomh*/
+OLED_WR_Byte(0x3f,OLED_CMD);
+OLED_WR_Byte(0xA8,OLED_CMD); /*multiplex ratio*/
+OLED_WR_Byte(0x4F,OLED_CMD); /*duty = 1/80*/
+OLED_WR_Byte(0xD3,OLED_CMD); /*set display offset*/
+OLED_WR_Byte(0x68,OLED_CMD); /*18*/
+OLED_WR_Byte(0xdc,OLED_CMD); /*Set Display Start Line*/
+OLED_WR_Byte(0x00,OLED_CMD);
+OLED_WR_Byte(0xad,OLED_CMD); /*set charge pump enable*/
+OLED_WR_Byte(0x8a,OLED_CMD); /*Set DC-DC enable (a=0:disable; a=1:enable) */
+OLED_WR_Byte(0xAF,OLED_CMD); /*display ON*/ 
+</code></pre>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://0HHHHHH0.github.io">HHHH</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://0hhhhhh0.github.io/2025/10/26/planck-pi/">https://0hhhhhh0.github.io/2025/10/26/planck-pi/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/uploads/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/10/31/annovar/" title="使用ANNOVAR进行长牡蛎SNP注释完整流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">使用ANNOVAR进行长牡蛎SNP注释完整流程</div></div><div class="info-2"><div class="info-item-1">使用ANNOVAR进行长牡蛎(Crassostrea gigas)SNP注释完整流程概述本文介绍如何使用ANNOVAR对长牡蛎(Crassostrea gigas)的SNP变异数据进行功能注释。流程包括参考基因组数据库构建、变异数据格式转换、功能注释和结果整合。 环境准备1. 软件安装# ANNOVAR下载 wget http://www.openbioinformatics.org/annovar/annovar.tar.gz tar -xzvf annovar.tar.gz  # 其他依赖工具 conda install -c bioconda ucsc-gtftogenepred  2. 数据文件准备 参考基因组GTF文件：/home/wanglab/Ywh/adductor_muscle_scar/Crassostrea_gigas.cgigas_uk_roslin_v1.61.gtf 基因组FASTA文件：GCF_902806645.1_cgigas_uk_roslin_v1_genomic.fna SNP数据：filtered_variants_thr0p7_2025...</div></div></div></a><a class="pagination-related" href="/2025/10/22/train-openspliceai/" title="训练您自己的模型——长牡蛎"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">训练您自己的模型——长牡蛎</div></div><div class="info-2"><div class="info-item-1">训练您自己的模型——长牡蛎本指南提供了一个详细、逐步的教程，用于在长牡蛎数据上训练一个 OpenSpliceAI 模型。使用物种特异性的基因组和注释文件，您可以生成训练和测试数据集，然后训练一个专为牡蛎定制的剪接位点预测模型。该流程与人类 MANE 工作流程类似，但根据需要对输入文件和参数进行了调整。 前置条件在开始之前，请确保您已经：  安装了 OpenSpliceAI：请按照安装页面的说明进行操作。 克隆了代码库：从 LiftOn OpenSpliceAI 代码库克隆 OpenSpliceAI 代码库。 下载了长牡蛎的输入文件： 参考基因组：例如，长牡蛎基因组组装可以从这里获取 GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna 注释文件：长牡蛎基因注释文件 GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff    步骤 1：检查输入文件转换基因组名字，使其与注释gff文件中名字一致： #!/bin/bash  # 变量配置 FLANKING_SIZE=400 EXPERIMENT_NAM...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E9%85%8D%E7%BD%AE%E7%BC%96%E8%AF%91%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">1. 配置编译环境</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="toc-number">1.1.</span> <span class="toc-text">1.2 交叉编译工具链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-TF%E5%8D%A1%E5%88%86%E5%8C%BA"><span class="toc-number">1.2.</span> <span class="toc-text">1.3 TF卡分区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4-TF%E5%8D%A1%E4%B8%8A%E4%BC%A0%E5%91%BD%E4%BB%A4"><span class="toc-number">1.3.</span> <span class="toc-text">1.4 TF卡上传命令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-uboot%EF%BC%8Ckernel%E5%92%8Crootfs%E7%BC%96%E8%AF%91"><span class="toc-number">2.</span> <span class="toc-text">2.uboot，kernel和rootfs编译</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-u-boot"><span class="toc-number">2.1.</span> <span class="toc-text">1.u-boot</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-linux-kernel"><span class="toc-number">2.2.</span> <span class="toc-text">2. linux kernel</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E4%B8%8B%E8%BD%BD%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81"><span class="toc-number">2.2.1.</span> <span class="toc-text">2.1. 下载内核源码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E9%85%8D%E7%BD%AE%E7%BC%96%E8%AF%91"><span class="toc-number">2.2.2.</span> <span class="toc-text">2.2.配置编译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E9%85%8D%E7%BD%AETF%E5%8D%A1%E8%AE%BE%E5%A4%87%E6%A0%91%E4%BF%A1%E6%81%AF"><span class="toc-number">2.2.3.</span> <span class="toc-text">3.3 配置TF卡设备树信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E5%86%85%E6%A0%B8%E5%A4%8D%E5%88%B6%E4%B8%8E%E6%89%A7%E8%A1%8C"><span class="toc-number">2.2.4.</span> <span class="toc-text">3.4 内核复制与执行</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%A7%BB%E6%A4%8D-buildroot"><span class="toc-number">2.3.</span> <span class="toc-text">3.文件系统移植-buildroot</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Target-options%E9%85%8D%E7%BD%AE"><span class="toc-number">2.3.1.</span> <span class="toc-text">3.1 Target options配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Build-options%E9%85%8D%E7%BD%AE"><span class="toc-number">2.3.2.</span> <span class="toc-text">3.2 Build options配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Toolchain%E9%85%8D%E7%BD%AE"><span class="toc-number">2.3.3.</span> <span class="toc-text">3.3 Toolchain配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-System-configuration%E9%85%8D%E7%BD%AE-https-www-cnblogs-com-twzy-p-15355842-html-2-4-system-configuration%E9%85%8D%E7%BD%AE"><span class="toc-number">2.3.4.</span> <span class="toc-text">3.4 System configuration配置[#](https:&#x2F;&#x2F;www.cnblogs.com&#x2F;twzy&#x2F;p&#x2F;15355842.html#2.4 system-configuration配置)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%A7%BB%E6%A4%8D%E4%B8%8E%E6%89%A7%E8%A1%8C"><span class="toc-number">2.3.5.</span> <span class="toc-text">3.5 文件系统移植与执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-%E5%8D%87%E7%BA%A7%E9%80%BC%E6%A0%BC-https-www-cnblogs-com-twzy-p-15355842-html-2-6-%E5%8D%87%E7%BA%A7%E9%80%BC%E6%A0%BC"><span class="toc-number">2.3.6.</span> <span class="toc-text">3.6 升级逼格[#](https:&#x2F;&#x2F;www.cnblogs.com&#x2F;twzy&#x2F;p&#x2F;15355842.html#2.6 升级逼格)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Debian%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%88%B6%E4%BD%9C-%E4%BB%A5%E5%8F%8AWIFI%E9%85%8D%E7%BD%AE%E3%80%81%E4%BA%A4%E6%8D%A2%E5%88%86%E5%8C%BA%E9%85%8D%E7%BD%AE"><span class="toc-number">2.4.</span> <span class="toc-text">4. Debian文件系统制作,以及WIFI配置、交换分区配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E9%85%8D%E7%BD%AE%E6%9E%84%E5%BB%BA%E7%8E%AF%E5%A2%83"><span class="toc-number">2.4.1.</span> <span class="toc-text">4.1 配置构建环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E9%85%8D%E7%BD%AE%E8%B4%A6%E5%8F%B7"><span class="toc-number">2.4.2.</span> <span class="toc-text">4.2 配置账号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E6%96%B0%E5%A2%9E%E8%B4%A6%E5%8F%B7sudo%E9%85%8D%E7%BD%AE"><span class="toc-number">2.4.3.</span> <span class="toc-text">4.3 新增账号sudo配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E9%85%8D%E7%BD%AE%E6%97%B6%E5%8C%BA"><span class="toc-number">2.4.4.</span> <span class="toc-text">4.4 配置时区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-%E9%85%8D%E7%BD%AESSH"><span class="toc-number">2.4.5.</span> <span class="toc-text">4.5 配置SSH</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-6-%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AE"><span class="toc-number">2.4.6.</span> <span class="toc-text">4.6 其他配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-6-1-%E5%A2%9E%E5%8A%A0%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF%E8%84%9A%E6%9C%AC"><span class="toc-number">2.4.6.1.</span> <span class="toc-text">4.6.1 增加开机自启脚本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-6-2-%E8%A7%A3%E5%86%B3root-fs%E5%88%86%E5%8C%BA%E5%BC%80%E6%9C%BA%E5%90%8E%E8%A2%AB%E6%8C%82%E8%BD%BD%E4%B8%BARead-Only%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">2.4.6.2.</span> <span class="toc-text">4.6.2 解决root-fs分区开机后被挂载为Read-Only的问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-6-3-%E6%B7%BB%E5%8A%A0USB-OTG-Gadget-RNDIS%E5%8A%9F%E8%83%BD"><span class="toc-number">2.4.6.3.</span> <span class="toc-text">4.6.3 添加USB-OTG &amp; Gadget-RNDIS功能</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-6-4-%E5%90%AF%E7%94%A8swap"><span class="toc-number">2.4.6.4.</span> <span class="toc-text">4.6.4 启用swap</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-7-rootfs%E6%89%93%E5%8C%85"><span class="toc-number">2.4.7.</span> <span class="toc-text">4.7 rootfs打包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-8-%E4%BD%BF%E7%94%A8wpa-supplicant%E8%BF%9E%E6%8E%A5wifi"><span class="toc-number">2.4.8.</span> <span class="toc-text">4.8. 使用wpa_supplicant连接wifi</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-9-%E5%A2%9E%E5%8A%A0swap%E5%88%86%E5%8C%BA"><span class="toc-number">2.4.9.</span> <span class="toc-text">4.9 增加swap分区</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-planck-pi%E6%93%8D%E4%BD%9C"><span class="toc-number">2.5.</span> <span class="toc-text">5. planck-pi操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E4%BF%AE%E6%94%B9%E4%B8%BB%E6%9C%BA%E5%90%8D"><span class="toc-number">2.5.1.</span> <span class="toc-text">5.1 修改主机名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E9%85%8D%E7%BD%AE%E6%B0%B8%E4%B9%85%E9%9D%99%E6%80%81ip"><span class="toc-number">2.5.2.</span> <span class="toc-text">5.2 配置永久静态ip</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-PC%E4%B8%8A%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="toc-number">2.6.</span> <span class="toc-text">6. PC上的操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-linux%E8%99%9A%E6%8B%9F%E6%9C%BAssh%E8%BF%9E%E6%8E%A5pi"><span class="toc-number">2.6.1.</span> <span class="toc-text">6.1 linux虚拟机ssh连接pi</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-Windows%E4%B8%8Bssh%E8%BF%9E%E6%8E%A5pi"><span class="toc-number">2.6.2.</span> <span class="toc-text">6.2 Windows下ssh连接pi</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E7%AE%80%E5%8C%96%E5%91%BD%E4%BB%A4"><span class="toc-number">3.</span> <span class="toc-text">3. 简化命令</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-uboot"><span class="toc-number">3.1.</span> <span class="toc-text">3.1.uboot</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-linux"><span class="toc-number">3.2.</span> <span class="toc-text">3.2.linux</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-1-busybox"><span class="toc-number">3.3.</span> <span class="toc-text">3.3.1 busybox</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-2-buildroot"><span class="toc-number">3.4.</span> <span class="toc-text">3.3.2 buildroot</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-4-Debian"><span class="toc-number">3.5.</span> <span class="toc-text">3.4 Debian</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E7%82%B9%E4%B8%AA%E7%81%AF%E5%90%A7"><span class="toc-number">4.</span> <span class="toc-text">4. 点个灯吧</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-OLED%E5%B1%8F"><span class="toc-number">5.</span> <span class="toc-text">5. OLED屏</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/24/indel/" title="记一次清空SMART修复群晖报故障的硬盘">记一次清空SMART修复群晖报故障的硬盘</a><time datetime="2025-12-24T04:56:00.000Z" title="Created 2025-12-24 12:56:00">2025-12-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/gemini/" title="根据SNP位点进行快速引物设计——网页版">根据SNP位点进行快速引物设计——网页版</a><time datetime="2025-12-02T14:26:00.000Z" title="Created 2025-12-02 22:26:00">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/24/latex/" title="LaTeX详细教程+技巧总结">LaTeX详细教程+技巧总结</a><time datetime="2025-11-24T14:26:00.000Z" title="Created 2025-11-24 22:26:00">2025-11-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/10/gwas-ld-block/" title="GWAS + 热点区域识别 + LD Block 分析流程详解">GWAS + 热点区域识别 + LD Block 分析流程详解</a><time datetime="2025-11-10T14:26:00.000Z" title="Created 2025-11-10 22:26:00">2025-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应">从基因到结构：用PyMOL可视化理解分子对接与突变效应</a><time datetime="2025-11-09T14:26:00.000Z" title="Created 2025-11-09 22:26:00">2025-11-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
+   #sidebar_search_box input[type=text]{width:calc(100% - 24px)}
+}</style></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/fish.js" defer data-pjax></script><script type="text/javascript" src="/js/busuanzi.pure.mini.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-10-09</span><a class="blog-slider__title" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">Hexo + Butterfly 个人博客搭建</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/11/10/gwas-ld-block/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-11-10</span><a class="blog-slider__title" href="2025/11/10/gwas-ld-block/" alt="">GWAS + 热点区域识别 + LD Block 分析流程详解</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/11/10/gwas-ld-block/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/07/31/19/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/OIP-C.2E7GSli1t13WJ-Of6Hp9UgHaEi" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-07-31</span><a class="blog-slider__title" href="2025/07/31/19/" alt="">2.重测序数据分析——初步整理</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/07/31/19/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><!-- hexo injector body_end end --></body></html>

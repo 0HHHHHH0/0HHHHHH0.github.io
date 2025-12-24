@@ -1,0 +1,360 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Western blot 原理和详细操作步骤 | HHHH</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="Western blot 原理  Western blot（也称为蛋白质免疫印迹）是一种常用于研究中分离和鉴定蛋白质的技术。它利用 SDS-聚丙烯酰胺凝胶电泳 (SDS-PAGE) 来分离指定样品中包含的各种蛋白质，然后将分离的蛋白质转移到硝酸纤维素或 PVDF 膜上，接下来将膜与对感目标蛋白质的特异抗体一起孵育。在洗膜过程中，未结合的抗体被洗掉，只留下与目标蛋白质结合的抗体，最后通过显影胶片或荧">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Western blot 原理和详细操作步骤">
+<meta property="og:url" content="https://0hhhhhh0.github.io/2022/11/04/029-western-blot/index.html">
+<meta property="og:site_name" content="HHHH">
+<meta property="og:description" content="Western blot 原理  Western blot（也称为蛋白质免疫印迹）是一种常用于研究中分离和鉴定蛋白质的技术。它利用 SDS-聚丙烯酰胺凝胶电泳 (SDS-PAGE) 来分离指定样品中包含的各种蛋白质，然后将分离的蛋白质转移到硝酸纤维素或 PVDF 膜上，接下来将膜与对感目标蛋白质的特异抗体一起孵育。在洗膜过程中，未结合的抗体被洗掉，只留下与目标蛋白质结合的抗体，最后通过显影胶片或荧">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/R-C.jpeg">
+<meta property="article:published_time" content="2022-11-04T21:19:55.000Z">
+<meta property="article:modified_time" content="2022-11-04T21:19:55.000Z">
+<meta property="article:author" content="HHHH">
+<meta property="article:tag" content="实验">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/R-C.jpeg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Western blot 原理和详细操作步骤",
+  "url": "https://0hhhhhh0.github.io/2022/11/04/029-western-blot/",
+  "image": "https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/R-C.jpeg",
+  "datePublished": "2022-11-04T21:19:55.000Z",
+  "dateModified": "2022-11-04T21:19:55.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "HHHH",
+      "url": "https://0HHHHHH0.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/uploads/avatar.png"><link rel="canonical" href="https://0hhhhhh0.github.io/2022/11/04/029-western-blot/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":-1,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Western blot 原理和详细操作步骤',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@4.5.12/index.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/styles/css/font.css"><link rel="stylesheet" href="/css/mermaid.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="HHHH" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="scarecrow"><div class="scarecrow__hat"><div class="scarecrow__ribbon"></div></div><div class="scarecrow__head"><div class="scarecrow__eye"></div><div class="scarecrow__eye"></div><div class="scarecrow__mouth"></div><div class="scarecrow__pipe"></div></div><div class="scarecrow__body"><div class="scarecrow__glove scarecrow__glove--l"></div><div class="scarecrow__sleeve scarecrow__sleeve--l"></div><div class="scarecrow__bow"></div><div class="scarecrow__shirt"></div><div class="scarecrow__coat"></div><div class="scarecrow__waistcoat"></div><div class="scarecrow__sleeve scarecrow__sleeve--r"></div><div class="scarecrow__glove scarecrow__glove--r"></div><div class="scarecrow__coattails"></div><div class="scarecrow__pants"></div></div><div class="scarecrow__arms"></div><div class="scarecrow__leg">  </div></div></div><script async="async">(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-color: #fbfdff;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/R-C.jpeg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/uploads/avatar.png" alt="Logo"><span class="site-name">HHHH</span></a><a class="nav-page-title" href="/"><span class="site-name">Western blot 原理和详细操作步骤</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Western blot 原理和详细操作步骤</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-11-04T21:19:55.000Z" title="Created 2022-11-05 05:19:55">2022-11-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-11-04T21:19:55.000Z" title="Updated 2022-11-05 05:19:55">2022-11-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%9B%8B%E7%99%BD%E7%BB%84/">蛋白组</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="ai-summary"><div class="ai-explanation" style="display: block;" data-summary="转自https://zhuanlan.zhihu.com/p/114177160">AI正在绞尽脑汁想思路ING···</div><div class="ai-title"> <div class="ai-title-left"> <i class="fa-brands fa-slack"></i><div class="ai-title-text">AI摘要</div></div><div class="ai-tag" id="ai-tag">deepseek-ai/DeepSeek-V3</div></div></div><h2 id="Western-blot-原理"><a href="#Western-blot-原理" class="headerlink" title="Western blot 原理"></a>Western blot 原理</h2><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-d6d9839833ec998ef6f250fe7a4dbc5b_720w.webp"></p>
+<blockquote>
+<p>Western blot（也称为蛋白质免疫印迹）是一种常用于研究中分离和鉴定蛋白质的技术。它利用 SDS-聚丙烯酰胺凝胶电泳 (SDS-PAGE) 来分离指定样品中包含的各种蛋白质，然后将分离的蛋白质转移到硝酸纤维素或 PVDF 膜上，接下来将膜与对感目标蛋白质的特异抗体一起孵育。在洗膜过程中，未结合的抗体被洗掉，只留下与目标蛋白质结合的抗体，最后通过显影胶片或荧光扫描来检测结合的抗体。</p>
+</blockquote>
+<blockquote>
+<p>由于抗体仅与目标蛋白质结合，因此一般只能看到一条清晰的带，条带的粗细对应于蛋白质量。通过分析特定反应的位置和强度，可以获得目标蛋白在给定细胞或组织匀浆中的表达信息。由于凝胶电泳的高分辨率和免疫的强特异性和高灵敏度，Western印迹分析可检测低至1ng的靶蛋白。该方法广泛应用于分子生物学、生物化学、免疫遗传学等分子生物学领域。</p>
+</blockquote>
+<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><h3 id="一、准备样品"><a href="#一、准备样品" class="headerlink" title="一、准备样品"></a>一、准备样品</h3><ol>
+<li><p>制冰，准备冰盒。</p>
+</li>
+<li><p>配制细胞裂解液：根据细胞数量确定所需裂解液：50ul/六孔板一孔 。</p>
+</li>
+</ol>
+<p> 裂解液配方：100ul碧云天裂解液+1ul蛋白酶抑制剂混合物+1ul PMSF</p>
+<ol start="3">
+<li><p>按实验需要准备好细胞：去掉培养基，1×PBS洗3次（去掉培养基中的血清），每个孔（6孔板）加入适量的裂解液。迅速用细胞刮刮下细胞并转移至1.5ml管中，置于冰上20min，振荡混合后，再置冰上10min。</p>
+</li>
+<li><p>12,000g，4℃离心15min，收集上清至另一1.5ml管。</p>
+</li>
+<li><p>取2.5ul样品加22.5ul三蒸水稀释，用于BCA法测蛋白浓度。</p>
+</li>
+<li><p>其余样品加5×Loading Buffer（按2.5mlBuffer/10ml蛋白）用95℃煮10分钟，期间振荡一次。</p>
+</li>
+<li><p>直接上样跑胶或者分装-80°C长期保存。</p>
+</li>
+</ol>
+<h3 id="二、SDS-PAGE聚丙烯酰胺凝胶电泳"><a href="#二、SDS-PAGE聚丙烯酰胺凝胶电泳" class="headerlink" title="二、SDS-PAGE聚丙烯酰胺凝胶电泳"></a>二、SDS-PAGE聚丙烯酰胺凝胶电泳</h3><ol>
+<li>制备分离胶（10%）</li>
+</ol>
+<p> <em>注：不同的分离胶配方可参见《分子克隆》p1716表A8-9</em></p>
+<ol start="2">
+<li><p>小心注入分离胶，留2 cm左右的空间（制胶架绿色或白色边框下缘）给浓缩胶，顶层覆盖无水乙醇。静置约30分钟。</p>
+</li>
+<li><p>制备浓缩胶（5%）</p>
+</li>
+<li><p>倒掉无水乙醇，用吸水纸吸去残留无水乙醇，然后将浓缩胶注入分离胶上端，注意避免气泡。</p>
+</li>
+<li><p>插入梳子，待浓缩胶凝固（胶与梳子之间有明显的分界，加上分离胶的凝固时间要大于2h），<del>用超纯水水将孔洗净，去除凝胶碎片，然后用滤纸吸干水</del>。</p>
+</li>
+<li><p>将胶放入电泳槽，上下槽均加入1×电泳缓冲液（反复使用不要超过3次）。</p>
+</li>
+<li><p>上样：marker孔中取5ul prestained marker<del>加入适量1×上样Buffer,使得总体积与sample孔一样</del>。Sample上样量一般为15－25μl，先用heating block 100℃煮5-10分钟，期间振荡一次，然后快速离心再上样跑胶；<del>在没有load sample的孔中加入等体积的1×上样Buffer</del>。</p>
+</li>
+<li><p>电泳：开始为恒压60-80V，当跑过浓缩胶后，将电流加大到100-120V，电泳时间根据目标蛋白的大小及marker的位置确定，一般为目标蛋白跑到分离胶的三分之二的位置即可。</p>
+</li>
+</ol>
+<h3 id="三、转膜"><a href="#三、转膜" class="headerlink" title="三、转膜"></a>三、转膜</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-4655ee5889e0b74ffeaf44a5927c9cfb_720w.webp"></p>
+<ol>
+<li><p>切胶，按Marker指示和目的条带的位置切胶(注意将胶切角做记号)，将洗脱的胶浸入转膜缓冲液中15分钟。</p>
+</li>
+<li><p>PVDF膜做好记号后先浸入甲醇中1分钟，再连同4张3mm滤纸和海绵浸入转移缓冲液中15分钟。</p>
+</li>
+<li><p>制备“夹心饼”：</p>
+</li>
+</ol>
+<p> 依次按如下顺序：纤维垫–滤纸—PVDF膜—凝胶—滤纸–纤维垫。</p>
+<p> 注意：每加一种物品都要对齐，确保没有气泡。</p>
+<ol start="4">
+<li>转膜：转膜时间根据1.确定。（60min）</li>
+</ol>
+<p> PVDF膜一边接正极（红色），凝胶一边接负极（黑色）。</p>
+<h3 id="四、封闭和抗体孵育"><a href="#四、封闭和抗体孵育" class="headerlink" title="四、封闭和抗体孵育"></a>四、封闭和抗体孵育</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-579f20046a8c0c8ed195c58cfce73423_720w.webp"></p>
+<ol>
+<li><p>转膜以后，<del>用10ml的1×TBS室温洗膜10分钟</del>。</p>
+</li>
+<li><p>15ml奶粉封闭液室温孵育<strong>2h</strong>或者4℃平缓摇动过夜。由于奶粉较为难溶，因此要<strong>提前至少1h配置</strong>。</p>
+</li>
+<li><p>10ml的TBS/T洗膜<del>3</del>5次，每次5分钟。</p>
+</li>
+<li><p>加入15ml一抗稀释缓冲液（抗体根据说明稀释），室温2 hrs或者4℃平缓摇动过夜，回收一抗，<del>按5ul/ml一抗液加入叠氮钠（可抑制细菌生长）4℃保存（不常用的抗体可-20℃长期保存），可重复使用！</del></p>
+</li>
+</ol>
+<p><em>如果用辣根过氧化物酶(HRP)检测系统，封闭液不应加叠氮钠(NaN3)，因为叠氮钠对辣根过氧化物酶（HRP）有灭活作用</em></p>
+<ol start="5">
+<li><p>10ml的TBS/T洗膜<del>3</del>5次，每次5分钟。</p>
+</li>
+<li><p>加入二抗（一般为1：2000稀释），室温平缓摇动1h。</p>
+</li>
+<li><p>10ml的TBS/T洗膜<del>3</del>5次，每次5分钟。</p>
+</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-787bb84a8e567620a49e3f0df4b365bf_720w.webp"></p>
+<h3 id="五、显影"><a href="#五、显影" class="headerlink" title="五、显影"></a>五、显影</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-87069acd533b8a41b7a4296c72786b0b_720w.webp"></p>
+<ol>
+<li><p>显色步骤：先铺保鲜膜，在吸水纸上再铺上保鲜膜；分别将水、显影液（颜色变深则不能用）和定影液倒入各自的盘中。2.5ml ECL-A 和2.5ml ECL-B混合,避光。将ECL混合液、膜等拿入暗房。关好门，反锁，拉回布。ECL混合液倒入小盒中，膜用吸水纸稍微吸干放入ECL混合液中室温摇动5min（使得ECL均匀的铺过膜），吸水纸吸干后置于保鲜膜上，膜面朝下包好置于夹子上，剪好X-film（注意手只能拿X-film的边缘）放于膜上，剪角一边为marker(注意：取胶片时要把灯光调到最小，且不要对着灯光，应背着灯光。)，根据条带的亮度来调整曝光时间，一般可先曝光2min，观察条带的深度，再确定最佳的曝光时间。</p>
+</li>
+<li><p>显影，定影: 取出X-film置于显影液中一定时间后(视目的条带强度与背景而定)，水洗一次再置于定影液中定影5min以上。</p>
+</li>
+</ol>
+<p> <em>（当然，随着时代的进步，现在很多实验室很少用古老的胶片显影定影。用在最后的发光二抗孵育后，直接扫描。这类仪器很多，操作方法看不同实验室的配置）</em></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://0HHHHHH0.github.io">HHHH</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://0hhhhhh0.github.io/2022/11/04/029-western-blot/">https://0hhhhhh0.github.io/2022/11/04/029-western-blot/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%AE%9E%E9%AA%8C/">实验</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/R-C.jpeg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2022/11/04/030-sds-page/" title="SDS-PAGE（聚丙烯酰胺）蛋白电泳原理详解"><img class="cover" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-718805fe00173970a339831cf7429c40_1440w.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">SDS-PAGE（聚丙烯酰胺）蛋白电泳原理详解</div></div><div class="info-2"><div class="info-item-1"> WB流程 首先通过SDS-PAGE聚丙烯酰胺凝胶电泳使蛋白质样本分离，再将凝胶上的蛋白电泳转移到固相载体上（NC膜或者PVDF膜），方便后续印迹显影操作，然后使用封闭液将封闭非特异位点，以避免抗体的非特异性吸附，这样固定的蛋白质即可与特异性的多克隆或单克隆抗体相互作用。最后通过化学发光法或荧光方法进行蛋白条带显影。   其中SDS聚丙烯酰胺凝胶电泳条件是关系到蛋白条带是否均一、整齐、干净的关键步骤。  SDS-PAGE聚丙烯酰胺凝胶电泳的原理和步骤SDS-PAGE （十二烷基硫酸钠–聚丙烯酰胺，sodium dodecyl sulfate – polyacrylamide gel electrophoresis）凝胶电泳是一种可以根据蛋白质的分子量分离样本中蛋白的技术。在电荷的影响下分离大分子称为电泳（electrophoresis）。在SDS-PAGE中使用的凝胶是聚丙烯酰胺（polyacrylamide），使蛋白质呈线性化的试剂是SDS。 因此得名SDS-PAGE。 一、SDS-PAGE的原理:首先准备一套蛋白电泳设备，蛋白质样品和marker上样到凝胶孔中，设置电压，启动...</div></div></div></a><a class="pagination-related" href="/2022/08/21/028-wan-zheng-mo-xing-xun-lian-mo-xing/" title="完整模型训练模型"><img class="cover" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Screenshot_from_2022-08-22_09-11-13.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">完整模型训练模型</div></div><div class="info-2"><div class="info-item-1">一、准备数据集 train_data = torchvision.datasets.CIFAR10(root="./dataset", train=True, transform=torchvision.transforms.ToTensor(), download=True)  test_data = torchvision.datasets.CIFAR10(root="./dataset", train=False, transform=torchvision.transforms.ToTensor(), download=True)   二、定义训练的设备 if torch.cuda.is_available():   device = torch.device("cuda")  else:   device = torch.device("cpu")   三、length 长度 train_data_size = len(train_data)  test_data_size = len(test_data)  print("训练数据集的长度：{}".format(tra...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2022/11/04/030-sds-page/" title="SDS-PAGE（聚丙烯酰胺）蛋白电泳原理详解"><img class="cover" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-718805fe00173970a339831cf7429c40_1440w.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-05</div><div class="info-item-2">SDS-PAGE（聚丙烯酰胺）蛋白电泳原理详解</div></div><div class="info-2"><div class="info-item-1"> WB流程 首先通过SDS-PAGE聚丙烯酰胺凝胶电泳使蛋白质样本分离，再将凝胶上的蛋白电泳转移到固相载体上（NC膜或者PVDF膜），方便后续印迹显影操作，然后使用封闭液将封闭非特异位点，以避免抗体的非特异性吸附，这样固定的蛋白质即可与特异性的多克隆或单克隆抗体相互作用。最后通过化学发光法或荧光方法进行蛋白条带显影。   其中SDS聚丙烯酰胺凝胶电泳条件是关系到蛋白条带是否均一、整齐、干净的关键步骤。  SDS-PAGE聚丙烯酰胺凝胶电泳的原理和步骤SDS-PAGE （十二烷基硫酸钠–聚丙烯酰胺，sodium dodecyl sulfate – polyacrylamide gel electrophoresis）凝胶电泳是一种可以根据蛋白质的分子量分离样本中蛋白的技术。在电荷的影响下分离大分子称为电泳（electrophoresis）。在SDS-PAGE中使用的凝胶是聚丙烯酰胺（polyacrylamide），使蛋白质呈线性化的试剂是SDS。 因此得名SDS-PAGE。 一、SDS-PAGE的原理:首先准备一套蛋白电泳设备，蛋白质样品和marker上样到凝胶孔中，设置电压，启动...</div></div></div></a><a class="pagination-related" href="/2022/11/08/031-pcr-shi-yan/" title="PCR实验最常见的9个问题及解决方案"><img class="cover" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/Coronavirus-2.44.32-PM-1400x800.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-08</div><div class="info-item-2">PCR实验最常见的9个问题及解决方案</div></div><div class="info-2"><div class="info-item-1">1. 如何有效设计引物 使用Oligo或Primer设计引物，  在保守区内设计  长度一般在18-27bp  上下游引物Tm值最好是60-75℃  GC含量=40%-60%  引物自身及引物之间不应存在互补序列，避免发夹结构   2. PCR电泳无扩增条带 酶失活或在反应体系中未加入酶。TaqDNA聚合酶因保存或运输不当而失活，往往通过更换新酶或用另一来源的酶以获得满意的结果。  模板含有杂质。特别是对甲醛固定及石蜡包埋的组织常含甲酸，造成DNA脱嘌呤而影响PCR的结果。  变性温度是否准确：PCR仪指示温度与实际温度是否相符，过高酶在前几个循环就迅速失活；过低则模板变性不彻底。  反应系统中污染了蛋白酶及核酸酶，应在未加Taq酶以前，将反应体系95℃加热5-10分钟。  引物变质失效。人工合成的引物是否正确。是否纯化，或因储存条件不当而失活。  引物错误。利用BLAST检查引物特异性或重新设计引物。  DNA凝胶电泳时加入阳性对照，确保不是DNA凝胶和PCR程序的问题。   3. PCR产物量过少 退火温度不合适。以2度为梯度设计梯度PCR反应优化退火温度。  DNA模板量太...</div></div></div></a><a class="pagination-related" href="/2022/11/12/032-xiao-mu-shuang-za-jiao/" title="酵母双杂交"><img class="cover" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/R-C_1.jpeg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-13</div><div class="info-item-2">酵母双杂交</div></div><div class="info-2"><div class="info-item-1"> 酵母双杂交系统是在真核模式生物酵母中进行的，研究活细胞内蛋白质相互作用，对蛋白质之间微弱的、瞬间的作用也能够通过报告基因的表达产物敏感地检测得到，它是一种具有很高灵敏度的研究蛋白质之间关系的技术。大量的研究文献表明，酵母双杂交技术既可以用来研究哺乳动物基因组编码的蛋白质之间的互作，也可以用来研究高等植物基因组编码的蛋白质之间的互作。   一、实验目的：验证PGBKT7-A与PGADT7-B是否为相互作用的关系 二、实验原理：Y2H的建立是基于对真核生物调控转录起始过程的认识，细胞起始基因转录需要有反式转录激活因子的参与;酵母转录因子 GAL4在结构上是组件式的，往往由功能上相互独立的结构域构成，其中有DNA结合功能域（DNA binding domain,DNA-BD）和转录激活结构域（activation domain，DNA-AD）;这两个结合域分开时仍分别具有功能，但不能激活转录。只有当被分开的两者通过适当的途径在空间上较为接近时，才能重新呈现完整的GAL4转录因子活性，使启动子下游基因得到转录。  GAL4是酵母（Saccharomyces cerevisiae）转录激...</div></div></div></a><a class="pagination-related" href="/2022/11/15/033-mian-yi-gong-chen-dian-co-ip/" title="免疫共沉淀（Co-IP）"><img class="cover" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/2019112816321619760.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-15</div><div class="info-item-2">免疫共沉淀（Co-IP）</div></div><div class="info-2"><div class="info-item-1"> 蛋白间相互作用是细胞各种基本功能的主要完成者，参与几乎所有的重要生命活动。因此，蛋白-蛋白相互作用研究以及建立相互作用的关系网络图，具有十分重要的意义，也是目前蛋白质研究领域的热点。   Co-IP（免疫共沉淀，co-inmunoprecipitation）是经典的利用抗体从样品中捕获靶蛋白及其互作蛋白、复合体的一项技术，能够特异性富集所研究的目的蛋白。由于过程中采用了非变性条件，保留了互作及复合体的细胞内状态。相对于酵母双杂交、pull down等方法，其特色之一便是捕获的蛋白互作发生在所研究的特定组织细胞内，保存了互作蛋白及复合体的“内源”状态。  一、Co-IP实验原理：以抗体和抗原之间的专一性作用为基础的用于研究蛋白质相互作用的经典方法，是确定两种蛋白质在完整细胞内生理性相互作用的有效方法。 当细胞在非变性条件下被裂解时，完整细胞内存在的许多蛋白质－蛋白质间的相互作用被保留了下来。如果用蛋白质X的抗体免疫沉淀X，那么与X在体内结合的蛋白质Y也能沉淀下来。  二、Co-IP实验优势：a) 取材可以选择该目的蛋白所在物种、特定组织、细胞，因此CoIP能够反应该蛋白在天然组织...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Western-blot-%E5%8E%9F%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">Western blot 原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="toc-number">2.</span> <span class="toc-text">操作步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%87%86%E5%A4%87%E6%A0%B7%E5%93%81"><span class="toc-number">2.1.</span> <span class="toc-text">一、准备样品</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81SDS-PAGE%E8%81%9A%E4%B8%99%E7%83%AF%E9%85%B0%E8%83%BA%E5%87%9D%E8%83%B6%E7%94%B5%E6%B3%B3"><span class="toc-number">2.2.</span> <span class="toc-text">二、SDS-PAGE聚丙烯酰胺凝胶电泳</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E8%BD%AC%E8%86%9C"><span class="toc-number">2.3.</span> <span class="toc-text">三、转膜</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%B0%81%E9%97%AD%E5%92%8C%E6%8A%97%E4%BD%93%E5%AD%B5%E8%82%B2"><span class="toc-number">2.4.</span> <span class="toc-text">四、封闭和抗体孵育</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%98%BE%E5%BD%B1"><span class="toc-number">2.5.</span> <span class="toc-text">五、显影</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/24/indel/" title="记一次清空SMART修复群晖报故障的硬盘">记一次清空SMART修复群晖报故障的硬盘</a><time datetime="2025-12-24T04:56:00.000Z" title="Created 2025-12-24 12:56:00">2025-12-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/gemini/" title="根据SNP位点进行快速引物设计——网页版">根据SNP位点进行快速引物设计——网页版</a><time datetime="2025-12-02T14:26:00.000Z" title="Created 2025-12-02 22:26:00">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/24/latex/" title="LaTeX详细教程+技巧总结">LaTeX详细教程+技巧总结</a><time datetime="2025-11-24T14:26:00.000Z" title="Created 2025-11-24 22:26:00">2025-11-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/10/gwas-ld-block/" title="GWAS + 热点区域识别 + LD Block 分析流程详解">GWAS + 热点区域识别 + LD Block 分析流程详解</a><time datetime="2025-11-10T14:26:00.000Z" title="Created 2025-11-10 22:26:00">2025-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应">从基因到结构：用PyMOL可视化理解分子对接与突变效应</a><time datetime="2025-11-09T14:26:00.000Z" title="Created 2025-11-09 22:26:00">2025-11-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
+   #sidebar_search_box input[type=text]{width:calc(100% - 24px)}
+}</style></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/fish.js" defer data-pjax></script><script type="text/javascript" src="/js/busuanzi.pure.mini.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-10-09</span><a class="blog-slider__title" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">Hexo + Butterfly 个人博客搭建</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/11/10/gwas-ld-block/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-11-10</span><a class="blog-slider__title" href="2025/11/10/gwas-ld-block/" alt="">GWAS + 热点区域识别 + LD Block 分析流程详解</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/11/10/gwas-ld-block/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/07/31/19/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/OIP-C.2E7GSli1t13WJ-Of6Hp9UgHaEi" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-07-31</span><a class="blog-slider__title" href="2025/07/31/19/" alt="">2.重测序数据分析——初步整理</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/07/31/19/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><!-- hexo injector body_end end --></body></html>

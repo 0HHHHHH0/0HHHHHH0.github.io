@@ -1,0 +1,1115 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>训练您自己的模型——长牡蛎 | HHHH</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="训练您自己的模型——长牡蛎本指南提供了一个详细、逐步的教程，用于在长牡蛎数据上训练一个 OpenSpliceAI 模型。使用物种特异性的基因组和注释文件，您可以生成训练和测试数据集，然后训练一个专为牡蛎定制的剪接位点预测模型。该流程与人类 MANE 工作流程类似，但根据需要对输入文件和参数进行了调整。 前置条件在开始之前，请确保您已经：  安装了 OpenSpliceAI：请按照安装页面的说明进行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="训练您自己的模型——长牡蛎">
+<meta property="og:url" content="https://0hhhhhh0.github.io/2025/10/22/train-openspliceai/index.html">
+<meta property="og:site_name" content="HHHH">
+<meta property="og:description" content="训练您自己的模型——长牡蛎本指南提供了一个详细、逐步的教程，用于在长牡蛎数据上训练一个 OpenSpliceAI 模型。使用物种特异性的基因组和注释文件，您可以生成训练和测试数据集，然后训练一个专为牡蛎定制的剪接位点预测模型。该流程与人类 MANE 工作流程类似，但根据需要对输入文件和参数进行了调整。 前置条件在开始之前，请确保您已经：  安装了 OpenSpliceAI：请按照安装页面的说明进行">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0hhhhhh0.github.io/uploads/avatar.png">
+<meta property="article:published_time" content="2025-10-22T11:26:00.000Z">
+<meta property="article:modified_time" content="2025-10-22T11:32:15.000Z">
+<meta property="article:author" content="HHHH">
+<meta property="article:tag" content="hexo">
+<meta property="article:tag" content="组学">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="折腾">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0hhhhhh0.github.io/uploads/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "训练您自己的模型——长牡蛎",
+  "url": "https://0hhhhhh0.github.io/2025/10/22/train-openspliceai/",
+  "image": "https://0hhhhhh0.github.io/uploads/avatar.png",
+  "datePublished": "2025-10-22T11:26:00.000Z",
+  "dateModified": "2025-10-22T11:32:15.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "HHHH",
+      "url": "https://0HHHHHH0.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/uploads/avatar.png"><link rel="canonical" href="https://0hhhhhh0.github.io/2025/10/22/train-openspliceai/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":-1,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '训练您自己的模型——长牡蛎',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@4.5.12/index.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/styles/css/font.css"><link rel="stylesheet" href="/css/mermaid.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="HHHH" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="scarecrow"><div class="scarecrow__hat"><div class="scarecrow__ribbon"></div></div><div class="scarecrow__head"><div class="scarecrow__eye"></div><div class="scarecrow__eye"></div><div class="scarecrow__mouth"></div><div class="scarecrow__pipe"></div></div><div class="scarecrow__body"><div class="scarecrow__glove scarecrow__glove--l"></div><div class="scarecrow__sleeve scarecrow__sleeve--l"></div><div class="scarecrow__bow"></div><div class="scarecrow__shirt"></div><div class="scarecrow__coat"></div><div class="scarecrow__waistcoat"></div><div class="scarecrow__sleeve scarecrow__sleeve--r"></div><div class="scarecrow__glove scarecrow__glove--r"></div><div class="scarecrow__coattails"></div><div class="scarecrow__pants"></div></div><div class="scarecrow__arms"></div><div class="scarecrow__leg">  </div></div></div><script async="async">(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-color: #fbfdff;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/uploads/avatar.png" alt="Logo"><span class="site-name">HHHH</span></a><a class="nav-page-title" href="/"><span class="site-name">训练您自己的模型——长牡蛎</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">训练您自己的模型——长牡蛎</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-10-22T11:26:00.000Z" title="Created 2025-10-22 19:26:00">2025-10-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-10-22T11:32:15.000Z" title="Updated 2025-10-22 19:32:15">2025-10-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="ai-summary"><div class="ai-explanation" style="display: block;" data-summary="这篇文章详细介绍了如何在长牡蛎数据集上训练OpenSpliceAI模型的完整流程。主要内容包括准备工作（安装软件、获取基因组和注释文件）、检查输入文件、创建训练测试数据集（使用HDF5格式转换基因组数据）、训练定制化模型（设置侧翼序列长度、损失函数等参数）以及可选的模型转移训练。文章提供了具体的bash脚本示例和关键参数解释，指导用户完成从数据处理到模型训练的全过程，适用于生物信息学研究人员开发针对长牡蛎的剪接位点预测模型。">AI正在绞尽脑汁想思路ING···</div><div class="ai-title"> <div class="ai-title-left"> <i class="fa-brands fa-slack"></i><div class="ai-title-text">AI摘要</div></div><div class="ai-tag" id="ai-tag">deepseek-ai/DeepSeek-V3</div></div></div><h1 id="训练您自己的模型——长牡蛎"><a href="#训练您自己的模型——长牡蛎" class="headerlink" title="训练您自己的模型——长牡蛎"></a>训练您自己的模型——长牡蛎</h1><p>本指南提供了一个详细、逐步的教程，用于在长牡蛎数据上训练一个 OpenSpliceAI 模型。使用物种特异性的基因组和注释文件，您可以生成训练和测试数据集，然后训练一个专为牡蛎定制的剪接位点预测模型。该流程与人类 MANE 工作流程类似，但根据需要对输入文件和参数进行了调整。</p>
+<h2 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h2><p>在开始之前，请确保您已经：</p>
+<ol>
+<li><strong>安装了 OpenSpliceAI</strong>：请按照安装页面的说明进行操作。</li>
+<li><strong>克隆了代码库</strong>：从 LiftOn OpenSpliceAI 代码库克隆 OpenSpliceAI 代码库。</li>
+<li><strong>下载了长牡蛎的输入文件</strong>：<ul>
+<li><strong>参考基因组</strong>：例如，长牡蛎基因组组装可以从这里获取 <code>GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna</code></li>
+<li><strong>注释文件</strong>：长牡蛎基因注释文件 <code>GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff</code></li>
+</ul>
+</li>
+</ol>
+<h2 id="步骤-1：检查输入文件"><a href="#步骤-1：检查输入文件" class="headerlink" title="步骤 1：检查输入文件"></a>步骤 1：检查输入文件</h2><p>转换基因组名字，使其与注释gff文件中名字一致：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token comment"># 变量配置</span>
+<span class="token assign-left variable">FLANKING_SIZE</span><span class="token operator">=</span><span class="token number">400</span>
+<span class="token assign-left variable">EXPERIMENT_NAME</span><span class="token operator">=</span><span class="token string">"oyster_full_dataset"</span>
+<span class="token assign-left variable">TRAIN_DATASET</span><span class="token operator">=</span><span class="token string">"/home/hhhh/OpenSpliceAI/OpenSpliceAI/spliciai/train_test_dataset/dataset_train.h5"</span>
+<span class="token assign-left variable">TEST_DATASET</span><span class="token operator">=</span><span class="token string">"/home/hhhh/OpenSpliceAI/OpenSpliceAI/spliciai/train_test_dataset/dataset_test.h5"</span>
+<span class="token assign-left variable">OUTPUT_DIR</span><span class="token operator">=</span><span class="token string">"/home/hhhh/OpenSpliceAI/OpenSpliceAI/spliciai/oyster_model_train_outdir"</span>
+<span class="token assign-left variable">PROJECT_NAME</span><span class="token operator">=</span><span class="token string">"OpenSpliceAI-Oyster"</span>
+<span class="token assign-left variable">RANDOM_SEED</span><span class="token operator">=</span><span class="token number">42</span>
+<span class="token assign-left variable">MODEL</span><span class="token operator">=</span><span class="token string">"SpliceAI"</span>
+<span class="token assign-left variable">LOSS</span><span class="token operator">=</span><span class="token string">"cross_entropy_loss"</span>
+<span class="token assign-left variable">EPOCHS</span><span class="token operator">=</span><span class="token number">20</span>
+<span class="token assign-left variable">PATIENCE</span><span class="token operator">=</span><span class="token number">5</span>
+<span class="token assign-left variable">SCHEDULER</span><span class="token operator">=</span><span class="token string">"MultiStepLR"</span>
+
+<span class="token comment"># 创建输出目录（如果不存在）</span>
+<span class="token function">mkdir</span> <span class="token parameter variable">-p</span> <span class="token string">"<span class="token variable">$OUTPUT_DIR</span>"</span>
+
+<span class="token comment"># 执行训练命令</span>
+openspliceai train <span class="token punctuation">\</span>
+   --flanking-size <span class="token variable">$FLANKING_SIZE</span> <span class="token punctuation">\</span>
+   --exp-num <span class="token variable">$EXPERIMENT_NAME</span> <span class="token punctuation">\</span>
+   --train-dataset <span class="token variable">$TRAIN_DATASET</span> <span class="token punctuation">\</span>
+   --test-dataset <span class="token variable">$TEST_DATASET</span> <span class="token punctuation">\</span>
+   --output-dir <span class="token variable">$OUTPUT_DIR</span> <span class="token punctuation">\</span>
+   --project-name <span class="token variable">$PROJECT_NAME</span> <span class="token punctuation">\</span>
+   --random-seed <span class="token variable">$RANDOM_SEED</span> <span class="token punctuation">\</span>
+   <span class="token parameter variable">--model</span> <span class="token variable">$MODEL</span> <span class="token punctuation">\</span>
+   <span class="token parameter variable">--loss</span> <span class="token variable">$LOSS</span> <span class="token punctuation">\</span>
+   <span class="token parameter variable">--epochs</span> <span class="token variable">$EPOCHS</span> <span class="token punctuation">\</span>
+   <span class="token parameter variable">--patience</span> <span class="token variable">$PATIENCE</span> <span class="token punctuation">\</span>
+   <span class="token parameter variable">--scheduler</span> <span class="token variable">$SCHEDULER</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"Training completed. Model and logs saved to <span class="token variable">$OUTPUT_DIR</span>."</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>命名为<code>1.n2n.sh</code>，<code>chmod +x 1.n2n.sh</code>，<code>./1.n2n.sh</code> 运行命令。</p>
+<h2 id="步骤-2：创建训练和测试数据集"><a href="#步骤-2：创建训练和测试数据集" class="headerlink" title="步骤 2：创建训练和测试数据集"></a>步骤 2：创建训练和测试数据集</h2><p>使用 <code>create-data</code> 子命令处理小鼠参考基因组和注释文件，将其转换为 HDF5 格式的数据集。此步骤提取基因序列，选择典型转录本（通常是蛋白质编码的），并对序列和剪接位点标签进行独热编码。</p>
+<p>运行以下命令（请根据需要更新文件名）：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token assign-left variable">GENOME</span><span class="token operator">=</span><span class="token string">"GCA_902806645.1_cgigas_uk_roslin_v1_genomic_fixed.fna"</span>
+<span class="token assign-left variable">ANNOTATION</span><span class="token operator">=</span><span class="token string">"GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff"</span>
+<span class="token assign-left variable">OUTPUT_DIR</span><span class="token operator">=</span><span class="token string">"train_test_dataset/"</span>
+
+<span class="token function">mkdir</span> <span class="token parameter variable">-p</span> <span class="token variable">${OUTPUT_DIR}</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"Starting accurate data processing at <span class="token variable"><span class="token variable">$(</span><span class="token function">date</span><span class="token variable">)</span></span>"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"This may take several hours for a complete genome..."</span>
+
+openspliceai create-data <span class="token punctuation">\</span>
+    --genome-fasta <span class="token string">"<span class="token variable">$GENOME</span>"</span> <span class="token punctuation">\</span>
+    --annotation-gff <span class="token string">"<span class="token variable">$ANNOTATION</span>"</span> <span class="token punctuation">\</span>
+    --output-dir <span class="token string">"<span class="token variable">$OUTPUT_DIR</span>"</span> <span class="token punctuation">\</span>
+    --parse-type canonical <span class="token punctuation">\</span>
+    --split-method random <span class="token punctuation">\</span>
+    --remove-paralogs <span class="token punctuation">\</span>
+    --min-identity <span class="token number">0.8</span> <span class="token punctuation">\</span>
+    --min-coverage <span class="token number">0.8</span> <span class="token punctuation">\</span>
+    --canonical-only <span class="token punctuation">\</span>
+    <span class="token parameter variable">--biotype</span> protein-coding <span class="token punctuation">\</span>
+    --write-fasta <span class="token punctuation">\</span>
+    <span class="token operator"><span class="token file-descriptor important">2</span>&gt;</span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">|</span> <span class="token function">tee</span> <span class="token string">"<span class="token variable">$OUTPUT_DIR</span>/processing.log"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"Completed at <span class="token variable"><span class="token variable">$(</span><span class="token function">date</span><span class="token variable">)</span></span>"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"Check <span class="token variable">$OUTPUT_DIR</span> for output files"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>关键选项解释</strong>：</p>
+<ul>
+<li><code>--remove-paralogs</code>：过滤掉旁系同源序列以避免数据泄露。</li>
+<li><code>--min-identity 0.8</code> 和 <code>--min-coverage 0.8</code>：设置过滤阈值。</li>
+<li><code>--parse-type canonical</code>：选择每个基因最长的典型转录本。</li>
+<li><code>--split-method mouse</code>：应用小鼠特定的规则将数据分割成训练集和测试集。</li>
+<li><code>--canonical-only</code>：将标记限制在保守的剪接位点模体。</li>
+</ul>
+<p>运行此命令后，检查输出目录中的两个主要文件：</p>
+<ul>
+<li><code>dataset_train.h5</code>（训练数据集）</li>
+<li><code>dataset_test.h5</code>（测试数据集）</li>
+</ul>
+<p>命名为<code>2.create-data_cg.sh</code>，<code>chmod +x 2.create-data_cg.sh</code>，<code>./2.create-data_cg.sh</code> 运行命令。</p>
+<h2 id="步骤-3：训练长牡蛎模型"><a href="#步骤-3：训练长牡蛎模型" class="headerlink" title="步骤 3：训练长牡蛎模型"></a>步骤 3：训练长牡蛎模型</h2><p>数据集准备好后，使用 <code>train</code> 子命令训练您的小鼠剪接位点预测模型。您可以根据应用选择合适的两侧侧翼序列长度；在此示例中，我们使用 10,000 个核苷酸的侧翼大小，这在先前的研究中已被证明是有效的。</p>
+<p>运行以下命令（根据需要调整文件路径和参数）：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token comment"># 变量配置</span>
+<span class="token assign-left variable">FLANKING_SIZE</span><span class="token operator">=</span><span class="token number">400</span>
+<span class="token assign-left variable">EXPERIMENT_NAME</span><span class="token operator">=</span><span class="token string">"oyster_full_dataset"</span>
+<span class="token assign-left variable">TRAIN_DATASET</span><span class="token operator">=</span><span class="token string">"/home/hhhh/OpenSpliceAI/OpenSpliceAI/spliciai/train_test_dataset/dataset_train.h5"</span>
+<span class="token assign-left variable">TEST_DATASET</span><span class="token operator">=</span><span class="token string">"/home/hhhh/OpenSpliceAI/OpenSpliceAI/spliciai/train_test_dataset/dataset_test.h5"</span>
+<span class="token assign-left variable">OUTPUT_DIR</span><span class="token operator">=</span><span class="token string">"/home/hhhh/OpenSpliceAI/OpenSpliceAI/spliciai/oyster_model_train_outdir"</span>
+<span class="token assign-left variable">PROJECT_NAME</span><span class="token operator">=</span><span class="token string">"OpenSpliceAI-Oyster"</span>
+<span class="token assign-left variable">RANDOM_SEED</span><span class="token operator">=</span><span class="token number">42</span>
+<span class="token assign-left variable">MODEL</span><span class="token operator">=</span><span class="token string">"SpliceAI"</span>
+<span class="token assign-left variable">LOSS</span><span class="token operator">=</span><span class="token string">"cross_entropy_loss"</span>
+<span class="token assign-left variable">EPOCHS</span><span class="token operator">=</span><span class="token number">20</span>
+<span class="token assign-left variable">PATIENCE</span><span class="token operator">=</span><span class="token number">5</span>
+<span class="token assign-left variable">SCHEDULER</span><span class="token operator">=</span><span class="token string">"MultiStepLR"</span>
+
+<span class="token comment"># 创建输出目录（如果不存在）</span>
+<span class="token function">mkdir</span> <span class="token parameter variable">-p</span> <span class="token string">"<span class="token variable">$OUTPUT_DIR</span>"</span>
+
+<span class="token comment"># 执行训练命令</span>
+openspliceai train <span class="token punctuation">\</span>
+   --flanking-size <span class="token variable">$FLANKING_SIZE</span> <span class="token punctuation">\</span>
+   --exp-num <span class="token variable">$EXPERIMENT_NAME</span> <span class="token punctuation">\</span>
+   --train-dataset <span class="token variable">$TRAIN_DATASET</span> <span class="token punctuation">\</span>
+   --test-dataset <span class="token variable">$TEST_DATASET</span> <span class="token punctuation">\</span>
+   --output-dir <span class="token variable">$OUTPUT_DIR</span> <span class="token punctuation">\</span>
+   --project-name <span class="token variable">$PROJECT_NAME</span> <span class="token punctuation">\</span>
+   --random-seed <span class="token variable">$RANDOM_SEED</span> <span class="token punctuation">\</span>
+   <span class="token parameter variable">--model</span> <span class="token variable">$MODEL</span> <span class="token punctuation">\</span>
+   <span class="token parameter variable">--loss</span> <span class="token variable">$LOSS</span> <span class="token punctuation">\</span>
+   <span class="token parameter variable">--epochs</span> <span class="token variable">$EPOCHS</span> <span class="token punctuation">\</span>
+   <span class="token parameter variable">--patience</span> <span class="token variable">$PATIENCE</span> <span class="token punctuation">\</span>
+   <span class="token parameter variable">--scheduler</span> <span class="token variable">$SCHEDULER</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"Training completed. Model and logs saved to <span class="token variable">$OUTPUT_DIR</span>."</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>选项解释</strong>：</p>
+<ul>
+<li><code>--flanking-size 10000</code>：将侧翼区域设置为 10,000 个核苷酸。</li>
+<li><code>--exp-num mouse_full_dataset</code>：此实验的标签。</li>
+<li><code>--random-seed 42</code>：确保结果可重现。</li>
+<li><code>--model SpliceAI</code>：使用 SpliceAI 模型架构。</li>
+<li><code>--loss cross_entropy_loss</code>：指定损失函数。</li>
+<li>模型检查点（例如 <code>model_best.pt</code>）和训练日志将保存在指定的输出目录中。</li>
+</ul>
+<p>命名为<code>3.train_model.sh</code>，<code>chmod +x 3.train_model.sh</code>，<code>./3.train_model.sh</code> 运行命令。</p>
+<h2 id="步骤-4（可选）：转移模型"><a href="#步骤-4（可选）：转移模型" class="headerlink" title="步骤 4（可选）：转移模型"></a>步骤 4（可选）：转移模型</h2><p>下面可以不运行，前面模型训练使用的fz == 400，机器不行，没跑大的，所以下面使用<code>transfer</code>训练2000的。</p>
+<p>运行以下命令（根据需要调整文件路径和参数）：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">openspliceai transfer <span class="token punctuation">\</span>
+   --train-dataset /home/hhhh/OpenSpliceAI/OpenSpliceAI/spliciai/train_test_dataset/dataset_train.h5 <span class="token punctuation">\</span>
+   --test-dataset /home/hhhh/OpenSpliceAI/OpenSpliceAI/spliciai/train_test_dataset/dataset_test.h5 <span class="token punctuation">\</span>
+   --pretrained-model /home/hhhh/OpenSpliceAI/OpenSpliceAI/spliciai/oyster_model_train_outdir/SpliceAI_OpenSpliceAI-Oyster_400_oyster_full_dataset_rs42/oyster_full_dataset/models/model_best.pt <span class="token punctuation">\</span>
+   --flanking-size <span class="token number">2000</span> <span class="token punctuation">\</span>
+   <span class="token parameter variable">--unfreeze</span> <span class="token number">2</span> <span class="token punctuation">\</span>
+   <span class="token parameter variable">--scheduler</span> CosineAnnealingWarmRestarts <span class="token punctuation">\</span>
+   <span class="token parameter variable">--loss</span> focal_loss <span class="token punctuation">\</span>
+   <span class="token parameter variable">--epochs</span> <span class="token number">10</span> <span class="token punctuation">\</span>
+   <span class="token parameter variable">--patience</span> <span class="token number">3</span> <span class="token punctuation">\</span>
+   --early-stopping <span class="token punctuation">\</span>
+   --project-name OpenSpliceAI-Oyster_2000_transfer <span class="token punctuation">\</span>
+   --output-dir /home/hhhh/OpenSpliceAI/OpenSpliceAI/spliciai/oyster_model_train_outdir<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>命名为<code>4.transfer_model.sh</code>，<code>chmod +x 4.transfer_model.sh</code>，<code>./4.transfer_model.sh</code> 运行命令。</p>
+<h2 id="步骤-5（可选）：校准长牡蛎模型"><a href="#步骤-5（可选）：校准长牡蛎模型" class="headerlink" title="步骤 5（可选）：校准长牡蛎模型"></a>步骤 5（可选）：校准长牡蛎模型</h2><p>校准可以优化模型的输出概率，使其更能反映经验上的剪接位点可能性。如果需要，可以使用 <code>calibrate</code> 子命令运行校准步骤。</p>
+<p>执行：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 强制使用CPU避免内存问题</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">CUDA_VISIBLE_DEVICES</span><span class="token operator">=</span><span class="token string">""</span>
+
+openspliceai calibrate <span class="token punctuation">\</span>
+   --flanking-size <span class="token number">2000</span> <span class="token punctuation">\</span>
+   --train-dataset train_test_dataset/dataset_train.h5 <span class="token punctuation">\</span>
+   --test-dataset train_test_dataset/dataset_test.h5 <span class="token punctuation">\</span>
+   --output-dir model_calibrate_outdir_oyster/ <span class="token punctuation">\</span>
+   --project-name OpenSpliceAI-oyster-calibrate <span class="token punctuation">\</span>
+   --random-seed <span class="token number">42</span> <span class="token punctuation">\</span>
+   --pretrained-model oyster_model_train_outdir/SpliceAI_OpenSpliceAI-Oyster_2000_transfer_2000_0_rs42/0/models/model_best.pt <span class="token punctuation">\</span>
+   <span class="token parameter variable">--loss</span> cross_entropy_loss<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>此命令：</p>
+<ul>
+<li>从您的长牡蛎训练运行中加载最佳模型检查点。</li>
+<li>优化用于校准的温度参数。</li>
+<li>将校准输出（例如，温度参数、可靠性曲线）保存在指定目录中。</li>
+</ul>
+<h2 id="步骤-6：部署您训练好的长牡蛎模型"><a href="#步骤-6：部署您训练好的长牡蛎模型" class="headerlink" title="步骤 6：部署您训练好的长牡蛎模型"></a>步骤 6：部署您训练好的长牡蛎模型</h2><p>训练（以及可选的校准）完成后，您的小鼠模型就可以使用了。您现在可以：</p>
+<ul>
+<li><strong>预测剪接位点</strong>：使用 <code>predict</code> 子命令对新的长牡蛎 FASTA 序列进行推理。</li>
+<li><strong>分析变异效应</strong>：使用 <code>variant</code> 子命令评估特定突变如何影响长牡蛎基因组中的剪接。</li>
+</ul>
+<h3 id="测试1："><a href="#测试1：" class="headerlink" title="测试1："></a>测试1：</h3><p>执行：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token builtin class-name">cd</span> /home/hhhh/OpenSpliceAI/OpenSpliceAI/spliciai
+
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 使用绝对路径测试 ==="</span>
+
+<span class="token comment"># 使用绝对路径</span>
+<span class="token assign-left variable">MODEL_PATH</span><span class="token operator">=</span><span class="token string">"/home/hhhh/OpenSpliceAI/OpenSpliceAI/spliciai/oyster_model_train_outdir/SpliceAI_OpenSpliceAI-Oyster_2000_transfer_2000_0_rs42/0/models/model_best.pt"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"模型路径: <span class="token variable">$MODEL_PATH</span>"</span>
+<span class="token function">ls</span> <span class="token parameter variable">-la</span> <span class="token string">"<span class="token variable">$MODEL_PATH</span>"</span>
+
+<span class="token comment"># 创建测试序列</span>
+<span class="token function">cat</span> <span class="token operator">&gt;</span> test_snp.fasta <span class="token operator">&lt;&lt;</span> <span class="token string">'EOF'
+&gt;reference_sequence
+$(python3 -c "import random; random.seed(42); print(''.join(random.choices(['A','C','G','T'], k=1000)))")
+&gt;mutant_sequence  
+$(python3 -c "import random; random.seed(42); s=''.join(random.choices(['A','C','G','T'], k=1000)); print(s[:500] + 'A' + s[501:])")
+EOF</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"测试序列已创建"</span>
+
+<span class="token comment"># 运行预测</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">CUDA_VISIBLE_DEVICES</span><span class="token operator">=</span><span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"开始剪接位点预测..."</span>
+openspliceai predict <span class="token punctuation">\</span>
+    --input-sequence <span class="token string">"test_snp.fasta"</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">--model</span> <span class="token string">"<span class="token variable">$MODEL_PATH</span>"</span> <span class="token punctuation">\</span>
+    --flanking-size <span class="token number">2000</span> <span class="token punctuation">\</span>
+    --output-dir <span class="token string">"snp_prediction_results"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 预测完成 ==="</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"结果文件:"</span>
+<span class="token function">find</span> snp_prediction_results <span class="token parameter variable">-type</span> f <span class="token operator"><span class="token file-descriptor important">2</span>&gt;</span>/dev/null<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>命名为<code>6.single_snp_test.sh</code>，<code>chmod +x 6.single_snp_test.sh</code>，<code>./6.single_snp_test.sh</code> 运行命令。</p>
+<h3 id="测试2："><a href="#测试2：" class="headerlink" title="测试2："></a>测试2：</h3><p>执行：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token comment"># OpenSpliceAI 自动提取染色体长度版本</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"========================================"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"OpenSpliceAI - 自动提取染色体长度"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"========================================"</span>
+
+<span class="token comment"># 设置变量</span>
+<span class="token assign-left variable">INPUT_TSV</span><span class="token operator">=</span><span class="token string">"filtered_three2one.tsv"</span>
+<span class="token assign-left variable">MODEL_PATH</span><span class="token operator">=</span><span class="token string">"/home/hhhh/OpenSpliceAI/OpenSpliceAI/spliciai/oyster_model_train_outdir/SpliceAI_OpenSpliceAI-Oyster_2000_transfer_2000_0_rs42/0/models/model_best.pt"</span>
+<span class="token assign-left variable">REF_GENOME</span><span class="token operator">=</span><span class="token string">"GCA_902806645.1_cgigas_uk_roslin_v1_genomic_fixed.fna"</span>
+<span class="token assign-left variable">OUTPUT_DIR</span><span class="token operator">=</span><span class="token string">"./final_fix_results_auto"</span>
+<span class="token assign-left variable">INPUT_GFF</span><span class="token operator">=</span><span class="token string">"GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff"</span>
+<span class="token assign-left variable">OUTPUT_TXT</span><span class="token operator">=</span><span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/oyster_annotation_clean.txt"</span>
+<span class="token assign-left variable">ANNOTATION</span><span class="token operator">=</span><span class="token string">"<span class="token variable">${OUTPUT_TXT}</span>"</span>
+
+<span class="token comment"># 创建输出目录</span>
+<span class="token function">mkdir</span> <span class="token parameter variable">-p</span> <span class="token variable">${OUTPUT_DIR}</span>
+
+<span class="token comment"># 1. 自动从FASTA文件提取染色体长度</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"[1/6] 从FASTA文件提取染色体长度..."</span>
+
+<span class="token comment"># 创建提取染色体长度的Python脚本</span>
+<span class="token function">cat</span> <span class="token operator">&gt;</span> <span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/extract_chrom_lengths.py"</span> <span class="token operator">&lt;&lt;</span> <span class="token string">'EOF'
+import re
+import sys
+
+def extract_chromosome_lengths(fasta_file, output_file):
+    print(f"从FASTA文件提取染色体长度: {fasta_file}")
+    
+    chrom_lengths = {}
+    current_chrom = None
+    current_length = 0
+    
+    with open(fasta_file, 'r') as f:
+        for line in f:
+            if line.startswith('&gt;'):
+                # 保存前一个染色体的长度
+                if current_chrom and current_length &gt; 0:
+                    chrom_lengths[current_chrom] = current_length
+                
+                # 解析新的染色体头
+                header = line[1:].strip()
+                # 提取染色体名称（通常是第一个空格前的部分）
+                chrom_name = header.split()[0]
+                current_chrom = chrom_name
+                current_length = 0
+                
+                print(f"找到染色体: {chrom_name}")
+            else:
+                # 计算序列长度
+                current_length += len(line.strip())
+        
+        # 保存最后一个染色体
+        if current_chrom and current_length &gt; 0:
+            chrom_lengths[current_chrom] = current_length
+    
+    print(f"\n📊 染色体长度统计:")
+    for chrom, length in chrom_lengths.items():
+        print(f"  {chrom}: {length:,} bp")
+    
+    # 写入VCF头文件
+    with open(output_file, 'w') as out:
+        out.write("##fileformat=VCFv4.2\n")
+        out.write('##INFO=&lt;ID=SpliceAI,Number=.,Type=String,Description="OpenSpliceAI annotation"&gt;\n')
+        
+        # 写入准确的contig定义
+        for chrom, length in chrom_lengths.items():
+            out.write(f'##contig=&lt;ID={chrom},length={length}&gt;\n')
+        
+        out.write("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
+    
+    print(f"✅ VCF头文件已生成: {output_file}")
+    return chrom_lengths
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("用法: python extract_chrom_lengths.py input.fasta output.vcf_header")
+        sys.exit(1)
+    
+    chrom_lengths = extract_chromosome_lengths(sys.argv[1], sys.argv[2])
+EOF</span>
+
+<span class="token comment"># 运行染色体长度提取</span>
+python3 <span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/extract_chrom_lengths.py"</span> <span class="token string">"<span class="token variable">${REF_GENOME}</span>"</span> <span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/vcf_header.txt"</span>
+
+<span class="token comment"># 2. 创建过滤后的GFF注释文件</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"[2/6] 创建过滤后的GFF注释文件..."</span>
+
+<span class="token function">cat</span> <span class="token operator">&gt;</span> <span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/fix_gff_with_filter.py"</span> <span class="token operator">&lt;&lt;</span> <span class="token string">'EOF'
+import pandas as pd
+import re
+import sys
+
+def extract_gene_info_with_filter(gff_file, output_file):
+    print("读取GFF文件并提取完整基因信息（过滤无外显子基因）...")
+    
+    genes = {}
+    mrnas = {}
+    exons = []
+    
+    with open(gff_file, 'r') as f:
+        for line in f:
+            if line.startswith('#'):
+                continue
+            
+            fields = line.strip().split('\t')
+            if len(fields) &lt; 9:
+                continue
+            
+            chrom, source, feature_type, start, end, score, strand, phase, attributes = fields
+            
+            if feature_type == 'gene':
+                gene_id = 'Unknown'
+                gene_name = 'Unknown'
+                
+                if 'ID=' in attributes:
+                    gene_id = attributes.split('ID=')[1].split(';')[0]
+                if 'gene=' in attributes:
+                    gene_name = attributes.split('gene=')[1].split(';')[0]
+                elif 'Name=' in attributes:
+                    gene_name = attributes.split('Name=')[1].split(';')[0]
+                elif gene_id != 'Unknown':
+                    gene_name = gene_id
+                
+                genes[gene_id] = {
+                    'name': gene_name,
+                    'chrom': chrom,
+                    'strand': strand,
+                    'start': int(start),
+                    'end': int(end),
+                    'mrnas': []
+                }
+            
+            elif feature_type == 'mRNA':
+                mrna_id = 'Unknown'
+                parent_gene = 'Unknown'
+                
+                if 'ID=' in attributes:
+                    mrna_id = attributes.split('ID=')[1].split(';')[0]
+                if 'Parent=' in attributes:
+                    parent_gene = attributes.split('Parent=')[1].split(';')[0]
+                
+                mrnas[mrna_id] = {
+                    'parent': parent_gene,
+                    'chrom': chrom,
+                    'strand': strand,
+                    'start': int(start),
+                    'end': int(end),
+                    'exons': []
+                }
+                
+                if parent_gene in genes:
+                    genes[parent_gene]['mrnas'].append(mrna_id)
+            
+            elif feature_type == 'exon':
+                parent_mrna = 'Unknown'
+                
+                if 'Parent=' in attributes:
+                    parent_mrna = attributes.split('Parent=')[1].split(';')[0]
+                
+                exons.append({
+                    'parent': parent_mrna,
+                    'chrom': chrom,
+                    'start': int(start),
+                    'end': int(end)
+                })
+    
+    print(f"找到 {len(genes)} 个基因, {len(mrnas)} 个mRNA, {len(exons)} 个外显子")
+    
+    # 关联外显子到mRNA
+    for exon in exons:
+        parent = exon['parent']
+        if parent in mrnas:
+            mrnas[parent]['exons'].append((exon['start'], exon['end']))
+    
+    # 为每个基因选择最长的mRNA作为代表，并过滤无外显子的基因
+    print("处理基因和转录本（过滤无外显子基因）...")
+    gene_records = []
+    skipped_genes = 0
+    
+    for gene_id, gene_info in genes.items():
+        if not gene_info['mrnas']:
+            skipped_genes += 1
+            continue
+        else:
+            longest_mrna = None
+            max_length = 0
+            
+            for mrna_id in gene_info['mrnas']:
+                if mrna_id in mrnas:
+                    mrna = mrnas[mrna_id]
+                    length = mrna['end'] - mrna['start']
+                    if length &gt; max_length:
+                        max_length = length
+                        longest_mrna = mrna
+            
+            if longest_mrna and longest_mrna['exons']:
+                sorted_exons = sorted(longest_mrna['exons'], key=lambda x: x[0])
+                exon_starts = [exon[0] for exon in sorted_exons]
+                exon_ends = [exon[1] for exon in sorted_exons]
+                
+                gene_records.append({
+                    'name': gene_info['name'],
+                    'chrom': gene_info['chrom'],
+                    'strand': gene_info['strand'],
+                    'tx_start': longest_mrna['start'],
+                    'tx_end': longest_mrna['end'],
+                    'exon_starts': exon_starts,
+                    'exon_ends': exon_ends
+                })
+            else:
+                skipped_genes += 1
+    
+    print(f"生成 {len(gene_records)} 个基因记录")
+    print(f"跳过 {skipped_genes} 个无外显子信息的基因")
+    
+    # 写入输出文件
+    print("写入输出文件...")
+    with open(output_file, 'w') as out:
+        out.write("#NAME\tCHROM\tSTRAND\tTX_START\tTX_END\tEXON_START\tEXON_END\n")
+        
+        for gene in gene_records:
+            exon_start_str = ','.join(map(str, gene['exon_starts'])) + ','
+            exon_end_str = ','.join(map(str, gene['exon_ends'])) + ','
+            
+            out.write(f"{gene['name']}\t{gene['chrom']}\t{gene['strand']}\t")
+            out.write(f"{gene['tx_start']}\t{gene['tx_end']}\t")
+            out.write(f"{exon_start_str}\t{exon_end_str}\n")
+    
+    print(f"转换完成: {output_file}")
+    
+    print(f"\n📊 统计信息:")
+    print(f"总基因数: {len(genes)}")
+    print(f"有效基因数（有外显子）: {len(gene_records)}")
+    print(f"无效基因数（无外显子）: {skipped_genes}")
+    print(f"过滤率: {skipped_genes/len(genes)*100:.1f}%")
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("用法: python fix_gff_with_filter.py input.gff output.txt")
+        sys.exit(1)
+    
+    extract_gene_info_with_filter(sys.argv[1], sys.argv[2])
+EOF</span>
+
+python3 <span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/fix_gff_with_filter.py"</span> <span class="token string">"<span class="token variable">${INPUT_GFF}</span>"</span> <span class="token string">"<span class="token variable">${OUTPUT_TXT}</span>"</span>
+
+<span class="token comment"># 3. 创建VCF文件（使用准确的染色体长度）</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"[3/6] 创建VCF文件（使用准确染色体长度）..."</span>
+<span class="token assign-left variable">INPUT_VCF</span><span class="token operator">=</span><span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/input_variants.vcf"</span>
+
+<span class="token comment"># 使用提取的VCF头</span>
+<span class="token function">cat</span> <span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/vcf_header.txt"</span> <span class="token operator">&gt;</span> <span class="token string">"<span class="token variable">${INPUT_VCF}</span>"</span>
+
+<span class="token comment"># 添加变异数据</span>
+<span class="token function">awk</span> -F<span class="token string">'\t'</span> <span class="token string">'
+NR==1 { next }
+{
+    chrom = $1;
+    pos = $2;
+    ref = $3;
+    alt = $4;
+    if (length(ref) == 1 &amp;&amp; length(alt) == 1) {
+        print chrom "\t" pos "\t.\t" ref "\t" alt "\t.\tPASS\t."
+    }
+}'</span> <span class="token string">"<span class="token variable">${INPUT_TSV}</span>"</span> <span class="token operator">&gt;&gt;</span> <span class="token string">"<span class="token variable">${INPUT_VCF}</span>"</span>
+
+<span class="token assign-left variable">VARIANT_COUNT</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">grep</span> <span class="token parameter variable">-v</span> <span class="token string">'^#'</span> <span class="token string">"<span class="token variable">${INPUT_VCF}</span>"</span> <span class="token operator">|</span> <span class="token function">wc</span> <span class="token parameter variable">-l</span><span class="token variable">)</span></span>
+<span class="token builtin class-name">echo</span> <span class="token string">"✅ VCF创建完成: <span class="token variable">${VARIANT_COUNT}</span> 个变异"</span>
+
+<span class="token comment"># 4. 运行预测</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"[4/6] 运行OpenSpliceAI预测..."</span>
+<span class="token assign-left variable">OUTPUT_VCF</span><span class="token operator">=</span><span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/output.vcf"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"使用准确的染色体长度和过滤后的注释文件..."</span>
+openspliceai variant <span class="token punctuation">\</span>
+    <span class="token parameter variable">-I</span> <span class="token string">"<span class="token variable">${INPUT_VCF}</span>"</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-R</span> <span class="token string">"<span class="token variable">${REF_GENOME}</span>"</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-A</span> <span class="token string">"<span class="token variable">${ANNOTATION}</span>"</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-m</span> <span class="token string">"<span class="token variable">${MODEL_PATH}</span>"</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-f</span> <span class="token number">2000</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-D</span> <span class="token number">50</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-O</span> <span class="token string">"<span class="token variable">${OUTPUT_VCF}</span>"</span> <span class="token operator"><span class="token file-descriptor important">2</span>&gt;</span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">|</span> <span class="token function">tee</span> <span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/prediction.log"</span>
+
+<span class="token comment"># 检查预测结果</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-f</span> <span class="token string">"<span class="token variable">${OUTPUT_VCF}</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token assign-left variable">ANNOTATED_COUNT</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">grep</span> <span class="token parameter variable">-c</span> <span class="token string">'SpliceAI'</span> <span class="token string">"<span class="token variable">${OUTPUT_VCF}</span>"</span> <span class="token operator"><span class="token file-descriptor important">2</span>&gt;</span>/dev/null <span class="token operator">||</span> <span class="token builtin class-name">echo</span> <span class="token string">"0"</span><span class="token variable">)</span></span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"✅ 预测完成: <span class="token variable">${ANNOTATED_COUNT}</span> 个变异被注释"</span>
+<span class="token keyword">else</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"❌ 预测失败"</span>
+    <span class="token builtin class-name">exit</span> <span class="token number">1</span>
+<span class="token keyword">fi</span>
+
+<span class="token comment"># 5. 提取结果</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"[5/6] 提取预测结果..."</span>
+<span class="token assign-left variable">FINAL_RESULTS</span><span class="token operator">=</span><span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/final_results.tsv"</span>
+
+<span class="token function">cat</span> <span class="token operator">&gt;</span> <span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/extract_results.py"</span> <span class="token operator">&lt;&lt;</span> <span class="token string">'EOF'
+import sys
+import re
+
+vcf_file = sys.argv[1]
+output_file = sys.argv[2]
+
+with open(vcf_file, 'r') as f, open(output_file, 'w') as out:
+    out.write("Chromosome\tPosition\tRef\tAlt\tGene\tDS_AG\tDS_AL\tDS_DG\tDS_DL\tMax_Score\tImpact\n")
+    
+    count = 0
+    for line in f:
+        if line.startswith('#'):
+            continue
+        
+        fields = line.strip().split('\t')
+        if len(fields) &lt; 8:
+            continue
+        
+        chrom, pos, _, ref, alt, _, _, info = fields
+        
+        if 'SpliceAI=' in info:
+            match = re.search(r'SpliceAI=([^;]+)', info)
+            if match:
+                data = match.group(1).split('|')
+                if len(data) &gt;= 7:
+                    gene = data[1]
+                    try:
+                        ds_ag = float(data[2]) if data[2] != '.' else 0.0
+                        ds_al = float(data[3]) if data[3] != '.' else 0.0
+                        ds_dg = float(data[4]) if data[4] != '.' else 0.0
+                        ds_dl = float(data[5]) if data[5] != '.' else 0.0
+                        
+                        max_score = max(ds_ag, ds_al, ds_dg, ds_dl)
+                        
+                        if max_score &gt; 0.8:
+                            impact = "VERY_HIGH"
+                        elif max_score &gt; 0.5:
+                            impact = "HIGH"
+                        elif max_score &gt; 0.2:
+                            impact = "MEDIUM"
+                        else:
+                            impact = "LOW"
+                        
+                        out.write(f"{chrom}\t{pos}\t{ref}\t{alt}\t{gene}\t{ds_ag:.6f}\t{ds_al:.6f}\t{ds_dg:.6f}\t{ds_dl:.6f}\t{max_score:.6f}\t{impact}\n")
+                        count += 1
+                    except ValueError:
+                        continue
+
+print(f"提取了 {count} 个变异的结果")
+EOF</span>
+
+python3 <span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/extract_results.py"</span> <span class="token string">"<span class="token variable">${OUTPUT_VCF}</span>"</span> <span class="token string">"<span class="token variable">${FINAL_RESULTS}</span>"</span>
+
+<span class="token comment"># 6. 清理和报告</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"[6/6] 清理和生成报告..."</span>
+<span class="token function">rm</span> <span class="token parameter variable">-f</span> <span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/extract_chrom_lengths.py"</span> <span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/fix_gff_with_filter.py"</span> <span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/extract_results.py"</span> <span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/vcf_header.txt"</span>
+
+<span class="token comment"># 显示染色体长度信息</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"📏 使用的准确染色体长度:"</span>
+python3 <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
+import re
+
+with open("<span class="token variable">${REF_GENOME}</span>", 'r') as f:
+    chrom_lengths = {}
+    current_chrom = None
+    current_length = 0
+    
+    for line in f:
+        if line.startswith('&gt;'):
+            if current_chrom and current_length &gt; 0:
+                chrom_lengths[current_chrom] = current_length
+            
+            header = line[1:].strip()
+            chrom_name = header.split()[0]
+            current_chrom = chrom_name
+            current_length = 0
+        else:
+            current_length += len(line.strip())
+    
+    if current_chrom and current_length &gt; 0:
+        chrom_lengths[current_chrom] = current_length
+
+print("染色体长度统计:")
+for chrom, length in sorted(chrom_lengths.items()):
+    print(f"  {chrom}: {length:,} bp")
+EOF</span>
+
+<span class="token comment"># 最终报告</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"========================================"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"🎉 使用准确染色体长度完成！"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"========================================"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"📊 结果统计:"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"  - 输入变异: <span class="token variable">${VARIANT_COUNT}</span> 个"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"  - 成功注释: <span class="token variable">${ANNOTATED_COUNT}</span> 个"</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">${VARIANT_COUNT}</span> <span class="token parameter variable">-gt</span> <span class="token number">0</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token assign-left variable">SUCCESS_RATE</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token builtin class-name">echo</span> <span class="token string">"scale=2; <span class="token variable">${ANNOTATED_COUNT}</span> * 100 / <span class="token variable">${VARIANT_COUNT}</span>"</span> <span class="token operator">|</span> <span class="token function">bc</span><span class="token variable">)</span></span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"  - 成功率: <span class="token variable">${SUCCESS_RATE}</span>%"</span>
+<span class="token keyword">fi</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"🔧 改进内容:"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"  ✅ 自动从FASTA提取准确染色体长度"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"  ✅ 过滤无外显子信息的基因"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"  ✅ 使用真实的基因组坐标"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"📁 输出文件:"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"  📋 <span class="token variable">${FINAL_RESULTS}</span> (主要结果)"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"  🧬 <span class="token variable">${OUTPUT_TXT}</span> (过滤后的基因注释)"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"  🧬 <span class="token variable">${OUTPUT_VCF}</span> (预测结果VCF)"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>命名为<code>7.run_openspliceai_predict.sh</code>，<code>chmod +x 7.run_openspliceai_predict.sh</code>，<code>./7.run_openspliceai_predict.sh</code> 运行命令。</p>
+<h3 id="结果展示："><a href="#结果展示：" class="headerlink" title="结果展示："></a>结果展示：</h3><p>执行：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token comment"># OpenSpliceAI 最终结果详细分析报告</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"========================================"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"🎊 OpenSpliceAI 最终成果报告"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"========================================"</span>
+
+<span class="token assign-left variable">OUTPUT_DIR</span><span class="token operator">=</span><span class="token string">"./final_fix_results_auto"</span>
+<span class="token assign-left variable">FINAL_RESULTS</span><span class="token operator">=</span><span class="token string">"<span class="token variable">${OUTPUT_DIR}</span>/final_results.tsv"</span>
+
+<span class="token comment"># 详细结果分析</span>
+python3 <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
+import pandas as pd
+import numpy as np
+from datetime import datetime
+
+# 读取结果文件
+df = pd.read_csv("<span class="token variable">${FINAL_RESULTS}</span>", sep='<span class="token entity" title="\t">\t</span>')
+
+print("🚀 重大性能提升!")
+print("=" * 50)
+print("优化前后对比:")
+print("  🔴 初始版本:  4/358 (1.11%)")
+print("  🟡 中间版本: 50/358 (13.96%)") 
+print("  🟢 最终版本: 235/358 (65.64%)")
+print("")
+print(f"📈 性能提升: +64.53个百分点!")
+
+print(f"<span class="token entity" title="\n">\n</span>📊 详细结果分析 - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+print("=" * 60)
+
+# 基本统计
+total_variants = len(df)
+print(f"总注释变异数: {total_variants}")
+
+# 影响级别统计
+impact_counts = df['Impact'].value_counts()
+print(f"<span class="token entity" title="\n">\n</span>🎯 影响级别分布:")
+for impact in ['VERY_HIGH', 'HIGH', 'MEDIUM', 'LOW']:
+    count = impact_counts.get(impact, 0)
+    percentage = (count / total_variants) * 100
+    icon = "🔴" if impact == "VERY_HIGH" else "🟠" if impact == "HIGH" else "🟡" if impact == "MEDIUM" else "🟢"
+    print(f"  {icon} {impact:&lt;9}: {count:3d} 个 ({percentage:5.1f}%)")
+
+# 高影响变异详细分析
+high_impact = df[df['Impact'].isin(['HIGH', 'VERY_HIGH'])]
+if len(high_impact) &gt; 0:
+    print(f"<span class="token entity" title="\n">\n</span>🚨 高影响变异详情 ({len(high_impact)} 个):")
+    print("-" * 80)
+    for idx, row in high_impact.sort_values('Max_Score', ascending=False).iterrows():
+        icon = "🔴" if row['Impact'] == "VERY_HIGH" else "🟠"
+        print(f"{icon} {row['Chromosome']}:{row['Position']} {row['Ref']}-&gt;{row['Alt']}")
+        print(f"  基因: {row['Gene']}")
+        print(f"  最大分数: {row['Max_Score']:.4f} ({row['Impact']})")
+        print(f"  详细分数: AG={row['DS_AG']:.4f}, AL={row['DS_AL']:.4f}, DG={row['DS_DG']:.4f}, DL={row['DS_DL']:.4f}")
+        print()
+else:
+    print("<span class="token entity" title="\n">\n</span>✅ 未发现高影响变异")
+
+# 分数分布统计
+print(f"<span class="token entity" title="\n">\n</span>📈 分数分布统计:")
+score_stats = {}
+for score_col in ['DS_AG', 'DS_AL', 'DS_DG', 'DS_DL']:
+    scores = df[score_col]
+    score_stats[score_col] = {
+        'max': scores.max(),
+        'mean': scores.mean(),
+        '&gt;0.2': len(scores[scores &gt; 0.2]),
+        '&gt;0.5': len(scores[scores &gt; 0.5]),
+        '&gt;0.8': len(scores[scores &gt; 0.8])
+    }
+
+score_names = {
+    'DS_AG': 'Acceptor Gain',
+    'DS_AL': 'Acceptor Loss', 
+    'DS_DG': 'Donor Gain',
+    'DS_DL': 'Donor Loss'
+}
+
+for score_col, stats in score_stats.items():
+    name = score_names[score_col]
+    print(f"  {name}:")
+    print(f"    🔺 最高分: {stats['max']:.4f}")
+    print(f"    📊 平均分: {stats['mean']:.4f}")
+    print(f"    🟡 &gt;0.2: {stats['&gt;0.2']:3d} 个")
+    print(f"    🟠 &gt;0.5: {stats['&gt;0.5']:3d} 个") 
+    print(f"    🔴 &gt;0.8: {stats['&gt;0.8']:3d} 个")
+
+# 基因分布统计
+print(f"<span class="token entity" title="\n">\n</span>🧬 基因分布统计 (前15个):")
+gene_counts = df['Gene'].value_counts().head(15)
+for gene, count in gene_counts.items():
+    percentage = (count / total_variants) * 100
+    print(f"  {gene}: {count:2d} 个变异 ({percentage:4.1f}%)")
+
+# 染色体分布
+print(f"<span class="token entity" title="\n">\n</span>🔬 染色体分布:")
+chrom_counts = df['Chromosome'].value_counts()
+for chrom, count in chrom_counts.items():
+    percentage = (count / total_variants) * 100
+    print(f"  {chrom}: {count:3d} 个变异 ({percentage:5.1f}%)")
+
+# 保存详细报告
+report_file = "<span class="token variable">${OUTPUT_DIR}</span>/final_detailed_report.txt"
+with open(report_file, 'w') as f:
+    f.write("OpenSpliceAI 最终详细分析报告<span class="token entity" title="\\">\\</span>n")
+    f.write("=" * 60 + "<span class="token entity" title="\\">\\</span>n<span class="token entity" title="\\">\\</span>n")
+    
+    f.write("性能提升总结:<span class="token entity" title="\\">\\</span>n")
+    f.write("- 初始版本: 4/358 (1.11%)<span class="token entity" title="\\">\\</span>n")
+    f.write("- 中间版本: 50/358 (13.96%)<span class="token entity" title="\\">\\</span>n")
+    f.write("- 最终版本: 235/358 (65.64%)<span class="token entity" title="\\">\\</span>n")
+    f.write("- 总提升: +64.53个百分点<span class="token entity" title="\\">\\</span>n<span class="token entity" title="\\">\\</span>n")
+    
+    f.write(f"总注释变异数: {total_variants}<span class="token entity" title="\\">\\</span>n<span class="token entity" title="\\">\\</span>n")
+    
+    f.write("影响级别分布:<span class="token entity" title="\\">\\</span>n")
+    for impact in ['VERY_HIGH', 'HIGH', 'MEDIUM', 'LOW']:
+        count = impact_counts.get(impact, 0)
+        percentage = (count / total_variants) * 100
+        f.write(f"  {impact}: {count} 个 ({percentage:.1f}%)<span class="token entity" title="\\">\\</span>n")
+    
+    if len(high_impact) &gt; 0:
+        f.write(f"<span class="token entity" title="\\">\\</span>n高影响变异 ({len(high_impact)} 个):<span class="token entity" title="\\">\\</span>n")
+        for idx, row in high_impact.sort_values('Max_Score', ascending=False).iterrows():
+            f.write(f"{row['Chromosome']}:{row['Position']} {row['Ref']}-&gt;{row['Alt']}<span class="token entity" title="\\">\\</span>n")
+            f.write(f"  基因: {row['Gene']}, 最大分数: {row['Max_Score']:.4f} ({row['Impact']})<span class="token entity" title="\\">\\</span>n")
+            f.write(f"  AG={row['DS_AG']:.4f}, AL={row['DS_AL']:.4f}, DG={row['DS_DG']:.4f}, DL={row['DS_DL']:.4f}<span class="token entity" title="\\">\\</span>n<span class="token entity" title="\\">\\</span>n")
+    
+    f.write("所有注释变异:<span class="token entity" title="\\">\\</span>n")
+    for idx, row in df.iterrows():
+        f.write(f"{row['Chromosome']}:{row['Position']} {row['Ref']}-&gt;{row['Alt']}<span class="token entity" title="\\">\\</span>n")
+        f.write(f"  基因: {row['Gene']}, 最大分数: {row['Max_Score']:.4f} ({row['Impact']})<span class="token entity" title="\\">\\</span>n<span class="token entity" title="\\">\\</span>n")
+
+print(f"<span class="token entity" title="\\">\\</span>n📄 详细报告已保存: {report_file}")
+EOF</span>
+
+<span class="token comment"># 创建优化总结</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"========================================"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"💡 优化关键因素总结"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"========================================"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"1. 🔧 准确的染色体长度"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 从FASTA文件自动提取真实长度"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 避免坐标越界和计算错误"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"2. 🧬 有效的基因注释"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 过滤无外显子信息的基因 (6,837个)"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 只保留有完整结构的基因 (31,371个)"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 避免空序列错误"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"3. 📍 真实的基因组坐标"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 使用准确的基因组位置信息"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 提高剪接位点预测的准确性"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"========================================"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"🎯 下一步研究建议"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"========================================"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"1. 🔍 验证高影响变异"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 检查分数 &gt;0.5的变异"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 与已知剪接变异数据库对比"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"2. 🧪 实验验证"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 对高影响变异进行RT-PCR验证"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 检查剪接异构体的变化"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"3. 📚 功能分析"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 分析受影响基因的生物学功能"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 研究剪接改变对蛋白质功能的影响"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"4. 🎯 临床意义"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 评估高影响变异的致病潜力"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   - 与疾病数据库进行关联分析"</span>
+
+<span class="token comment"># 显示最重要的高影响变异</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"========================================"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"🏆 最重要的发现"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"========================================"</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-f</span> <span class="token string">"<span class="token variable">${FINAL_RESULTS}</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"前5个最高分数变异:"</span>
+    python3 <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
+import pandas as pd
+
+df = pd.read_csv("<span class="token variable">${FINAL_RESULTS}</span>", sep='<span class="token entity" title="\t">\t</span>')
+top_variants = df.nlargest(5, 'Max_Score')
+
+for idx, row in top_variants.iterrows():
+    icon = "🏆" if row['Max_Score'] &gt; 0.8 else "🥇" if row['Max_Score'] &gt; 0.5 else "🥈"
+    print(f"{icon} {row['Chromosome']}:{row['Position']} {row['Ref']}-&gt;{row['Alt']}")
+    print(f"   基因: {row['Gene']}")
+    print(f"   分数: {row['Max_Score']:.4f} ({row['Impact']})")
+    print(f"   AG: {row['DS_AG']:.4f}, AL: {row['DS_AL']:.4f}, DG: {row['DS_DG']:.4f}, DL: {row['DS_DL']:.4f}")
+    print()
+EOF</span>
+<span class="token keyword">fi</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"========================================"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"✅ 分析完全成功！"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"========================================"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>命名为<code>8.show_result.sh</code>，<code>chmod +x 8.show_result.sh</code>，<code>./8.show_result.sh</code> 运行命令。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>通过遵循这些步骤，您已经成功地使用物种特异性的基因组和注释文件，在长牡蛎数据上训练了一个 OpenSpliceAI 模型。该模型现在可用于预测长牡蛎的剪接位点和分析遗传变异的影响，从而将 OpenSpliceAI 的实用性扩展到非人类基因组学领域。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://0HHHHHH0.github.io">HHHH</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://0hhhhhh0.github.io/2025/10/22/train-openspliceai/">https://0hhhhhh0.github.io/2025/10/22/train-openspliceai/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/uploads/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/10/26/planck-pi/" title="Planck-Pi学习"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Planck-Pi学习</div></div><div class="info-2"><div class="info-item-1">1. 配置编译环境1.1 编译过程中需要的依赖 sudo apt update sudo apt install xz-utils nano wget unzip build-essential git bc swig libncurses5-dev libpython3-dev libssl-dev pkg-config zlib1g-dev libusb-dev libusb-1.0-0-dev python3-pip gawk bison flex -y sudo apt install python python-dev lib32ncurses5 lib32z1 vim dwarves -y 1.2 交叉编译工具链# 下载 wget http://releases.linaro.org/components/toolchain/binaries/7.2-2017.11/arm-linux-gnueabi/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi.tar.xz  $ wget https://releases.li...</div></div></div></a><a class="pagination-related" href="/2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" title="Hexo + Butterfly 个人博客搭建"><img class="cover" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Hexo + Butterfly 个人博客搭建</div></div><div class="info-2"><div class="info-item-1">Hexo + Butterfly 个人博客搭建在用了一周左右的时间搭建博客，沉浸于试效果、改 bug、试效果、改 bug……的循环后，我还是决定写一篇文章来记录一下，省得未来的自己再走一遍这痛苦的过程。  一、Hexo 静态网页生成 1. Node.js 安装!首先我们需要下载 Node.js👉 Node.js — 在任何地方运行 JavaScript 安装好之后我们可以输入以下指令，如果都能正常输出版本号则安装成功。 node -v npm -v   2. Git 安装Git 可是个好东西，程序员必备。官网在这里：Git - Downloading Package 验证是否安装成功： git --version  正常显示版本即可。  3. Hexo 安装在自己心仪的文件夹下（如 E:/hexo），鼠标右击选择 Git Bash Here，依次执行以下命令： npm install hexo-cli -g npm install hexo --save  如果已经安装过 hexo 或不确定装没装过也没关系，装过的执行完会显示 update。 查看版本： hexo -v  正常...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E6%82%A8%E8%87%AA%E5%B7%B1%E7%9A%84%E6%A8%A1%E5%9E%8B%E2%80%94%E2%80%94%E9%95%BF%E7%89%A1%E8%9B%8E"><span class="toc-number">1.</span> <span class="toc-text">训练您自己的模型——长牡蛎</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="toc-number">1.1.</span> <span class="toc-text">前置条件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-1%EF%BC%9A%E6%A3%80%E6%9F%A5%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6"><span class="toc-number">1.2.</span> <span class="toc-text">步骤 1：检查输入文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-2%EF%BC%9A%E5%88%9B%E5%BB%BA%E8%AE%AD%E7%BB%83%E5%92%8C%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-number">1.3.</span> <span class="toc-text">步骤 2：创建训练和测试数据集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-3%EF%BC%9A%E8%AE%AD%E7%BB%83%E9%95%BF%E7%89%A1%E8%9B%8E%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.4.</span> <span class="toc-text">步骤 3：训练长牡蛎模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-4%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89%EF%BC%9A%E8%BD%AC%E7%A7%BB%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.5.</span> <span class="toc-text">步骤 4（可选）：转移模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-5%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89%EF%BC%9A%E6%A0%A1%E5%87%86%E9%95%BF%E7%89%A1%E8%9B%8E%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.6.</span> <span class="toc-text">步骤 5（可选）：校准长牡蛎模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-6%EF%BC%9A%E9%83%A8%E7%BD%B2%E6%82%A8%E8%AE%AD%E7%BB%83%E5%A5%BD%E7%9A%84%E9%95%BF%E7%89%A1%E8%9B%8E%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.7.</span> <span class="toc-text">步骤 6：部署您训练好的长牡蛎模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%951%EF%BC%9A"><span class="toc-number">1.7.1.</span> <span class="toc-text">测试1：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%952%EF%BC%9A"><span class="toc-number">1.7.2.</span> <span class="toc-text">测试2：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C%E5%B1%95%E7%A4%BA%EF%BC%9A"><span class="toc-number">1.7.3.</span> <span class="toc-text">结果展示：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-number">1.8.</span> <span class="toc-text">结论</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/24/indel/" title="记一次清空SMART修复群晖报故障的硬盘">记一次清空SMART修复群晖报故障的硬盘</a><time datetime="2025-12-24T04:56:00.000Z" title="Created 2025-12-24 12:56:00">2025-12-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/gemini/" title="根据SNP位点进行快速引物设计——网页版">根据SNP位点进行快速引物设计——网页版</a><time datetime="2025-12-02T14:26:00.000Z" title="Created 2025-12-02 22:26:00">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/24/latex/" title="LaTeX详细教程+技巧总结">LaTeX详细教程+技巧总结</a><time datetime="2025-11-24T14:26:00.000Z" title="Created 2025-11-24 22:26:00">2025-11-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/10/gwas-ld-block/" title="GWAS + 热点区域识别 + LD Block 分析流程详解">GWAS + 热点区域识别 + LD Block 分析流程详解</a><time datetime="2025-11-10T14:26:00.000Z" title="Created 2025-11-10 22:26:00">2025-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应">从基因到结构：用PyMOL可视化理解分子对接与突变效应</a><time datetime="2025-11-09T14:26:00.000Z" title="Created 2025-11-09 22:26:00">2025-11-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
+   #sidebar_search_box input[type=text]{width:calc(100% - 24px)}
+}</style></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/fish.js" defer data-pjax></script><script type="text/javascript" src="/js/busuanzi.pure.mini.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-10-09</span><a class="blog-slider__title" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">Hexo + Butterfly 个人博客搭建</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/11/10/gwas-ld-block/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-11-10</span><a class="blog-slider__title" href="2025/11/10/gwas-ld-block/" alt="">GWAS + 热点区域识别 + LD Block 分析流程详解</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/11/10/gwas-ld-block/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/07/31/19/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/OIP-C.2E7GSli1t13WJ-Of6Hp9UgHaEi" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-07-31</span><a class="blog-slider__title" href="2025/07/31/19/" alt="">2.重测序数据分析——初步整理</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/07/31/19/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><!-- hexo injector body_end end --></body></html>

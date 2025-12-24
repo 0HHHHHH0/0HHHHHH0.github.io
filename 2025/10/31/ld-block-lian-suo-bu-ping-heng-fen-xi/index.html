@@ -1,0 +1,835 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>LD-Block 连锁不平衡分析 | HHHH</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="关键词：LD Block分析、连锁不平衡、LDBlockShow、群体遗传学、VCF处理、基因组可视化  使用LDBlockShow进行LD Block分析 在群体遗传学研究中，连锁不平衡（Linkage Disequilibrium, LD）分析是理解基因组结构和识别候选基因的重要工具。本文将介绍如何使用LDBlockShow工具对特定基因组区域进行LD block分析。本文详细介绍如何使用LD">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LD-Block 连锁不平衡分析">
+<meta property="og:url" content="https://0hhhhhh0.github.io/2025/10/31/ld-block-lian-suo-bu-ping-heng-fen-xi/index.html">
+<meta property="og:site_name" content="HHHH">
+<meta property="og:description" content="关键词：LD Block分析、连锁不平衡、LDBlockShow、群体遗传学、VCF处理、基因组可视化  使用LDBlockShow进行LD Block分析 在群体遗传学研究中，连锁不平衡（Linkage Disequilibrium, LD）分析是理解基因组结构和识别候选基因的重要工具。本文将介绍如何使用LDBlockShow工具对特定基因组区域进行LD block分析。本文详细介绍如何使用LD">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0hhhhhh0.github.io/uploads/avatar.png">
+<meta property="article:published_time" content="2025-10-31T02:26:00.000Z">
+<meta property="article:modified_time" content="2025-10-31T02:32:15.000Z">
+<meta property="article:author" content="HHHH">
+<meta property="article:tag" content="hexo">
+<meta property="article:tag" content="组学">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="折腾">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0hhhhhh0.github.io/uploads/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "LD-Block 连锁不平衡分析",
+  "url": "https://0hhhhhh0.github.io/2025/10/31/ld-block-lian-suo-bu-ping-heng-fen-xi/",
+  "image": "https://0hhhhhh0.github.io/uploads/avatar.png",
+  "datePublished": "2025-10-31T02:26:00.000Z",
+  "dateModified": "2025-10-31T02:32:15.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "HHHH",
+      "url": "https://0HHHHHH0.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/uploads/avatar.png"><link rel="canonical" href="https://0hhhhhh0.github.io/2025/10/31/ld-block-lian-suo-bu-ping-heng-fen-xi/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":-1,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'LD-Block 连锁不平衡分析',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@4.5.12/index.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/styles/css/font.css"><link rel="stylesheet" href="/css/mermaid.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="HHHH" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="scarecrow"><div class="scarecrow__hat"><div class="scarecrow__ribbon"></div></div><div class="scarecrow__head"><div class="scarecrow__eye"></div><div class="scarecrow__eye"></div><div class="scarecrow__mouth"></div><div class="scarecrow__pipe"></div></div><div class="scarecrow__body"><div class="scarecrow__glove scarecrow__glove--l"></div><div class="scarecrow__sleeve scarecrow__sleeve--l"></div><div class="scarecrow__bow"></div><div class="scarecrow__shirt"></div><div class="scarecrow__coat"></div><div class="scarecrow__waistcoat"></div><div class="scarecrow__sleeve scarecrow__sleeve--r"></div><div class="scarecrow__glove scarecrow__glove--r"></div><div class="scarecrow__coattails"></div><div class="scarecrow__pants"></div></div><div class="scarecrow__arms"></div><div class="scarecrow__leg">  </div></div></div><script async="async">(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-color: #fbfdff;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/uploads/avatar.png" alt="Logo"><span class="site-name">HHHH</span></a><a class="nav-page-title" href="/"><span class="site-name">LD-Block 连锁不平衡分析</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">LD-Block 连锁不平衡分析</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-10-31T02:26:00.000Z" title="Created 2025-10-31 10:26:00">2025-10-31</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-10-31T02:32:15.000Z" title="Updated 2025-10-31 10:32:15">2025-10-31</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="ai-summary"><div class="ai-explanation" style="display: block;" data-summary="这篇文章介绍了如何使用LDBlockShow工具进行连锁不平衡（LD）Block分析的技术流程，重点阐述了从数据预处理到可视化的完整操作步骤。文章首先说明了分析目标是对基因LOC105322102特定区域进行LD Block研究，并提供了所需工具安装的conda命令。随后详细讲解了数据预处理过程，特别是解决VCF文件中样本名包含下划线的问题。接着介绍了如何提取目标SNP位点，包括创建位点列表、转换为BED格式和提取特定区域SNP等操作。文章重点解析了LDBlockShow的核心运行参数和使用方法，并补充了使用PLINK计算全基因组LD和R语言进行可视化分析的流程。该教程提供了完整的命令行代码和R脚本，适合研究人员快速上手进行LD Block分析项目。">AI正在绞尽脑汁想思路ING···</div><div class="ai-title"> <div class="ai-title-left"> <i class="fa-brands fa-slack"></i><div class="ai-title-text">AI摘要</div></div><div class="ai-tag" id="ai-tag">deepseek-ai/DeepSeek-V3</div></div></div><p><strong>关键词</strong>：LD Block分析、连锁不平衡、LDBlockShow、群体遗传学、VCF处理、基因组可视化</p>
+<hr>
+<h1 id="使用LDBlockShow进行LD-Block分析"><a href="#使用LDBlockShow进行LD-Block分析" class="headerlink" title="使用LDBlockShow进行LD Block分析"></a>使用LDBlockShow进行LD Block分析</h1><blockquote>
+<p>在群体遗传学研究中，连锁不平衡（Linkage Disequilibrium, LD）分析是理解基因组结构和识别候选基因的重要工具。本文将介绍如何使用LDBlockShow工具对特定基因组区域进行LD block分析。本文详细介绍如何使用LDBlockShow工具对特定基因组区域进行连锁不平衡（LD）Block分析，涵盖从数据预处理、样本名修正、目标区域提取到最终可视化分析的完整流程。</p>
+</blockquote>
+<h2 id="1-分析背景与工具准备"><a href="#1-分析背景与工具准备" class="headerlink" title="1. 分析背景与工具准备"></a>1. 分析背景与工具准备</h2><h3 id="1-1-分析目标"><a href="#1-1-分析目标" class="headerlink" title="1.1 分析目标"></a>1.1 分析目标</h3><p>对基因LOC105322102区域（NC_047567.1:32646664-32667511）进行LD Block分析，了解该区域的连锁不平衡结构。</p>
+<h3 id="1-2-所需工具安装"><a href="#1-2-所需工具安装" class="headerlink" title="1.2 所需工具安装"></a>1.2 所需工具安装</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 生物信息学工具</span>
+conda create <span class="token parameter variable">-n</span> vcftools_env <span class="token parameter variable">-c</span> bioconda <span class="token parameter variable">-c</span> conda-forge <span class="token punctuation">\</span>
+    bcftools <span class="token punctuation">\</span>
+    ldblockshow <span class="token punctuation">\</span>
+    plink <span class="token punctuation">\</span>
+    tabix <span class="token punctuation">\</span>
+    vcftools <span class="token punctuation">\</span>
+    ldblockshow <span class="token punctuation">\</span>
+    r-base <span class="token punctuation">\</span>
+    r-tidyverse <span class="token punctuation">\</span>
+    r-hexbin <span class="token punctuation">\</span>
+    r-patchwork <span class="token punctuation">\</span>
+    r-viridis <span class="token parameter variable">-y</span>
+    
+<span class="token comment"># R包（用于可视化）</span>
+R <span class="token parameter variable">-e</span> <span class="token string">"install.packages(c('tidyverse', 'hexbin', 'patchwork', 'viridis'))"</span>
+
+conda activate vcftools_env<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="2-数据预处理"><a href="#2-数据预处理" class="headerlink" title="2. 数据预处理"></a>2. 数据预处理</h2><h3 id="2-1-原始数据"><a href="#2-1-原始数据" class="headerlink" title="2.1 原始数据"></a>2.1 原始数据</h3><ul>
+<li>输入文件：<code>/home/wanglab/Ywh/adductor_muscle_scar/Variants/NC_047567.1_results_snps.vcf.gz</code></li>
+</ul>
+<h3 id="2-2-解决样本名问题"><a href="#2-2-解决样本名问题" class="headerlink" title="2.2 解决样本名问题"></a>2.2 解决样本名问题</h3><p>原始VCF文件中的样本名包含下划线，会导致PLINK（LDBlockShow内部调用）报错：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 导出样本名并替换下划线</span>
+bcftools query <span class="token parameter variable">-l</span> /home/wanglab/Ywh/adductor_muscle_scar/Variants/NC_047567.1_results_snps.vcf.gz <span class="token operator">&gt;</span> samples.txt
+<span class="token function">sed</span> <span class="token string">'s/_/-/g'</span> samples.txt <span class="token operator">&gt;</span> new_samples.txt
+
+<span class="token comment"># 重新写入header生成修正后的VCF文件</span>
+bcftools reheader <span class="token parameter variable">-s</span> new_samples.txt /home/wanglab/Ywh/adductor_muscle_scar/Variants/NC_047567.1_results_snps.vcf.gz <span class="token parameter variable">-o</span> fixed_samples.vcf.gz
+tabix <span class="token parameter variable">-p</span> vcf fixed_samples.vcf.gz<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="3-目标SNP位点提取"><a href="#3-目标SNP位点提取" class="headerlink" title="3. 目标SNP位点提取"></a>3. 目标SNP位点提取</h2><h3 id="3-1-创建目标位点列表"><a href="#3-1-创建目标位点列表" class="headerlink" title="3.1 创建目标位点列表"></a>3.1 创建目标位点列表</h3><p>创建包含108个目标SNP位点的列表文件：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">cat</span> <span class="token operator">&gt;</span> selected_positions.txt <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
+32667511
+32661831
+32661817
+32661895
+...（此处省略具体位点列表）
+32646664
+EOF</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="3-2-提取目标SNP"><a href="#3-2-提取目标SNP" class="headerlink" title="3.2 提取目标SNP"></a>3.2 提取目标SNP</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 转换为BED格式</span>
+<span class="token function">awk</span> <span class="token string">'{print "NC_047567.1\t"$1-1"\t"$1}'</span> selected_positions.txt <span class="token operator">&gt;</span> selected_snps.bed
+
+<span class="token comment"># 从修正后的VCF文件中提取目标SNP</span>
+bcftools view <span class="token parameter variable">-T</span> selected_snps.bed fixed_samples.vcf.gz <span class="token parameter variable">-Oz</span> <span class="token parameter variable">-o</span> selected_snps.vcf.gz
+tabix <span class="token parameter variable">-p</span> vcf selected_snps.vcf.gz<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="4-LD-Block分析"><a href="#4-LD-Block分析" class="headerlink" title="4. LD Block分析"></a>4. LD Block分析</h2><h3 id="4-1-运行LDBlockShow"><a href="#4-1-运行LDBlockShow" class="headerlink" title="4.1 运行LDBlockShow"></a>4.1 运行LDBlockShow</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">LDBlockShow <span class="token parameter variable">-InVCF</span> selected_snps.vcf.gz <span class="token punctuation">\</span>
+            <span class="token parameter variable">-OutPut</span> LOC105322102_selected_snps <span class="token punctuation">\</span>
+            <span class="token parameter variable">-Region</span> <span class="token string">"NC_047567.1:32646281:32669029"</span> <span class="token punctuation">\</span>
+            <span class="token parameter variable">-SeleVar</span> <span class="token number">2</span> <span class="token punctuation">\</span>
+            <span class="token parameter variable">-MAF</span> <span class="token number">0.05</span> <span class="token punctuation">\</span>
+            <span class="token parameter variable">-OutPng</span> <span class="token punctuation">\</span>
+            <span class="token parameter variable">-OutPdf</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-2-参数详解"><a href="#4-2-参数详解" class="headerlink" title="4.2 参数详解"></a>4.2 参数详解</h3><ul>
+<li><code>-InVCF selected_snps.vcf.gz</code>：输入提取的目标SNP VCF文件</li>
+<li><code>-OutPut LOC105322102_selected_snps</code>：输出文件前缀</li>
+<li><code>-Region "NC_047567.1:32646281:32669029"</code>：分析区域</li>
+<li><code>-SeleVar 2</code>：选择算法</li>
+<li><code>-MAF 0.05</code>：过滤次要等位基因频率&lt;5%的位点</li>
+<li><code>-OutPng -OutPdf</code>：生成PNG和PDF格式图片</li>
+</ul>
+<h3 id="4-3-结果文件与解读"><a href="#4-3-结果文件与解读" class="headerlink" title="4.3. 结果文件与解读"></a>4.3. 结果文件与解读</h3><h3 id="4-3-1-生成文件"><a href="#4-3-1-生成文件" class="headerlink" title="4.3.1 生成文件"></a>4.3.1 生成文件</h3><ul>
+<li><code>LOC105322102_selected_snps.blocks</code>：LD block定义文件</li>
+<li><code>LOC105322102_selected_snps.blocks.gz</code>：压缩的block文件</li>
+<li><code>LOC105322102_selected_snps.png</code>：LD block可视化图（PNG格式）</li>
+<li><code>LOC105322102_selected_snps.pdf</code>：LD block可视化图（PDF格式）</li>
+</ul>
+<h3 id="4-3-2-结果解读"><a href="#4-3-2-结果解读" class="headerlink" title="4.3.2 结果解读"></a>4.3.2 结果解读</h3><p>LD block图中：</p>
+<ul>
+<li><strong>颜色深浅</strong>：表示SNP对之间的LD强度（r²值）</li>
+<li><strong>Block边界</strong>：黑色三角标记表示LD block的边界</li>
+<li><strong>Block内部</strong>：高度连锁的SNP集合，通常作为一个整体遗传</li>
+</ul>
+<h2 id="5-全基因组LD分析可视化（R脚本）"><a href="#5-全基因组LD分析可视化（R脚本）" class="headerlink" title="5. 全基因组LD分析可视化（R脚本）"></a>5. 全基因组LD分析可视化（R脚本）</h2><p>对于更全面的LD分析，可以使用以下R脚本进行可视化：</p>
+<h3 id="5-1-准备LD数据"><a href="#5-1-准备LD数据" class="headerlink" title="5.1 准备LD数据"></a>5.1 准备LD数据</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 使用PLINK计算全基因组LD</span>
+plink <span class="token parameter variable">--vcf</span> fixed_samples.vcf.gz <span class="token punctuation">\</span>
+      --double-id <span class="token punctuation">\</span>
+      --make-bed <span class="token punctuation">\</span>
+      <span class="token parameter variable">--out</span> full_data
+      
+plink <span class="token parameter variable">--bfile</span> full_data <span class="token punctuation">\</span>
+      <span class="token parameter variable">--r2</span> <span class="token punctuation">\</span>
+      --ld-window <span class="token number">100</span> <span class="token punctuation">\</span>
+      --ld-window-kb <span class="token number">10000</span> <span class="token punctuation">\</span>
+      --ld-window-r2 <span class="token number">0</span> <span class="token punctuation">\</span>
+      <span class="token parameter variable">--out</span> full_ld_results<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="5-2-R可视化脚本"><a href="#5-2-R可视化脚本" class="headerlink" title="5.2 R可视化脚本"></a>5.2 R可视化脚本</h3><p><code>conda activate py310</code></p>
+<p><code>jupyter notebook --allow-root</code></p>
+<p>创建 <code>ld_visualization.R</code> 文件：</p>
+<pre class="line-numbers language-r" data-language="r"><code class="language-r"><span class="token comment">#!/usr/bin/env Rscript</span>
+
+<span class="token comment"># 加载必要的包</span>
+library<span class="token punctuation">(</span>tidyverse<span class="token punctuation">)</span>
+library<span class="token punctuation">(</span>hexbin<span class="token punctuation">)</span>
+library<span class="token punctuation">(</span>patchwork<span class="token punctuation">)</span>
+
+cat<span class="token punctuation">(</span><span class="token string">"=== LD分析可视化 ===\n"</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 1. 读取LD结果数据</span>
+ld_data <span class="token operator">&lt;-</span> read.table<span class="token punctuation">(</span><span class="token string">"full_ld_results.ld"</span><span class="token punctuation">,</span> header <span class="token operator">=</span> <span class="token boolean">TRUE</span><span class="token punctuation">,</span> 
+                     stringsAsFactors <span class="token operator">=</span> <span class="token boolean">FALSE</span><span class="token punctuation">,</span> comment.char <span class="token operator">=</span> <span class="token string">""</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 移除可能的空行</span>
+ld_data <span class="token operator">&lt;-</span> ld_data<span class="token punctuation">[</span>complete.cases<span class="token punctuation">(</span>ld_data<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">]</span>
+
+cat<span class="token punctuation">(</span><span class="token string">"数据维度:"</span><span class="token punctuation">,</span> dim<span class="token punctuation">(</span>ld_data<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"\n"</span><span class="token punctuation">)</span>
+cat<span class="token punctuation">(</span><span class="token string">"总SNP对数量:"</span><span class="token punctuation">,</span> format<span class="token punctuation">(</span>nrow<span class="token punctuation">(</span>ld_data<span class="token punctuation">)</span><span class="token punctuation">,</span> big.mark <span class="token operator">=</span> <span class="token string">","</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"\n"</span><span class="token punctuation">)</span>
+cat<span class="token punctuation">(</span><span class="token string">"平均r²值:"</span><span class="token punctuation">,</span> round<span class="token punctuation">(</span>mean<span class="token punctuation">(</span>ld_data<span class="token operator">$</span>R2<span class="token punctuation">,</span> na.rm <span class="token operator">=</span> <span class="token boolean">TRUE</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"\n"</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 2. 随机抽样用于可视化</span>
+set.seed<span class="token punctuation">(</span><span class="token number">123</span><span class="token punctuation">)</span>
+sample_size <span class="token operator">&lt;-</span> min<span class="token punctuation">(</span><span class="token number">100000</span><span class="token punctuation">,</span> nrow<span class="token punctuation">(</span>ld_data<span class="token punctuation">)</span><span class="token punctuation">)</span>
+ld_sample <span class="token operator">&lt;-</span> ld_data <span class="token percent-operator operator">%&gt;%</span> sample_n<span class="token punctuation">(</span>sample_size<span class="token punctuation">)</span>
+
+<span class="token comment"># 计算距离</span>
+ld_sample<span class="token operator">$</span>distance <span class="token operator">&lt;-</span> abs<span class="token punctuation">(</span>ld_sample<span class="token operator">$</span>BP_B <span class="token operator">-</span> ld_sample<span class="token operator">$</span>BP_A<span class="token punctuation">)</span>
+ld_sample<span class="token operator">$</span>distance_kb <span class="token operator">&lt;-</span> ld_sample<span class="token operator">$</span>distance <span class="token operator">/</span> <span class="token number">1000</span>
+
+<span class="token comment"># 3. 创建高质量LD衰减图</span>
+png<span class="token punctuation">(</span><span class="token string">"ld_decay_high_quality.png"</span><span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">12</span><span class="token punctuation">,</span> height<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">,</span> units<span class="token operator">=</span><span class="token string">"in"</span><span class="token punctuation">,</span> res<span class="token operator">=</span><span class="token number">300</span><span class="token punctuation">)</span>
+
+p1 <span class="token operator">&lt;-</span> ggplot<span class="token punctuation">(</span>ld_sample<span class="token punctuation">,</span> aes<span class="token punctuation">(</span>x <span class="token operator">=</span> distance_kb<span class="token punctuation">,</span> y <span class="token operator">=</span> R2<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  stat_binhex<span class="token punctuation">(</span>bins <span class="token operator">=</span> <span class="token number">80</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  scale_fill_viridis_c<span class="token punctuation">(</span>trans <span class="token operator">=</span> <span class="token string">"log10"</span><span class="token punctuation">,</span> name <span class="token operator">=</span> <span class="token string">"SNP pairs\n(log10)"</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_smooth<span class="token punctuation">(</span>color <span class="token operator">=</span> <span class="token string">"red"</span><span class="token punctuation">,</span> method <span class="token operator">=</span> <span class="token string">"loess"</span><span class="token punctuation">,</span> span <span class="token operator">=</span> <span class="token number">0.3</span><span class="token punctuation">,</span> 
+              size <span class="token operator">=</span> <span class="token number">1.5</span><span class="token punctuation">,</span> se <span class="token operator">=</span> <span class="token boolean">TRUE</span><span class="token punctuation">,</span> fill <span class="token operator">=</span> <span class="token string">"pink"</span><span class="token punctuation">,</span> alpha <span class="token operator">=</span> <span class="token number">0.3</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  labs<span class="token punctuation">(</span>title <span class="token operator">=</span> <span class="token string">"A. LD Decay: r² vs Distance"</span><span class="token punctuation">,</span>
+       x <span class="token operator">=</span> <span class="token string">"Distance between SNPs (kb)"</span><span class="token punctuation">,</span>
+       y <span class="token operator">=</span> expression<span class="token punctuation">(</span>LD<span class="token operator">~</span><span class="token punctuation">(</span>r<span class="token operator">^</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  theme_minimal<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+p2 <span class="token operator">&lt;-</span> ggplot<span class="token punctuation">(</span>ld_sample<span class="token punctuation">,</span> aes<span class="token punctuation">(</span>x <span class="token operator">=</span> R2<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_histogram<span class="token punctuation">(</span>fill <span class="token operator">=</span> <span class="token string">"lightblue"</span><span class="token punctuation">,</span> color <span class="token operator">=</span> <span class="token string">"black"</span><span class="token punctuation">,</span> bins <span class="token operator">=</span> <span class="token number">50</span><span class="token punctuation">,</span> alpha <span class="token operator">=</span> <span class="token number">0.8</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_vline<span class="token punctuation">(</span>aes<span class="token punctuation">(</span>xintercept <span class="token operator">=</span> mean<span class="token punctuation">(</span>R2<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span> color <span class="token operator">=</span> <span class="token string">"red"</span><span class="token punctuation">,</span> 
+             linetype <span class="token operator">=</span> <span class="token string">"dashed"</span><span class="token punctuation">,</span> size <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  labs<span class="token punctuation">(</span>title <span class="token operator">=</span> <span class="token string">"B. Distribution of r² values"</span><span class="token punctuation">,</span>
+       x <span class="token operator">=</span> expression<span class="token punctuation">(</span>r<span class="token operator">^</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> y <span class="token operator">=</span> <span class="token string">"Frequency"</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  theme_minimal<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 组合图形</span>
+combined_plot <span class="token operator">&lt;-</span> p1 <span class="token operator">/</span> p2 <span class="token operator">+</span> 
+  plot_annotation<span class="token punctuation">(</span>title <span class="token operator">=</span> <span class="token string">"Linkage Disequilibrium Analysis"</span><span class="token punctuation">,</span>
+                  subtitle <span class="token operator">=</span> paste<span class="token punctuation">(</span><span class="token string">"Based on"</span><span class="token punctuation">,</span> format<span class="token punctuation">(</span>sample_size<span class="token punctuation">,</span> big.mark <span class="token operator">=</span> <span class="token string">","</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"SNP pairs"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+print<span class="token punctuation">(</span>combined_plot<span class="token punctuation">)</span>
+dev.off<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 4. 创建距离分箱的LD衰减图</span>
+png<span class="token punctuation">(</span><span class="token string">"ld_by_distance_bins.png"</span><span class="token punctuation">,</span> width<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">,</span> height<span class="token operator">=</span><span class="token number">6</span><span class="token punctuation">,</span> units<span class="token operator">=</span><span class="token string">"in"</span><span class="token punctuation">,</span> res<span class="token operator">=</span><span class="token number">300</span><span class="token punctuation">)</span>
+
+distance_breaks <span class="token operator">&lt;-</span> c<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">50</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">,</span> <span class="token number">500</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">,</span> <span class="token number">Inf</span><span class="token punctuation">)</span>
+distance_labels <span class="token operator">&lt;-</span> c<span class="token punctuation">(</span><span class="token string">"0-1"</span><span class="token punctuation">,</span> <span class="token string">"1-5"</span><span class="token punctuation">,</span> <span class="token string">"5-10"</span><span class="token punctuation">,</span> <span class="token string">"10-50"</span><span class="token punctuation">,</span> <span class="token string">"50-100"</span><span class="token punctuation">,</span> 
+                    <span class="token string">"100-500"</span><span class="token punctuation">,</span> <span class="token string">"500-1000"</span><span class="token punctuation">,</span> <span class="token string">"&gt;1000"</span><span class="token punctuation">)</span>
+
+ld_sample<span class="token operator">$</span>distance_bin <span class="token operator">&lt;-</span> cut<span class="token punctuation">(</span>ld_sample<span class="token operator">$</span>distance_kb<span class="token punctuation">,</span> 
+                             breaks <span class="token operator">=</span> distance_breaks<span class="token punctuation">,</span>
+                             labels <span class="token operator">=</span> distance_labels<span class="token punctuation">)</span>
+
+ld_summary <span class="token operator">&lt;-</span> ld_sample <span class="token percent-operator operator">%&gt;%</span>
+  group_by<span class="token punctuation">(</span>distance_bin<span class="token punctuation">)</span> <span class="token percent-operator operator">%&gt;%</span>
+  summarise<span class="token punctuation">(</span>mean_r2 <span class="token operator">=</span> mean<span class="token punctuation">(</span>R2<span class="token punctuation">,</span> na.rm <span class="token operator">=</span> <span class="token boolean">TRUE</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            sd_r2 <span class="token operator">=</span> sd<span class="token punctuation">(</span>R2<span class="token punctuation">,</span> na.rm <span class="token operator">=</span> <span class="token boolean">TRUE</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            n_pairs <span class="token operator">=</span> n<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token percent-operator operator">%&gt;%</span>
+  filter<span class="token punctuation">(</span>n_pairs <span class="token operator">&gt;</span> <span class="token number">10</span><span class="token punctuation">)</span>
+
+ggplot<span class="token punctuation">(</span>ld_summary<span class="token punctuation">,</span> aes<span class="token punctuation">(</span>x <span class="token operator">=</span> distance_bin<span class="token punctuation">,</span> y <span class="token operator">=</span> mean_r2<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_col<span class="token punctuation">(</span>fill <span class="token operator">=</span> <span class="token string">"steelblue"</span><span class="token punctuation">,</span> alpha <span class="token operator">=</span> <span class="token number">0.8</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_errorbar<span class="token punctuation">(</span>aes<span class="token punctuation">(</span>ymin <span class="token operator">=</span> mean_r2 <span class="token operator">-</span> sd_r2<span class="token punctuation">,</span> ymax <span class="token operator">=</span> mean_r2 <span class="token operator">+</span> sd_r2<span class="token punctuation">)</span><span class="token punctuation">,</span> 
+                width <span class="token operator">=</span> <span class="token number">0.2</span><span class="token punctuation">,</span> color <span class="token operator">=</span> <span class="token string">"darkred"</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  geom_text<span class="token punctuation">(</span>aes<span class="token punctuation">(</span>label <span class="token operator">=</span> format<span class="token punctuation">(</span>n_pairs<span class="token punctuation">,</span> big.mark <span class="token operator">=</span> <span class="token string">","</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span> 
+            vjust <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">0.5</span><span class="token punctuation">,</span> size <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  labs<span class="token punctuation">(</span>title <span class="token operator">=</span> <span class="token string">"LD Decay by Distance Intervals"</span><span class="token punctuation">,</span>
+       x <span class="token operator">=</span> <span class="token string">"Distance (kb)"</span><span class="token punctuation">,</span> y <span class="token operator">=</span> <span class="token string">"Mean r²"</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  theme_minimal<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+  theme<span class="token punctuation">(</span>axis.text.x <span class="token operator">=</span> element_text<span class="token punctuation">(</span>angle <span class="token operator">=</span> <span class="token number">45</span><span class="token punctuation">,</span> hjust <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+dev.off<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 5. 生成统计报告</span>
+ld_stats <span class="token operator">&lt;-</span> data.frame<span class="token punctuation">(</span>
+  Statistic <span class="token operator">=</span> c<span class="token punctuation">(</span><span class="token string">"Total SNP pairs"</span><span class="token punctuation">,</span> <span class="token string">"Sampled pairs"</span><span class="token punctuation">,</span> <span class="token string">"Mean r²"</span><span class="token punctuation">,</span> <span class="token string">"Median r²"</span><span class="token punctuation">,</span>
+                <span class="token string">"Pairs with r² &gt; 0.8"</span><span class="token punctuation">,</span> <span class="token string">"Pairs with r² &gt; 0.5"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  Value <span class="token operator">=</span> c<span class="token punctuation">(</span>format<span class="token punctuation">(</span>nrow<span class="token punctuation">(</span>ld_data<span class="token punctuation">)</span><span class="token punctuation">,</span> big.mark <span class="token operator">=</span> <span class="token string">","</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            format<span class="token punctuation">(</span>sample_size<span class="token punctuation">,</span> big.mark <span class="token operator">=</span> <span class="token string">","</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            round<span class="token punctuation">(</span>mean<span class="token punctuation">(</span>ld_data<span class="token operator">$</span>R2<span class="token punctuation">,</span> na.rm <span class="token operator">=</span> <span class="token boolean">TRUE</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            round<span class="token punctuation">(</span>median<span class="token punctuation">(</span>ld_data<span class="token operator">$</span>R2<span class="token punctuation">,</span> na.rm <span class="token operator">=</span> <span class="token boolean">TRUE</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            sum<span class="token punctuation">(</span>ld_data<span class="token operator">$</span>R2 <span class="token operator">&gt;</span> <span class="token number">0.8</span><span class="token punctuation">,</span> na.rm <span class="token operator">=</span> <span class="token boolean">TRUE</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            sum<span class="token punctuation">(</span>ld_data<span class="token operator">$</span>R2 <span class="token operator">&gt;</span> <span class="token number">0.5</span><span class="token punctuation">,</span> na.rm <span class="token operator">=</span> <span class="token boolean">TRUE</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span>
+
+write.csv<span class="token punctuation">(</span>ld_stats<span class="token punctuation">,</span> <span class="token string">"ld_detailed_statistics.csv"</span><span class="token punctuation">,</span> row.names <span class="token operator">=</span> <span class="token boolean">FALSE</span><span class="token punctuation">)</span>
+
+cat<span class="token punctuation">(</span><span class="token string">"分析完成！生成3个可视化文件\n"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>运行R脚本：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">chmod</span> +x ld_visualization.R
+Rscript ld_visualization.R<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>版本2</p>
+<pre class="line-numbers language-none"><code class="language-none">library(tidyverse)
+
+plot_ld_decay &lt;- function(ld_file, output="ld_decay.png", nsample=1e5,
+                          region=NULL) {
+  message("=== 清洁版LD分析可视化 ===")
+  ld_data &lt;- read.table(ld_file, header=TRUE)
+  message("数据维度: ", paste(dim(ld_data), collapse=" x "))
+  message("列名: ", paste(colnames(ld_data), collapse=" "))
+
+  # 区间筛选
+  if (!is.null(region)) {
+    parts &lt;- strsplit(region, "[:]", fixed=FALSE)[[1]]
+    if (length(parts) != 3) stop("区间格式错误，应为 chr:start:end")
+    
+    region_chr &lt;- parts[1]
+    start_pos  &lt;- as.numeric(parts[2])
+    end_pos    &lt;- as.numeric(parts[3])
+    
+    ld_data &lt;- ld_data %&gt;%
+      filter(CHR_A == region_chr &amp; CHR_B == region_chr) %&gt;%
+      filter(BP_A &gt;= start_pos &amp; BP_A &lt;= end_pos &amp;
+             BP_B &gt;= start_pos &amp; BP_B &lt;= end_pos)
+    
+    message("筛选区间: ", region)
+    message("区间 SNP对数量: ", nrow(ld_data))
+  }
+
+  # 统计信息
+  message("\n=== LD统计摘要 ===")
+  message("总SNP对数量: ", nrow(ld_data))
+  message("平均r²值: ", round(mean(ld_data$R2, na.rm=TRUE), 4))
+  message("r²值范围: ", paste(range(ld_data$R2, na.rm=TRUE), collapse=" - "))
+
+  # 抽样
+  set.seed(42)
+  if (nrow(ld_data) &gt; nsample) {
+    ld_plot &lt;- ld_data %&gt;% sample_n(nsample)
+  } else {
+    ld_plot &lt;- ld_data
+  }
+
+  # 画图
+  plot &lt;- ggplot(ld_plot, aes(x=abs(BP_B - BP_A), y=R2)) +
+    geom_point(alpha=0.3, size=0.6) +
+    geom_smooth(method="loess", formula=y~x, se=FALSE, linewidth=1, color="red") +
+    theme_minimal(base_size=14) +
+    labs(
+      title="LD Decay",
+      x="Distance (bp)",
+      y=expression(r^2)
+    )
+  
+  ggsave(output, plot, width=8, height=6, dpi=300)
+  print(plot)
+  message("LD衰减图已保存到: ", output)
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h2 id="6-结果文件与解读"><a href="#6-结果文件与解读" class="headerlink" title="6. 结果文件与解读"></a>6. 结果文件与解读</h2><h3 id="6-1-LDBlockShow生成文件"><a href="#6-1-LDBlockShow生成文件" class="headerlink" title="6.1 LDBlockShow生成文件"></a>6.1 LDBlockShow生成文件</h3><ul>
+<li><code>LOC105322102_selected_snps.blocks</code>：LD block定义文件</li>
+<li><code>LOC105322102_selected_snps.png/pdf</code>：LD block可视化图</li>
+</ul>
+<h3 id="6-2-R脚本生成文件"><a href="#6-2-R脚本生成文件" class="headerlink" title="6.2 R脚本生成文件"></a>6.2 R脚本生成文件</h3><ul>
+<li><code>ld_decay_high_quality.png</code>：LD衰减组合图</li>
+<li><code>ld_by_distance_bins.png</code>：距离分箱分析图  </li>
+<li><code>ld_detailed_statistics.csv</code>：详细统计表格</li>
+</ul>
+<h3 id="6-3-结果解读"><a href="#6-3-结果解读" class="headerlink" title="6.3 结果解读"></a>6.3 结果解读</h3><ul>
+<li><strong>LD Block图</strong>：显示特定区域的连锁区块结构</li>
+<li><strong>LD衰减图</strong>：展示基因组范围内LD随距离衰减的趋势</li>
+<li><strong>r²分布</strong>：反映整体LD强度分布</li>
+<li><strong>统计表格</strong>：提供量化的LD分析指标</li>
+</ul>
+<h2 id="7-常见问题与解决方案"><a href="#7-常见问题与解决方案" class="headerlink" title="7. 常见问题与解决方案"></a>7. 常见问题与解决方案</h2><h3 id="问题1：样本名包含下划线"><a href="#问题1：样本名包含下划线" class="headerlink" title="问题1：样本名包含下划线"></a>问题1：样本名包含下划线</h3><p><strong>错误信息</strong>：<code>Multiple instances of '_' in sample ID</code><br><strong>解决方案</strong>：使用<code>bcftools reheader</code>修改样本名</p>
+<h3 id="问题2：区域格式错误"><a href="#问题2：区域格式错误" class="headerlink" title="问题2：区域格式错误"></a>问题2：区域格式错误</h3><p><strong>错误信息</strong>：<code>Para [-Region] should be [chr:Start:End]</code><br><strong>解决方案</strong>：确保区域格式为<code>chr:start:end</code></p>
+<h3 id="问题3：R包缺失"><a href="#问题3：R包缺失" class="headerlink" title="问题3：R包缺失"></a>问题3：R包缺失</h3><p><strong>解决方案</strong>：</p>
+<pre class="line-numbers language-r" data-language="r"><code class="language-r">install.packages<span class="token punctuation">(</span>c<span class="token punctuation">(</span><span class="token string">"tidyverse"</span><span class="token punctuation">,</span> <span class="token string">"hexbin"</span><span class="token punctuation">,</span> <span class="token string">"patchwork"</span><span class="token punctuation">,</span> <span class="token string">"viridis"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h2 id="8-技术要点总结"><a href="#8-技术要点总结" class="headerlink" title="8. 技术要点总结"></a>8. 技术要点总结</h2><ol>
+<li><strong>数据预处理是关键</strong>：确保VCF文件格式正确</li>
+<li><strong>精确提取目标区域</strong>：使用bcftools根据位点列表精确提取</li>
+<li><strong>多层次分析</strong>：结合LDBlockShow的区块分析和R的全基因组可视化</li>
+<li><strong>结果验证</strong>：检查生成的图片和统计文件，确保分析质量</li>
+</ol>
+<h2 id="9-应用价值"><a href="#9-应用价值" class="headerlink" title="9. 应用价值"></a>9. 应用价值</h2><p>这个完整流程可以：</p>
+<ul>
+<li><strong>精细分析</strong>：对候选基因区域进行精细LD Block分析</li>
+<li><strong>全局视角</strong>：通过全基因组LD分析了解整体遗传结构</li>
+<li><strong>科研发表</strong>：生成高质量的发表级图片</li>
+<li><strong>育种应用</strong>：为分子标记辅助选择提供依据</li>
+</ul>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<h2 id="看不懂的！"><a href="#看不懂的！" class="headerlink" title="看不懂的！"></a>看不懂的！</h2><pre class="line-numbers language-none"><code class="language-none">#!/bin/bash
+
+# 傻瓜式一键基因LD分析脚本
+# 用法: ./auto_gene_ld_oneclick.sh &lt;基因名&gt;
+
+set -e
+
+# 配置参数
+GENE_NAME=$1
+VCF_FILE="/home/wanglab/Ywh/adductor_muscle_scar/Variants/NC_047567.1_results_snps.vcf.gz"
+GFF_FILE="/path/to/your/genome.gff"  # 请修改为你的GFF文件路径
+EXTEND_UPSTREAM=50000
+EXTEND_DOWNSTREAM=50000
+MAF_THRESHOLD=0.05
+
+echo "=== 傻瓜式一键基因LD分析: $GENE_NAME ==="
+
+# 检查输入参数
+if [ -z "$GENE_NAME" ]; then
+    echo "错误: 请提供基因名作为参数"
+    echo "用法: $0 &lt;基因名&gt;"
+    exit 1
+fi
+
+# 检查必要文件
+if [ ! -f "$VCF_FILE" ]; then
+    echo "错误: VCF文件不存在: $VCF_FILE"
+    exit 1
+fi
+
+if [ ! -f "$GFF_FILE" ]; then
+    echo "错误: GFF文件不存在: $GFF_FILE"
+    echo "请修改脚本中的GFF_FILE路径"
+    exit 1
+fi
+
+# 创建工作目录
+WORK_DIR="LD_analysis_${GENE_NAME}"
+mkdir -p "$WORK_DIR"
+cd "$WORK_DIR"
+
+echo "工作目录: $(pwd)"
+
+# 步骤1: 从GFF文件自动提取基因坐标
+echo "步骤1: 从GFF文件提取基因坐标..."
+
+# 从GFF中提取基因信息（支持多种GFF格式）
+GENE_INFO=$(grep -w "$GENE_NAME" "$GFF_FILE" | grep -E "(gene|mRNA|transcript)" | head -1)
+
+if [ -z "$GENE_INFO" ]; then
+    echo "错误: 在GFF文件中未找到基因 $GENE_NAME"
+    echo "尝试模糊匹配..."
+    GENE_INFO=$(grep "$GENE_NAME" "$GFF_FILE" | grep -E "(gene|mRNA|transcript)" | head -1)
+    if [ -z "$GENE_INFO" ]; then
+        echo "错误: 模糊匹配也失败，请检查基因名是否正确"
+        exit 1
+    fi
+    echo "警告: 使用模糊匹配结果"
+fi
+
+echo "找到基因信息: $GENE_INFO"
+
+# 解析GFF行（第1列: 染色体, 第4列: 起始, 第5列: 终止）
+CHROM=$(echo "$GENE_INFO" | awk '{print $1}')
+GENE_START=$(echo "$GENE_INFO" | awk '{print $4}')
+GENE_END=$(echo "$GENE_INFO" | awk '{print $5}')
+
+# 验证坐标
+if [ -z "$CHROM" ] || [ -z "$GENE_START" ] || [ -z "$GENE_END" ]; then
+    echo "错误: 无法从GFF行中解析坐标"
+    echo "GFF行: $GENE_INFO"
+    exit 1
+fi
+
+echo "✓ 成功提取基因坐标: $CHROM:$GENE_START-$GENE_END"
+
+# 计算分析区域
+REGION_START=$((GENE_START - EXTEND_UPSTREAM))
+REGION_END=$((GENE_END + EXTEND_DOWNSTREAM))
+
+# 确保起始位置不小于1
+if [ $REGION_START -lt 1 ]; then
+    REGION_START=1
+fi
+
+echo "分析区域: $CHROM:$REGION_START-$REGION_END"
+echo "区域大小: $(( (REGION_END - REGION_START) / 1000 )) kb"
+
+# 步骤2: 提取目标区域SNP
+echo "步骤2: 提取目标区域SNP..."
+
+# 方法1: 使用bcftools view -r
+bcftools view -r "$CHROM:$REGION_START-$REGION_END" "$VCF_FILE" -Ov -o "${GENE_NAME}_region.vcf" 2&gt;/dev/null || {
+    echo "方法1失败，尝试方法2: 使用BED文件"
+    echo -e "$CHROM\t$REGION_START\t$REGION_END" &gt; "${GENE_NAME}_region.bed"
+    bcftools view -T "${GENE_NAME}_region.bed" "$VCF_FILE" -Ov -o "${GENE_NAME}_region.vcf"
+}
+
+# 检查是否提取到SNP
+SNP_COUNT=$(grep -v "^#" "${GENE_NAME}_region.vcf" | wc -l)
+echo "提取到 $SNP_COUNT 个SNP"
+
+if [ "$SNP_COUNT" -eq 0 ]; then
+    echo "错误: 在目标区域未找到任何SNP"
+    exit 1
+fi
+
+if [ "$SNP_COUNT" -lt 10 ]; then
+    echo "警告: SNP数量较少($SNP_COUNT)，LD分析可能不理想"
+fi
+
+# 步骤3: 样本名处理
+echo "步骤3: 处理样本名..."
+bcftools query -l "${GENE_NAME}_region.vcf" &gt; original_samples.txt
+if [ $? -ne 0 ]; then
+    echo "错误: 无法读取样本名，VCF文件可能损坏"
+    exit 1
+fi
+
+sed 's/_/-/g' original_samples.txt &gt; new_samples.txt
+bcftools reheader -s new_samples.txt "${GENE_NAME}_region.vcf" -o "${GENE_NAME}_region_fixed.vcf"
+
+# 步骤4: 转换为压缩格式
+echo "步骤4: 准备分析文件..."
+bgzip -f "${GENE_NAME}_region_fixed.vcf"
+tabix -p vcf "${GENE_NAME}_region_fixed.vcf.gz"
+
+# 步骤5: 运行LDBlockShow
+echo "步骤5: 进行LD Block分析..."
+LDBlockShow -InVCF "${GENE_NAME}_region_fixed.vcf.gz" \
+            -OutPut "${GENE_NAME}_ld_block" \
+            -Region "$CHROM:$REGION_START:$REGION_END" \
+            -SeleVar 2 \
+            -MAF $MAF_THRESHOLD \
+            -OutPng \
+            -OutPdf 2&gt;&amp;1 | grep -v "Warning" || {
+    echo "LDBlockShow完成（可能有一些警告信息）"
+}
+
+# 步骤6: PLINK补充分析
+echo "步骤6: 进行PLINK LD分析..."
+plink --vcf "${GENE_NAME}_region_fixed.vcf.gz" \
+      --double-id \
+      --make-bed \
+      --out "${GENE_NAME}_plink" --silent
+
+plink --bfile "${GENE_NAME}_plink" \
+      --r2 \
+      --ld-window 100 \
+      --ld-window-kb 1000 \
+      --ld-window-r2 0 \
+      --out "${GENE_NAME}_pairwise_ld" --silent
+
+# 步骤7: 生成统计报告
+echo "步骤7: 生成统计报告..."
+Rscript - &lt;&lt;EOF
+#!/usr/bin/env Rscript
+library(tidyverse)
+
+cat("生成统计报告...\n")
+
+if (file.exists("${GENE_NAME}_pairwise_ld.ld")) {
+    ld_data &lt;- read.table("${GENE_NAME}_pairwise_ld.ld", header = TRUE)
+    
+    # 基本统计
+    total_pairs &lt;- nrow(ld_data)
+    mean_r2 &lt;- mean(ld_data\$R2, na.rm = TRUE)
+    median_r2 &lt;- median(ld_data\$R2, na.rm = TRUE)
+    
+    stats &lt;- data.frame(
+        统计项 = c("基因名", "分析区域", "SNP数量", "SNP对数量", 
+                  "平均r²", "中位数r²", "最大r²", "最小r²",
+                  "强LD对(r²&gt;0.8)", "中等LD对(r²&gt;0.5)", "弱LD对(r²&lt;0.1)"),
+        数值 = c(
+            "${GENE_NAME}",
+            paste0("${CHROM}:${REGION_START}-${REGION_END}"),
+            "${SNP_COUNT}",
+            format(total_pairs, big.mark = ","),
+            round(mean_r2, 4),
+            round(median_r2, 4),
+            round(max(ld_data\$R2, na.rm = TRUE), 4),
+            round(min(ld_data\$R2, na.rm = TRUE), 4),
+            paste0(sum(ld_data\$R2 &gt; 0.8, na.rm = TRUE), " (", 
+                   round(sum(ld_data\$R2 &gt; 0.8, na.rm = TRUE)/total_pairs*100, 1), "%)"),
+            paste0(sum(ld_data\$R2 &gt; 0.5, na.rm = TRUE), " (", 
+                   round(sum(ld_data\$R2 &gt; 0.5, na.rm = TRUE)/total_pairs*100, 1), "%)"),
+            paste0(sum(ld_data\$R2 &lt; 0.1, na.rm = TRUE), " (", 
+                   round(sum(ld_data\$R2 &lt; 0.1, na.rm = TRUE)/total_pairs*100, 1), "%)")
+        )
+    )
+    
+    write.csv(stats, "${GENE_NAME}_ld_statistics.csv", row.names = FALSE, fileEncoding = "UTF-8")
+    
+    # 生成简单的文本报告
+    sink("${GENE_NAME}_analysis_report.txt")
+    cat("=== 基因LD分析报告 ===\n")
+    cat("基因名: ${GENE_NAME}\n")
+    cat("分析时间: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
+    cat("分析区域: ${CHROM}:${REGION_START}-${REGION_END}\n")
+    cat("SNP数量: ${SNP_COUNT}\n")
+    cat("SNP对数量: ", format(total_pairs, big.mark = ","), "\n")
+    cat("平均LD(r²): ", round(mean_r2, 4), "\n")
+    cat("LD强度分布:\n")
+    cat("  强LD(r²&gt;0.8): ", sum(ld_data\$R2 &gt; 0.8, na.rm = TRUE), 
+        "(", round(sum(ld_data\$R2 &gt; 0.8, na.rm = TRUE)/total_pairs*100, 1), "%)\n")
+    cat("  中等LD(r²&gt;0.5): ", sum(ld_data\$R2 &gt; 0.5, na.rm = TRUE), 
+        "(", round(sum(ld_data\$R2 &gt; 0.5, na.rm = TRUE)/total_pairs*100, 1), "%)\n")
+    cat("  弱LD(r²&lt;0.1): ", sum(ld_data\$R2 &lt; 0.1, na.rm = TRUE), 
+        "(", round(sum(ld_data\$R2 &lt; 0.1, na.rm = TRUE)/total_pairs*100, 1), "%)\n")
+    sink()
+    
+    cat("✓ 统计报告生成完成\n")
+} else {
+    cat("警告: 未找到PLINK LD结果文件\n")
+}
+EOF
+
+# 步骤8: 清理和总结
+echo "步骤8: 清理临时文件..."
+rm -f original_samples.txt new_samples.txt "${GENE_NAME}_region.vcf" "${GENE_NAME}_region.bed"
+
+echo ""
+echo "=== 分析完成! ==="
+echo "📁 工作目录: $(pwd)"
+echo ""
+echo "📊 生成的结果文件:"
+echo "   📈 ${GENE_NAME}_ld_block.png    - LD Block图"
+echo "   📄 ${GENE_NAME}_ld_block.pdf    - LD Block图(矢量)"
+echo "   📋 ${GENE_NAME}_ld_statistics.csv - 详细统计表格"
+echo "   📝 ${GENE_NAME}_analysis_report.txt - 分析报告"
+echo "   💾 ${GENE_NAME}_pairwise_ld.ld  - 原始LD数据"
+echo ""
+echo "🔍 分析摘要:"
+echo "   基因: $GENE_NAME"
+echo "   区域: $CHROM:$REGION_START-$REGION_END"
+echo "   SNP数量: $SNP_COUNT"
+echo "   上下游扩展: ${EXTEND_UPSTREAM}bp"<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><h3 id="1-首先修改脚本中的GFF文件路径："><a href="#1-首先修改脚本中的GFF文件路径：" class="headerlink" title="1. 首先修改脚本中的GFF文件路径："></a>1. 首先修改脚本中的GFF文件路径：</h3><pre class="line-numbers language-none"><code class="language-none"># 编辑脚本，修改这一行：
+GFF_FILE="/path/to/your/genome.gff"  # 改为你实际的GFF文件路径
+
+# 如：/home/wanglab/Ywh/adductor_muscle_scar/GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="2-给脚本执行权限："><a href="#2-给脚本执行权限：" class="headerlink" title="2. 给脚本执行权限："></a>2. 给脚本执行权限：</h3><pre class="line-numbers language-none"><code class="language-none">chmod +x auto_gene_ld_oneclick.sh<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="3-一键运行："><a href="#3-一键运行：" class="headerlink" title="3. 一键运行："></a>3. 一键运行：</h3><pre class="line-numbers language-none"><code class="language-none">./auto_gene_ld_oneclick.sh LOC105322102
+./auto_gene_ld_oneclick.sh LOC105325689
+./auto_gene_ld_oneclick.sh 任何基因名<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="脚本特点"><a href="#脚本特点" class="headerlink" title="脚本特点"></a>脚本特点</h2><p>✅ <strong>完全自动化</strong>：只需提供基因名<br>✅ <strong>智能解析</strong>：自动从GFF提取基因坐标<br>✅ <strong>错误处理</strong>：多种备选方案，提高成功率<br>✅ <strong>详细报告</strong>：生成完整的分析报告<br>✅ <strong>友好输出</strong>：清晰的进度提示和结果汇总</p>
+<h2 id="支持的GFF格式"><a href="#支持的GFF格式" class="headerlink" title="支持的GFF格式"></a>支持的GFF格式</h2><ul>
+<li>NCBI GFF3</li>
+<li>Ensembl GFF3</li>
+<li>其他标准GFF格式</li>
+<li>自动识别gene/mRNA/transcript行</li>
+</ul>
+<div style="height:3px;background:linear-gradient(90deg,#ff6c6c,#73aaff);margin:2rem 0;border-radius:2px;"></div>
+
+<p>通过LDBlockShow和R的有机结合，研究人员可以从不同尺度全面理解基因组的连锁不平衡结构，为群体遗传学和育种研究提供强有力的技术支持。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://0HHHHHH0.github.io">HHHH</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://0hhhhhh0.github.io/2025/10/31/ld-block-lian-suo-bu-ping-heng-fen-xi/">https://0hhhhhh0.github.io/2025/10/31/ld-block-lian-suo-bu-ping-heng-fen-xi/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/uploads/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/10/31/wen-jian-chu-li-yu-shu-ju-shai-xuan-liu-cheng/" title="文件处理与数据筛选-终端"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">文件处理与数据筛选-终端</div></div><div class="info-2"><div class="info-item-1">文件处理与数据筛选流程流程概述从两个基因组数据文件中筛选共有基因位点，生成TSV格式结果。 处理步骤1. 文件格式标准化dos2unix color_GWAS.anno.xls 作用： Windows转Unix换行符 2. CSV转TSV格式sed '1s/^\xEF\xBB\xBF//' 红标0.7与黄标与GWAS共有.csv | tr ',' '\t' &gt; 红标0.7与黄标与GWAS共有.tsv 作用： 去除BOM头，逗号转制表符 3. 数据筛选awk 'BEGIN {OFS="\t"}       NR==FNR {if(FNR&gt;1) start_values[$2] = 1; next}       FNR==1 {print; next}       $2 in start_values' color_GWAS.anno.xls 红标0.7与黄标与GWAS共有.tsv &gt; filtered_three2one.tsv 逻辑：  读取第一个文件的第二列作为筛选依据 保留第二个文件中匹配的数据行 输出制表符分隔的结果  文件说明 输入： color_GWA...</div></div></div></a><a class="pagination-related" href="/2025/10/31/chong-ce-xu-xia-ji-shu-ju-chu-li/" title="重测序下机数据处理"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">重测序下机数据处理</div></div><div class="info-2"><div class="info-item-1">🧬 重测序数据标准处理流程详解本篇博客详细解析从 下机 FastQ 数据 到 变异检测输入文件（gVCF） 的完整流程。流程基于 Linux 环境与 GATK 推荐实践，并结合并行优化与磁盘空间节省策略。适合刚接触重测序分析的新手，也适用于需要高效自动化处理的研究人员。  环境：conda activate py310 一、Fastp 质控与过滤（run_fastpl.sh）#!/bin/bash # ========================================= # Fastp 并行质控脚本（最终版本 + 已完成计数修正） # Author: Carl Hansen # Date: $(date +"%Y-%m-%d") # =========================================  INPUT_DIR="/home/wanglab/Ywh/adductor_muscle_scar/ReSeq_Data/DZQD2023092909-b1/Raw_data" OUTPUT_DIR="/home/wanglab/Ywh/adduct...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8LDBlockShow%E8%BF%9B%E8%A1%8CLD-Block%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">使用LDBlockShow进行LD Block分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%88%86%E6%9E%90%E8%83%8C%E6%99%AF%E4%B8%8E%E5%B7%A5%E5%85%B7%E5%87%86%E5%A4%87"><span class="toc-number">1.1.</span> <span class="toc-text">1. 分析背景与工具准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%88%86%E6%9E%90%E7%9B%AE%E6%A0%87"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1 分析目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E6%89%80%E9%9C%80%E5%B7%A5%E5%85%B7%E5%AE%89%E8%A3%85"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2 所需工具安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86"><span class="toc-number">1.2.</span> <span class="toc-text">2. 数据预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%8E%9F%E5%A7%8B%E6%95%B0%E6%8D%AE"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1 原始数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E8%A7%A3%E5%86%B3%E6%A0%B7%E6%9C%AC%E5%90%8D%E9%97%AE%E9%A2%98"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.2 解决样本名问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E7%9B%AE%E6%A0%87SNP%E4%BD%8D%E7%82%B9%E6%8F%90%E5%8F%96"><span class="toc-number">1.3.</span> <span class="toc-text">3. 目标SNP位点提取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%88%9B%E5%BB%BA%E7%9B%AE%E6%A0%87%E4%BD%8D%E7%82%B9%E5%88%97%E8%A1%A8"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1 创建目标位点列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%8F%90%E5%8F%96%E7%9B%AE%E6%A0%87SNP"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2 提取目标SNP</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-LD-Block%E5%88%86%E6%9E%90"><span class="toc-number">1.4.</span> <span class="toc-text">4. LD Block分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E8%BF%90%E8%A1%8CLDBlockShow"><span class="toc-number">1.4.1.</span> <span class="toc-text">4.1 运行LDBlockShow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3"><span class="toc-number">1.4.2.</span> <span class="toc-text">4.2 参数详解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E7%BB%93%E6%9E%9C%E6%96%87%E4%BB%B6%E4%B8%8E%E8%A7%A3%E8%AF%BB"><span class="toc-number">1.4.3.</span> <span class="toc-text">4.3. 结果文件与解读</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-1-%E7%94%9F%E6%88%90%E6%96%87%E4%BB%B6"><span class="toc-number">1.4.4.</span> <span class="toc-text">4.3.1 生成文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-2-%E7%BB%93%E6%9E%9C%E8%A7%A3%E8%AF%BB"><span class="toc-number">1.4.5.</span> <span class="toc-text">4.3.2 结果解读</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%85%A8%E5%9F%BA%E5%9B%A0%E7%BB%84LD%E5%88%86%E6%9E%90%E5%8F%AF%E8%A7%86%E5%8C%96%EF%BC%88R%E8%84%9A%E6%9C%AC%EF%BC%89"><span class="toc-number">1.5.</span> <span class="toc-text">5. 全基因组LD分析可视化（R脚本）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%87%86%E5%A4%87LD%E6%95%B0%E6%8D%AE"><span class="toc-number">1.5.1.</span> <span class="toc-text">5.1 准备LD数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-R%E5%8F%AF%E8%A7%86%E5%8C%96%E8%84%9A%E6%9C%AC"><span class="toc-number">1.5.2.</span> <span class="toc-text">5.2 R可视化脚本</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E7%BB%93%E6%9E%9C%E6%96%87%E4%BB%B6%E4%B8%8E%E8%A7%A3%E8%AF%BB"><span class="toc-number">1.6.</span> <span class="toc-text">6. 结果文件与解读</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-LDBlockShow%E7%94%9F%E6%88%90%E6%96%87%E4%BB%B6"><span class="toc-number">1.6.1.</span> <span class="toc-text">6.1 LDBlockShow生成文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-R%E8%84%9A%E6%9C%AC%E7%94%9F%E6%88%90%E6%96%87%E4%BB%B6"><span class="toc-number">1.6.2.</span> <span class="toc-text">6.2 R脚本生成文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E7%BB%93%E6%9E%9C%E8%A7%A3%E8%AF%BB"><span class="toc-number">1.6.3.</span> <span class="toc-text">6.3 结果解读</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">1.7.</span> <span class="toc-text">7. 常见问题与解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%981%EF%BC%9A%E6%A0%B7%E6%9C%AC%E5%90%8D%E5%8C%85%E5%90%AB%E4%B8%8B%E5%88%92%E7%BA%BF"><span class="toc-number">1.7.1.</span> <span class="toc-text">问题1：样本名包含下划线</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%982%EF%BC%9A%E5%8C%BA%E5%9F%9F%E6%A0%BC%E5%BC%8F%E9%94%99%E8%AF%AF"><span class="toc-number">1.7.2.</span> <span class="toc-text">问题2：区域格式错误</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%983%EF%BC%9AR%E5%8C%85%E7%BC%BA%E5%A4%B1"><span class="toc-number">1.7.3.</span> <span class="toc-text">问题3：R包缺失</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%8A%80%E6%9C%AF%E8%A6%81%E7%82%B9%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">8. 技术要点总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%BA%94%E7%94%A8%E4%BB%B7%E5%80%BC"><span class="toc-number">1.9.</span> <span class="toc-text">9. 应用价值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9C%8B%E4%B8%8D%E6%87%82%E7%9A%84%EF%BC%81"><span class="toc-number">1.10.</span> <span class="toc-text">看不懂的！</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-number">1.11.</span> <span class="toc-text">使用方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%A6%96%E5%85%88%E4%BF%AE%E6%94%B9%E8%84%9A%E6%9C%AC%E4%B8%AD%E7%9A%84GFF%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84%EF%BC%9A"><span class="toc-number">1.11.1.</span> <span class="toc-text">1. 首先修改脚本中的GFF文件路径：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%BB%99%E8%84%9A%E6%9C%AC%E6%89%A7%E8%A1%8C%E6%9D%83%E9%99%90%EF%BC%9A"><span class="toc-number">1.11.2.</span> <span class="toc-text">2. 给脚本执行权限：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E4%B8%80%E9%94%AE%E8%BF%90%E8%A1%8C%EF%BC%9A"><span class="toc-number">1.11.3.</span> <span class="toc-text">3. 一键运行：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%84%9A%E6%9C%AC%E7%89%B9%E7%82%B9"><span class="toc-number">1.12.</span> <span class="toc-text">脚本特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%AF%E6%8C%81%E7%9A%84GFF%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.13.</span> <span class="toc-text">支持的GFF格式</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/24/indel/" title="记一次清空SMART修复群晖报故障的硬盘">记一次清空SMART修复群晖报故障的硬盘</a><time datetime="2025-12-24T04:56:00.000Z" title="Created 2025-12-24 12:56:00">2025-12-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/gemini/" title="根据SNP位点进行快速引物设计——网页版">根据SNP位点进行快速引物设计——网页版</a><time datetime="2025-12-02T14:26:00.000Z" title="Created 2025-12-02 22:26:00">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/24/latex/" title="LaTeX详细教程+技巧总结">LaTeX详细教程+技巧总结</a><time datetime="2025-11-24T14:26:00.000Z" title="Created 2025-11-24 22:26:00">2025-11-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/10/gwas-ld-block/" title="GWAS + 热点区域识别 + LD Block 分析流程详解">GWAS + 热点区域识别 + LD Block 分析流程详解</a><time datetime="2025-11-10T14:26:00.000Z" title="Created 2025-11-10 22:26:00">2025-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应">从基因到结构：用PyMOL可视化理解分子对接与突变效应</a><time datetime="2025-11-09T14:26:00.000Z" title="Created 2025-11-09 22:26:00">2025-11-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
+   #sidebar_search_box input[type=text]{width:calc(100% - 24px)}
+}</style></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/fish.js" defer data-pjax></script><script type="text/javascript" src="/js/busuanzi.pure.mini.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-10-09</span><a class="blog-slider__title" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">Hexo + Butterfly 个人博客搭建</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/11/10/gwas-ld-block/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-11-10</span><a class="blog-slider__title" href="2025/11/10/gwas-ld-block/" alt="">GWAS + 热点区域识别 + LD Block 分析流程详解</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/11/10/gwas-ld-block/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/07/31/19/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/OIP-C.2E7GSli1t13WJ-Of6Hp9UgHaEi" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-07-31</span><a class="blog-slider__title" href="2025/07/31/19/" alt="">2.重测序数据分析——初步整理</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/07/31/19/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><!-- hexo injector body_end end --></body></html>

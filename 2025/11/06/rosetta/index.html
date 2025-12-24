@@ -1,0 +1,1367 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Rosetta全面使用指南 | HHHH</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="Rosetta全面使用指南 转载自：https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;d96a72d06e26  简介Rosetta是由华盛顿大学Baker实验室开发的一套用于计算蛋白质结构建模和设计的软件套件。 Rosetta软件套件包括用于蛋白质结构计算建模和分析的算法。它使计算生物学取得了显著的科学进步，包括从头蛋白质设计、酶设计、配体对接以及生物大分子和大分子复合物的结构预测。 RoeT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rosetta全面使用指南">
+<meta property="og:url" content="https://0hhhhhh0.github.io/2025/11/06/rosetta/index.html">
+<meta property="og:site_name" content="HHHH">
+<meta property="og:description" content="Rosetta全面使用指南 转载自：https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;d96a72d06e26  简介Rosetta是由华盛顿大学Baker实验室开发的一套用于计算蛋白质结构建模和设计的软件套件。 Rosetta软件套件包括用于蛋白质结构计算建模和分析的算法。它使计算生物学取得了显著的科学进步，包括从头蛋白质设计、酶设计、配体对接以及生物大分子和大分子复合物的结构预测。 RoeT">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0hhhhhh0.github.io/uploads/avatar.png">
+<meta property="article:published_time" content="2025-11-06T14:26:00.000Z">
+<meta property="article:modified_time" content="2025-11-06T14:32:15.000Z">
+<meta property="article:author" content="HHHH">
+<meta property="article:tag" content="hexo">
+<meta property="article:tag" content="组学">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="折腾">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0hhhhhh0.github.io/uploads/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Rosetta全面使用指南",
+  "url": "https://0hhhhhh0.github.io/2025/11/06/rosetta/",
+  "image": "https://0hhhhhh0.github.io/uploads/avatar.png",
+  "datePublished": "2025-11-06T14:26:00.000Z",
+  "dateModified": "2025-11-06T14:32:15.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "HHHH",
+      "url": "https://0HHHHHH0.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/uploads/avatar.png"><link rel="canonical" href="https://0hhhhhh0.github.io/2025/11/06/rosetta/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":-1,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Rosetta全面使用指南',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@4.5.12/index.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/styles/css/font.css"><link rel="stylesheet" href="/css/mermaid.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="HHHH" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="scarecrow"><div class="scarecrow__hat"><div class="scarecrow__ribbon"></div></div><div class="scarecrow__head"><div class="scarecrow__eye"></div><div class="scarecrow__eye"></div><div class="scarecrow__mouth"></div><div class="scarecrow__pipe"></div></div><div class="scarecrow__body"><div class="scarecrow__glove scarecrow__glove--l"></div><div class="scarecrow__sleeve scarecrow__sleeve--l"></div><div class="scarecrow__bow"></div><div class="scarecrow__shirt"></div><div class="scarecrow__coat"></div><div class="scarecrow__waistcoat"></div><div class="scarecrow__sleeve scarecrow__sleeve--r"></div><div class="scarecrow__glove scarecrow__glove--r"></div><div class="scarecrow__coattails"></div><div class="scarecrow__pants"></div></div><div class="scarecrow__arms"></div><div class="scarecrow__leg">  </div></div></div><script async="async">(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-color: #fbfdff;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/uploads/avatar.png" alt="Logo"><span class="site-name">HHHH</span></a><a class="nav-page-title" href="/"><span class="site-name">Rosetta全面使用指南</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Rosetta全面使用指南</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-06T14:26:00.000Z" title="Created 2025-11-06 22:26:00">2025-11-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-11-06T14:32:15.000Z" title="Updated 2025-11-06 22:32:15">2025-11-06</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%9B%8B%E7%99%BD%E4%BA%92%E4%BD%9C/">蛋白互作</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%9B%8B%E7%99%BD%E4%BA%92%E4%BD%9C/PyMOL/">PyMOL</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="ai-summary"><div class="ai-explanation" style="display: block;" data-summary="这篇文章全面介绍了Rosetta软件套件的使用指南，包括其功能、安装配置和核心应用。Rosetta是由华盛顿大学Baker实验室开发的蛋白质结构建模和设计工具，广泛应用于蛋白质设计、酶设计、分子对接等领域。文章详细说明了Rosetta的学术和商业许可证申请流程、系统要求（如处理器、内存和操作系统配置）以及Linux环境下的安装步骤，包括依赖项安装、源代码解压和编译。基础功能部分讲解了Rosetta的文件系统结构、命令行格式和常用选项。核心应用程序涵盖了结构预测（如Ab initio预测、片段组装、同源建模等）、蛋白质设计（固定骨架设计、侧链重打包、弛豫优化）以及分子对接（蛋白质-蛋白质对接、局部对接）的具体操作命令和参数设置。">AI正在绞尽脑汁想思路ING···</div><div class="ai-title"> <div class="ai-title-left"> <i class="fa-brands fa-slack"></i><div class="ai-title-text">AI摘要</div></div><div class="ai-tag" id="ai-tag">deepseek-ai/DeepSeek-V3</div></div></div><h2 id="Rosetta全面使用指南"><a href="#Rosetta全面使用指南" class="headerlink" title="Rosetta全面使用指南"></a>Rosetta全面使用指南</h2><blockquote>
+<p>转载自：<a href="https://www.jianshu.com/p/d96a72d06e26">https://www.jianshu.com/p/d96a72d06e26</a></p>
+</blockquote>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Rosetta是由华盛顿大学Baker实验室开发的一套用于计算蛋白质结构建模和设计的软件套件。</p>
+<p>Rosetta软件套件包括用于蛋白质结构计算建模和分析的算法。它使计算生物学取得了显著的科学进步，包括从头蛋白质设计、酶设计、配体对接以及生物大分子和大分子复合物的结构预测。</p>
+<p>RoeTeta开发始于华盛顿大学David Baker博士的实验室，作为结构预测工具，但此后已经适应于解决常见的计算大分子问题。</p>
+<p>Rosetta的重要作用如下所示：</p>
+<p>理解大分子相互作用; 设计定制分子; 寻找构象和序列空间的有效方法; 为各种生物分子表示寻找广泛有用的能量函数</p>
+<h2 id="安装准备"><a href="#安装准备" class="headerlink" title="安装准备"></a>安装准备</h2><h3 id="1-获取许可证"><a href="#1-获取许可证" class="headerlink" title="1. 获取许可证"></a>1. 获取许可证</h3><ul>
+<li><strong>学术许可证</strong>:<ul>
+<li>访问 <a href="https://rosettacommons.org/software/download/">Rosetta Commons官网</a></li>
+<li>填写学术许可申请表格</li>
+<li>等待审核邮件，通常1-3个工作日</li>
+</ul>
+</li>
+<li><strong>商业许可证</strong>:<ul>
+<li>联系 <a href="https://www.rosettacommons.org/commercial">Rosetta Design Group</a></li>
+<li>了解定价和协议条款</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-系统要求"><a href="#2-系统要求" class="headerlink" title="2. 系统要求"></a>2. 系统要求</h3><ul>
+<li>计算机配置推荐<ul>
+<li>处理器: 至少Intel i5以上或AMD同等性能</li>
+<li>内存: 最低8GB，推荐16GB以上</li>
+<li>存储空间: 至少20GB可用空间</li>
+<li>操作系统: Windows 10/11 (64位)</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-Linux系统准备"><a href="#3-Linux系统准备" class="headerlink" title="3. Linux系统准备"></a>3. Linux系统准备</h3><p>Rosetta主要设计用于Unix/Linux环境。</p>
+<h2 id="安装与配置"><a href="#安装与配置" class="headerlink" title="安装与配置"></a>安装与配置</h2><p>以下步骤基于Ubuntu环境:</p>
+<h3 id="1-安装依赖项"><a href="#1-安装依赖项" class="headerlink" title="1. 安装依赖项"></a>1. 安装依赖项</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 更新软件源</span>
+<span class="token function">sudo</span> <span class="token function">apt</span> update
+<span class="token function">sudo</span> <span class="token function">apt</span> upgrade <span class="token parameter variable">-y</span>
+
+<span class="token comment"># 安装编译工具和依赖库</span>
+<span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token parameter variable">-y</span> build-essential scons zlib1g-dev libxml2-dev python-is-python3 python3-dev python3-pip <span class="token function">git</span> cmake<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="2-下载并解压Rosetta"><a href="#2-下载并解压Rosetta" class="headerlink" title="2. 下载并解压Rosetta"></a>2. 下载并解压Rosetta</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 将下载的源代码包移至主目录</span>
+<span class="token function">cp</span> /mnt/c/Users/YourUsername/Downloads/rosetta_src_20XX.XX.XXXXX.tgz ~/
+
+<span class="token comment"># 解压源代码包</span>
+<span class="token function">tar</span> <span class="token parameter variable">-xvzf</span> rosetta_src_20XX.XX.XXXXX.tgz
+
+<span class="token comment"># 创建符号链接(可选)</span>
+<span class="token function">ln</span> <span class="token parameter variable">-s</span> rosetta_src_20XX.XX.XXXXX rosetta<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="3-编译Rosetta"><a href="#3-编译Rosetta" class="headerlink" title="3. 编译Rosetta"></a>3. 编译Rosetta</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 进入源代码目录</span>
+<span class="token builtin class-name">cd</span> ~/rosetta/main/source
+
+<span class="token comment"># 使用scons编译(使用4个线程，可根据CPU核心数调整)</span>
+./scons.py <span class="token parameter variable">-j4</span> <span class="token assign-left variable">mode</span><span class="token operator">=</span>release bin<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>编译过程通常需要1-2小时，取决于计算机性能。</p>
+<h3 id="4-设置环境变量"><a href="#4-设置环境变量" class="headerlink" title="4. 设置环境变量"></a>4. 设置环境变量</h3><p>编辑<code>~/.bashrc</code>文件:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">nano</span> ~/.bashrc<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>添加以下内容:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Rosetta环境变量</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">ROSETTA3</span><span class="token operator">=~</span>/rosetta
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span>:~/rosetta/main/source/bin
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">ROSETTA_DB</span><span class="token operator">=~</span>/rosetta/main/database<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>应用更改:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">source</span> ~/.bashrc<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="5-测试安装"><a href="#5-测试安装" class="headerlink" title="5. 测试安装"></a>5. 测试安装</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 检查版本</span>
+~/rosetta/main/source/bin/score_jd2.default.linuxgccrelease <span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token parameter variable">-help</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>如果输出Rosetta版本信息和帮助文档，说明安装成功。</p>
+<h2 id="基础功能"><a href="#基础功能" class="headerlink" title="基础功能"></a>基础功能</h2><h3 id="1-文件系统结构"><a href="#1-文件系统结构" class="headerlink" title="1. 文件系统结构"></a>1. 文件系统结构</h3><p>Rosetta的主要目录结构:</p>
+<ul>
+<li><strong>bin/</strong>: 编译后的可执行程序</li>
+<li><strong>database/</strong>: 包含评分函数、旋转异构体库和其他数据</li>
+<li><strong>demo/</strong>: 演示程序和示例</li>
+<li><strong>scripts/</strong>: 实用脚本</li>
+<li><strong>src/</strong>: 源代码</li>
+</ul>
+<h3 id="2-命令行结构"><a href="#2-命令行结构" class="headerlink" title="2. 命令行结构"></a>2. 命令行结构</h3><p>Rosetta命令通常遵循以下格式:</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css">application_name.executable_type.platform -database path_to_database [options]<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>例如:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">score_jd2.default.linuxgccrelease <span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token parameter variable">-s</span> input.pdb<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>其中:</p>
+<ul>
+<li><code>score_jd2</code> - 应用程序名称</li>
+<li><code>default</code> - 编译选项</li>
+<li><code>linuxgccrelease</code> - 平台</li>
+<li><code>-database</code> - 指定数据库路径的标志</li>
+<li><code>-s</code> - 指定输入结构的标志</li>
+</ul>
+<h3 id="3-常用命令行选项"><a href="#3-常用命令行选项" class="headerlink" title="3. 常用命令行选项"></a>3. 常用命令行选项</h3><ul>
+<li><code>-database</code>: 指定Rosetta数据库路径</li>
+<li><code>-s</code>: 指定输入结构文件</li>
+<li><code>-in:file:fasta</code>: 指定输入序列文件</li>
+<li><code>-nstruct</code>: 生成的结构数量</li>
+<li><code>-out:file:scorefile</code>: 输出得分文件名</li>
+<li><code>-out:path</code>: 输出目录</li>
+<li><code>-out:pdb</code>: 输出PDB文件</li>
+<li><code>-ex1</code>, <code>-ex2</code>: 使用额外的旋转异构体构象</li>
+<li><code>-use_input_sc</code>: 使用输入结构的侧链构象</li>
+<li><code>-relax:fast</code>: 使用快速弛豫算法</li>
+<li><code>-overwrite</code>: 覆盖现有输出文件</li>
+</ul>
+<h2 id="核心应用程序"><a href="#核心应用程序" class="headerlink" title="核心应用程序"></a>核心应用程序</h2><h3 id="Structure-Prediction-结构预测"><a href="#Structure-Prediction-结构预测" class="headerlink" title="Structure Prediction (结构预测)"></a>Structure Prediction (结构预测)</h3><h4 id="1-Ab-initio结构预测"><a href="#1-Ab-initio结构预测" class="headerlink" title="1. Ab initio结构预测"></a>1. Ab initio结构预测</h4><p>从氨基酸序列预测蛋白质三维结构:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 准备fasta文件 (example.fasta)</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"&gt;target_protein"</span> <span class="token operator">&gt;</span> example.fasta
+<span class="token builtin class-name">echo</span> <span class="token string">"MKVSHPLLMGMAFAYDIILCLTIFMGPDLLNSA"</span> <span class="token operator">&gt;&gt;</span> example.fasta
+
+<span class="token comment"># 运行Ab initio预测</span>
+~/rosetta/main/source/bin/AbinitioRelax.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+-in:file:fasta example.fasta <span class="token punctuation">\</span>
+<span class="token parameter variable">-abinitio:relax</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">5</span> <span class="token punctuation">\</span>
+-out:file:silent abinitio_results.out<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>选项说明:</p>
+<ul>
+<li><code>-abinitio:relax</code>: 在预测后进行弛豫优化</li>
+<li><code>-nstruct 5</code>: 生成5个预测结构</li>
+<li><code>-out:file:silent</code>: 以二进制格式保存结果</li>
+</ul>
+<h4 id="2-片段组装"><a href="#2-片段组装" class="headerlink" title="2. 片段组装"></a>2. 片段组装</h4><p>Ab initio预测需要片段库，可以使用Robetta服务器或本地生成:</p>
+<p><strong>使用Robetta服务器</strong>:</p>
+<ol>
+<li>访问<a href="https://links.jianshu.com/go?to=http://robetta.bakerlab.org/">Robetta服务器</a></li>
+<li>提交序列并下载片段库</li>
+<li>将片段库(3mer和9mer)放在工作目录中</li>
+</ol>
+<p><strong>本地生成片段</strong>:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/fragment_picker.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+-in:file:fasta example.fasta <span class="token punctuation">\</span>
+<span class="token parameter variable">-frags:n_frags</span> <span class="token number">200</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-frags:n_candidates</span> <span class="token number">2000</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="3-同源建模-Comparative-Modeling"><a href="#3-同源建模-Comparative-Modeling" class="headerlink" title="3. 同源建模 (Comparative Modeling)"></a>3. 同源建模 (Comparative Modeling)</h4><p>当有同源模板时，可以使用比较建模:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/comparative_modeling.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+-in:file:fasta target.fasta <span class="token punctuation">\</span>
+-in:file:alignment alignment.aln <span class="token punctuation">\</span>
+-in:file:template_pdb template.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-loops:build_terminal_loops</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">10</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="4-混合建模-Hybrid-Modeling"><a href="#4-混合建模-Hybrid-Modeling" class="headerlink" title="4. 混合建模 (Hybrid Modeling)"></a>4. 混合建模 (Hybrid Modeling)</h4><p>当有部分结构信息时:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/RosettaCM.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-cm:aln</span> alignment.aln <span class="token punctuation">\</span>
+<span class="token parameter variable">-cm:align_formats</span> grishin <span class="token punctuation">\</span>
+-in:file:fasta target.fasta <span class="token punctuation">\</span>
+<span class="token parameter variable">-out:nstruct</span> <span class="token number">10</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="Protein-Design-蛋白质设计"><a href="#Protein-Design-蛋白质设计" class="headerlink" title="Protein Design (蛋白质设计)"></a>Protein Design (蛋白质设计)</h3><h4 id="1-固定骨架设计-Fixed-Backbone-Design"><a href="#1-固定骨架设计-Fixed-Backbone-Design" class="headerlink" title="1. 固定骨架设计 (Fixed Backbone Design)"></a>1. 固定骨架设计 (Fixed Backbone Design)</h4><p>保持骨架不变，优化侧链:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 创建resfile指定设计位点</span>
+<span class="token function">cat</span> <span class="token operator">&gt;</span> design.resfile <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
+NATAA
+start
+10 A ALLAA
+11 A PIKAA YFWL
+12 A NATRO
+EOF</span>
+
+<span class="token comment"># 运行设计</span>
+~/rosetta/main/source/bin/fixbb.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> input.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-resfile</span> design.resfile <span class="token punctuation">\</span>
+<span class="token parameter variable">-ex1</span> <span class="token parameter variable">-ex2</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">10</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>resfile说明:</p>
+<ul>
+<li><code>NATAA</code>: 默认保持原始氨基酸</li>
+<li><code>ALLAA</code>: 允许所有20种氨基酸</li>
+<li><code>PIKAA YFWL</code>: 仅允许Y,F,W,L四种氨基酸</li>
+<li><code>NATRO</code>: 不重新打包，保持原始构象</li>
+</ul>
+<h4 id="2-侧链重打包-Side-chain-Repacking"><a href="#2-侧链重打包-Side-chain-Repacking" class="headerlink" title="2. 侧链重打包 (Side-chain Repacking)"></a>2. 侧链重打包 (Side-chain Repacking)</h4><p>优化侧链构象而不改变氨基酸类型:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/fixbb.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> input.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-suffix</span> _repacked <span class="token punctuation">\</span>
+<span class="token parameter variable">-packing:ex1</span> <span class="token parameter variable">-packing:ex2</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-packing:repack_only</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="3-弛豫-Relax"><a href="#3-弛豫-Relax" class="headerlink" title="3. 弛豫 (Relax)"></a>3. 弛豫 (Relax)</h4><p>对结构进行能量最小化:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/relax.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> input.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-relax:fast</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-out:suffix</span> _relaxed <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">5</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="Docking-分子对接"><a href="#Docking-分子对接" class="headerlink" title="Docking (分子对接)"></a>Docking (分子对接)</h3><h4 id="1-蛋白质-蛋白质对接"><a href="#1-蛋白质-蛋白质对接" class="headerlink" title="1. 蛋白质-蛋白质对接"></a>1. 蛋白质-蛋白质对接</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/docking_protocol.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> complex.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-partners</span> A_B <span class="token punctuation">\</span>
+<span class="token parameter variable">-dock_ppk</span> <span class="token punctuation">\</span>
+-out:file:scorefile docking_scores.sc <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">100</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>选项说明:</p>
+<ul>
+<li><code>-partners A_B</code>: 指定对接的链</li>
+<li><code>-dock_ppk</code>: 使用预打包的蛋白质</li>
+<li><code>-nstruct 100</code>: 生成100个对接构象</li>
+</ul>
+<h4 id="2-局部对接-Local-Docking"><a href="#2-局部对接-Local-Docking" class="headerlink" title="2. 局部对接 (Local Docking)"></a>2. 局部对接 (Local Docking)</h4><p>当已知大致结合位置:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/docking_protocol.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> complex.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-partners</span> A_B <span class="token punctuation">\</span>
+<span class="token parameter variable">-docking:local_refine</span> <span class="token punctuation">\</span>
+-out:file:scorefile local_docking.sc <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">50</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="3-蛋白质-配体对接"><a href="#3-蛋白质-配体对接" class="headerlink" title="3. 蛋白质-配体对接"></a>3. 蛋白质-配体对接</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 首先准备配体文件</span>
+~/rosetta/main/source/scripts/python/public/molfile_to_params.py <span class="token punctuation">\</span>
+<span class="token parameter variable">-n</span> LIG <span class="token parameter variable">-p</span> LIG --conformers-in-one-file ligand.mol2
+
+<span class="token comment"># 运行对接</span>
+~/rosetta/main/source/bin/ligand_docking.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> protein_with_ligand.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-extra_res_fa</span> LIG.params <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">100</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-out:suffix</span> _dock<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="Loop-Modeling-环建模"><a href="#Loop-Modeling-环建模" class="headerlink" title="Loop Modeling (环建模)"></a>Loop Modeling (环建模)</h3><h4 id="1-基础环建模"><a href="#1-基础环建模" class="headerlink" title="1. 基础环建模"></a>1. 基础环建模</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 创建loops文件指定要重建的环区域</span>
+<span class="token function">cat</span> <span class="token operator">&gt;</span> loops.txt <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
+LOOP 25 35 0 0 0
+LOOP 78 86 0 0 0
+EOF</span>
+
+<span class="token comment"># 运行环建模</span>
+~/rosetta/main/source/bin/loopmodel.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> input.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-loops:input_loops</span> loops.txt <span class="token punctuation">\</span>
+<span class="token parameter variable">-loops:remodel</span> quick_ccd <span class="token punctuation">\</span>
+<span class="token parameter variable">-loops:refine</span> refine_ccd <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">10</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>loops文件格式说明:</p>
+<ul>
+<li>第一列: LOOP关键字</li>
+<li>第二列: 环起始残基号</li>
+<li>第三列: 环终止残基号</li>
+<li>后三列: 环的切割点，闭合点和构象设置（一般为0）</li>
+</ul>
+<h4 id="2-环优化-Loop-Refinement"><a href="#2-环优化-Loop-Refinement" class="headerlink" title="2. 环优化 (Loop Refinement)"></a>2. 环优化 (Loop Refinement)</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/loopmodel.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> input.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-loops:input_loops</span> loops.txt <span class="token punctuation">\</span>
+<span class="token parameter variable">-loops:refine</span> refine_kic <span class="token punctuation">\</span>
+<span class="token parameter variable">-ex1</span> <span class="token parameter variable">-ex2</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">20</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="3-无模板环建模"><a href="#3-无模板环建模" class="headerlink" title="3. 无模板环建模"></a>3. 无模板环建模</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/loopmodel.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> input.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-loops:input_loops</span> loops.txt <span class="token punctuation">\</span>
+<span class="token parameter variable">-loops:extended</span> <span class="token boolean">true</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-loops:build_initial</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-loops:remodel</span> perturb_ccd <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">50</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="Membrane-Proteins-膜蛋白"><a href="#Membrane-Proteins-膜蛋白" class="headerlink" title="Membrane Proteins (膜蛋白)"></a>Membrane Proteins (膜蛋白)</h3><h4 id="1-膜蛋白弛豫"><a href="#1-膜蛋白弛豫" class="headerlink" title="1. 膜蛋白弛豫"></a>1. 膜蛋白弛豫</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 创建span文件定义跨膜区域</span>
+<span class="token function">cat</span> <span class="token operator">&gt;</span> membrane.span <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
+TM region 10 30
+TM region 50 70
+TM region 90 110
+EOF</span>
+
+<span class="token comment"># 运行膜蛋白弛豫</span>
+~/rosetta/main/source/bin/mp_relax.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> membrane_protein.pdb <span class="token punctuation">\</span>
+-mp:setup:spanfiles membrane.span <span class="token punctuation">\</span>
+-mp:scoring:hbond <span class="token punctuation">\</span>
+<span class="token parameter variable">-relax:fast</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">10</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="2-膜蛋白设计"><a href="#2-膜蛋白设计" class="headerlink" title="2. 膜蛋白设计"></a>2. 膜蛋白设计</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/mp_design.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> membrane_protein.pdb <span class="token punctuation">\</span>
+-mp:setup:spanfiles membrane.span <span class="token punctuation">\</span>
+<span class="token parameter variable">-resfile</span> design.resfile <span class="token punctuation">\</span>
+-mp:lipids:composition DLPC <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">10</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="3-膜蛋白组装"><a href="#3-膜蛋白组装" class="headerlink" title="3. 膜蛋白组装"></a>3. 膜蛋白组装</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/mp_fold.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+-in:file:fasta membrane_protein.fasta <span class="token punctuation">\</span>
+-mp:setup:spans_from_file membrane.span <span class="token punctuation">\</span>
+-mp:assembly:num_components <span class="token number">2</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">50</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="Antibody-Design-抗体设计"><a href="#Antibody-Design-抗体设计" class="headerlink" title="Antibody Design (抗体设计)"></a>Antibody Design (抗体设计)</h3><h4 id="1-抗体建模"><a href="#1-抗体建模" class="headerlink" title="1. 抗体建模"></a>1. 抗体建模</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 创建抗体序列和模板文件</span>
+<span class="token comment"># ...</span>
+
+<span class="token comment"># 运行抗体建模</span>
+~/rosetta/main/source/bin/antibody.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-fasta</span> antibody.fasta <span class="token punctuation">\</span>
+<span class="token parameter variable">-antibody:numbering_scheme</span> kabat <span class="token punctuation">\</span>
+<span class="token parameter variable">-antibody:auto_generate_kink_constraint</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">10</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="2-CDR环优化"><a href="#2-CDR环优化" class="headerlink" title="2. CDR环优化"></a>2. CDR环优化</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/antibody.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> antibody.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-antibody:refine_cdr</span> h3 <span class="token punctuation">\</span>
+<span class="token parameter variable">-antibody:cdr_dihedral_constraints</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">100</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="3-抗原-抗体对接"><a href="#3-抗原-抗体对接" class="headerlink" title="3. 抗原-抗体对接"></a>3. 抗原-抗体对接</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/snugdock.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> antibody_antigen_complex.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-antibody:snug_loops</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-partners</span> A_BC <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">50</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="De-novo-Protein-Design-从头设计"><a href="#De-novo-Protein-Design-从头设计" class="headerlink" title="De novo Protein Design (从头设计)"></a>De novo Protein Design (从头设计)</h3><h4 id="1-骨架生成"><a href="#1-骨架生成" class="headerlink" title="1. 骨架生成"></a>1. 骨架生成</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/rosetta_scripts.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-parser:protocol</span> denovo_design.xml <span class="token punctuation">\</span>
+-out:file:silent denovo_backbones.silent <span class="token punctuation">\</span>
+<span class="token parameter variable">-out:nstruct</span> <span class="token number">1000</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>denovo_design.xml示例:</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ROSETTASCRIPTS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>MOVERS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>BackboneGenerator</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>bb_gen<span class="token punctuation">"</span></span> <span class="token attr-name">ss</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>LHEELLLEEE<span class="token punctuation">"</span></span> 
+            <span class="token attr-name">legacy</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>0<span class="token punctuation">"</span></span> <span class="token attr-name">n_samples</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100<span class="token punctuation">"</span></span> <span class="token attr-name">n_tries</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100<span class="token punctuation">"</span></span> <span class="token attr-name">rmsd</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1.0<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ScoreFilter</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>score_filter<span class="token punctuation">"</span></span> <span class="token attr-name">scorefxn</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref2015<span class="token punctuation">"</span></span> <span class="token attr-name">threshold</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>10<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>MOVERS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>PROTOCOLS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">mover</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>bb_gen<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">filter</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>score_filter<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>PROTOCOLS</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ROSETTASCRIPTS</span><span class="token punctuation">&gt;</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="2-序列设计"><a href="#2-序列设计" class="headerlink" title="2. 序列设计"></a>2. 序列设计</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/fixbb.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> denovo_backbone.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-design</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-ex1</span> <span class="token parameter variable">-ex2</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-use_input_sc</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">10</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="3-完整从头设计流程"><a href="#3-完整从头设计流程" class="headerlink" title="3. 完整从头设计流程"></a>3. 完整从头设计流程</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/rosetta_scripts.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-parser:protocol</span> full_denovo.xml <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">100</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="RNA-Modeling-RNA建模"><a href="#RNA-Modeling-RNA建模" class="headerlink" title="RNA Modeling (RNA建模)"></a>RNA Modeling (RNA建模)</h3><h4 id="1-RNA折叠"><a href="#1-RNA折叠" class="headerlink" title="1. RNA折叠"></a>1. RNA折叠</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/rna_denovo.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-fasta</span> rna.fasta <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">100</span> <span class="token punctuation">\</span>
+-out:file:silent rna_folded.out<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="2-RNA设计"><a href="#2-RNA设计" class="headerlink" title="2. RNA设计"></a>2. RNA设计</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/rna_design.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> rna_structure.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-rna_design:sequence_constraints</span> sequence.constraints <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">100</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="3-RNA-蛋白质对接"><a href="#3-RNA-蛋白质对接" class="headerlink" title="3. RNA-蛋白质对接"></a>3. RNA-蛋白质对接</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/rna_protein_dock.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> rna_protein_complex.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-partners</span> P_R <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">100</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="高级功能"><a href="#高级功能" class="headerlink" title="高级功能"></a>高级功能</h2><h3 id="Rosetta-Scripts"><a href="#Rosetta-Scripts" class="headerlink" title="Rosetta Scripts"></a>Rosetta Scripts</h3><p>Rosetta Scripts是一个基于XML的接口，允许用户创建自定义Rosetta协议:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/rosetta_scripts.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> input.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-parser:protocol</span> my_protocol.xml <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">10</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>示例脚本(my_protocol.xml):</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ROSETTASCRIPTS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>SCOREFXNS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ScoreFunction</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15<span class="token punctuation">"</span></span> <span class="token attr-name">weights</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref2015<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ScoreFunction</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15_soft<span class="token punctuation">"</span></span> <span class="token attr-name">weights</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref2015_soft<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>SCOREFXNS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>RESIDUE_SELECTORS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Chain</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>chainA<span class="token punctuation">"</span></span> <span class="token attr-name">chains</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>A<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Chain</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>chainB<span class="token punctuation">"</span></span> <span class="token attr-name">chains</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>B<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Interface</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>interface<span class="token punctuation">"</span></span> <span class="token attr-name">chain1</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>chainA<span class="token punctuation">"</span></span> <span class="token attr-name">chain2</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>chainB<span class="token punctuation">"</span></span> <span class="token attr-name">cutoff</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>8.0<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>RESIDUE_SELECTORS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>TASKOPERATIONS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>InitializeFromCommandline</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>init<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>RestrictToRepacking</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>repack_only<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ReadResfile</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>design_interface<span class="token punctuation">"</span></span> <span class="token attr-name">filename</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>interface_design.resfile<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>TASKOPERATIONS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>FILTERS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Ddg</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ddg<span class="token punctuation">"</span></span> <span class="token attr-name">scorefxn</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15<span class="token punctuation">"</span></span> <span class="token attr-name">threshold</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>-15<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Sasa</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>sasa<span class="token punctuation">"</span></span> <span class="token attr-name">threshold</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>800<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>FILTERS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>MOVERS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Docking</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dock<span class="token punctuation">"</span></span> <span class="token attr-name">score_high</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>PackRotamersMover</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>design<span class="token punctuation">"</span></span> <span class="token attr-name">scorefxn</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15<span class="token punctuation">"</span></span> <span class="token attr-name">task_operations</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>init,design_interface<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>MinMover</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>minimize<span class="token punctuation">"</span></span> <span class="token attr-name">scorefxn</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15<span class="token punctuation">"</span></span> <span class="token attr-name">chi</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span> <span class="token attr-name">bb</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>MOVERS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>PROTOCOLS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">mover</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dock<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">mover</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>design<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">mover</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>minimize<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">filter</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ddg<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">filter</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>sasa<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>PROTOCOLS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>OUTPUT</span> <span class="token attr-name">scorefxn</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ROSETTASCRIPTS</span><span class="token punctuation">&gt;</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="PyRosetta"><a href="#PyRosetta" class="headerlink" title="PyRosetta"></a>PyRosetta</h3><p>PyRosetta是Rosetta的Python接口，让用户能够通过Python脚本使用Rosetta功能:</p>
+<h4 id="1-安装PyRosetta"><a href="#1-安装PyRosetta" class="headerlink" title="1. 安装PyRosetta"></a>1. 安装PyRosetta</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 在WSL中安装</span>
+pip <span class="token function">install</span> pyrosetta <span class="token parameter variable">-f</span> https://username:password@graylab.jhu.edu/download/PyRosetta4/latest/repository/linux/release/PyRosetta-4.subset.all.linux.wheel<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>注意:用自己的许可证用户名和密码替换username和password。</p>
+<h4 id="2-基本PyRosetta脚本示例"><a href="#2-基本PyRosetta脚本示例" class="headerlink" title="2. 基本PyRosetta脚本示例"></a>2. 基本PyRosetta脚本示例</h4><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># save as simple_pyrosetta.py</span>
+<span class="token keyword">import</span> pyrosetta
+<span class="token keyword">from</span> pyrosetta <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token keyword">from</span> pyrosetta<span class="token punctuation">.</span>toolbox <span class="token keyword">import</span> <span class="token operator">*</span>
+
+<span class="token comment"># 初始化PyRosetta</span>
+pyrosetta<span class="token punctuation">.</span>init<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 加载蛋白质</span>
+pose <span class="token operator">=</span> pyrosetta<span class="token punctuation">.</span>pose_from_pdb<span class="token punctuation">(</span><span class="token string">"input.pdb"</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 创建评分函数</span>
+scorefxn <span class="token operator">=</span> pyrosetta<span class="token punctuation">.</span>get_fa_scorefxn<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 评分</span>
+score <span class="token operator">=</span> scorefxn<span class="token punctuation">(</span>pose<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"Initial score: </span><span class="token interpolation"><span class="token punctuation">{</span>score<span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+
+<span class="token comment"># 创建PackerTask </span>
+task <span class="token operator">=</span> pyrosetta<span class="token punctuation">.</span>standard_packer_task<span class="token punctuation">(</span>pose<span class="token punctuation">)</span>
+task<span class="token punctuation">.</span>restrict_to_repacking<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 打包侧链</span>
+packer <span class="token operator">=</span> pyrosetta<span class="token punctuation">.</span>protocols<span class="token punctuation">.</span>PackRotamersMover<span class="token punctuation">(</span>scorefxn<span class="token punctuation">,</span> task<span class="token punctuation">)</span>
+packer<span class="token punctuation">.</span><span class="token builtin">apply</span><span class="token punctuation">(</span>pose<span class="token punctuation">)</span>
+
+<span class="token comment"># 重新评分</span>
+score <span class="token operator">=</span> scorefxn<span class="token punctuation">(</span>pose<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"After repacking score: </span><span class="token interpolation"><span class="token punctuation">{</span>score<span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+
+<span class="token comment"># 保存结果</span>
+pose<span class="token punctuation">.</span>dump_pdb<span class="token punctuation">(</span><span class="token string">"output_repacked.pdb"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>运行脚本:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">python simple_pyrosetta.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="3-高级PyRosetta脚本示例"><a href="#3-高级PyRosetta脚本示例" class="headerlink" title="3. 高级PyRosetta脚本示例"></a>3. 高级PyRosetta脚本示例</h4><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># save as advanced_pyrosetta.py</span>
+<span class="token keyword">import</span> pyrosetta
+<span class="token keyword">from</span> pyrosetta <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token keyword">from</span> pyrosetta<span class="token punctuation">.</span>toolbox <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token keyword">import</span> pyrosetta<span class="token punctuation">.</span>distributed<span class="token punctuation">.</span>tasks<span class="token punctuation">.</span>rosetta_scripts <span class="token keyword">as</span> rs
+
+<span class="token comment"># 初始化</span>
+pyrosetta<span class="token punctuation">.</span>init<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 加载蛋白质</span>
+pose <span class="token operator">=</span> pyrosetta<span class="token punctuation">.</span>pose_from_pdb<span class="token punctuation">(</span><span class="token string">"input.pdb"</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 定义XML脚本</span>
+xml_script <span class="token operator">=</span> <span class="token triple-quoted-string string">"""
+&lt;ROSETTASCRIPTS&gt;
+    &lt;SCOREFXNS&gt;
+        &lt;ScoreFunction name="ref15" weights="ref2015"/&gt;
+    &lt;/SCOREFXNS&gt;
+    &lt;MOVERS&gt;
+        &lt;FastRelax name="relax" scorefxn="ref15"/&gt;
+    &lt;/MOVERS&gt;
+    &lt;PROTOCOLS&gt;
+        &lt;Add mover="relax"/&gt;
+    &lt;/PROTOCOLS&gt;
+&lt;/ROSETTASCRIPTS&gt;
+"""</span>
+
+<span class="token comment"># 运行XML脚本</span>
+rs<span class="token punctuation">.</span>rosetta_scripts_task<span class="token punctuation">(</span>pose<span class="token punctuation">,</span> xml_script<span class="token punctuation">)</span>
+
+<span class="token comment"># 保存结果</span>
+pose<span class="token punctuation">.</span>dump_pdb<span class="token punctuation">(</span><span class="token string">"output_relaxed.pdb"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="Fold-and-Dock"><a href="#Fold-and-Dock" class="headerlink" title="Fold and Dock"></a>Fold and Dock</h3><p>用于同时预测多亚基蛋白质复合物结构:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/fold_and_dock.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+-in:file:fasta complex.fasta <span class="token punctuation">\</span>
+-in:file:native native.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-fold_and_dock:symmetry</span> symm.def <span class="token punctuation">\</span>
+<span class="token parameter variable">-out:nstruct</span> <span class="token number">100</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>symm.def示例(二聚体C2对称):</p>
+<pre class="line-numbers language-undefined" data-language="undefined"><code class="language-undefined">symmetry_name C2
+subunits 2
+number_of_interfaces 1
+E = 2*VRT0001 + 1*(VRT0001:VRT0002)
+anchor_residue 1
+virtual_coordinates_start
+xyz VRT0001 0,0,0 0,0,1 0,1,0
+xyz VRT0002 0,0,0 0,0,-1 0,-1,0
+virtual_coordinates_stop<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="Enzyme-Design"><a href="#Enzyme-Design" class="headerlink" title="Enzyme Design"></a>Enzyme Design</h3><p>设计具有特定催化功能的酶:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">~/rosetta/main/source/bin/enzyme_design.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> scaffold.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-enzdes:cstfile</span> constraints.cst <span class="token punctuation">\</span>
+<span class="token parameter variable">-enzdes:design_min_cycles</span> <span class="token number">2</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-ex1</span> <span class="token parameter variable">-ex2</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">50</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>constraints.cst示例:</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"># 约束基质与活性位点氨基酸的相互作用
+<span class="token property">CST</span><span class="token punctuation">:</span><span class="token punctuation">:</span>BEGIN
+<span class="token property">TEMPLATE</span><span class="token punctuation">:</span><span class="token punctuation">:</span>   <span class="token property">ATOM_MAP</span><span class="token punctuation">:</span> 1 <span class="token property">atom_name</span><span class="token punctuation">:</span> C1 C2 O1
+<span class="token property">TEMPLATE</span><span class="token punctuation">:</span><span class="token punctuation">:</span>   <span class="token property">ATOM_MAP</span><span class="token punctuation">:</span> 2 <span class="token property">atom_name</span><span class="token punctuation">:</span> OG CB CA
+<span class="token property">CONSTRAINT</span><span class="token punctuation">:</span><span class="token punctuation">:</span> <span class="token property">distanceAB</span><span class="token punctuation">:</span>    3.0   0.2  100.0  0
+<span class="token property">CONSTRAINT</span><span class="token punctuation">:</span><span class="token punctuation">:</span> <span class="token property">angle_A</span><span class="token punctuation">:</span>     109.5   5.0  100.0  360.0
+<span class="token property">CONSTRAINT</span><span class="token punctuation">:</span><span class="token punctuation">:</span> <span class="token property">angle_B</span><span class="token punctuation">:</span>     109.5   5.0  100.0  360.0
+<span class="token property">CONSTRAINT</span><span class="token punctuation">:</span><span class="token punctuation">:</span> <span class="token property">torsion_A</span><span class="token punctuation">:</span>   180.0  15.0  100.0  360.0
+<span class="token property">CONSTRAINT</span><span class="token punctuation">:</span><span class="token punctuation">:</span> <span class="token property">torsion_AB</span><span class="token punctuation">:</span>  180.0  15.0  100.0  360.0
+<span class="token property">CONSTRAINT</span><span class="token punctuation">:</span><span class="token punctuation">:</span> <span class="token property">torsion_B</span><span class="token punctuation">:</span>   180.0  15.0  100.0  360.0
+<span class="token property">CST</span><span class="token punctuation">:</span><span class="token punctuation">:</span>END<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="Symmetry-Modeling"><a href="#Symmetry-Modeling" class="headerlink" title="Symmetry Modeling"></a>Symmetry Modeling</h3><p>对称蛋白设计:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 创建对称定义文件</span>
+<span class="token function">cat</span> <span class="token operator">&gt;</span> C3.symm <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
+symmetry_name C3
+subunits 3
+number_of_interfaces 1
+E = 3*VRT0001 + 3*(VRT0001:VRT0001)
+anchor_residue 1
+virtual_coordinates_start
+xyz VRT0001 0,0,0 0,0,1 1,0,0
+virtual_coordinates_stop
+EOF</span>
+
+<span class="token comment"># 运行对称蛋白设计</span>
+~/rosetta/main/source/bin/rosetta_scripts.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> monomer.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-parser:protocol</span> symmetry_design.xml <span class="token punctuation">\</span>
+<span class="token parameter variable">-symmetry:symmet</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">50</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>symmetry_design.xml示例:</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ROSETTASCRIPTS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>SCOREFXNS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ScoreFunction</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15<span class="token punctuation">"</span></span> <span class="token attr-name">weights</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref2015<span class="token punctuation">"</span></span> <span class="token attr-name">symmetric</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>SCOREFXNS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>MOVERS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>SetupForSymmetry</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>setupsymm<span class="token punctuation">"</span></span> <span class="token attr-name">definition</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>C3.symm<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>SymPackRotamersMover</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>symdes<span class="token punctuation">"</span></span> <span class="token attr-name">scorefxn</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15<span class="token punctuation">"</span></span> <span class="token attr-name">task_operations</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>init,ifcdes<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>SymMinMover</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>symmin<span class="token punctuation">"</span></span> <span class="token attr-name">scorefxn</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>MOVERS</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>TASKOPERATIONS</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>InitializeFromCommandline</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>init<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>DesignInterfaceOperation</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ifcdes<span class="token punctuation">"</span></span> <span class="token attr-name">interface_weight</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1.0<span class="token punctuation">"</span></span> <span class="token attr-name">design_chain1</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span> <span class="token attr-name">design_chain2</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>TASKOPERATIONS</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>PROTOCOLS</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">mover</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>setupsymm<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">mover</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>symdes<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">mover</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>symmin<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>PROTOCOLS</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>OUTPUT</span> <span class="token attr-name">scorefxn</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ROSETTASCRIPTS</span><span class="token punctuation">&gt;</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="输入文件格式"><a href="#输入文件格式" class="headerlink" title="输入文件格式"></a>输入文件格式</h2><h3 id="1-PDB文件"><a href="#1-PDB文件" class="headerlink" title="1. PDB文件"></a>1. PDB文件</h3><p>标准蛋白质数据库格式文件，包含原子坐标和结构信息:</p>
+<pre class="line-numbers language-none"><code class="language-none">ATOM 1 N MET A 1 27.340 24.430 2.614 1.00 19.66 A N
+ATOM 2 CA MET A 1 26.266 25.413 2.842 1.00 18.57 A C<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+
+<h3 id="2-FASTA文件"><a href="#2-FASTA文件" class="headerlink" title="2. FASTA文件"></a>2. FASTA文件</h3><p>氨基酸或核苷酸序列文件:</p>
+<blockquote>
+<p>protein_name<br>MVLSPADKTNVKAAWGKVGAHAGEYGAEALERMFLSFPTTKTYFPHFDLSHGSAQVKGHGKKVADALTNAVAHVDDMPNALSALSDLHAHKLRVDPVNFKLLSHCLLVTLAAHLPAEFTPAVHASLDKFLASVSTVLTSKYR</p>
+</blockquote>
+<h3 id="3-Resfile"><a href="#3-Resfile" class="headerlink" title="3. Resfile"></a>3. Resfile</h3><p>指定设计或重打包的残基文件:</p>
+<pre class="line-numbers language-none"><code class="language-none">
+NATAA # 默认重新打包为相同氨基酸类型
+start
+10 A ALLAA # 10号位点允许任何氨基酸
+11 A PIKAA YFWL # 11号位点只允许这四种氨基酸
+12 A NATRO # 12号位点保持不变
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="4-Constraint-Files-cst"><a href="#4-Constraint-Files-cst" class="headerlink" title="4. Constraint Files (.cst)"></a>4. Constraint Files (.cst)</h3><p>定义结构约束:</p>
+<pre class="line-numbers language-none"><code class="language-none">
+AtomPair CA 10 CA 20 HARMONIC 10.0 0.5 # 残基10和20的CA原子之间距离约束为10Å
+Angle CA 10 CA 15 CA 20 CIRCULARHARMONIC 120.0 5.0 # 角度约束
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h3 id="5-Fragments文件"><a href="#5-Fragments文件" class="headerlink" title="5. Fragments文件"></a>5. Fragments文件</h3><p>用于结构预测的片段库(.200.9mers, .200.3mers):</p>
+<pre class="line-numbers language-none"><code class="language-none">
+position: 1 neighbors: 200
+1 A1 PHE 1c3y_A 56 A 56 0.479 147.000 -127.000 175.000 -77.000 144.000 ...
+...
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="6-Loops文件"><a href="#6-Loops文件" class="headerlink" title="6. Loops文件"></a>6. Loops文件</h3><p>指定要建模的蛋白质环区域:</p>
+<pre class="line-numbers language-none"><code class="language-none">
+LOOP 25 35 0 0 0
+LOOP 78 86 0 0 0
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h3 id="7-Blueprint文件"><a href="#7-Blueprint文件" class="headerlink" title="7. Blueprint文件"></a>7. Blueprint文件</h3><p>用于从头设计骨架:</p>
+<pre class="line-numbers language-none"><code class="language-none">
+1 A . ABEGO
+2 A . ABEGO
+3 A . ABEGO
+...
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="输出分析"><a href="#输出分析" class="headerlink" title="输出分析"></a>输出分析</h2><h3 id="1-评分文件-sc"><a href="#1-评分文件-sc" class="headerlink" title="1. 评分文件(.sc)"></a>1. 评分文件(.sc)</h3><p>包含所有输出模型的能量分数和各项能量指标:</p>
+<pre class="line-numbers language-none"><code class="language-none">
+SCORE: score fa_atr fa_rep fa_sol fa_intra_rep fa_elec pro_close hbond_sr_bb hbond_lr_bb hbond_bb_sc hbond_sc dslf_fa13 rama omega fa_dun p_aa_pp yhh_planarity ref allatom_rms gdtmm gdtmm1.0 gdtmm2.0 gdtmm3.0 gdtmm4.0 gdtmm5.0 gdtmm0.5 gdtmm1_hires gdtmm0.5_hires gdthc irms maxsub maxsub2.0 rms sc_value time description
+SCORE: -93.451 -367.213 58.402 195.307 0.402 -35.582 0.030 -22.613 -9.633 -9.059 -9.053 0.000 -4.066 -0.756 124.442 -8.748 0.000 -5.312 0.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 0.000 125 125 0.000 0.000 9.12 S_00000001
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>分析评分文件:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 提取总分</span>
+<span class="token function">grep</span> <span class="token string">"^SCORE:"</span> scores.sc <span class="token operator">|</span> <span class="token function">grep</span> <span class="token parameter variable">-v</span> <span class="token string">"SCORE: score"</span> <span class="token operator">|</span> <span class="token function">sort</span> <span class="token parameter variable">-nk2</span> <span class="token operator">&gt;</span> sorted_scores.txt
+
+<span class="token comment"># 提取特定能量项(如界面能量)</span>
+<span class="token function">awk</span> <span class="token string">'{print $2, $7}'</span> sorted_scores.txt <span class="token operator">&gt;</span> interface_energy.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="2-结构分析"><a href="#2-结构分析" class="headerlink" title="2. 结构分析"></a>2. 结构分析</h3><h4 id="使用PyMOL进行可视化"><a href="#使用PyMOL进行可视化" class="headerlink" title="使用PyMOL进行可视化"></a>使用PyMOL进行可视化</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 启动PyMOL并加载结构</span>
+pymol output_*.pdb
+
+<span class="token comment"># 在PyMOL中运行命令</span>
+align all, model_1
+rms_cur model_*, model_1
+spectrum b, rainbow
+cartoon putty
+show sticks, resn ALA+GLU+<span class="token punctuation">..</span>.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="使用PyRosetta进行分析"><a href="#使用PyRosetta进行分析" class="headerlink" title="使用PyRosetta进行分析"></a>使用PyRosetta进行分析</h4><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># save as analyze_structures.py</span>
+<span class="token keyword">import</span> pyrosetta
+<span class="token keyword">from</span> pyrosetta <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token keyword">from</span> pyrosetta<span class="token punctuation">.</span>toolbox <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token keyword">import</span> numpy <span class="token keyword">as</span> np
+
+<span class="token comment"># 初始化</span>
+pyrosetta<span class="token punctuation">.</span>init<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 加载结构</span>
+pose1 <span class="token operator">=</span> pyrosetta<span class="token punctuation">.</span>pose_from_pdb<span class="token punctuation">(</span><span class="token string">"model_1.pdb"</span><span class="token punctuation">)</span>
+pose2 <span class="token operator">=</span> pyrosetta<span class="token punctuation">.</span>pose_from_pdb<span class="token punctuation">(</span><span class="token string">"model_2.pdb"</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 计算RMSD</span>
+rmsd <span class="token operator">=</span> pyrosetta<span class="token punctuation">.</span>rosetta<span class="token punctuation">.</span>core<span class="token punctuation">.</span>scoring<span class="token punctuation">.</span>CA_rmsd<span class="token punctuation">(</span>pose1<span class="token punctuation">,</span> pose2<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"CA RMSD: </span><span class="token interpolation"><span class="token punctuation">{</span>rmsd<span class="token punctuation">:</span><span class="token format-spec">.3f</span><span class="token punctuation">}</span></span><span class="token string"> Å"</span></span><span class="token punctuation">)</span>
+
+<span class="token comment"># 计算每个残基的SASA</span>
+sasa_calc <span class="token operator">=</span> pyrosetta<span class="token punctuation">.</span>rosetta<span class="token punctuation">.</span>core<span class="token punctuation">.</span>scoring<span class="token punctuation">.</span>sasa<span class="token punctuation">.</span>SasaCalc<span class="token punctuation">(</span><span class="token punctuation">)</span>
+sasa_calc<span class="token punctuation">.</span>calculate<span class="token punctuation">(</span>pose1<span class="token punctuation">)</span>
+<span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> pose1<span class="token punctuation">.</span>total_residue<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    sasa <span class="token operator">=</span> sasa_calc<span class="token punctuation">.</span>get_residue_sasa<span class="token punctuation">(</span>i<span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"Residue </span><span class="token interpolation"><span class="token punctuation">{</span>i<span class="token punctuation">}</span></span><span class="token string">: </span><span class="token interpolation"><span class="token punctuation">{</span>sasa<span class="token punctuation">:</span><span class="token format-spec">.2f</span><span class="token punctuation">}</span></span><span class="token string"> Å²"</span></span><span class="token punctuation">)</span>
+
+<span class="token comment"># 分析氢键网络</span>
+hbonds <span class="token operator">=</span> pyrosetta<span class="token punctuation">.</span>rosetta<span class="token punctuation">.</span>core<span class="token punctuation">.</span>scoring<span class="token punctuation">.</span>hbonds<span class="token punctuation">.</span>HBondSet<span class="token punctuation">(</span><span class="token punctuation">)</span>
+pyrosetta<span class="token punctuation">.</span>rosetta<span class="token punctuation">.</span>core<span class="token punctuation">.</span>scoring<span class="token punctuation">.</span>hbonds<span class="token punctuation">.</span>fill_hbond_set<span class="token punctuation">(</span>pose1<span class="token punctuation">,</span> hbonds<span class="token punctuation">)</span>
+<span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> hbonds<span class="token punctuation">.</span>nhbonds<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    hb <span class="token operator">=</span> hbonds<span class="token punctuation">.</span>hbond<span class="token punctuation">(</span>i<span class="token punctuation">)</span>
+    don_res <span class="token operator">=</span> hb<span class="token punctuation">.</span>don_res<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    acc_res <span class="token operator">=</span> hb<span class="token punctuation">.</span>acc_res<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    energy <span class="token operator">=</span> hb<span class="token punctuation">.</span>energy<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"H-bond </span><span class="token interpolation"><span class="token punctuation">{</span>i<span class="token punctuation">}</span></span><span class="token string">: Donor </span><span class="token interpolation"><span class="token punctuation">{</span>don_res<span class="token punctuation">}</span></span><span class="token string"> - Acceptor </span><span class="token interpolation"><span class="token punctuation">{</span>acc_res<span class="token punctuation">}</span></span><span class="token string">, Energy: </span><span class="token interpolation"><span class="token punctuation">{</span>energy<span class="token punctuation">:</span><span class="token format-spec">.2f</span><span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="批量分析多个结构"><a href="#批量分析多个结构" class="headerlink" title="批量分析多个结构"></a>批量分析多个结构</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 使用Rosetta工具分析多个结构</span>
+~/rosetta/main/source/bin/score_jd2.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+-in:file:s model_*.pdb <span class="token punctuation">\</span>
+-out:file:scorefile all_scores.sc
+
+<span class="token comment"># 计算RMSD矩阵</span>
+~/rosetta/main/source/bin/rms_analysis.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+-in:file:s model_*.pdb <span class="token punctuation">\</span>
+-out:file:o rmsd_matrix.txt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="3-聚类分析"><a href="#3-聚类分析" class="headerlink" title="3. 聚类分析"></a>3. 聚类分析</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 使用Rosetta进行聚类</span>
+~/rosetta/main/source/bin/cluster.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+-in:file:s model_*.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-cluster:radius</span> <span class="token number">2.0</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-out:prefix</span> clustered_<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="常见问题解决"><a href="#常见问题解决" class="headerlink" title="常见问题解决"></a>常见问题解决</h2><h3 id="1-编译错误"><a href="#1-编译错误" class="headerlink" title="1. 编译错误"></a>1. 编译错误</h3><p><strong>问题</strong>: scons编译失败，显示缺少依赖项<br><strong>解决方案</strong>:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 安装所有必要的依赖项</span>
+<span class="token function">sudo</span> <span class="token function">apt</span> update
+<span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token parameter variable">-y</span> build-essential scons python3-dev zlib1g-dev libboost-all-dev libxml2-dev libxslt1-dev<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>问题</strong>: 编译中内存不足<br><strong>解决方案</strong>:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 减少并行编译线程数</span>
+./scons.py <span class="token parameter variable">-j2</span> <span class="token assign-left variable">mode</span><span class="token operator">=</span>release bin
+
+<span class="token comment"># 或增加交换空间</span>
+<span class="token function">sudo</span> fallocate <span class="token parameter variable">-l</span> 4G /swapfile
+<span class="token function">sudo</span> <span class="token function">chmod</span> <span class="token number">600</span> /swapfile
+<span class="token function">sudo</span> <span class="token function">mkswap</span> /swapfile
+<span class="token function">sudo</span> <span class="token function">swapon</span> /swapfile<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="2-运行时错误"><a href="#2-运行时错误" class="headerlink" title="2. 运行时错误"></a>2. 运行时错误</h3><p><strong>问题</strong>: 找不到数据库<br><strong>解决方案</strong>:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 确保正确指定数据库路径</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><strong>问题</strong>: “core dumped”错误<br><strong>解决方案</strong>:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 检查内存使用情况</span>
+<span class="token builtin class-name">ulimit</span> <span class="token parameter variable">-a</span>
+<span class="token comment"># 增加可用内存限制</span>
+<span class="token builtin class-name">ulimit</span> <span class="token parameter variable">-v</span> unlimited<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>问题</strong>: 输入文件格式错误<br><strong>解决方案</strong>:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 检查PDB文件格式</span>
+~/rosetta/main/source/bin/check_pdb_file.default.linuxgccrelease <span class="token parameter variable">-s</span> input.pdb
+<span class="token comment"># 修复PDB文件</span>
+~/rosetta/main/source/bin/clean_pdb.py input.pdb A<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="3-性能优化"><a href="#3-性能优化" class="headerlink" title="3. 性能优化"></a>3. 性能优化</h3><p><strong>问题</strong>: 运行速度慢<br><strong>解决方案</strong>:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 并行运行多个独立任务</span>
+<span class="token keyword">for</span> <span class="token for-or-select variable">i</span> <span class="token keyword">in</span> <span class="token punctuation">{</span><span class="token number">1</span><span class="token punctuation">..</span><span class="token number">10</span><span class="token punctuation">}</span><span class="token punctuation">;</span> <span class="token keyword">do</span>
+  <span class="token function">mkdir</span> run_<span class="token variable">$i</span>
+  <span class="token builtin class-name">cd</span> run_<span class="token variable">$i</span>
+  ~/rosetta/main/source/bin/AbinitioRelax.default.linuxgccrelease <span class="token punctuation">\</span>
+  <span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+  -in:file:fasta <span class="token punctuation">..</span>/protein.fasta <span class="token punctuation">\</span>
+  <span class="token parameter variable">-nstruct</span> <span class="token number">10</span> <span class="token punctuation">\</span>
+  -out:file:silent abinit_<span class="token variable">$i</span>.out <span class="token operator">&amp;</span>
+  <span class="token builtin class-name">cd</span> <span class="token punctuation">..</span>
+<span class="token keyword">done</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>问题</strong>: 磁盘空间不足<br><strong>解决方案</strong>:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 使用二进制静默文件而非PDB文件</span>
+-out:file:silent results.out
+
+<span class="token comment"># 提取特定模型</span>
+~/rosetta/main/source/bin/extract_pdbs.default.linuxgccrelease <span class="token punctuation">\</span>
+-in:file:silent results.out <span class="token punctuation">\</span>
+-in:file:tags S_00001 S_00002<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="资源与社区"><a href="#资源与社区" class="headerlink" title="资源与社区"></a>资源与社区</h2><h3 id="1-官方资源"><a href="#1-官方资源" class="headerlink" title="1. 官方资源"></a>1. 官方资源</h3><ul>
+<li><strong>Rosetta Commons官网</strong>: <a href="https://links.jianshu.com/go?to=https://www.rosettacommons.org/">https://www.rosettacommons.org/</a></li>
+<li><strong>文档</strong>: <a href="https://links.jianshu.com/go?to=https://www.rosettacommons.org/docs/latest/Home">https://www.rosettacommons.org/docs/latest/Home</a></li>
+<li><strong>教程</strong>: <a href="https://links.jianshu.com/go?to=https://www.rosettacommons.org/demos/latest/Home">https://www.rosettacommons.org/demos/latest/Home</a></li>
+<li><strong>RosettaCon</strong>: 年度Rosetta用户与开发者会议</li>
+</ul>
+<h3 id="2-社区支持"><a href="#2-社区支持" class="headerlink" title="2. 社区支持"></a>2. 社区支持</h3><ul>
+<li><strong>Rosetta Forums</strong>: <a href="https://links.jianshu.com/go?to=https://www.rosettacommons.org/forums">https://www.rosettacommons.org/forums</a></li>
+<li><strong>Rosetta3 User Guide</strong>: <a href="https://links.jianshu.com/go?to=https://www.rosettacommons.org/manuals/latest/rosetta3_user_guide/">https://www.rosettacommons.org/manuals/latest/rosetta3_user_guide/</a></li>
+<li><strong>GitHub</strong>: <a href="https://links.jianshu.com/go?to=https://github.com/RosettaCommons">https://github.com/RosettaCommons</a></li>
+</ul>
+<h3 id="3-学习资源"><a href="#3-学习资源" class="headerlink" title="3. 学习资源"></a>3. 学习资源</h3><ul>
+<li><strong>Online Courses</strong>:<ul>
+<li>Coursera: Computational Methods for Protein Structure Prediction</li>
+<li>edX: Protein Design and Ligand Design with Rosetta</li>
+</ul>
+</li>
+<li><strong>推荐书籍</strong>:<ul>
+<li>“Protein Structure Prediction: A Practical Approach” by M.J.E. Sternberg</li>
+<li>“Computational Protein Design” by Gert-Jan Bekker</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-常用第三方工具"><a href="#4-常用第三方工具" class="headerlink" title="4. 常用第三方工具"></a>4. 常用第三方工具</h3><ul>
+<li><strong>结构可视化</strong>:<ul>
+<li>PyMOL: <a href="https://links.jianshu.com/go?to=https://pymol.org/">https://pymol.org/</a></li>
+<li>UCSF Chimera: <a href="https://links.jianshu.com/go?to=https://www.cgl.ucsf.edu/chimera/">https://www.cgl.ucsf.edu/chimera/</a></li>
+<li>VMD: <a href="https://links.jianshu.com/go?to=https://www.ks.uiuc.edu/Research/vmd/">https://www.ks.uiuc.edu/Research/vmd/</a></li>
+</ul>
+</li>
+<li><strong>序列分析</strong>:<ul>
+<li>BLAST: <a href="https://links.jianshu.com/go?to=https://blast.ncbi.nlm.nih.gov/">https://blast.ncbi.nlm.nih.gov/</a></li>
+<li>HMMER: <a href="https://links.jianshu.com/go?to=http://hmmer.org/">http://hmmer.org/</a></li>
+<li>Clustal Omega: <a href="https://links.jianshu.com/go?to=https://www.ebi.ac.uk/Tools/msa/clustalo/">https://www.ebi.ac.uk/Tools/msa/clustalo/</a></li>
+</ul>
+</li>
+<li><strong>结构验证</strong>:<ul>
+<li>MolProbity: <a href="https://links.jianshu.com/go?to=http://molprobity.biochem.duke.edu/">http://molprobity.biochem.duke.edu/</a></li>
+<li>PROCHECK: <a href="https://links.jianshu.com/go?to=https://www.ebi.ac.uk/thornton-srv/software/PROCHECK/">https://www.ebi.ac.uk/thornton-srv/software/PROCHECK/</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="高级应用案例"><a href="#高级应用案例" class="headerlink" title="高级应用案例"></a>高级应用案例</h2><h3 id="1-蛋白质界面优化"><a href="#1-蛋白质界面优化" class="headerlink" title="1. 蛋白质界面优化"></a>1. 蛋白质界面优化</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 1. 首先使用界面分析器</span>
+~/rosetta/main/source/bin/InterfaceAnalyzer.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> complex.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-interface</span> A_B <span class="token punctuation">\</span>
+<span class="token parameter variable">-pack_input</span> <span class="token boolean">true</span> <span class="token punctuation">\</span>
+-out:file:score_only interface_analysis.sc
+
+<span class="token comment"># 2. 创建界面设计resfile</span>
+<span class="token function">cat</span> <span class="token operator">&gt;</span> interface_design.resfile <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
+NATAA
+start
+# 基于界面分析的结果选择残基
+45 A ALLAA
+46 A ALLAA
+72 B PIKAA DEHKR
+73 B PIKAA DEHKR
+EOF</span>
+
+<span class="token comment"># 3. 运行界面设计</span>
+~/rosetta/main/source/bin/rosetta_scripts.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> complex.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-parser:protocol</span> interface_design.xml <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">100</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>interface_design.xml示例:</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ROSETTASCRIPTS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>SCOREFXNS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ScoreFunction</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15<span class="token punctuation">"</span></span> <span class="token attr-name">weights</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref2015<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ScoreFunction</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>soft_rep<span class="token punctuation">"</span></span> <span class="token attr-name">weights</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref2015<span class="token punctuation">"</span></span> <span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Reweight</span> <span class="token attr-name">scoretype</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>fa_rep<span class="token punctuation">"</span></span> <span class="token attr-name">weight</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>0.5<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ScoreFunction</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>SCOREFXNS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>RESIDUE_SELECTORS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Chain</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>chainA<span class="token punctuation">"</span></span> <span class="token attr-name">chains</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>A<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Chain</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>chainB<span class="token punctuation">"</span></span> <span class="token attr-name">chains</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>B<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Interface</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>interface<span class="token punctuation">"</span></span> <span class="token attr-name">chain1</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>chainA<span class="token punctuation">"</span></span> <span class="token attr-name">chain2</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>chainB<span class="token punctuation">"</span></span> <span class="token attr-name">cutoff</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>8.0<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Neighborhood</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>neighbor<span class="token punctuation">"</span></span> <span class="token attr-name">selector</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>interface<span class="token punctuation">"</span></span> <span class="token attr-name">distance</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>4.0<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Union</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>design_residues<span class="token punctuation">"</span></span> <span class="token attr-name">selectors</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>interface,neighbor<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>RESIDUE_SELECTORS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>TASKOPERATIONS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>InitializeFromCommandline</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>init<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ReadResfile</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>res_file<span class="token punctuation">"</span></span> <span class="token attr-name">filename</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>interface_design.resfile<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>OperateOnResidueSubset</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>restrict_to_interface<span class="token punctuation">"</span></span> <span class="token attr-name">selector</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>design_residues<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>RestrictToRepackingRLT</span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>OperateOnResidueSubset</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>TASKOPERATIONS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>FILTERS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>InterfaceHoles</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>holes<span class="token punctuation">"</span></span> <span class="token attr-name">jump</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span> <span class="token attr-name">threshold</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>200<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Ddg</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ddg_filter<span class="token punctuation">"</span></span> <span class="token attr-name">scorefxn</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15<span class="token punctuation">"</span></span> <span class="token attr-name">threshold</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>-15<span class="token punctuation">"</span></span> <span class="token attr-name">jump</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ShapeComplementarity</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>sc<span class="token punctuation">"</span></span> <span class="token attr-name">jump</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span> <span class="token attr-name">verbose</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>false<span class="token punctuation">"</span></span> <span class="token attr-name">min_sc</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>0.65<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>PackStat</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pstat<span class="token punctuation">"</span></span> <span class="token attr-name">threshold</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>0.58<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>FILTERS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>MOVERS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>PackRotamersMover</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>design<span class="token punctuation">"</span></span> <span class="token attr-name">scorefxn</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>soft_rep<span class="token punctuation">"</span></span> <span class="token attr-name">task_operations</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>init,res_file,restrict_to_interface<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>MinMover</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>minimize<span class="token punctuation">"</span></span> <span class="token attr-name">scorefxn</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15<span class="token punctuation">"</span></span> <span class="token attr-name">chi</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span> <span class="token attr-name">bb</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>FilterReportAsPDBInfo</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>report_sc<span class="token punctuation">"</span></span> <span class="token attr-name">filter</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>sc<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>FilterReportAsPDBInfo</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>report_ddg<span class="token punctuation">"</span></span> <span class="token attr-name">filter</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ddg_filter<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>MOVERS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>PROTOCOLS</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">mover</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>design<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">mover</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>minimize<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">filter</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>holes<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">filter</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ddg_filter<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">filter</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>sc<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">filter</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pstat<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">mover</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>report_sc<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Add</span> <span class="token attr-name">mover</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>report_ddg<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>PROTOCOLS</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>OUTPUT</span> <span class="token attr-name">scorefxn</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ref15<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ROSETTASCRIPTS</span><span class="token punctuation">&gt;</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="2-稳定性改进设计"><a href="#2-稳定性改进设计" class="headerlink" title="2. 稳定性改进设计"></a>2. 稳定性改进设计</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 1. 首先运行Rosetta弛豫和稳定性分析</span>
+~/rosetta/main/source/bin/relax.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> protein.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-relax:fast</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">-out:suffix</span> _relaxed
+
+<span class="token comment"># 2. 创建稳定性设计XML脚本</span>
+<span class="token function">cat</span> <span class="token operator">&gt;</span> stability_design.xml <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
+&lt;ROSETTASCRIPTS&gt;
+    &lt;SCOREFXNS&gt;
+        &lt;ScoreFunction name="ref15" weights="ref2015"/&gt;
+    &lt;/SCOREFXNS&gt;
+    &lt;RESIDUE_SELECTORS&gt;
+        &lt;SecondaryStructure name="sheet" ss="E" /&gt;
+        &lt;SecondaryStructure name="helix" ss="H" /&gt;
+        &lt;Not name="loop" selector="sheet"&gt;
+            &lt;SecondaryStructure ss="H"/&gt;
+        &lt;/Not&gt;
+        &lt;Layer name="surface" select_core="false" select_boundary="false" select_surface="true" core_cutoff="2.0" surface_cutoff="1.0"/&gt;
+        &lt;Layer name="boundary" select_core="false" select_boundary="true" select_surface="false"/&gt;
+        &lt;Layer name="core" select_core="true" select_boundary="false" select_surface="false"/&gt;
+    &lt;/RESIDUE_SELECTORS&gt;
+    &lt;TASKOPERATIONS&gt;
+        &lt;InitializeFromCommandline name="init"/&gt;
+        &lt;RestrictToRepacking name="rtrp"/&gt;
+        &lt;OperateOnResidueSubset name="design_hydrophobic_core" selector="core"&gt;
+            &lt;RestrictAbsentCanonicalAASRLT aas="ACFGILMPVWY"/&gt;
+        &lt;/OperateOnResidueSubset&gt;
+        &lt;OperateOnResidueSubset name="design_boundary" selector="boundary"&gt;
+            &lt;RestrictAbsentCanonicalAASRLT aas="ADEFGHIKLMNPQRSTVWY"/&gt;
+        &lt;/OperateOnResidueSubset&gt;
+        &lt;OperateOnResidueSubset name="design_surface" selector="surface"&gt;
+            &lt;RestrictAbsentCanonicalAASRLT aas="DEHKNPQRST"/&gt;
+        &lt;/OperateOnResidueSubset&gt;
+        &lt;DesignRestrictions name="turn_glycine"&gt;
+            &lt;Action residue_selector="loop" aas="G"/&gt;
+        &lt;/DesignRestrictions&gt;
+        &lt;DesignRestrictions name="helix_favoring"&gt;
+            &lt;Action residue_selector="helix" aas="AEKLMQR"/&gt;
+        &lt;/DesignRestrictions&gt;
+        &lt;DesignRestrictions name="sheet_favoring"&gt;
+            &lt;Action residue_selector="sheet" aas="FILVWY"/&gt;
+        &lt;/DesignRestrictions&gt;
+    &lt;/TASKOPERATIONS&gt;
+    &lt;FILTERS&gt;
+        &lt;PackStat name="packstat" threshold="0.58"/&gt;
+        &lt;BuriedUnsatHbonds name="buried_unsat_hbonds" cutoff="5"/&gt;
+        &lt;CavityVolume name="cavity" threshold="10"/&gt;
+        &lt;SSPrediction name="ss_prediction" threshold="0.8" use_svm="1"/&gt;
+        &lt;EnergyCutoff name="score_cut" scorefxn="ref15" cutoff="0" energy_type="total_score"/&gt;
+    &lt;/FILTERS&gt;
+    &lt;MOVERS&gt;
+        &lt;FastDesign name="fast_design" scorefxn="ref15" task_operations="init,design_hydrophobic_core,design_boundary,design_surface,turn_glycine,helix_favoring,sheet_favoring" repeats="5"/&gt;
+        &lt;MinMover name="minimize" scorefxn="ref15" chi="1" bb="1"/&gt;
+    &lt;/MOVERS&gt;
+    &lt;PROTOCOLS&gt;
+        &lt;Add mover="fast_design"/&gt;
+        &lt;Add mover="minimize"/&gt;
+        &lt;Add filter="packstat"/&gt;
+        &lt;Add filter="buried_unsat_hbonds"/&gt;
+        &lt;Add filter="cavity"/&gt;
+        &lt;Add filter="ss_prediction"/&gt;
+        &lt;Add filter="score_cut"/&gt;
+    &lt;/PROTOCOLS&gt;
+    &lt;OUTPUT scorefxn="ref15"/&gt;
+&lt;/ROSETTASCRIPTS&gt;
+EOF</span>
+
+<span class="token comment"># 3. 运行稳定性设计</span>
+~/rosetta/main/source/bin/rosetta_scripts.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> protein_relaxed.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-parser:protocol</span> stability_design.xml <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">100</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="3-多状态设计"><a href="#3-多状态设计" class="headerlink" title="3. 多状态设计"></a>3. 多状态设计</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 创建多状态设计XML脚本</span>
+<span class="token function">cat</span> <span class="token operator">&gt;</span> multistate_design.xml <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
+&lt;ROSETTASCRIPTS&gt;
+    &lt;SCOREFXNS&gt;
+        &lt;ScoreFunction name="ref15" weights="ref2015"/&gt;
+    &lt;/SCOREFXNS&gt;
+    &lt;RESIDUE_SELECTORS&gt;
+        &lt;Chain name="chainA" chains="A"/&gt;
+        &lt;Chain name="chainB" chains="B"/&gt;
+        &lt;Chain name="chainC" chains="C"/&gt;
+        &lt;Interface name="AB_interface" chain1="chainA" chain2="chainB" cutoff="8.0"/&gt;
+        &lt;Interface name="AC_interface" chain1="chainA" chain2="chainC" cutoff="8.0"/&gt;
+        &lt;Union name="design_residues" selectors="AB_interface,AC_interface"/&gt;
+    &lt;/RESIDUE_SELECTORS&gt;
+    &lt;TASKOPERATIONS&gt;
+        &lt;InitializeFromCommandline name="init"/&gt;
+        &lt;OperateOnResidueSubset name="design_interfaces" selector="design_residues"&gt;
+            &lt;RestrictToRepackingRLT/&gt;
+        &lt;/OperateOnResidueSubset&gt;
+        &lt;DisallowIfNonnative name="native_aa" disallow_aas="ACDEFGHIKLMNPQRSTVWY"/&gt;
+    &lt;/TASKOPERATIONS&gt;
+    &lt;FILTERS&gt;
+        &lt;Ddg name="ddg_AB" scorefxn="ref15" threshold="-15" jump="1"/&gt;
+        &lt;Ddg name="ddg_AC" scorefxn="ref15" threshold="-15" jump="2"/&gt;
+    &lt;/FILTERS&gt;
+    &lt;MOVERS&gt;
+        &lt;MakeMultimerMover name="make_multimer" states="2"&gt;
+            &lt;State filename="AB_complex.pdb"/&gt;
+            &lt;State filename="AC_complex.pdb"/&gt;
+        &lt;/MakeMultimerMover&gt;
+        &lt;MutateResidue name="mutate1" target="10" new_res="ALA"/&gt;
+        &lt;MultiStateDesign name="msd" scorefxn="ref15" task_operations="init,design_interfaces,native_aa"&gt;
+            &lt;States&gt;
+                &lt;State state_name="AB" reference="true"/&gt;
+                &lt;State state_name="AC"/&gt;
+            &lt;/States&gt;
+        &lt;/MultiStateDesign&gt;
+    &lt;/MOVERS&gt;
+    &lt;PROTOCOLS&gt;
+        &lt;Add mover="make_multimer"/&gt;
+        &lt;Add mover="msd"/&gt;
+        &lt;Add filter="ddg_AB"/&gt;
+        &lt;Add filter="ddg_AC"/&gt;
+    &lt;/PROTOCOLS&gt;
+    &lt;OUTPUT scorefxn="ref15"/&gt;
+&lt;/ROSETTASCRIPTS&gt;
+EOF</span>
+
+<span class="token comment"># 运行多状态设计</span>
+~/rosetta/main/source/bin/rosetta_scripts.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-parser:protocol</span> multistate_design.xml <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">50</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="4-设计金属结合位点"><a href="#4-设计金属结合位点" class="headerlink" title="4. 设计金属结合位点"></a>4. 设计金属结合位点</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 1. 创建金属结合位点设计XML脚本</span>
+<span class="token function">cat</span> <span class="token operator">&gt;</span> metal_site_design.xml <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
+&lt;ROSETTASCRIPTS&gt;
+    &lt;SCOREFXNS&gt;
+        &lt;ScoreFunction name="ref15" weights="ref2015"/&gt;
+        &lt;ScoreFunction name="metal_score" weights="ref2015"&gt;
+            &lt;Reweight scoretype="coordinate_constraint" weight="1.0"/&gt;
+            &lt;Reweight scoretype="atom_pair_constraint" weight="1.0"/&gt;
+            &lt;Reweight scoretype="angle_constraint" weight="1.0"/&gt;
+            &lt;Reweight scoretype="dihedral_constraint" weight="1.0"/&gt;
+        &lt;/ScoreFunction&gt;
+    &lt;/SCOREFXNS&gt;
+    &lt;RESIDUE_SELECTORS&gt;
+        &lt;ResiduePDBInfoHasLabel name="catalytic_residues" property="METAL_BINDING"/&gt;
+        &lt;Neighborhood name="shell1" selector="catalytic_residues" distance="8.0"/&gt;
+        &lt;Neighborhood name="shell2" selector="shell1" distance="8.0"/&gt;
+    &lt;/RESIDUE_SELECTORS&gt;
+    &lt;TASKOPERATIONS&gt;
+        &lt;InitializeFromCommandline name="init"/&gt;
+        &lt;OperateOnResidueSubset name="design_catalytic" selector="catalytic_residues"&gt;
+            &lt;RestrictAbsentCanonicalAASRLT aas="DEHKYCST"/&gt;
+        &lt;/OperateOnResidueSubset&gt;
+        &lt;OperateOnResidueSubset name="design_shell1" selector="shell1"&gt;
+            &lt;RestrictToRepackingRLT/&gt;
+        &lt;/OperateOnResidueSubset&gt;
+        &lt;OperateOnResidueSubset name="design_shell2" selector="shell2"&gt;
+            &lt;PreventRepackingRLT/&gt;
+        &lt;/OperateOnResidueSubset&gt;
+    &lt;/TASKOPERATIONS&gt;
+    &lt;FILTERS&gt;
+        &lt;MetalContact name="metal_contact" confidence="0.8" catalytic_residues="catalytic_residues"/&gt;
+        &lt;BuriedUnsatHbonds name="buried_unsat" jump_number="0" cutoff="5" residue_surface_cutoff="20.0" ignore_surface_res="true"/&gt;
+    &lt;/FILTERS&gt;
+    &lt;MOVERS&gt;
+        &lt;AddConstraints name="add_cst"&gt;
+            &lt;AddZincCoordinationConstraints name="zinc_cst" coordinating_residues="10,14,54,78" metal_id="1000" CA_distance_cutoff="6.0" coordinators="NE2 OE1 OE2 ND1"/&gt;
+        &lt;/AddConstraints&gt;
+        &lt;PackRotamersMover name="design" scorefxn="metal_score" task_operations="init,design_catalytic,design_shell1,design_shell2"/&gt;
+        &lt;MinMover name="minimize" scorefxn="metal_score" chi="1" bb="1"/&gt;
+    &lt;/MOVERS&gt;
+    &lt;PROTOCOLS&gt;
+        &lt;Add mover="add_cst"/&gt;
+        &lt;Add mover="design"/&gt;
+        &lt;Add mover="minimize"/&gt;
+        &lt;Add filter="metal_contact"/&gt;
+        &lt;Add filter="buried_unsat"/&gt;
+    &lt;/PROTOCOLS&gt;
+    &lt;OUTPUT scorefxn="ref15"/&gt;
+&lt;/ROSETTASCRIPTS&gt;
+EOF</span>
+
+<span class="token comment"># 2. 运行金属结合位点设计</span>
+~/rosetta/main/source/bin/rosetta_scripts.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> protein.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-parser:protocol</span> metal_site_design.xml <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">50</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="5-非天然氨基酸整合设计"><a href="#5-非天然氨基酸整合设计" class="headerlink" title="5. 非天然氨基酸整合设计"></a>5. 非天然氨基酸整合设计</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 1. 准备非天然氨基酸参数文件</span>
+~/rosetta/main/source/scripts/python/public/ncaa_to_params.py <span class="token punctuation">\</span>
+<span class="token parameter variable">-n</span> UAA <span class="token punctuation">\</span>
+--no-pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">--clobber</span> <span class="token punctuation">\</span>
+uaa.mol2
+
+<span class="token comment"># 2. 创建包含非天然氨基酸的设计XML脚本</span>
+<span class="token function">cat</span> <span class="token operator">&gt;</span> ncaa_design.xml <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
+&lt;ROSETTASCRIPTS&gt;
+    &lt;SCOREFXNS&gt;
+        &lt;ScoreFunction name="ref15" weights="ref2015"/&gt;
+    &lt;/SCOREFXNS&gt;
+    &lt;RESIDUE_SELECTORS&gt;
+        &lt;Index name="target_res" resnums="10,25,42"/&gt;
+        &lt;Neighborhood name="nbr" selector="target_res" distance="8.0"/&gt;
+    &lt;/RESIDUE_SELECTORS&gt;
+    &lt;TASKOPERATIONS&gt;
+        &lt;InitializeFromCommandline name="init"/&gt;
+        &lt;IncludeCurrent name="include_current"/&gt;
+        &lt;ExtraRotamersGeneric name="ex_rot" ex1="1" ex2="1" extrachi_cutoff="0"/&gt;
+        &lt;LimitAromaChi2 name="limit_aro" include_trp="true"/&gt;
+        &lt;OperateOnResidueSubset name="design_target" selector="target_res"&gt;
+            &lt;RestrictAbsentCanonicalAASRLT aas="X"/&gt;
+        &lt;/OperateOnResidueSubset&gt;
+        &lt;OperateOnResidueSubset name="repack_nbr" selector="nbr"&gt;
+            &lt;RestrictToRepackingRLT/&gt;
+        &lt;/OperateOnResidueSubset&gt;
+    &lt;/TASKOPERATIONS&gt;
+    &lt;MOVERS&gt;
+        &lt;PackRotamersMover name="design" scorefxn="ref15" task_operations="init,include_current,ex_rot,limit_aro,design_target,repack_nbr"/&gt;
+        &lt;MinMover name="minimize" scorefxn="ref15" chi="1" bb="1"/&gt;
+    &lt;/MOVERS&gt;
+    &lt;PROTOCOLS&gt;
+        &lt;Add mover="design"/&gt;
+        &lt;Add mover="minimize"/&gt;
+    &lt;/PROTOCOLS&gt;
+    &lt;OUTPUT scorefxn="ref15"/&gt;
+&lt;/ROSETTASCRIPTS&gt;
+EOF</span>
+
+<span class="token comment"># 3. 运行非天然氨基酸设计</span>
+~/rosetta/main/source/bin/rosetta_scripts.default.linuxgccrelease <span class="token punctuation">\</span>
+<span class="token parameter variable">-database</span> ~/rosetta/main/database <span class="token punctuation">\</span>
+<span class="token parameter variable">-s</span> protein.pdb <span class="token punctuation">\</span>
+<span class="token parameter variable">-parser:protocol</span> ncaa_design.xml <span class="token punctuation">\</span>
+<span class="token parameter variable">-extra_res_fa</span> UAA.params <span class="token punctuation">\</span>
+<span class="token parameter variable">-nstruct</span> <span class="token number">50</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://0HHHHHH0.github.io">HHHH</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://0hhhhhh0.github.io/2025/11/06/rosetta/">https://0hhhhhh0.github.io/2025/11/06/rosetta/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/uploads/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">从基因到结构：用PyMOL可视化理解分子对接与突变效应</div></div><div class="info-2"><div class="info-item-1">从基因到结构：用PyMOL可视化理解分子对接与突变效应亲爱的同学们，当我们谈论“结构生物学”或“计算药物设计”时，分子对接和蛋白质突变是两个核心概念。它们一个关乎预测，一个关乎解释。今天，我们将不仅从原理上理解它们，更将借助强大的分子可视化软件PyMOL，将抽象的概念转化为可见的3D结构。 第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”分子对接的本质是在原子层面预测小分子（配体）与其靶标生物大分子（受体）之间的最优结合模式。传统的流程我们比作“钥匙配锁”，但现在，我们迎来了一位强大的AI助手——AlphaFold——它能为许多我们不知道精确结构的“锁”生成高精度的3D模型。 现代分子对接的增强版流程如下： 1. 结构准备与预处理：获取“锁”和“钥匙”的3D蓝图 这是所有计算的基石。蛋白质受体的三维结构是分子对接的起点。其来源主要分为实验解析和计算预测两大类。  a) 传统路径（实验结构）：从PDB数据库下载通过X射线晶体学、冷冻电镜或核磁共振等技术解析的结构。这是金标准，精度最高。然而，并非所有蛋白质，特别是某些膜蛋白或大型复合物，都能被轻易解析出结构。 b) 计算预...</div></div></div></a><a class="pagination-related" href="/2025/11/05/alphafold-pymol/" title="AlphaFold与PyMOL的示例"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">AlphaFold与PyMOL的示例</div></div><div class="info-2"><div class="info-item-1">蛋白质与蛋白质互作是指不同蛋白质之间的相互作用，这种作用可以发生在细胞内或细胞外。蛋白质通过互相结合，形成复杂的细胞机制和信号传导网络，参与多种生物过程，如基因调控、代谢、信号传导等。这种互作是生命活动中的重要组成部分，对维持生物体的正常功能具有重要意义。 那么如何用AlphaFold3预测候选蛋白质与蛋白质互作呢？ 第一步通过Uniport网站获取候选基因的蛋白质序列（以cGAS、STING为例）。获取cGAS蛋白质序列。 &gt;XP_065930211.1 cyclic GMP-AMP synthase-like receptor isoform X1 [Magallana gigas] MVFKCPICKREDFQSEGGLSSHITWKHSGSSDGRGSRPSTGGRGRRDDRDIKARVFKCPICKREDFQSEGGLSSHITWKHSGSSDGRGSRPSTGHGACGRSDNREYNTTVIKCPICKRGDFKSEGGLSCHITTVHPGSANGKGSRPSSCTNGKRDDGARPKTYTPRHRDHERHNSDRDVVRGVARVQRESSQRGSP...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Rosetta%E5%85%A8%E9%9D%A2%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97"><span class="toc-number">1.</span> <span class="toc-text">Rosetta全面使用指南</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">2.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%87%86%E5%A4%87"><span class="toc-number">3.</span> <span class="toc-text">安装准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%8E%B7%E5%8F%96%E8%AE%B8%E5%8F%AF%E8%AF%81"><span class="toc-number">3.1.</span> <span class="toc-text">1. 获取许可证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%B3%BB%E7%BB%9F%E8%A6%81%E6%B1%82"><span class="toc-number">3.2.</span> <span class="toc-text">2. 系统要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Linux%E7%B3%BB%E7%BB%9F%E5%87%86%E5%A4%87"><span class="toc-number">3.3.</span> <span class="toc-text">3. Linux系统准备</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="toc-number">4.</span> <span class="toc-text">安装与配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E9%A1%B9"><span class="toc-number">4.1.</span> <span class="toc-text">1. 安装依赖项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%B8%8B%E8%BD%BD%E5%B9%B6%E8%A7%A3%E5%8E%8BRosetta"><span class="toc-number">4.2.</span> <span class="toc-text">2. 下载并解压Rosetta</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%BC%96%E8%AF%91Rosetta"><span class="toc-number">4.3.</span> <span class="toc-text">3. 编译Rosetta</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E8%AE%BE%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">4.4.</span> <span class="toc-text">4. 设置环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%B5%8B%E8%AF%95%E5%AE%89%E8%A3%85"><span class="toc-number">4.5.</span> <span class="toc-text">5. 测试安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E5%8A%9F%E8%83%BD"><span class="toc-number">5.</span> <span class="toc-text">基础功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%BB%93%E6%9E%84"><span class="toc-number">5.1.</span> <span class="toc-text">1. 文件系统结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%91%BD%E4%BB%A4%E8%A1%8C%E7%BB%93%E6%9E%84"><span class="toc-number">5.2.</span> <span class="toc-text">2. 命令行结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%A1%8C%E9%80%89%E9%A1%B9"><span class="toc-number">5.3.</span> <span class="toc-text">3. 常用命令行选项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F"><span class="toc-number">6.</span> <span class="toc-text">核心应用程序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Structure-Prediction-%E7%BB%93%E6%9E%84%E9%A2%84%E6%B5%8B"><span class="toc-number">6.1.</span> <span class="toc-text">Structure Prediction (结构预测)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-Ab-initio%E7%BB%93%E6%9E%84%E9%A2%84%E6%B5%8B"><span class="toc-number">6.1.1.</span> <span class="toc-text">1. Ab initio结构预测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E7%89%87%E6%AE%B5%E7%BB%84%E8%A3%85"><span class="toc-number">6.1.2.</span> <span class="toc-text">2. 片段组装</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%90%8C%E6%BA%90%E5%BB%BA%E6%A8%A1-Comparative-Modeling"><span class="toc-number">6.1.3.</span> <span class="toc-text">3. 同源建模 (Comparative Modeling)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E6%B7%B7%E5%90%88%E5%BB%BA%E6%A8%A1-Hybrid-Modeling"><span class="toc-number">6.1.4.</span> <span class="toc-text">4. 混合建模 (Hybrid Modeling)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Protein-Design-%E8%9B%8B%E7%99%BD%E8%B4%A8%E8%AE%BE%E8%AE%A1"><span class="toc-number">6.2.</span> <span class="toc-text">Protein Design (蛋白质设计)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%9B%BA%E5%AE%9A%E9%AA%A8%E6%9E%B6%E8%AE%BE%E8%AE%A1-Fixed-Backbone-Design"><span class="toc-number">6.2.1.</span> <span class="toc-text">1. 固定骨架设计 (Fixed Backbone Design)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E4%BE%A7%E9%93%BE%E9%87%8D%E6%89%93%E5%8C%85-Side-chain-Repacking"><span class="toc-number">6.2.2.</span> <span class="toc-text">2. 侧链重打包 (Side-chain Repacking)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%BC%9B%E8%B1%AB-Relax"><span class="toc-number">6.2.3.</span> <span class="toc-text">3. 弛豫 (Relax)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Docking-%E5%88%86%E5%AD%90%E5%AF%B9%E6%8E%A5"><span class="toc-number">6.3.</span> <span class="toc-text">Docking (分子对接)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E8%9B%8B%E7%99%BD%E8%B4%A8-%E8%9B%8B%E7%99%BD%E8%B4%A8%E5%AF%B9%E6%8E%A5"><span class="toc-number">6.3.1.</span> <span class="toc-text">1. 蛋白质-蛋白质对接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%B1%80%E9%83%A8%E5%AF%B9%E6%8E%A5-Local-Docking"><span class="toc-number">6.3.2.</span> <span class="toc-text">2. 局部对接 (Local Docking)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E8%9B%8B%E7%99%BD%E8%B4%A8-%E9%85%8D%E4%BD%93%E5%AF%B9%E6%8E%A5"><span class="toc-number">6.3.3.</span> <span class="toc-text">3. 蛋白质-配体对接</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Loop-Modeling-%E7%8E%AF%E5%BB%BA%E6%A8%A1"><span class="toc-number">6.4.</span> <span class="toc-text">Loop Modeling (环建模)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%BB%BA%E6%A8%A1"><span class="toc-number">6.4.1.</span> <span class="toc-text">1. 基础环建模</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E7%8E%AF%E4%BC%98%E5%8C%96-Loop-Refinement"><span class="toc-number">6.4.2.</span> <span class="toc-text">2. 环优化 (Loop Refinement)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E6%97%A0%E6%A8%A1%E6%9D%BF%E7%8E%AF%E5%BB%BA%E6%A8%A1"><span class="toc-number">6.4.3.</span> <span class="toc-text">3. 无模板环建模</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Membrane-Proteins-%E8%86%9C%E8%9B%8B%E7%99%BD"><span class="toc-number">6.5.</span> <span class="toc-text">Membrane Proteins (膜蛋白)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E8%86%9C%E8%9B%8B%E7%99%BD%E5%BC%9B%E8%B1%AB"><span class="toc-number">6.5.1.</span> <span class="toc-text">1. 膜蛋白弛豫</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E8%86%9C%E8%9B%8B%E7%99%BD%E8%AE%BE%E8%AE%A1"><span class="toc-number">6.5.2.</span> <span class="toc-text">2. 膜蛋白设计</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E8%86%9C%E8%9B%8B%E7%99%BD%E7%BB%84%E8%A3%85"><span class="toc-number">6.5.3.</span> <span class="toc-text">3. 膜蛋白组装</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Antibody-Design-%E6%8A%97%E4%BD%93%E8%AE%BE%E8%AE%A1"><span class="toc-number">6.6.</span> <span class="toc-text">Antibody Design (抗体设计)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E6%8A%97%E4%BD%93%E5%BB%BA%E6%A8%A1"><span class="toc-number">6.6.1.</span> <span class="toc-text">1. 抗体建模</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-CDR%E7%8E%AF%E4%BC%98%E5%8C%96"><span class="toc-number">6.6.2.</span> <span class="toc-text">2. CDR环优化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E6%8A%97%E5%8E%9F-%E6%8A%97%E4%BD%93%E5%AF%B9%E6%8E%A5"><span class="toc-number">6.6.3.</span> <span class="toc-text">3. 抗原-抗体对接</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#De-novo-Protein-Design-%E4%BB%8E%E5%A4%B4%E8%AE%BE%E8%AE%A1"><span class="toc-number">6.7.</span> <span class="toc-text">De novo Protein Design (从头设计)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E9%AA%A8%E6%9E%B6%E7%94%9F%E6%88%90"><span class="toc-number">6.7.1.</span> <span class="toc-text">1. 骨架生成</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%BA%8F%E5%88%97%E8%AE%BE%E8%AE%A1"><span class="toc-number">6.7.2.</span> <span class="toc-text">2. 序列设计</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%AE%8C%E6%95%B4%E4%BB%8E%E5%A4%B4%E8%AE%BE%E8%AE%A1%E6%B5%81%E7%A8%8B"><span class="toc-number">6.7.3.</span> <span class="toc-text">3. 完整从头设计流程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RNA-Modeling-RNA%E5%BB%BA%E6%A8%A1"><span class="toc-number">6.8.</span> <span class="toc-text">RNA Modeling (RNA建模)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-RNA%E6%8A%98%E5%8F%A0"><span class="toc-number">6.8.1.</span> <span class="toc-text">1. RNA折叠</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-RNA%E8%AE%BE%E8%AE%A1"><span class="toc-number">6.8.2.</span> <span class="toc-text">2. RNA设计</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-RNA-%E8%9B%8B%E7%99%BD%E8%B4%A8%E5%AF%B9%E6%8E%A5"><span class="toc-number">6.8.3.</span> <span class="toc-text">3. RNA-蛋白质对接</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E7%BA%A7%E5%8A%9F%E8%83%BD"><span class="toc-number">7.</span> <span class="toc-text">高级功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Rosetta-Scripts"><span class="toc-number">7.1.</span> <span class="toc-text">Rosetta Scripts</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PyRosetta"><span class="toc-number">7.2.</span> <span class="toc-text">PyRosetta</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%AE%89%E8%A3%85PyRosetta"><span class="toc-number">7.2.1.</span> <span class="toc-text">1. 安装PyRosetta</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%9F%BA%E6%9C%ACPyRosetta%E8%84%9A%E6%9C%AC%E7%A4%BA%E4%BE%8B"><span class="toc-number">7.2.2.</span> <span class="toc-text">2. 基本PyRosetta脚本示例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E9%AB%98%E7%BA%A7PyRosetta%E8%84%9A%E6%9C%AC%E7%A4%BA%E4%BE%8B"><span class="toc-number">7.2.3.</span> <span class="toc-text">3. 高级PyRosetta脚本示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fold-and-Dock"><span class="toc-number">7.3.</span> <span class="toc-text">Fold and Dock</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Enzyme-Design"><span class="toc-number">7.4.</span> <span class="toc-text">Enzyme Design</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Symmetry-Modeling"><span class="toc-number">7.5.</span> <span class="toc-text">Symmetry Modeling</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F"><span class="toc-number">8.</span> <span class="toc-text">输入文件格式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-PDB%E6%96%87%E4%BB%B6"><span class="toc-number">8.1.</span> <span class="toc-text">1. PDB文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-FASTA%E6%96%87%E4%BB%B6"><span class="toc-number">8.2.</span> <span class="toc-text">2. FASTA文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Resfile"><span class="toc-number">8.3.</span> <span class="toc-text">3. Resfile</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Constraint-Files-cst"><span class="toc-number">8.4.</span> <span class="toc-text">4. Constraint Files (.cst)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-Fragments%E6%96%87%E4%BB%B6"><span class="toc-number">8.5.</span> <span class="toc-text">5. Fragments文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-Loops%E6%96%87%E4%BB%B6"><span class="toc-number">8.6.</span> <span class="toc-text">6. Loops文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-Blueprint%E6%96%87%E4%BB%B6"><span class="toc-number">8.7.</span> <span class="toc-text">7. Blueprint文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E5%88%86%E6%9E%90"><span class="toc-number">9.</span> <span class="toc-text">输出分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%AF%84%E5%88%86%E6%96%87%E4%BB%B6-sc"><span class="toc-number">9.1.</span> <span class="toc-text">1. 评分文件(.sc)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90"><span class="toc-number">9.2.</span> <span class="toc-text">2. 结构分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8PyMOL%E8%BF%9B%E8%A1%8C%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="toc-number">9.2.1.</span> <span class="toc-text">使用PyMOL进行可视化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8PyRosetta%E8%BF%9B%E8%A1%8C%E5%88%86%E6%9E%90"><span class="toc-number">9.2.2.</span> <span class="toc-text">使用PyRosetta进行分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%89%B9%E9%87%8F%E5%88%86%E6%9E%90%E5%A4%9A%E4%B8%AA%E7%BB%93%E6%9E%84"><span class="toc-number">9.2.3.</span> <span class="toc-text">批量分析多个结构</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%81%9A%E7%B1%BB%E5%88%86%E6%9E%90"><span class="toc-number">9.3.</span> <span class="toc-text">3. 聚类分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3"><span class="toc-number">10.</span> <span class="toc-text">常见问题解决</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%BC%96%E8%AF%91%E9%94%99%E8%AF%AF"><span class="toc-number">10.1.</span> <span class="toc-text">1. 编译错误</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%BF%90%E8%A1%8C%E6%97%B6%E9%94%99%E8%AF%AF"><span class="toc-number">10.2.</span> <span class="toc-text">2. 运行时错误</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">10.3.</span> <span class="toc-text">3. 性能优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E4%B8%8E%E7%A4%BE%E5%8C%BA"><span class="toc-number">11.</span> <span class="toc-text">资源与社区</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AE%98%E6%96%B9%E8%B5%84%E6%BA%90"><span class="toc-number">11.1.</span> <span class="toc-text">1. 官方资源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%A4%BE%E5%8C%BA%E6%94%AF%E6%8C%81"><span class="toc-number">11.2.</span> <span class="toc-text">2. 社区支持</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%BA%90"><span class="toc-number">11.3.</span> <span class="toc-text">3. 学习资源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%B8%B8%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E5%B7%A5%E5%85%B7"><span class="toc-number">11.4.</span> <span class="toc-text">4. 常用第三方工具</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E7%BA%A7%E5%BA%94%E7%94%A8%E6%A1%88%E4%BE%8B"><span class="toc-number">12.</span> <span class="toc-text">高级应用案例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%9B%8B%E7%99%BD%E8%B4%A8%E7%95%8C%E9%9D%A2%E4%BC%98%E5%8C%96"><span class="toc-number">12.1.</span> <span class="toc-text">1. 蛋白质界面优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%A8%B3%E5%AE%9A%E6%80%A7%E6%94%B9%E8%BF%9B%E8%AE%BE%E8%AE%A1"><span class="toc-number">12.2.</span> <span class="toc-text">2. 稳定性改进设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%A4%9A%E7%8A%B6%E6%80%81%E8%AE%BE%E8%AE%A1"><span class="toc-number">12.3.</span> <span class="toc-text">3. 多状态设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E8%AE%BE%E8%AE%A1%E9%87%91%E5%B1%9E%E7%BB%93%E5%90%88%E4%BD%8D%E7%82%B9"><span class="toc-number">12.4.</span> <span class="toc-text">4. 设计金属结合位点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E9%9D%9E%E5%A4%A9%E7%84%B6%E6%B0%A8%E5%9F%BA%E9%85%B8%E6%95%B4%E5%90%88%E8%AE%BE%E8%AE%A1"><span class="toc-number">12.5.</span> <span class="toc-text">5. 非天然氨基酸整合设计</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/24/indel/" title="记一次清空SMART修复群晖报故障的硬盘">记一次清空SMART修复群晖报故障的硬盘</a><time datetime="2025-12-24T04:56:00.000Z" title="Created 2025-12-24 12:56:00">2025-12-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/gemini/" title="根据SNP位点进行快速引物设计——网页版">根据SNP位点进行快速引物设计——网页版</a><time datetime="2025-12-02T14:26:00.000Z" title="Created 2025-12-02 22:26:00">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/24/latex/" title="LaTeX详细教程+技巧总结">LaTeX详细教程+技巧总结</a><time datetime="2025-11-24T14:26:00.000Z" title="Created 2025-11-24 22:26:00">2025-11-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/10/gwas-ld-block/" title="GWAS + 热点区域识别 + LD Block 分析流程详解">GWAS + 热点区域识别 + LD Block 分析流程详解</a><time datetime="2025-11-10T14:26:00.000Z" title="Created 2025-11-10 22:26:00">2025-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应">从基因到结构：用PyMOL可视化理解分子对接与突变效应</a><time datetime="2025-11-09T14:26:00.000Z" title="Created 2025-11-09 22:26:00">2025-11-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
+   #sidebar_search_box input[type=text]{width:calc(100% - 24px)}
+}</style></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/fish.js" defer data-pjax></script><script type="text/javascript" src="/js/busuanzi.pure.mini.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-10-09</span><a class="blog-slider__title" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">Hexo + Butterfly 个人博客搭建</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/11/10/gwas-ld-block/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-11-10</span><a class="blog-slider__title" href="2025/11/10/gwas-ld-block/" alt="">GWAS + 热点区域识别 + LD Block 分析流程详解</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/11/10/gwas-ld-block/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/07/31/19/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/OIP-C.2E7GSli1t13WJ-Of6Hp9UgHaEi" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-07-31</span><a class="blog-slider__title" href="2025/07/31/19/" alt="">2.重测序数据分析——初步整理</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/07/31/19/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><!-- hexo injector body_end end --></body></html>

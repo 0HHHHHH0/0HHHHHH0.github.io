@@ -1,0 +1,1394 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>GWAS + 热点区域识别 + LD Block 分析流程详解 | HHHH</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="🧬 一、项目概述在进行 GWAS（全基因组关联分析） 后，我们通常得到一个包含数十万到数百万个 SNP 的结果文件。然而，仅凭曼哈顿图观察显著位点往往无法直观判断“显著 SNP 是否存在聚集（hotspot）”，更难直接选定 LD 分析区域。 本篇文章介绍一套自动化分析流程，用于：  从 GWAS 注释文件中提取特定染色体； 对 SNP 分布进行可视化与统计； 基于密度与显著性筛选“热点区域”；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GWAS + 热点区域识别 + LD Block 分析流程详解">
+<meta property="og:url" content="https://0hhhhhh0.github.io/2025/11/10/gwas-ld-block/index.html">
+<meta property="og:site_name" content="HHHH">
+<meta property="og:description" content="🧬 一、项目概述在进行 GWAS（全基因组关联分析） 后，我们通常得到一个包含数十万到数百万个 SNP 的结果文件。然而，仅凭曼哈顿图观察显著位点往往无法直观判断“显著 SNP 是否存在聚集（hotspot）”，更难直接选定 LD 分析区域。 本篇文章介绍一套自动化分析流程，用于：  从 GWAS 注释文件中提取特定染色体； 对 SNP 分布进行可视化与统计； 基于密度与显著性筛选“热点区域”；">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg">
+<meta property="article:published_time" content="2025-11-10T14:26:00.000Z">
+<meta property="article:modified_time" content="2025-11-16T14:32:15.000Z">
+<meta property="article:author" content="HHHH">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="GWAS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "GWAS + 热点区域识别 + LD Block 分析流程详解",
+  "url": "https://0hhhhhh0.github.io/2025/11/10/gwas-ld-block/",
+  "image": "https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg",
+  "datePublished": "2025-11-10T14:26:00.000Z",
+  "dateModified": "2025-11-16T14:32:15.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "HHHH",
+      "url": "https://0HHHHHH0.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/uploads/avatar.png"><link rel="canonical" href="https://0hhhhhh0.github.io/2025/11/10/gwas-ld-block/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":-1,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'GWAS + 热点区域识别 + LD Block 分析流程详解',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@4.5.12/index.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/styles/css/font.css"><link rel="stylesheet" href="/css/mermaid.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="HHHH" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="scarecrow"><div class="scarecrow__hat"><div class="scarecrow__ribbon"></div></div><div class="scarecrow__head"><div class="scarecrow__eye"></div><div class="scarecrow__eye"></div><div class="scarecrow__mouth"></div><div class="scarecrow__pipe"></div></div><div class="scarecrow__body"><div class="scarecrow__glove scarecrow__glove--l"></div><div class="scarecrow__sleeve scarecrow__sleeve--l"></div><div class="scarecrow__bow"></div><div class="scarecrow__shirt"></div><div class="scarecrow__coat"></div><div class="scarecrow__waistcoat"></div><div class="scarecrow__sleeve scarecrow__sleeve--r"></div><div class="scarecrow__glove scarecrow__glove--r"></div><div class="scarecrow__coattails"></div><div class="scarecrow__pants"></div></div><div class="scarecrow__arms"></div><div class="scarecrow__leg">  </div></div></div><script async="async">(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-color: #fbfdff;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/uploads/avatar.png" alt="Logo"><span class="site-name">HHHH</span></a><a class="nav-page-title" href="/"><span class="site-name">GWAS + 热点区域识别 + LD Block 分析流程详解</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">GWAS + 热点区域识别 + LD Block 分析流程详解</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-10T14:26:00.000Z" title="Created 2025-11-10 22:26:00">2025-11-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-11-16T14:32:15.000Z" title="Updated 2025-11-16 22:32:15">2025-11-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF/">生物信息</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="ai-summary"><div class="ai-explanation" style="display: block;" data-summary="这篇文章介绍了一个针对GWAS（全基因组关联分析）结果的后处理流程，重点聚焦于热点区域识别和LD Block分析。流程主要包括五个步骤：从GWAS结果文件中提取特定染色体数据、SNP分布可视化与统计、基于密度和显著性筛选热点区域、输出LD block分析建议区域以及生成综合图形报告。文章详细展示了环境配置方法（使用conda安装R及相关包），并通过具体脚本示例（如show_all_chromosomes.sh、extract_NC_047567.1.sh和3.0.complete_analysis.R）演示了数据提取、预处理和分析的具体操作。该流程可处理任何GWAS结果文件格式（如.assoc或.anno.xls），并以染色体NC_047567.1为例，展示了从基础统计分析到高级可视化（包括密度图和曼哈顿图）的全套分析方法，帮助研究者高效识别重要遗传位点和连锁不平衡区域。">AI正在绞尽脑汁想思路ING···</div><div class="ai-title"> <div class="ai-title-left"> <i class="fa-brands fa-slack"></i><div class="ai-title-text">AI摘要</div></div><div class="ai-tag" id="ai-tag">deepseek-ai/DeepSeek-V3</div></div></div><h2 id="🧬-一、项目概述"><a href="#🧬-一、项目概述" class="headerlink" title="🧬 一、项目概述"></a>🧬 一、项目概述</h2><p>在进行 <strong>GWAS（全基因组关联分析）</strong> 后，我们通常得到一个包含数十万到数百万个 SNP 的结果文件。然而，仅凭曼哈顿图观察显著位点往往无法直观判断“显著 SNP 是否存在聚集（hotspot）”，更难直接选定 LD 分析区域。</p>
+<p>本篇文章介绍一套自动化分析流程，用于：</p>
+<ol>
+<li>从 GWAS 注释文件中提取特定染色体；</li>
+<li>对 SNP 分布进行可视化与统计；</li>
+<li>基于密度与显著性筛选“热点区域”；</li>
+<li>输出推荐的 <strong>LD block 分析区域</strong>；</li>
+<li>生成一整套图形报告（含基础可视化、热点分布、显著SNP分布、综合分析图）。</li>
+</ol>
+<p>该流程适用于任何 GWAS 结果（如 <code>.assoc</code> 或 <code>.anno.xls</code> 文件），并以染色体 <strong>NC_047567.1</strong> 为示例展示。</p>
+<hr>
+<h2 id="⚙️-二、环境配置"><a href="#⚙️-二、环境配置" class="headerlink" title="⚙️ 二、环境配置"></a>⚙️ 二、环境配置</h2><p>分析依赖 R 及多个可视化与基因组处理包，可通过以下命令一次性安装：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 一键安装所有依赖</span>
+conda activate vcftools_env
+
+conda <span class="token function">install</span> <span class="token parameter variable">-c</span> conda-forge r-base<span class="token operator">=</span><span class="token number">4.3</span>.3 <span class="token parameter variable">-y</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">\</span>
+conda <span class="token function">install</span> <span class="token parameter variable">-c</span> conda-forge r-tidyverse r-ggplot2 r-viridis r-scales r-circlize <span class="token parameter variable">-y</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">\</span>
+conda <span class="token function">install</span> <span class="token parameter variable">-c</span> bioconda r-biocmanager bioconductor-rtracklayer <span class="token parameter variable">-y</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">\</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"✅ 所有R包安装完成！"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>✅ 安装完成后即可运行所有 R 脚本，无需额外配置。</p>
+<hr>
+<h2 id="🔍-三、数据准备与预处理"><a href="#🔍-三、数据准备与预处理" class="headerlink" title="🔍 三、数据准备与预处理"></a>🔍 三、数据准备与预处理</h2><h3 id="1️⃣-查看所有染色体信息"><a href="#1️⃣-查看所有染色体信息" class="headerlink" title="1️⃣ 查看所有染色体信息"></a>1️⃣ 查看所有染色体信息</h3><p>1.show_all_chromosomes.sh</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 查看所有染色体名称 ==="</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"文件: color_GWAS.anno.xls"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"总行数: <span class="token variable"><span class="token variable">$(</span><span class="token function">wc</span> <span class="token parameter variable">-l</span> <span class="token operator">&lt;</span> color_GWAS.anno.xls<span class="token variable">)</span></span>"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"所有唯一的染色体名称:"</span>
+<span class="token function">awk</span> <span class="token string">'NR&gt;1 {print $1}'</span> color_GWAS.anno.xls <span class="token operator">|</span> <span class="token function">sort</span> <span class="token operator">|</span> <span class="token function">uniq</span> <span class="token parameter variable">-c</span> <span class="token operator">|</span> <span class="token function">sort</span> <span class="token parameter variable">-nr</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"前10个SNP的详细信息:"</span>
+<span class="token function">head</span> <span class="token parameter variable">-n</span> <span class="token number">11</span> color_GWAS.anno.xls
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>脚本 <code>show_all_chromosomes.sh</code> 用于快速检查 GWAS 注释文件中的染色体分布与 SNP 数量。</p>
+<p>目的：</p>
+<ul>
+<li>确定分析目标染色体；</li>
+<li>统计 SNP 数量与基本信息；</li>
+<li>避免文件格式错误。</li>
+</ul>
+<p>输出结果示例：</p>
+<pre class="line-numbers language-none"><code class="language-none">=== 查看所有染色体名称 ===
+所有唯一的染色体名称:
+  2345  NC_047567.1
+  1987  NC_047568.1
+前10个SNP的详细信息:
+Chr     POS     P.value     ...<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<hr>
+<h3 id="2️⃣-提取单条染色体数据"><a href="#2️⃣-提取单条染色体数据" class="headerlink" title="2️⃣ 提取单条染色体数据"></a>2️⃣ 提取单条染色体数据</h3><p>2.extract_NC_047567.1.sh</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<span class="token assign-left variable">CHROM</span><span class="token operator">=</span><span class="token string">"NC_047567.1"</span>
+<span class="token assign-left variable">ANNO_FILE</span><span class="token operator">=</span><span class="token string">"color_GWAS.anno.xls"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 提取染色体 <span class="token variable">$CHROM</span> 数据 ==="</span>
+
+<span class="token comment"># 提取表头</span>
+<span class="token function">head</span> <span class="token parameter variable">-n</span> <span class="token number">1</span> <span class="token string">"<span class="token variable">$ANNO_FILE</span>"</span> <span class="token operator">&gt;</span> <span class="token string">"<span class="token variable">${CHROM}</span>_data.txt"</span>
+
+<span class="token comment"># 提取该染色体的数据</span>
+<span class="token function">awk</span> <span class="token parameter variable">-v</span> <span class="token assign-left variable">chrom</span><span class="token operator">=</span><span class="token string">"<span class="token variable">$CHROM</span>"</span> <span class="token string">'$1 == chrom'</span> <span class="token string">"<span class="token variable">$ANNO_FILE</span>"</span> <span class="token operator">&gt;&gt;</span> <span class="token string">"<span class="token variable">${CHROM}</span>_data.txt"</span>
+
+<span class="token comment"># 统计</span>
+<span class="token assign-left variable">TOTAL_LINES</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">wc</span> <span class="token parameter variable">-l</span> <span class="token operator">&lt;</span> <span class="token string">"<span class="token variable">${CHROM}</span>_data.txt"</span><span class="token variable">)</span></span>
+<span class="token assign-left variable">SNP_COUNT</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span>TOTAL_LINES <span class="token operator">-</span> <span class="token number">1</span><span class="token variable">))</span></span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"提取完成:"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"- 输出文件: <span class="token variable">${CHROM}</span>_data.txt"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"- SNP数量: <span class="token variable">$SNP_COUNT</span>"</span>
+
+<span class="token comment"># 检查文件内容</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"前3行数据:"</span>
+<span class="token function">head</span> <span class="token parameter variable">-n</span> <span class="token number">3</span> <span class="token string">"<span class="token variable">${CHROM}</span>_data.txt"</span>
+
+<span class="token comment"># 生成位置文件</span>
+<span class="token function">awk</span> <span class="token string">'NR&gt;1 {print $2}'</span> <span class="token string">"<span class="token variable">${CHROM}</span>_data.txt"</span> <span class="token operator">&gt;</span> <span class="token string">"<span class="token variable">${CHROM}</span>_positions.txt"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"位置文件: <span class="token variable">${CHROM}</span>_positions.txt"</span>
+
+<span class="token comment"># 位置范围统计</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"位置范围统计:"</span>
+<span class="token function">awk</span> <span class="token string">'NR&gt;1 {print $2}'</span> <span class="token string">"<span class="token variable">${CHROM}</span>_data.txt"</span> <span class="token operator">|</span> <span class="token function">sort</span> <span class="token parameter variable">-n</span> <span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'
+BEGIN {min=999999999; max=0} 
+{count++; sum+=$1; if($1&lt;min)min=$1; if($1&gt;max)max=$1} 
+END {
+    print "最小位置: " min
+    print "最大位置: " max  
+    print "位置范围: " min " - " max
+    print "总跨度: " (max-min)/1000000 " Mb"
+    print "SNP数量: " count
+}'</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><code>extract_NC_047567.1.sh</code> 用于从注释表中提取指定染色体 SNP 信息。</p>
+<p>核心步骤：</p>
+<ul>
+<li>从原始 GWAS 注释文件中筛选出对应染色体；</li>
+<li>输出该染色体的 SNP 表；</li>
+<li>自动生成位置文件与区间统计。</li>
+</ul>
+<p>输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">- 输出文件: NC_047567.1_data.txt
+- SNP数量: 2345
+- 位置范围: 1.2 Mb - 39.7 Mb
+- 总跨度: 38.5 Mb<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<hr>
+<h2 id="📈-四、R-脚本分析模块"><a href="#📈-四、R-脚本分析模块" class="headerlink" title="📈 四、R 脚本分析模块"></a>📈 四、R 脚本分析模块</h2><h3 id="🔹-1-完整基础分析（3-0-complete-analysis-R）"><a href="#🔹-1-完整基础分析（3-0-complete-analysis-R）" class="headerlink" title="🔹 1. 完整基础分析（3.0.complete_analysis.R）"></a>🔹 1. 完整基础分析（<code>3.0.complete_analysis.R</code>）</h3><p>3.0.complete_analysis.R</p>
+<pre class="line-numbers language-R" data-language="R"><code class="language-R">#!/usr/bin/env Rscript
+cat("=== 完整的染色体SNP分析 ===\n")
+
+library(ggplot2)
+library(dplyr)
+library(viridis)
+library(patchwork)
+
+# 读取数据
+chrom &lt;- "NC_047567.1"
+snp_data &lt;- read.table(paste0(chrom, "_data.txt"), header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+snp_data$logP &lt;- -log10(snp_data$P.value)
+
+cat("数据概况:\n")
+cat("- SNP总数:", format(nrow(snp_data), big.mark = ","), "\n")
+cat("- 位置范围:", format(min(snp_data$POS), big.mark = ","), "-", format(max(snp_data$POS), big.mark = ","), "\n")
+cat("- 染色体长度:", format((max(snp_data$POS) - min(snp_data$POS))/1000000, digits=2), "Mb\n")
+cat("- P值范围:", min(snp_data$P.value), "-", max(snp_data$P.value), "\n")
+
+# 1. 基础可视化
+cat("生成基础可视化...\n")
+
+# 密度图
+p_density &lt;- ggplot(snp_data, aes(x = POS/1000000)) +
+    geom_density(fill = "steelblue", alpha = 0.7) +
+    labs(title = "SNP密度分布", x = "基因组位置 (Mb)", y = "密度") +
+    theme_minimal()
+
+# 曼哈顿图
+p_manhattan &lt;- ggplot(snp_data, aes(x = POS/1000000, y = logP)) +
+    geom_point(aes(color = logP), alpha = 0.3, size = 0.5) +
+    scale_color_viridis_c(name = "-log10(P)") +
+    geom_hline(yintercept = -log10(0.05/nrow(snp_data)), linetype = "dashed", color = "red") +
+    labs(title = "曼哈顿图", x = "基因组位置 (Mb)", y = "-log10(P值)") +
+    theme_minimal()
+
+# 组合图
+png(paste0(chrom, "_basic_analysis.png"), width=16, height=10, units="in", res=300)
+basic_plot &lt;- p_density / p_manhattan +
+    plot_annotation(
+        title = paste("染色体", chrom, "SNP分析"),
+        subtitle = paste("总计", format(nrow(snp_data), big.mark = ","), "个SNP"),
+        theme = theme(plot.title = element_text(hjust = 0.5, size=16, face="bold"))
+    )
+print(basic_plot)
+dev.off()
+
+# 2. 正确的热点区域分析
+cat("进行热点区域分析...\n")
+
+# 使用固定大小的窗口（1Mb窗口）
+window_size &lt;- 1000000  # 1Mb窗口
+starts &lt;- seq(min(snp_data$POS), max(snp_data$POS), by = window_size)
+
+hotspot_analysis &lt;- data.frame()
+for(i in 1:(length(starts)-1)) {
+    start &lt;- starts[i]
+    end &lt;- starts[i+1]
+    window_data &lt;- snp_data[snp_data$POS &gt;= start &amp; snp_data$POS &lt; end, ]
+    
+    if(nrow(window_data) &gt; 0) {
+        hotspot_analysis &lt;- rbind(hotspot_analysis, data.frame(
+            Window = i,
+            Start = start,
+            End = end,
+            SNP_Count = nrow(window_data),
+            SNP_Density = nrow(window_data) / ((end - start)/1000000),  # 每Mb的SNP数
+            Mean_logP = mean(window_data$logP, na.rm = TRUE),
+            Max_logP = max(window_data$logP, na.rm = TRUE)
+        ))
+    }
+}
+
+cat("窗口分析完成，窗口数量:", nrow(hotspot_analysis), "\n")
+cat("平均每窗口SNP数量:", round(mean(hotspot_analysis$SNP_Count)), "\n")
+cat("平均SNP密度:", round(mean(hotspot_analysis$SNP_Density)), "SNPs/Mb\n")
+
+# 识别热点区域（SNP密度前20%）
+density_threshold &lt;- quantile(hotspot_analysis$SNP_Density, 0.80)
+hot_regions &lt;- hotspot_analysis %&gt;%
+    filter(SNP_Density &gt;= density_threshold) %&gt;%
+    arrange(desc(SNP_Density))
+
+cat("热点区域阈值:", round(density_threshold), "SNPs/Mb\n")
+cat("发现热点区域:", nrow(hot_regions), "个\n")
+
+# 热点区域可视化
+png(paste0(chrom, "_hotspot_corrected.png"), width=14, height=6, units="in", res=300)
+ggplot(hotspot_analysis, aes(x = Start/1000000, y = SNP_Density)) +
+    geom_col(aes(fill = SNP_Density), alpha = 0.8, width = 0.8) +
+    geom_hline(yintercept = density_threshold, linetype = "dashed", color = "red", size = 1) +
+    geom_text(data = hot_regions, aes(label = round(SNP_Density)), vjust = -0.5, size = 3) +
+    scale_fill_viridis_c(name = "SNP密度\n(SNPs/Mb)") +
+    labs(title = paste("SNP热点区域分析 -", chrom),
+         subtitle = paste("红色虚线: 热点阈值 (", round(density_threshold), "SNPs/Mb)"),
+         x = "基因组位置 (Mb)", y = "SNP密度 (SNPs/Mb)") +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+dev.off()
+
+# 3. 输出热点区域和推荐分析区域
+if(nrow(hot_regions) &gt; 0) {
+    hotspot_info &lt;- data.frame(
+        Region_ID = paste0("Hotspot_", 1:nrow(hot_regions)),
+        Chromosome = chrom,
+        Start_Mb = round(hot_regions$Start/1000000, 1),
+        End_Mb = round(hot_regions$End/1000000, 1),
+        Size_Mb = 1.0,  # 固定1Mb窗口
+        SNP_Count = hot_regions$SNP_Count,
+        SNP_Density = round(hot_regions$SNP_Density),
+        Mean_logP = round(hot_regions$Mean_logP, 2),
+        Max_logP = round(hot_regions$Max_logP, 2)
+    )
+    
+    write.csv(hotspot_info, paste0(chrom, "_corrected_hotspots.csv"), row.names = FALSE)
+    
+    # 推荐前3个区域进行LD分析
+    recommended &lt;- head(hotspot_info, 3)
+    write.csv(recommended, paste0(chrom, "_recommended_ld_regions.csv"), row.names = FALSE)
+    
+    cat("\n=== 热点区域总结 ===\n")
+    print(hotspot_info)
+    
+    cat("\n=== 推荐LD分析区域 ===\n")
+    print(recommended)
+} else {
+    cat("未发现明显热点区域\n")
+}
+
+# 4. 生成分析报告
+cat("\n=== 分析完成 ===\n")
+cat("生成的文件:\n")
+cat("- ", chrom, "_basic_analysis.png (基础分析图)\n")
+cat("- ", chrom, "_hotspot_corrected.png (热点区域图)\n")
+cat("- ", chrom, "_corrected_hotspots.csv (热点区域列表)\n")
+cat("- ", chrom, "_recommended_ld_regions.csv (推荐LD分析区域)\n")
+
+cat("\n下一步建议:\n")
+if(nrow(hot_regions) &gt; 0) {
+    cat("1. 对推荐区域进行LD block分析\n")
+    cat("2. 重点关注高SNP密度且P值显著的区域\n")
+    cat("3. 结合基因注释分析候选基因\n")
+} else {
+    cat("1. 考虑分析整个染色体或选择SNP密度较高的区域\n")
+    cat("2. 可以手动选择感兴趣的区域进行LD分析\n")
+}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>该脚本是整个流程的核心，包含以下分析步骤：</p>
+<h4 id="（1）基础可视化"><a href="#（1）基础可视化" class="headerlink" title="（1）基础可视化"></a>（1）基础可视化</h4><p>生成 <strong>SNP密度图</strong> 与 <strong>曼哈顿图</strong>：</p>
+<ul>
+<li>横轴为基因组位置（Mb）；</li>
+<li>纵轴为 -log10(P)；</li>
+<li>自动添加 Bonferroni 阈值线；</li>
+<li>图像合并保存为 <code>*_basic_analysis.png</code>。</li>
+</ul>
+<h4 id="（2）窗口扫描与热点检测"><a href="#（2）窗口扫描与热点检测" class="headerlink" title="（2）窗口扫描与热点检测"></a>（2）窗口扫描与热点检测</h4><p>通过 1Mb 窗口滑动统计每 Mb 的 SNP 数量与密度，并识别：</p>
+<ul>
+<li>SNP 密度位于前 20% 的窗口；</li>
+<li>输出为 <code>*_corrected_hotspots.csv</code>；</li>
+<li>可视化结果为 <code>*_hotspot_corrected.png</code>。</li>
+</ul>
+<h4 id="（3）推荐-LD-分析区域"><a href="#（3）推荐-LD-分析区域" class="headerlink" title="（3）推荐 LD 分析区域"></a>（3）推荐 LD 分析区域</h4><p>程序自动输出密度最高的前三个窗口，保存为：</p>
+<ul>
+<li><code>*_recommended_ld_regions.csv</code></li>
+</ul>
+<h4 id="（4）结果总结与建议"><a href="#（4）结果总结与建议" class="headerlink" title="（4）结果总结与建议"></a>（4）结果总结与建议</h4><p>输出包括：</p>
+<pre class="line-numbers language-none"><code class="language-none">=== 热点区域总结 ===
+=== 推荐LD分析区域 ===
+下一步建议:
+1. 对推荐区域进行LD block分析
+2. 结合基因注释分析候选基因<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<hr>
+<h3 id="🔹-2-基于显著SNP的热点分析（3-1-corrected-significant-hotspots-R）"><a href="#🔹-2-基于显著SNP的热点分析（3-1-corrected-significant-hotspots-R）" class="headerlink" title="🔹 2. 基于显著SNP的热点分析（3.1.corrected_significant_hotspots.R）"></a>🔹 2. 基于显著SNP的热点分析（<code>3.1.corrected_significant_hotspots.R</code>）</h3><p>3.1.corrected_significant_hotspots.R</p>
+<pre class="line-numbers language-R" data-language="R"><code class="language-R">#!/usr/bin/env Rscript
+cat("=== 基于显著SNP的热点区域分析 ===\n")
+
+library(ggplot2)
+library(dplyr)
+library(viridis)
+library(patchwork)
+
+# 读取数据
+chrom &lt;- "NC_047567.1"
+snp_data &lt;- read.table(paste0(chrom, "_data.txt"), header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+snp_data$logP &lt;- -log10(snp_data$P.value)
+
+cat("原始数据概况:\n")
+cat("- 总SNP数:", format(nrow(snp_data), big.mark = ","), "\n")
+
+# 定义显著性阈值
+significance_threshold &lt;- -log10(0.05/nrow(snp_data))  # Bonferroni校正
+cat("Bonferroni校正的显著性阈值: -log10(P) &gt;", round(significance_threshold, 2), "\n")
+
+# 过滤显著SNP
+significant_snps &lt;- snp_data[snp_data$logP &gt; significance_threshold, ]
+cat("显著SNP数量:", format(nrow(significant_snps), big.mark = ","), "\n")
+cat("显著SNP比例:", round(nrow(significant_snps)/nrow(snp_data)*100, 2), "%\n")
+
+if(nrow(significant_snps) == 0) {
+    cat("警告: 没有显著SNP，使用较宽松的阈值\n")
+    significance_threshold &lt;- -log10(1e-5)  # 使用10^-5作为阈值
+    significant_snps &lt;- snp_data[snp_data$logP &gt; significance_threshold, ]
+    cat("使用阈值 -log10(P) &gt;", significance_threshold, "\n")
+    cat("显著SNP数量:", nrow(significant_snps), "\n")
+}
+
+if(nrow(significant_snps) &gt; 0) {
+    # 1. 显著SNP的分布可视化
+    p1 &lt;- ggplot(significant_snps, aes(x = POS/1000000, y = logP)) +
+        geom_point(aes(color = logP), alpha = 0.7, size = 1) +
+        scale_color_viridis_c(name = "-log10(P)") +
+        geom_hline(yintercept = significance_threshold, linetype = "dashed", color = "red") +
+        labs(title = "显著SNP分布",
+             x = "基因组位置 (Mb)", y = "-log10(P值)") +
+        theme_minimal()
+    
+    p2 &lt;- ggplot(significant_snps, aes(x = POS/1000000)) +
+        geom_density(fill = "red", alpha = 0.7) +
+        labs(title = "显著SNP密度分布",
+             x = "基因组位置 (Mb)", y = "密度") +
+        theme_minimal()
+    
+    png(paste0(chrom, "_significant_snps.png"), width=16, height=8, units="in", res=300)
+    combined &lt;- p1 | p2 +
+        plot_annotation(
+            title = paste("显著SNP分析 -", chrom),
+            subtitle = paste("显著SNP:", nrow(significant_snps), "/", format(nrow(snp_data), big.mark = ",")),
+            theme = theme(plot.title = element_text(hjust = 0.5, face="bold"))
+        )
+    print(combined)
+    dev.off()
+    
+    # 2. 基于显著SNP的热点区域分析
+    cat("进行显著SNP热点区域分析...\n")
+    
+    # 使用500kb窗口分析显著SNP
+    window_size &lt;- 500000  # 500kb窗口
+    starts &lt;- seq(min(snp_data$POS), max(snp_data$POS), by = window_size)
+    
+    hotspot_analysis &lt;- data.frame()
+    for(i in 1:(length(starts)-1)) {
+        start &lt;- starts[i]
+        end &lt;- starts[i+1]
+        window_data &lt;- significant_snps[significant_snps$POS &gt;= start &amp; significant_snps$POS &lt; end, ]
+        
+        if(nrow(window_data) &gt; 0) {
+            hotspot_analysis &lt;- rbind(hotspot_analysis, data.frame(
+                Window = i,
+                Start = start,
+                End = end,
+                Significant_SNP_Count = nrow(window_data),
+                SNP_Density = nrow(window_data) / ((end - start)/1000000),  # 每Mb的显著SNP数
+                Mean_logP = mean(window_data$logP, na.rm = TRUE),
+                Max_logP = max(window_data$logP, na.rm = TRUE)
+            ))
+        } else {
+            # 也记录没有显著SNP的窗口
+            hotspot_analysis &lt;- rbind(hotspot_analysis, data.frame(
+                Window = i,
+                Start = start,
+                End = end,
+                Significant_SNP_Count = 0,
+                SNP_Density = 0,
+                Mean_logP = NA,
+                Max_logP = NA
+            ))
+        }
+    }
+    
+    cat("窗口分析完成，窗口数量:", nrow(hotspot_analysis), "\n")
+    
+    # 识别显著SNP热点区域（显著SNP密度前20%）
+    if(sum(hotspot_analysis$Significant_SNP_Count &gt; 0) &gt; 0) {
+        density_threshold &lt;- quantile(hotspot_analysis$SNP_Density[hotspot_analysis$SNP_Density &gt; 0], 0.80, na.rm = TRUE)
+        hot_regions &lt;- hotspot_analysis %&gt;%
+            filter(SNP_Density &gt;= density_threshold) %&gt;%
+            arrange(desc(SNP_Density))
+        
+        cat("显著SNP热点阈值:", round(density_threshold, 1), "显著SNPs/Mb\n")
+        cat("发现显著SNP热点区域:", nrow(hot_regions), "个\n")
+        
+        # 热点区域可视化
+        png(paste0(chrom, "_significant_hotspots.png"), width=14, height=6, units="in", res=300)
+        ggplot(hotspot_analysis, aes(x = Start/1000000, y = SNP_Density)) +
+            geom_col(aes(fill = SNP_Density), alpha = 0.8, width = 0.4) +
+            geom_hline(yintercept = density_threshold, linetype = "dashed", color = "red", linewidth = 1) +
+            geom_text(data = hot_regions, aes(label = round(SNP_Density, 1)), vjust = -0.5, size = 3) +
+            scale_fill_viridis_c(name = "显著SNP密度\n(SNPs/Mb)") +
+            labs(title = paste("显著SNP热点区域分析 -", chrom),
+                 subtitle = paste("红色虚线: 热点阈值 (", round(density_threshold, 1), "显著SNPs/Mb)"),
+                 x = "基因组位置 (Mb)", y = "显著SNP密度 (SNPs/Mb)") +
+            theme_minimal() +
+            theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+        dev.off()
+        
+        # 输出热点区域
+        if(nrow(hot_regions) &gt; 0) {
+            hotspot_info &lt;- data.frame(
+                Region_ID = paste0("SigHotspot_", 1:nrow(hot_regions)),
+                Chromosome = chrom,
+                Start_Mb = round(hot_regions$Start/1000000, 1),
+                End_Mb = round(hot_regions$End/1000000, 1),
+                Size_Mb = 0.5,  # 500kb窗口
+                Significant_SNP_Count = hot_regions$Significant_SNP_Count,
+                SNP_Density = round(hot_regions$SNP_Density, 1),
+                Mean_logP = round(hot_regions$Mean_logP, 2),
+                Max_logP = round(hot_regions$Max_logP, 2)
+            )
+            
+            write.csv(hotspot_info, paste0(chrom, "_significant_hotspots.csv"), row.names = FALSE)
+            
+            # 推荐前3个区域进行LD分析
+            recommended &lt;- head(hotspot_info, 3)
+            write.csv(recommended, paste0(chrom, "_recommended_significant_regions.csv"), row.names = FALSE)
+            
+            cat("\n=== 显著SNP热点区域 ===\n")
+            print(hotspot_info)
+            
+            cat("\n=== 推荐LD分析区域（基于显著SNP）===\n")
+            print(recommended)
+        }
+    } else {
+        cat("警告: 没有发现显著SNP聚集的区域\n")
+    }
+    
+} else {
+    cat("错误: 没有显著SNP，无法进行热点区域分析\n")
+}
+
+cat("\n=== 分析完成 ===\n")
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>此脚本进一步聚焦于显著 SNP：</p>
+<h4 id="（1）显著性筛选"><a href="#（1）显著性筛选" class="headerlink" title="（1）显著性筛选"></a>（1）显著性筛选</h4><ul>
+<li>默认使用 Bonferroni 阈值；</li>
+<li>若无显著 SNP，自动使用更宽松阈值（如 1e-5）；</li>
+<li>输出显著 SNP 的数量、比例及分布。</li>
+</ul>
+<h4 id="（2）基于显著SNP的窗口统计"><a href="#（2）基于显著SNP的窗口统计" class="headerlink" title="（2）基于显著SNP的窗口统计"></a>（2）基于显著SNP的窗口统计</h4><p>采用更精细的 500kb 窗口滑动，计算：</p>
+<ul>
+<li>显著SNP数；</li>
+<li>显著SNP密度；</li>
+<li>平均与最大 -log10(P)。</li>
+</ul>
+<p>筛选密度前 20% 的窗口作为 <strong>显著热点区域</strong>，输出为：</p>
+<ul>
+<li><code>*_significant_hotspots.csv</code></li>
+<li>推荐区域：<code>*_recommended_significant_regions.csv</code></li>
+</ul>
+<h4 id="（3）显著SNP热点可视化"><a href="#（3）显著SNP热点可视化" class="headerlink" title="（3）显著SNP热点可视化"></a>（3）显著SNP热点可视化</h4><p>生成：</p>
+<ul>
+<li>显著SNP分布图；</li>
+<li>显著SNP密度图；</li>
+<li>热点分布柱状图；<br> 输出文件：<code>*_significant_hotspots.png</code></li>
+</ul>
+<hr>
+<h3 id="🔹-3-最终可视化与总结（3-2-fixed-visualization-R）"><a href="#🔹-3-最终可视化与总结（3-2-fixed-visualization-R）" class="headerlink" title="🔹 3. 最终可视化与总结（3.2.fixed_visualization.R）"></a>🔹 3. 最终可视化与总结（<code>3.2.fixed_visualization.R</code>）</h3><p>3.2.fixed_visualization.R</p>
+<pre class="line-numbers language-R" data-language="R"><code class="language-R">#!/usr/bin/env Rscript
+cat("=== 修复版完整可视化 ===\n")
+
+library(ggplot2)
+library(dplyr)
+library(viridis)
+library(patchwork)
+library(circlize)
+library(scales)  # 添加scales包用于rescale函数
+
+# 读取数据
+chrom &lt;- "NC_047567.1"
+snp_data &lt;- read.table(paste0(chrom, "_data.txt"), header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+snp_data$logP &lt;- -log10(snp_data$P.value)
+
+# 读取显著热点区域
+hotspots &lt;- read.csv(paste0(chrom, "_significant_hotspots.csv"))
+
+cat("生成完整可视化...\n")
+
+# 1. 曼哈顿风格组合图（更稳定的方法）
+sig_threshold &lt;- -log10(0.05/nrow(snp_data))
+significant_snps &lt;- snp_data[snp_data$logP &gt; sig_threshold, ]
+
+cat("显著SNP数量:", nrow(significant_snps), "\n")
+cat("热点区域:", nrow(hotspots), "个\n")
+
+# 主曼哈顿图
+p_manhattan &lt;- ggplot(snp_data, aes(x = POS/1000000, y = logP)) +
+    # 所有SNP背景
+    geom_point(data = snp_data[snp_data$logP &lt;= sig_threshold, ], 
+               color = "grey80", alpha = 0.3, size = 0.3) +
+    # 显著SNP
+    geom_point(data = significant_snps, 
+               aes(color = logP), alpha = 0.8, size = 1) +
+    scale_color_viridis_c(name = "-log10(P)") +
+    # 显著性阈值线
+    geom_hline(yintercept = sig_threshold, 
+               linetype = "dashed", color = "red", linewidth = 1) +
+    # 热点区域标记
+    geom_rect(data = hotspots, 
+              aes(xmin = Start_Mb, xmax = End_Mb, ymin = 0, ymax = Inf),
+              fill = "red", alpha = 0.1, inherit.aes = FALSE) +
+    geom_text(data = hotspots, 
+              aes(x = (Start_Mb + End_Mb)/2, y = max(snp_data$logP)*0.95, 
+                  label = paste0("Hotspot\n", Significant_SNP_Count, " sig SNPs")),
+              size = 2.5, color = "darkred", inherit.aes = FALSE) +
+    labs(title = "Manhattan Plot with Significant SNP Hotspots",
+         x = "Genomic Position (Mb)", y = "-log10(P-value)") +
+    theme_minimal()
+
+# 显著SNP密度图
+p_density &lt;- ggplot(significant_snps, aes(x = POS/1000000)) +
+    geom_density(fill = "red", alpha = 0.7, color = "darkred", linewidth = 1) +
+    geom_rug(sides = "b", color = "red", alpha = 0.5) +
+    # 热点区域标记
+    geom_vline(data = hotspots, aes(xintercept = Start_Mb), 
+               linetype = "dashed", color = "blue", linewidth = 0.8) +
+    geom_vline(data = hotspots, aes(xintercept = End_Mb), 
+               linetype = "dashed", color = "blue", linewidth = 0.8) +
+    geom_label(data = hotspots, 
+               aes(x = (Start_Mb + End_Mb)/2, y = 0, 
+                   label = paste0(Start_Mb, "-", End_Mb, " Mb")),
+              angle = 90, vjust = 1.2, size = 3, color = "blue", 
+              fill = "white", alpha = 0.8, inherit.aes = FALSE) +
+    labs(title = "Density of Significant SNPs",
+         x = "Genomic Position (Mb)", y = "Density") +
+    theme_minimal()
+
+# 组合图
+png(paste0(chrom, "_final_analysis.png"), width=16, height=10, units="in", res=300)
+combined_plot &lt;- p_manhattan / p_density +
+    plot_annotation(
+        title = paste("Significant SNP Analysis:", chrom),
+        subtitle = paste("Total:", nrow(significant_snps), "significant SNPs |", 
+                        nrow(hotspots), "hotspot regions"),
+        theme = theme(
+            plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
+            plot.subtitle = element_text(hjust = 0.5, size = 12)
+        )
+    )
+print(combined_plot)
+dev.off()
+cat("组合分析图已生成\n")
+
+# 2. 热点区域详细分析
+if(nrow(hotspots) &gt; 0) {
+    cat("生成热点区域详细图...\n")
+    
+    hotspot_plots &lt;- list()
+    
+    for(i in 1:nrow(hotspots)) {
+        hotspot &lt;- hotspots[i, ]
+        start_bp &lt;- hotspot$Start_Mb * 1000000
+        end_bp &lt;- hotspot$End_Mb * 1000000
+        
+        # 提取热点区域内的SNP
+        hotspot_snps &lt;- snp_data[snp_data$POS &gt;= start_bp &amp; snp_data$POS &lt;= end_bp, ]
+        hotspot_sig_snps &lt;- hotspot_snps[hotspot_snps$logP &gt; sig_threshold, ]
+        
+        cat(paste0("热点", i, ": ", nrow(hotspot_snps), "个SNP, ", 
+                   nrow(hotspot_sig_snps), "个显著SNP\n"))
+        
+        # 热点区域详细图
+        p &lt;- ggplot(hotspot_snps, aes(x = POS, y = logP)) +
+            # 背景SNP
+            geom_point(data = hotspot_snps[hotspot_snps$logP &lt;= sig_threshold, ], 
+                       color = "grey70", alpha = 0.5, size = 1) +
+            # 显著SNP
+            geom_point(data = hotspot_sig_snps, 
+                       aes(color = logP), size = 2, alpha = 0.8) +
+            scale_color_viridis_c(name = "-log10(P)") +
+            # 显著性线
+            geom_hline(yintercept = sig_threshold, linetype = "dashed", color = "red") +
+            # 区域标记
+            annotate("rect", xmin = start_bp, xmax = end_bp, 
+                     ymin = 0, ymax = Inf, fill = "red", alpha = 0.1) +
+            labs(title = paste("Hotspot", i, ":", hotspot$Start_Mb, "-", hotspot$End_Mb, "Mb"),
+                 subtitle = paste("Size:", hotspot$Size_Mb, "Mb |", 
+                                 hotspot$Significant_SNP_Count, "significant SNPs |",
+                                 "Mean -log10(P):", hotspot$Mean_logP),
+                 x = "Position (bp)", y = "-log10(P-value)") +
+            theme_minimal() +
+            theme(plot.title = element_text(face = "bold", hjust = 0.5),
+                  plot.subtitle = element_text(hjust = 0.5))
+        
+        hotspot_plots[[i]] &lt;- p
+        
+        # 保存单个热点图
+        ggsave(paste0(chrom, "_hotspot_", i, "_detail.png"), p, 
+               width = 10, height = 6, dpi = 300)
+    }
+    
+    # 热点区域组合图
+    if(length(hotspot_plots) &gt; 1) {
+        png(paste0(chrom, "_all_hotspots.png"), width=14, height=8, units="in", res=300)
+        if(length(hotspot_plots) == 2) {
+            final_plot &lt;- hotspot_plots[[1]] | hotspot_plots[[2]]
+        } else {
+            final_plot &lt;- wrap_plots(hotspot_plots)
+        }
+        print(final_plot)
+        dev.off()
+    }
+}
+
+# 3. 生成总结统计
+cat("生成分析总结...\n")
+
+summary_stats &lt;- data.frame(
+    Metric = c("Total SNPs", "Significant SNPs", "Significance Threshold", 
+               "Hotspot Regions", "Total Significant SNPs in Hotspots",
+               "Hotspot 1 (31.5-32.0 Mb)", "Hotspot 2 (32.0-32.5 Mb)"),
+    Value = c(
+        format(nrow(snp_data), big.mark = ","),
+        nrow(significant_snps),
+        paste0("-log10(P) &gt; ", round(sig_threshold, 2)),
+        nrow(hotspots),
+        sum(hotspots$Significant_SNP_Count),
+        paste0(hotspots$Significant_SNP_Count[1], " SNPs, mean -log10(P)=", hotspots$Mean_logP[1]),
+        paste0(hotspots$Significant_SNP_Count[2], " SNPs, mean -log10(P)=", hotspots$Mean_logP[2])
+    )
+)
+
+write.csv(summary_stats, paste0(chrom, "_analysis_summary.csv"), row.names = FALSE)
+
+cat("\n=== 分析完成 ===\n")
+cat("📊 生成的可视化文件:\n")
+cat("   - ", chrom, "_final_analysis.png (组合分析图)\n")
+cat("   - ", chrom, "_hotspot_1_detail.png (热点1详细图)\n")
+cat("   - ", chrom, "_hotspot_2_detail.png (热点2详细图)\n")
+cat("   - ", chrom, "_all_hotspots.png (所有热点组合图)\n")
+cat("📋 生成的数据文件:\n")
+cat("   - ", chrom, "_analysis_summary.csv (分析总结)\n")
+
+cat("\n🎯 最终LD分析推荐:\n")
+cat("   优先分析: 31.5-32.0 Mb 区域 (70个显著SNP)\n")
+cat("   次要分析: 32.0-32.5 Mb 区域 (25个显著SNP)\n")
+cat("   这些区域包含真正的功能变异，LD分析最有生物学意义！\n")<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>该脚本整合所有结果，生成最终图形报告。</p>
+<h4 id="（1）综合曼哈顿-密度双图"><a href="#（1）综合曼哈顿-密度双图" class="headerlink" title="（1）综合曼哈顿 + 密度双图"></a>（1）综合曼哈顿 + 密度双图</h4><p>展示：</p>
+<ul>
+<li>全部SNP背景；</li>
+<li>显著SNP标记；</li>
+<li>热点区域矩形标注；</li>
+<li>显著阈值线；<br> 输出文件：<code>*_final_analysis.png</code></li>
+</ul>
+<h4 id="（2）热点区域细化可视化"><a href="#（2）热点区域细化可视化" class="headerlink" title="（2）热点区域细化可视化"></a>（2）热点区域细化可视化</h4><p>为每个热点单独绘制详细图，包含：</p>
+<ul>
+<li>区域内SNP分布；</li>
+<li>显著SNP聚集情况；</li>
+<li>区域统计指标。</li>
+</ul>
+<p>输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">- NC_047567.1_hotspot_1_detail.png
+- NC_047567.1_hotspot_2_detail.png
+- NC_047567.1_all_hotspots.png<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="（3）分析总结报告"><a href="#（3）分析总结报告" class="headerlink" title="（3）分析总结报告"></a>（3）分析总结报告</h4><p>自动生成汇总文件：</p>
+<ul>
+<li><code>*_analysis_summary.csv</code><br> 包含总SNP数、显著SNP数、热点数量、推荐LD分析区间等信息。</li>
+</ul>
+<hr>
+<h2 id="🧭-五、结果解读与后续分析建议"><a href="#🧭-五、结果解读与后续分析建议" class="headerlink" title="🧭 五、结果解读与后续分析建议"></a>🧭 五、结果解读与后续分析建议</h2><p>经过三步 R 脚本分析后，你将获得以下核心成果：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>文件名</th>
+<th>内容说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>基础分析图</td>
+<td><code>_basic_analysis.png</code></td>
+<td>SNP密度 + 曼哈顿图</td>
+</tr>
+<tr>
+<td>热点分析图</td>
+<td><code>_hotspot_corrected.png</code></td>
+<td>基于密度的热点识别</td>
+</tr>
+<tr>
+<td>显著热点图</td>
+<td><code>_significant_hotspots.png</code></td>
+<td>显著SNP聚集区</td>
+</tr>
+<tr>
+<td>综合报告图</td>
+<td><code>_final_analysis.png</code></td>
+<td>曼哈顿 + 密度双图</td>
+</tr>
+<tr>
+<td>LD推荐区域</td>
+<td><code>_recommended_ld_regions.csv</code></td>
+<td>建议LD分析区间</td>
+</tr>
+<tr>
+<td>汇总统计</td>
+<td><code>_analysis_summary.csv</code></td>
+<td>关键参数表</td>
+</tr>
+</tbody></table>
+<h3 id="🔬-下一步建议："><a href="#🔬-下一步建议：" class="headerlink" title="🔬 下一步建议："></a>🔬 下一步建议：</h3><ol>
+<li>在推荐区域中进行 <strong>LD Block 分析</strong>；</li>
+<li>使用 <code>plink --r2</code> 或 <code>haploview</code> 计算 LD；</li>
+<li>结合 <strong>基因注释 / 转录组表达数据</strong>，筛选潜在功能基因；</li>
+<li>若热点区域较集中，可进一步做 <strong>候选区域 GWAS 重分析</strong>。</li>
+</ol>
+<hr>
+<h2 id="🔬-六、GWAS热点区域分析"><a href="#🔬-六、GWAS热点区域分析" class="headerlink" title="🔬 六、GWAS热点区域分析"></a>🔬 六、GWAS热点区域分析</h2><p>4.auto_gwas_hotspot_ld.sh</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token comment"># 综合LD分析和LocusZoom图生成脚本 - 可配置版</span>
+<span class="token comment"># 用法: ./combined_ld_locuszoom_configurable.sh &lt;热点区域名称&gt; &lt;染色体&gt; &lt;起始位置&gt; &lt;终止位置&gt;</span>
+
+<span class="token builtin class-name">set</span> <span class="token parameter variable">-e</span>
+
+<span class="token comment"># ========== 可配置参数 ==========</span>
+<span class="token assign-left variable">SIGNIFICANCE_THRESHOLD</span><span class="token operator">=</span><span class="token string">"1e-8"</span>  <span class="token comment"># 显著性阈值，可修改为1e-6、5e-8等</span>
+<span class="token assign-left variable">MAF_FILTER</span><span class="token operator">=</span><span class="token string">"0.4"</span>              <span class="token comment"># MAF过滤阈值</span>
+<span class="token comment"># ===============================</span>
+
+<span class="token assign-left variable">REGION_NAME</span><span class="token operator">=</span><span class="token variable">$1</span>
+<span class="token assign-left variable">CHROM</span><span class="token operator">=</span><span class="token variable">$2</span>
+<span class="token assign-left variable">REGION_START</span><span class="token operator">=</span><span class="token variable">$3</span>
+<span class="token assign-left variable">REGION_END</span><span class="token operator">=</span><span class="token variable">$4</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 综合LD分析和LocusZoom图生成: <span class="token variable">$REGION_NAME</span> ==="</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"使用参数: 显著性阈值=<span class="token variable">$SIGNIFICANCE_THRESHOLD</span>, MAF过滤=<span class="token variable">$MAF_FILTER</span>"</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-z</span> <span class="token string">"<span class="token variable">$REGION_NAME</span>"</span> <span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token punctuation">[</span> <span class="token parameter variable">-z</span> <span class="token string">"<span class="token variable">$CHROM</span>"</span> <span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token punctuation">[</span> <span class="token parameter variable">-z</span> <span class="token string">"<span class="token variable">$REGION_START</span>"</span> <span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token punctuation">[</span> <span class="token parameter variable">-z</span> <span class="token string">"<span class="token variable">$REGION_END</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"错误: 参数不完整"</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"用法: <span class="token variable">$0</span> &lt;热点区域名称&gt; &lt;染色体&gt; &lt;起始位置&gt; &lt;终止位置&gt;"</span>
+    <span class="token builtin class-name">exit</span> <span class="token number">1</span>
+<span class="token keyword">fi</span>
+
+<span class="token comment"># 设置基础目录</span>
+<span class="token assign-left variable">BASE_DIR</span><span class="token operator">=</span><span class="token string">"/mnt/usb/LD-block"</span>
+<span class="token assign-left variable">VCF_FILE</span><span class="token operator">=</span><span class="token string">"/media/hhhh/5435CA8664BB5557/Desktop/闭壳肌痕/多组学/重测序/3.Variants/Filter.snp.vcf.gz"</span>
+<span class="token assign-left variable">GWAS_FILE</span><span class="token operator">=</span><span class="token string">"<span class="token variable">${BASE_DIR}</span>/color_GWAS.anno.xls"</span>
+<span class="token assign-left variable">GFF_FILE</span><span class="token operator">=</span><span class="token string">"<span class="token variable">${BASE_DIR}</span>/GCF_902806645.1_cgigas_uk_roslin_v1_genomic.gff.gz"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"工作目录: <span class="token variable">$BASE_DIR</span>"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"分析区域: <span class="token variable">$CHROM</span>:<span class="token variable">$REGION_START</span>-<span class="token variable">$REGION_END</span>"</span>
+
+<span class="token comment"># 切换到工作目录</span>
+<span class="token builtin class-name">cd</span> <span class="token string">"<span class="token variable">$BASE_DIR</span>"</span>
+
+<span class="token comment"># 创建区域工作目录</span>
+<span class="token assign-left variable">WORK_DIR</span><span class="token operator">=</span><span class="token string">"Complete_Analysis_<span class="token variable">${REGION_NAME}</span>"</span>
+<span class="token function">mkdir</span> <span class="token parameter variable">-p</span> <span class="token string">"<span class="token variable">$WORK_DIR</span>"</span>
+<span class="token builtin class-name">cd</span> <span class="token string">"<span class="token variable">$WORK_DIR</span>"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 阶段1: 基础数据准备 ==="</span>
+
+<span class="token comment"># 步骤1: 准备GFF文件</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"步骤1: 准备GFF文件..."</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-f</span> <span class="token string">"<span class="token variable">$GFF_FILE</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"解压GFF文件..."</span>
+    gunzip <span class="token parameter variable">-c</span> <span class="token string">"<span class="token variable">$GFF_FILE</span>"</span> <span class="token operator">&gt;</span> genomic.gff
+    <span class="token assign-left variable">GFF_FILE_PATH</span><span class="token operator">=</span><span class="token string">"genomic.gff"</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"使用GFF文件: <span class="token variable">$GFF_FILE_PATH</span>"</span>
+<span class="token keyword">else</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"警告: 未找到GFF文件，将生成无基因注释的图"</span>
+    <span class="token assign-left variable">GFF_FILE_PATH</span><span class="token operator">=</span><span class="token string">""</span>
+<span class="token keyword">fi</span>
+
+<span class="token comment"># 步骤2: 提取显著SNP</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"步骤2: 提取显著SNP..."</span>
+<span class="token function">awk</span> <span class="token parameter variable">-v</span> <span class="token assign-left variable">chrom</span><span class="token operator">=</span><span class="token string">"<span class="token variable">$CHROM</span>"</span> <span class="token parameter variable">-v</span> <span class="token assign-left variable">start</span><span class="token operator">=</span><span class="token string">"<span class="token variable">$REGION_START</span>"</span> <span class="token parameter variable">-v</span> <span class="token assign-left variable">end</span><span class="token operator">=</span><span class="token string">"<span class="token variable">$REGION_END</span>"</span> <span class="token parameter variable">-v</span> <span class="token assign-left variable">threshold</span><span class="token operator">=</span><span class="token string">"<span class="token variable">$SIGNIFICANCE_THRESHOLD</span>"</span> <span class="token string">'
+BEGIN {FS="\t"; OFS="\t"}
+$1 == chrom &amp;&amp; $2 &gt;= start &amp;&amp; $2 &lt;= end &amp;&amp; $5 &lt; threshold {
+    print $0
+}'</span> <span class="token punctuation">..</span>/color_GWAS.anno.xls <span class="token operator">&gt;</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_significant_snps.txt"</span>
+
+<span class="token assign-left variable">SNP_COUNT</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">wc</span> <span class="token parameter variable">-l</span> <span class="token operator">&lt;</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_significant_snps.txt"</span> <span class="token operator"><span class="token file-descriptor important">2</span>&gt;</span>/dev/null <span class="token operator">||</span> <span class="token builtin class-name">echo</span> <span class="token string">"0"</span><span class="token variable">)</span></span>
+<span class="token builtin class-name">echo</span> <span class="token string">"找到 <span class="token variable">$SNP_COUNT</span> 个显著SNP (P &lt; <span class="token variable">$SIGNIFICANCE_THRESHOLD</span>)"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 阶段2: 完整LD分析 ==="</span>
+
+<span class="token comment"># 步骤3: 提取VCF数据</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"步骤3: 提取VCF数据..."</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-f</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_significant_snps.txt"</span> <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$SNP_COUNT</span>"</span> <span class="token parameter variable">-gt</span> <span class="token number">0</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token comment"># 创建BED文件提取显著SNP</span>
+    <span class="token function">awk</span> <span class="token parameter variable">-v</span> <span class="token assign-left variable">chrom</span><span class="token operator">=</span><span class="token string">"<span class="token variable">$CHROM</span>"</span> <span class="token string">'{print chrom "\t" ($2-1) "\t" $2}'</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_significant_snps.txt"</span> <span class="token operator">&gt;</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_snps.bed"</span>
+    bcftools view <span class="token parameter variable">-T</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_snps.bed"</span> <span class="token string">"<span class="token variable">$VCF_FILE</span>"</span> <span class="token parameter variable">-Ov</span> <span class="token parameter variable">-o</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_significant.vcf"</span>
+<span class="token keyword">else</span>
+    <span class="token comment"># 如果无显著SNP，提取整个区域</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"提取整个区域VCF数据..."</span>
+    bcftools view <span class="token parameter variable">-r</span> <span class="token string">"<span class="token variable">${CHROM}</span>:<span class="token variable">${REGION_START}</span>-<span class="token variable">${REGION_END}</span>"</span> <span class="token string">"<span class="token variable">$VCF_FILE</span>"</span> <span class="token parameter variable">-Ov</span> <span class="token parameter variable">-o</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_significant.vcf"</span>
+<span class="token keyword">fi</span>
+
+<span class="token assign-left variable">EXTRACTED_COUNT</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">grep</span> <span class="token parameter variable">-v</span> <span class="token string">"^#"</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_significant.vcf"</span> <span class="token operator">|</span> <span class="token function">wc</span> <span class="token parameter variable">-l</span> <span class="token operator"><span class="token file-descriptor important">2</span>&gt;</span>/dev/null <span class="token operator">||</span> <span class="token builtin class-name">echo</span> <span class="token string">"0"</span><span class="token variable">)</span></span>
+<span class="token builtin class-name">echo</span> <span class="token string">"提取到 <span class="token variable">$EXTRACTED_COUNT</span> 个SNP"</span>
+
+<span class="token comment"># 修复样本名和染色体</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"修复样本名和染色体..."</span>
+bcftools query <span class="token parameter variable">-l</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_significant.vcf"</span> <span class="token operator">&gt;</span> original_samples.txt
+<span class="token function">sed</span> <span class="token string">'s/_/-/g'</span> original_samples.txt <span class="token operator">&gt;</span> new_samples.txt
+bcftools reheader <span class="token parameter variable">-s</span> new_samples.txt <span class="token string">"<span class="token variable">${REGION_NAME}</span>_significant.vcf"</span> <span class="token parameter variable">-o</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_fixed_samples.vcf"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"<span class="token variable">$CHROM</span> 1"</span> <span class="token operator">&gt;</span> chr_map.txt
+bcftools annotate --rename-chrs chr_map.txt <span class="token string">"<span class="token variable">${REGION_NAME}</span>_fixed_samples.vcf"</span> <span class="token parameter variable">-Ov</span> <span class="token parameter variable">-o</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_numeric.vcf"</span>
+
+<span class="token comment"># 压缩和索引</span>
+bgzip <span class="token parameter variable">-f</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_numeric.vcf"</span>
+tabix <span class="token parameter variable">-p</span> vcf <span class="token string">"<span class="token variable">${REGION_NAME}</span>_numeric.vcf.gz"</span>
+
+<span class="token comment"># 步骤4: 使用PLINK进行LD分析</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"步骤4: PLINK LD分析..."</span>
+plink <span class="token parameter variable">--vcf</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_numeric.vcf.gz"</span> <span class="token punctuation">\</span>
+      --allow-extra-chr <span class="token punctuation">\</span>
+      --double-id <span class="token punctuation">\</span>
+      <span class="token parameter variable">--r2</span> <span class="token punctuation">\</span>
+      --ld-window <span class="token number">1000</span> <span class="token punctuation">\</span>
+      --ld-window-kb <span class="token number">10000</span> <span class="token punctuation">\</span>
+      --ld-window-r2 <span class="token number">0</span> <span class="token punctuation">\</span>
+      <span class="token parameter variable">--out</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_plink_ld"</span> 
+
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 阶段3: 生成高质量LocusZoom图 ==="</span>
+
+<span class="token comment"># 步骤5: 生成高质量LocusZoom图</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"步骤5: 生成高质量LocusZoom图..."</span>
+<span class="token function">cat</span> <span class="token operator">&gt;</span> generate_high_quality_locuszoom.R <span class="token operator">&lt;&lt;</span> <span class="token string">EOF3
+#!/usr/bin/env Rscript
+library(ggplot2)
+library(patchwork)
+library(viridis)
+
+cat("生成高质量LocusZoom图...<span class="token entity" title="\n">\n</span>")
+
+args &lt;- commandArgs(trailingOnly = TRUE)
+region_name &lt;- args[1]
+region_start &lt;- as.numeric(args[2])
+region_end &lt;- as.numeric(args[3])
+significance_threshold &lt;- as.numeric(args[4])
+
+cat("区域:", region_name, "<span class="token entity" title="\n">\n</span>")
+cat("位置范围:", region_start, "-", region_end, "<span class="token entity" title="\n">\n</span>")
+cat("显著性阈值:", significance_threshold, "<span class="token entity" title="\n">\n</span>")
+
+# 读取显著SNP数据
+sig_file &lt;- paste0(region_name, "_significant_snps.txt")
+if(file.exists(sig_file) &amp;&amp; file.info(sig_file)\<span class="token variable">$size</span> &gt; 0) {
+    cat("读取显著SNP文件:", sig_file, "<span class="token entity" title="\n">\n</span>")
+    sig_snps &lt;- read.table(sig_file, sep="<span class="token entity" title="\t">\t</span>", header=FALSE,
+                          col.names=c("CHROM","POS","REF","ALT","PVALUE","OBS","MAF","ANNO","GENE"))
+    # 处理可能的NA值
+    sig_snps\<span class="token variable">$PVALUE</span> &lt;- as.numeric(as.character(sig_snps\<span class="token variable">$PVALUE</span>))
+    sig_snps\<span class="token variable">$MAF</span> &lt;- as.numeric(as.character(sig_snps\<span class="token variable">$MAF</span>))
+    
+    # 移除NA值
+    sig_snps &lt;- sig_snps[!is.na(sig_snps\<span class="token variable">$PVALUE</span>) &amp; !is.na(sig_snps\<span class="token variable">$MAF</span>), ]
+    
+    cat("有效显著SNP数量:", nrow(sig_snps), "<span class="token entity" title="\n">\n</span>")
+    
+    if(nrow(sig_snps) &gt; 0) {
+        # 创建专业LocusZoom图 - 上部：GWAS信号
+        p1 &lt;- ggplot(sig_snps, aes(x = POS/1e6, y = -log10(PVALUE))) +
+            geom_point(aes(color = ANNO, size = MAF), alpha = 0.8) +
+            geom_hline(yintercept = -log10(significance_threshold), color = "red", linetype = "dashed", linewidth = 1) +
+            scale_color_viridis_d(name = "注释类型") +
+            scale_size_continuous(name = "MAF", range = c(3, 8)) +
+            labs(title = paste("LocusZoom图 -", region_name),
+                 subtitle = paste(nrow(sig_snps), "个显著SNP (P &lt;", format(significance_threshold, scientific=TRUE), ")"),
+                 x = "", y = "-log10(P值)") +
+            theme_minimal() +
+            theme(legend.position = "top",
+                  plot.title = element_text(size = 14, face = "bold"),
+                  plot.subtitle = element_text(size = 12))
+        
+        # 下部：LD热图
+        ld_file &lt;- paste0(region_name, "_plink_ld.ld")
+        if(file.exists(ld_file) &amp;&amp; file.info(ld_file)\<span class="token variable">$size</span> &gt; 0) {
+            cat("读取LD文件:", ld_file, "<span class="token entity" title="\n">\n</span>")
+            ld_data &lt;- read.table(ld_file, header=TRUE)
+            cat("LD数据记录数:", nrow(ld_data), "<span class="token entity" title="\n">\n</span>")
+            
+            if(nrow(ld_data) &gt; 0) {
+                p2 &lt;- ggplot(ld_data, aes(x = BP_A/1e6, y = BP_B/1e6, color = R2)) +
+                    geom_point(size = 3, alpha = 0.7) +
+                    scale_color_viridis_c(name = "LD (R²)", limits = c(0, 1)) +
+                    labs(x = "基因组位置 (Mb)", y = "基因组位置 (Mb)",
+                         subtitle = "LD热图") +
+                    theme_minimal()
+            } else {
+                p2 &lt;- ggplot() +
+                    annotate("text", x = 0.5, y = 0.5, label = "LD数据为空", size = 6, color = "gray") +
+                    labs(x = "基因组位置 (Mb)", y = "基因组位置 (Mb)") +
+                    theme_void()
+            }
+        } else {
+            p2 &lt;- ggplot() +
+                annotate("text", x = 0.5, y = 0.5, label = "LD热图数据缺失", size = 6, color = "gray") +
+                labs(x = "基因组位置 (Mb)", y = "基因组位置 (Mb)") +
+                theme_void()
+        }
+        
+        # 组合图形
+        combined &lt;- p1 / p2 + 
+            plot_layout(heights = c(1, 1))
+        
+        output_file &lt;- paste0("High_Quality_LocusZoom_", region_name, ".png")
+        ggsave(output_file, combined, width = 12, height = 10, dpi = 300, bg = "white")
+        cat("✓ 高质量LocusZoom图生成完成:", output_file, "<span class="token entity" title="\n">\n</span>")
+        
+    } else {
+        cat("无有效显著SNP数据<span class="token entity" title="\n">\n</span>")
+    }
+} else {
+    cat("显著SNP文件不存在或为空<span class="token entity" title="\n">\n</span>")
+}
+
+cat("✓ 高质量LocusZoom图生成完成<span class="token entity" title="\n">\n</span>")
+EOF3</span>
+
+Rscript generate_high_quality_locuszoom.R <span class="token string">"<span class="token variable">$REGION_NAME</span>"</span> <span class="token string">"<span class="token variable">$REGION_START</span>"</span> <span class="token string">"<span class="token variable">$REGION_END</span>"</span> <span class="token string">"<span class="token variable">$SIGNIFICANCE_THRESHOLD</span>"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 阶段4: 生成脚本4风格完整图 ==="</span>
+
+<span class="token comment"># 步骤6: 准备GWAS文件</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"步骤6: 准备GWAS文件..."</span>
+<span class="token function">awk</span> <span class="token string">'{print $1, $2, $5}'</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_significant_snps.txt"</span> <span class="token operator">&gt;</span> gwas_significant.pvalue
+
+<span class="token comment"># 步骤7: 使用脚本4的完整方案生成图片</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"步骤7: 使用脚本4的完整方案生成图片..."</span>
+
+<span class="token comment"># 直接运行，让LDBlockShow自己处理</span>
+LDBlockShow <span class="token parameter variable">-InVCF</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_significant.vcf"</span> <span class="token punctuation">\</span>
+            <span class="token parameter variable">-OutPut</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_LD"</span> <span class="token punctuation">\</span>
+            <span class="token parameter variable">-InGWAS</span> <span class="token string">"gwas_significant.pvalue"</span> <span class="token punctuation">\</span>
+            <span class="token parameter variable">-Region</span> <span class="token string">"<span class="token variable">${CHROM}</span>:<span class="token variable">${REGION_START}</span>:<span class="token variable">${REGION_END}</span>"</span> <span class="token punctuation">\</span>
+            <span class="token parameter variable">-SeleVar</span> <span class="token number">3</span> <span class="token punctuation">\</span>
+            <span class="token parameter variable">-OutPng</span> <span class="token punctuation">\</span>
+            <span class="token parameter variable">-BlockType</span> <span class="token number">2</span> <span class="token punctuation">\</span>
+            <span class="token parameter variable">-MAF</span> <span class="token number">0.05</span>
+
+<span class="token comment"># 检查生成结果</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-f</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_LD.png"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"✓ 脚本4风格完整图生成成功: <span class="token variable">${REGION_NAME}</span>_LD.png"</span>
+    <span class="token comment"># 复制一份作为最终结果</span>
+    <span class="token function">cp</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_LD.png"</span> <span class="token string">"Script4_Complete_<span class="token variable">${REGION_NAME}</span>.png"</span>
+<span class="token keyword">else</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"✗ 脚本4风格生成失败，尝试备选方案..."</span>
+    
+    <span class="token comment"># 备选方案：使用简化版本</span>
+    LDBlockShow <span class="token parameter variable">-InVCF</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_significant.vcf"</span> <span class="token punctuation">\</span>
+                <span class="token parameter variable">-OutPut</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_LD_simple"</span> <span class="token punctuation">\</span>
+                <span class="token parameter variable">-Region</span> <span class="token string">"<span class="token variable">${CHROM}</span>:<span class="token variable">${REGION_START}</span>:<span class="token variable">${REGION_END}</span>"</span> <span class="token punctuation">\</span>
+                <span class="token parameter variable">-SeleVar</span> <span class="token number">2</span> <span class="token punctuation">\</span>
+                <span class="token parameter variable">-OutPng</span> <span class="token operator"><span class="token file-descriptor important">2</span>&gt;</span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">|</span> <span class="token function">grep</span> <span class="token parameter variable">-v</span> <span class="token string">"Warning"</span> <span class="token operator">||</span> <span class="token boolean">true</span>
+    
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-f</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_LD_simple.png"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+        <span class="token function">cp</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_LD_simple.png"</span> <span class="token string">"Script4_Complete_<span class="token variable">${REGION_NAME}</span>.png"</span>
+        <span class="token builtin class-name">echo</span> <span class="token string">"✓ 使用简化版作为备选"</span>
+    <span class="token keyword">fi</span>
+<span class="token keyword">fi</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 阶段5: 生成R版本备选图 ==="</span>
+
+<span class="token comment"># 步骤8: 生成R_LocusZoom_Style.png作为备选</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"步骤8: 生成R_LocusZoom_Style.png作为备选..."</span>
+<span class="token function">cat</span> <span class="token operator">&gt;</span> generate_r_locuszoom.R <span class="token operator">&lt;&lt;</span> <span class="token string">EOF2
+#!/usr/bin/env Rscript
+library(ggplot2)
+library(gridExtra)
+library(patchwork)
+
+cat("创建R版LocusZoom风格图...<span class="token entity" title="\n">\n</span>")
+
+args &lt;- commandArgs(trailingOnly = TRUE)
+region_name &lt;- args[1]
+region_start &lt;- as.numeric(args[2])
+region_end &lt;- as.numeric(args[3])
+significance_threshold &lt;- as.numeric(args[4])
+
+cat("区域:", region_name, "<span class="token entity" title="\n">\n</span>")
+cat("位置:", region_start, "-", region_end, "<span class="token entity" title="\n">\n</span>")
+cat("显著性阈值:", significance_threshold, "<span class="token entity" title="\n">\n</span>")
+
+# 读取GWAS数据
+gwas_file &lt;- paste0(region_name, "_significant_snps.txt")
+if(file.exists(gwas_file)) {
+    gwas &lt;- read.table(gwas_file, sep="<span class="token entity" title="\t">\t</span>", header=FALSE,
+                      col.names=c("CHROM","POS","REF","ALT","PVALUE","OBS","MAF","ANNO","GENE"))
+    gwas\<span class="token variable">$PVALUE</span> &lt;- as.numeric(gwas\<span class="token variable">$PVALUE</span>)
+    
+    cat("区域内的GWAS SNP数量:", nrow(gwas), "<span class="token entity" title="\n">\n</span>")
+    
+    if(nrow(gwas) &gt; 0) {
+        # 创建综合图
+        p1 &lt;- ggplot(gwas, aes(x = POS/1e6, y = -log10(PVALUE))) +
+            geom_point(aes(color = ANNO), size = 3, alpha = 0.7) +
+            geom_hline(yintercept = -log10(significance_threshold), color = "red", linetype = "dashed", linewidth = 1) +
+            scale_color_brewer(palette = "Set1", name = "注释类型") +
+            labs(title = paste("GWAS信号 -", region_name, "(P &lt;", format(significance_threshold, scientific=TRUE), ")"),
+                 x = "", y = "-log10(P值)") +
+            theme_minimal() +
+            theme(axis.text.x = element_blank())
+        
+        # 读取LD数据
+        ld_file &lt;- paste0(region_name, "_plink_ld.ld")
+        if(file.exists(ld_file)) {
+            ld_data &lt;- read.table(ld_file, header = TRUE)
+            
+            p2 &lt;- ggplot(ld_data, aes(x = BP_A/1e6, y = BP_B/1e6, color = R2)) +
+                geom_point(size = 2, alpha = 0.7) +
+                scale_color_gradient2(name = "R²", low = "blue", mid = "yellow", high = "red", midpoint = 0.5, limits = c(0, 1)) +
+                labs(x = "基因组位置 (Mb)", y = "基因组位置 (Mb)") +
+                theme_minimal()
+        } else {
+            p2 &lt;- ggplot() + 
+                geom_text(aes(x = 0.5, y = 0.5, label = "无LD数据")) +
+                labs(x = "基因组位置 (Mb)", y = "基因组位置 (Mb)") +
+                theme_minimal()
+        }
+        
+        # 组合图形
+        combined_plot &lt;- p1 / p2 + 
+            plot_layout(heights = c(1, 1))
+        
+        ggsave("R_LocusZoom_Style.png", combined_plot, width = 10, height = 8, dpi = 300)
+        cat("✓ R版LocusZoom风格图生成完成: R_LocusZoom_Style.png<span class="token entity" title="\n">\n</span>")
+    } else {
+        cat("错误: 在指定区域内未找到GWAS数据<span class="token entity" title="\n">\n</span>")
+    }
+} else {
+    cat("错误: 未找到GWAS文件<span class="token entity" title="\n">\n</span>")
+}
+EOF2</span>
+
+Rscript generate_r_locuszoom.R <span class="token string">"<span class="token variable">$REGION_NAME</span>"</span> <span class="token string">"<span class="token variable">$REGION_START</span>"</span> <span class="token string">"<span class="token variable">$REGION_END</span>"</span> <span class="token string">"<span class="token variable">$SIGNIFICANCE_THRESHOLD</span>"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 阶段6: 清理和总结 ==="</span>
+
+<span class="token comment"># 清理临时文件</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"清理临时文件..."</span>
+<span class="token function">rm</span> <span class="token parameter variable">-f</span> original_samples.txt new_samples.txt chr_map.txt <span class="token punctuation">\</span>
+      original_samples_all.txt new_samples_all.txt <span class="token punctuation">\</span>
+      <span class="token string">"<span class="token variable">${REGION_NAME}</span>_significant.vcf"</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_fixed_samples.vcf"</span> <span class="token punctuation">\</span>
+      <span class="token string">"<span class="token variable">${REGION_NAME}</span>_numeric.vcf.gz"</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_numeric.vcf.gz.tbi"</span> <span class="token punctuation">\</span>
+      <span class="token string">"<span class="token variable">${REGION_NAME}</span>_snps.bed"</span> gwas_significant.pvalue genomic.gff <span class="token punctuation">\</span>
+      generate_high_quality_locuszoom.R generate_r_locuszoom.R <span class="token punctuation">\</span>
+      <span class="token string">"<span class="token variable">${REGION_NAME}</span>_all_snps.vcf.gz"</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_all_snps.vcf.gz.tbi"</span> <span class="token punctuation">\</span>
+      <span class="token string">"<span class="token variable">${REGION_NAME}</span>_all_snps_fixed.vcf.gz"</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_all_snps_fixed.vcf.gz.tbi"</span> <span class="token punctuation">\</span>
+      <span class="token string">"<span class="token variable">${REGION_NAME}</span>_LD.png"</span> <span class="token string">"<span class="token variable">${REGION_NAME}</span>_LD_simple.png"</span> <span class="token operator"><span class="token file-descriptor important">2</span>&gt;</span>/dev/null <span class="token operator">||</span> <span class="token boolean">true</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 综合分析完成! ==="</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"📁 工作目录: <span class="token variable"><span class="token variable">$(</span><span class="token builtin class-name">pwd</span><span class="token variable">)</span></span>"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"📊 生成的所有图片文件:"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 高质量LocusZoom图 (R版本) ==="</span>
+<span class="token keyword">for</span> <span class="token for-or-select variable">file</span> <span class="token keyword">in</span> High_Quality_LocusZoom_*.png<span class="token punctuation">;</span> <span class="token keyword">do</span>
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-f</span> <span class="token string">"<span class="token variable">$file</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+        <span class="token assign-left variable">size_kb</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">du</span> <span class="token parameter variable">-k</span> <span class="token string">"<span class="token variable">$file</span>"</span> <span class="token operator">|</span> <span class="token function">cut</span> <span class="token parameter variable">-f1</span><span class="token variable">)</span></span>
+        <span class="token builtin class-name">echo</span> <span class="token string">"   📄 <span class="token variable">$file</span> (<span class="token variable">${size_kb}</span> KB)"</span>
+    <span class="token keyword">fi</span>
+<span class="token keyword">done</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 脚本4风格完整图 ==="</span>
+<span class="token keyword">for</span> <span class="token for-or-select variable">file</span> <span class="token keyword">in</span> Script4_Complete_*.png<span class="token punctuation">;</span> <span class="token keyword">do</span>
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-f</span> <span class="token string">"<span class="token variable">$file</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+        <span class="token assign-left variable">size_kb</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">du</span> <span class="token parameter variable">-k</span> <span class="token string">"<span class="token variable">$file</span>"</span> <span class="token operator">|</span> <span class="token function">cut</span> <span class="token parameter variable">-f1</span><span class="token variable">)</span></span>
+        <span class="token builtin class-name">echo</span> <span class="token string">"   📄 <span class="token variable">$file</span> (<span class="token variable">${size_kb}</span> KB) - 推荐使用"</span>
+    <span class="token keyword">fi</span>
+<span class="token keyword">done</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 其他备选图 ==="</span>
+<span class="token keyword">for</span> <span class="token for-or-select variable">file</span> <span class="token keyword">in</span> R_LocusZoom_Style.png<span class="token punctuation">;</span> <span class="token keyword">do</span>
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-f</span> <span class="token string">"<span class="token variable">$file</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+        <span class="token assign-left variable">size_kb</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">du</span> <span class="token parameter variable">-k</span> <span class="token string">"<span class="token variable">$file</span>"</span> <span class="token operator">|</span> <span class="token function">cut</span> <span class="token parameter variable">-f1</span><span class="token variable">)</span></span>
+        <span class="token builtin class-name">echo</span> <span class="token string">"   📄 <span class="token variable">$file</span> (<span class="token variable">${size_kb}</span> KB)"</span>
+    <span class="token keyword">fi</span>
+<span class="token keyword">done</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"🔍 分析摘要:"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   显著SNP: <span class="token variable">$SNP_COUNT</span> 个 (P &lt; <span class="token variable">$SIGNIFICANCE_THRESHOLD</span>)"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   成功提取: <span class="token variable">$EXTRACTED_COUNT</span> 个SNP"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   区域SNP: <span class="token variable">$FINAL_SNP_COUNT</span> 个 (用于LDBlockShow)"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   使用参数:"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"     - 显著性阈值: <span class="token variable">$SIGNIFICANCE_THRESHOLD</span>"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"     - MAF过滤: <span class="token variable">$MAF_FILTER</span>"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"   推荐图片:"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"     - Script4_Complete_<span class="token variable">${REGION_NAME}</span>.png (脚本4风格，一气呵成)"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"     - High_Quality_LocusZoom_<span class="token variable">${REGION_NAME}</span>.png (高质量R版本)"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">""</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"✅ 所有图片生成完成!"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<pre class="line-numbers language-none"><code class="language-none"># 给脚本执行权限
+chmod +x 4.auto_gwas_hotspot_ld.sh
+
+# 用法1: 使用默认VCF文件分析热点区域
+./4.auto_gwas_hotspot_ld.sh "hotspot_31.5_32.0Mb" "NC_047567.1" 31500000 32000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="📚-七、总结"><a href="#📚-七、总结" class="headerlink" title="📚 七、总结"></a>📚 七、总结</h2><p>本流程将传统 GWAS 结果从“显著性点的罗列”提升为“聚集信号的结构化分析”，实现了：</p>
+<ul>
+<li>🔹 从单点显著到区域热点的层级聚焦；</li>
+<li>🔹 自动化 R + Shell 流程，避免人工重复操作；</li>
+<li>🔹 为 LD block、候选基因挖掘提供清晰的定位依据。</li>
+</ul>
+<p>这套框架可无缝迁移至任意物种或 GWAS 项目，只需更换输入文件与染色体名称即可快速运行。</p>
+<blockquote>
+<p>💡 <strong>关键词：</strong> GWAS、热点区域、LD Block、显著性SNP、R可视化</p>
+</blockquote>
+<hr>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://0HHHHHH0.github.io">HHHH</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://0hhhhhh0.github.io/2025/11/10/gwas-ld-block/">https://0hhhhhh0.github.io/2025/11/10/gwas-ld-block/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/GWAS/">GWAS</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/11/24/latex/" title="LaTeX详细教程+技巧总结"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">LaTeX详细教程+技巧总结</div></div><div class="info-2"><div class="info-item-1"> 转载自: https://blog.csdn.net/NSJim/article/details/109066847  前言若想直接学习LaTeX数学公式，请参见我的另一篇博客：LaTeX数学公式-详细教程 。 本篇文章介绍LaTeX的基本用法，并有自己的经验和总结。另外，可以从LaTeX的官方文档进行学习，官方文档大部分是英文文档，链接：LaTeX在线文档 ，LaTex宏包文档。 本篇文章内容包含LaTeX工具，LaTeX模板，LaTeX技巧，LaTeX基础，文章架构，字体、大小和颜色，链接，列表，图片，表格，数学公式，算法（伪代码），代码块，论文写作，等等。 LaTeX工具介绍LaTeX工具分为在线工具和本地工具，本地工具又分为前台和后台。在线工具推荐Overleaf，本地工具推荐前台使用TeXStudio，后台推荐使用TeXLive（后台工具有TeXLive，MikTeX，CTeX等）。 各个后台的比较：TeXLive有跨平台的性质，适用于Linux、Mac以及Windows系统；TeXLive是完全安装，大小大概为5G左右；每年有一次更新。TeXStudio只适用于Wi...</div></div></div></a><a class="pagination-related" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">从基因到结构：用PyMOL可视化理解分子对接与突变效应</div></div><div class="info-2"><div class="info-item-1">从基因到结构：用PyMOL可视化理解分子对接与突变效应亲爱的同学们，当我们谈论“结构生物学”或“计算药物设计”时，分子对接和蛋白质突变是两个核心概念。它们一个关乎预测，一个关乎解释。今天，我们将不仅从原理上理解它们，更将借助强大的分子可视化软件PyMOL，将抽象的概念转化为可见的3D结构。 第一部分：分子对接——当传统“钥匙配锁”遇上AI“神助攻”分子对接的本质是在原子层面预测小分子（配体）与其靶标生物大分子（受体）之间的最优结合模式。传统的流程我们比作“钥匙配锁”，但现在，我们迎来了一位强大的AI助手——AlphaFold——它能为许多我们不知道精确结构的“锁”生成高精度的3D模型。 现代分子对接的增强版流程如下： 1. 结构准备与预处理：获取“锁”和“钥匙”的3D蓝图 这是所有计算的基石。蛋白质受体的三维结构是分子对接的起点。其来源主要分为实验解析和计算预测两大类。  a) 传统路径（实验结构）：从PDB数据库下载通过X射线晶体学、冷冻电镜或核磁共振等技术解析的结构。这是金标准，精度最高。然而，并非所有蛋白质，特别是某些膜蛋白或大型复合物，都能被轻易解析出结构。 b) 计算预...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2022/08/05/023-ji-yin-jia-zu-fen-xi/" title="一个简单的基因家族分析"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-06</div><div class="info-item-2">一个简单的基因家族分析</div></div><div class="info-2"><div class="info-item-1">基因家族分析以拟南芥为例，重现一个描述芝麻 大豆、拟南芥中一个与油脂合成相关的基因的进化关系以及拷贝数差异的图  一、准备参考基因序列拟南芥中FAD4-like基因有三条：At1g62190、At2g22890、At4g27030 拟南芥蛋白序列文件：atha.fasta找出以上三个序列，拷贝放进query.fasta文件二、准备大豆和芝麻的蛋白序列芝麻蛋白序列文件：sind.fasta大豆蛋白序列文件：gmax.fasta######合并芝麻、大豆、拟南芥的蛋白序列文件 cat atha.fasta gmax.fasta sind.fasta &gt; all.fasta 三、Blast（局部比对软件）1.比对数据库构建makeblastdb -dbtype prot -in all.fasta -out all ==&gt; 得到一系列以all为名的数据库文件3.blast比对blastp -query query.fasta -db all -out blast.out -evalue 1e-10 ==&gt; 结果太详细，-outfmt 第七种，表格带注释形式 blast...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A7%AC-%E4%B8%80%E3%80%81%E9%A1%B9%E7%9B%AE%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">🧬 一、项目概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9A%99%EF%B8%8F-%E4%BA%8C%E3%80%81%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="toc-number">2.</span> <span class="toc-text">⚙️ 二、环境配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%8D-%E4%B8%89%E3%80%81%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87%E4%B8%8E%E9%A2%84%E5%A4%84%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text">🔍 三、数据准备与预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%EF%B8%8F%E2%83%A3-%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E6%9F%93%E8%89%B2%E4%BD%93%E4%BF%A1%E6%81%AF"><span class="toc-number">3.1.</span> <span class="toc-text">1️⃣ 查看所有染色体信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%EF%B8%8F%E2%83%A3-%E6%8F%90%E5%8F%96%E5%8D%95%E6%9D%A1%E6%9F%93%E8%89%B2%E4%BD%93%E6%95%B0%E6%8D%AE"><span class="toc-number">3.2.</span> <span class="toc-text">2️⃣ 提取单条染色体数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%88-%E5%9B%9B%E3%80%81R-%E8%84%9A%E6%9C%AC%E5%88%86%E6%9E%90%E6%A8%A1%E5%9D%97"><span class="toc-number">4.</span> <span class="toc-text">📈 四、R 脚本分析模块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-1-%E5%AE%8C%E6%95%B4%E5%9F%BA%E7%A1%80%E5%88%86%E6%9E%90%EF%BC%883-0-complete-analysis-R%EF%BC%89"><span class="toc-number">4.1.</span> <span class="toc-text">🔹 1. 完整基础分析（3.0.complete_analysis.R）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E5%9F%BA%E7%A1%80%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="toc-number">4.1.1.</span> <span class="toc-text">（1）基础可视化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%882%EF%BC%89%E7%AA%97%E5%8F%A3%E6%89%AB%E6%8F%8F%E4%B8%8E%E7%83%AD%E7%82%B9%E6%A3%80%E6%B5%8B"><span class="toc-number">4.1.2.</span> <span class="toc-text">（2）窗口扫描与热点检测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%883%EF%BC%89%E6%8E%A8%E8%8D%90-LD-%E5%88%86%E6%9E%90%E5%8C%BA%E5%9F%9F"><span class="toc-number">4.1.3.</span> <span class="toc-text">（3）推荐 LD 分析区域</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%884%EF%BC%89%E7%BB%93%E6%9E%9C%E6%80%BB%E7%BB%93%E4%B8%8E%E5%BB%BA%E8%AE%AE"><span class="toc-number">4.1.4.</span> <span class="toc-text">（4）结果总结与建议</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-2-%E5%9F%BA%E4%BA%8E%E6%98%BE%E8%91%97SNP%E7%9A%84%E7%83%AD%E7%82%B9%E5%88%86%E6%9E%90%EF%BC%883-1-corrected-significant-hotspots-R%EF%BC%89"><span class="toc-number">4.2.</span> <span class="toc-text">🔹 2. 基于显著SNP的热点分析（3.1.corrected_significant_hotspots.R）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E6%98%BE%E8%91%97%E6%80%A7%E7%AD%9B%E9%80%89"><span class="toc-number">4.2.1.</span> <span class="toc-text">（1）显著性筛选</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%882%EF%BC%89%E5%9F%BA%E4%BA%8E%E6%98%BE%E8%91%97SNP%E7%9A%84%E7%AA%97%E5%8F%A3%E7%BB%9F%E8%AE%A1"><span class="toc-number">4.2.2.</span> <span class="toc-text">（2）基于显著SNP的窗口统计</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%883%EF%BC%89%E6%98%BE%E8%91%97SNP%E7%83%AD%E7%82%B9%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="toc-number">4.2.3.</span> <span class="toc-text">（3）显著SNP热点可视化</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B9-3-%E6%9C%80%E7%BB%88%E5%8F%AF%E8%A7%86%E5%8C%96%E4%B8%8E%E6%80%BB%E7%BB%93%EF%BC%883-2-fixed-visualization-R%EF%BC%89"><span class="toc-number">4.3.</span> <span class="toc-text">🔹 3. 最终可视化与总结（3.2.fixed_visualization.R）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E7%BB%BC%E5%90%88%E6%9B%BC%E5%93%88%E9%A1%BF-%E5%AF%86%E5%BA%A6%E5%8F%8C%E5%9B%BE"><span class="toc-number">4.3.1.</span> <span class="toc-text">（1）综合曼哈顿 + 密度双图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%882%EF%BC%89%E7%83%AD%E7%82%B9%E5%8C%BA%E5%9F%9F%E7%BB%86%E5%8C%96%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="toc-number">4.3.2.</span> <span class="toc-text">（2）热点区域细化可视化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%883%EF%BC%89%E5%88%86%E6%9E%90%E6%80%BB%E7%BB%93%E6%8A%A5%E5%91%8A"><span class="toc-number">4.3.3.</span> <span class="toc-text">（3）分析总结报告</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A7%AD-%E4%BA%94%E3%80%81%E7%BB%93%E6%9E%9C%E8%A7%A3%E8%AF%BB%E4%B8%8E%E5%90%8E%E7%BB%AD%E5%88%86%E6%9E%90%E5%BB%BA%E8%AE%AE"><span class="toc-number">5.</span> <span class="toc-text">🧭 五、结果解读与后续分析建议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%AC-%E4%B8%8B%E4%B8%80%E6%AD%A5%E5%BB%BA%E8%AE%AE%EF%BC%9A"><span class="toc-number">5.1.</span> <span class="toc-text">🔬 下一步建议：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%AC-%E5%85%AD%E3%80%81GWAS%E7%83%AD%E7%82%B9%E5%8C%BA%E5%9F%9F%E5%88%86%E6%9E%90"><span class="toc-number">6.</span> <span class="toc-text">🔬 六、GWAS热点区域分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9A-%E4%B8%83%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">📚 七、总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/24/indel/" title="记一次清空SMART修复群晖报故障的硬盘">记一次清空SMART修复群晖报故障的硬盘</a><time datetime="2025-12-24T04:56:00.000Z" title="Created 2025-12-24 12:56:00">2025-12-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/gemini/" title="根据SNP位点进行快速引物设计——网页版">根据SNP位点进行快速引物设计——网页版</a><time datetime="2025-12-02T14:26:00.000Z" title="Created 2025-12-02 22:26:00">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/24/latex/" title="LaTeX详细教程+技巧总结">LaTeX详细教程+技巧总结</a><time datetime="2025-11-24T14:26:00.000Z" title="Created 2025-11-24 22:26:00">2025-11-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/10/gwas-ld-block/" title="GWAS + 热点区域识别 + LD Block 分析流程详解">GWAS + 热点区域识别 + LD Block 分析流程详解</a><time datetime="2025-11-10T14:26:00.000Z" title="Created 2025-11-10 22:26:00">2025-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应">从基因到结构：用PyMOL可视化理解分子对接与突变效应</a><time datetime="2025-11-09T14:26:00.000Z" title="Created 2025-11-09 22:26:00">2025-11-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
+   #sidebar_search_box input[type=text]{width:calc(100% - 24px)}
+}</style></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/fish.js" defer data-pjax></script><script type="text/javascript" src="/js/busuanzi.pure.mini.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-10-09</span><a class="blog-slider__title" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">Hexo + Butterfly 个人博客搭建</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/11/10/gwas-ld-block/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-11-10</span><a class="blog-slider__title" href="2025/11/10/gwas-ld-block/" alt="">GWAS + 热点区域识别 + LD Block 分析流程详解</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/11/10/gwas-ld-block/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/07/31/19/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/OIP-C.2E7GSli1t13WJ-Of6Hp9UgHaEi" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-07-31</span><a class="blog-slider__title" href="2025/07/31/19/" alt="">2.重测序数据分析——初步整理</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/07/31/19/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><!-- hexo injector body_end end --></body></html>

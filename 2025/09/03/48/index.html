@@ -1,0 +1,551 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>6.筛选组内一致率90%，组间有差异的SNP位点 | HHHH</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="分析需求：   请分析查找组间差异SNP &amp; Indel。需要找组内一致，组间具有差异的突变位点，样本一致率卡90%，即在大于90%的样本中突变型一致就认为是组内一致的突变。  关键技术要求：  组内一致性：在&gt;90%的样本中突变型一致即认为组内一致 组间差异性：不同群体间基因型存在明显分化 质量控制：确保结果的统计学可靠性   🎯 分析目标与生物学意义在群体遗传学和分子育种研究中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="6.筛选组内一致率90%，组间有差异的SNP位点">
+<meta property="og:url" content="https://0hhhhhh0.github.io/2025/09/03/48/index.html">
+<meta property="og:site_name" content="HHHH">
+<meta property="og:description" content="分析需求：   请分析查找组间差异SNP &amp; Indel。需要找组内一致，组间具有差异的突变位点，样本一致率卡90%，即在大于90%的样本中突变型一致就认为是组内一致的突变。  关键技术要求：  组内一致性：在&gt;90%的样本中突变型一致即认为组内一致 组间差异性：不同群体间基因型存在明显分化 质量控制：确保结果的统计学可靠性   🎯 分析目标与生物学意义在群体遗传学和分子育种研究中">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0hhhhhh0.github.io/uploads/avatar.png">
+<meta property="article:published_time" content="2025-09-03T03:32:00.000Z">
+<meta property="article:modified_time" content="2025-09-03T07:01:38.000Z">
+<meta property="article:author" content="HHHH">
+<meta property="article:tag" content="hexo">
+<meta property="article:tag" content="组学">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="折腾">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0hhhhhh0.github.io/uploads/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "6.筛选组内一致率90%，组间有差异的SNP位点",
+  "url": "https://0hhhhhh0.github.io/2025/09/03/48/",
+  "image": "https://0hhhhhh0.github.io/uploads/avatar.png",
+  "datePublished": "2025-09-03T03:32:00.000Z",
+  "dateModified": "2025-09-03T07:01:38.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "HHHH",
+      "url": "https://0HHHHHH0.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/uploads/avatar.png"><link rel="canonical" href="https://0hhhhhh0.github.io/2025/09/03/48/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":-1,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '6.筛选组内一致率90%，组间有差异的SNP位点',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@4.5.12/index.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/styles/css/font.css"><link rel="stylesheet" href="/css/mermaid.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="HHHH" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="scarecrow"><div class="scarecrow__hat"><div class="scarecrow__ribbon"></div></div><div class="scarecrow__head"><div class="scarecrow__eye"></div><div class="scarecrow__eye"></div><div class="scarecrow__mouth"></div><div class="scarecrow__pipe"></div></div><div class="scarecrow__body"><div class="scarecrow__glove scarecrow__glove--l"></div><div class="scarecrow__sleeve scarecrow__sleeve--l"></div><div class="scarecrow__bow"></div><div class="scarecrow__shirt"></div><div class="scarecrow__coat"></div><div class="scarecrow__waistcoat"></div><div class="scarecrow__sleeve scarecrow__sleeve--r"></div><div class="scarecrow__glove scarecrow__glove--r"></div><div class="scarecrow__coattails"></div><div class="scarecrow__pants"></div></div><div class="scarecrow__arms"></div><div class="scarecrow__leg">  </div></div></div><script async="async">(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-color: #fbfdff;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/uploads/avatar.png" alt="Logo"><span class="site-name">HHHH</span></a><a class="nav-page-title" href="/"><span class="site-name">6.筛选组内一致率90%，组间有差异的SNP位点</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">6.筛选组内一致率90%，组间有差异的SNP位点</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-09-03T03:32:00.000Z" title="Created 2025-09-03 11:32:00">2025-09-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-09-03T07:01:38.000Z" title="Updated 2025-09-03 15:01:38">2025-09-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%BB%98%E8%AE%A4%E5%88%86%E7%B1%BB/">默认分类</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%BB%98%E8%AE%A4%E5%88%86%E7%B1%BB/%E9%87%8D%E6%B5%8B%E5%BA%8F/">重测序</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="ai-summary"><div class="ai-explanation" style="display: block;" data-summary="这篇文章主要介绍了一套完整的生物信息学分析流程，通过严格的组内一致性检验（&gt;90%样本基因型一致）和组间差异性筛选，从大规模基因组数据中高效识别群体特异性SNP位点，并结合交互式可视化进行结果验证，为群体遗传分化研究和分子标记开发提供了可靠的技术方案。">AI正在绞尽脑汁想思路ING···</div><div class="ai-title"> <div class="ai-title-left"> <i class="fa-brands fa-slack"></i><div class="ai-title-text">AI摘要</div></div><div class="ai-tag" id="ai-tag">deepseek-ai/DeepSeek-V3</div></div></div><p><strong>分析需求：</strong> </p>
+<blockquote>
+<p>请分析查找组间差异SNP &amp; Indel。需要找组内一致，组间具有差异的突变位点，样本一致率卡90%，即在大于90%的样本中突变型一致就认为是组内一致的突变。</p>
+</blockquote>
+<p><strong>关键技术要求</strong>：</p>
+<ul>
+<li><strong>组内一致性</strong>：在&gt;90%的样本中突变型一致即认为组内一致</li>
+<li><strong>组间差异性</strong>：不同群体间基因型存在明显分化</li>
+<li><strong>质量控制</strong>：确保结果的统计学可靠性</li>
+</ul>
+<hr>
+<h2 id="🎯-分析目标与生物学意义"><a href="#🎯-分析目标与生物学意义" class="headerlink" title="🎯 分析目标与生物学意义"></a>🎯 分析目标与生物学意义</h2><p>在群体遗传学和分子育种研究中，识别群体特异性变异位点是理解物种分化、适应性进化以及关键性状遗传基础的核心任务。本次分析旨在：</p>
+<ul>
+<li><strong>揭示群体分化标记</strong>：找到在不同群体间固定差异的SNP位点</li>
+<li><strong>定位候选基因区域</strong>：为后续的功能验证提供可靠的候选位点</li>
+<li><strong>支撑分子标记开发</strong>：为育种标记辅助选择提供理论基础</li>
+</ul>
+<h2 id="🔧-1-筛选流程设计与实现"><a href="#🔧-1-筛选流程设计与实现" class="headerlink" title="🔧 1. 筛选流程设计与实现"></a>🔧 1. 筛选流程设计与实现</h2><h3 id="核心算法逻辑"><a href="#核心算法逻辑" class="headerlink" title="核心算法逻辑"></a>核心算法逻辑</h3><pre class="mermaid">graph TD
+    A[原始基因型数据] --&gt; B[群体分组统计]
+    B --&gt; C{组内一致性检验}
+    C --&gt;|通过| D{组间差异性检验}
+    C --&gt;|不通过| E[过滤掉]
+    D --&gt;|有差异| F[输出结果]
+    D --&gt;|无差异| E</pre>
+
+<h3 id="筛选命令详解"><a href="#筛选命令详解" class="headerlink" title="筛选命令详解"></a>筛选命令详解</h3><pre class="line-numbers language-Bash" data-language="Bash"><code class="language-Bash">#!/bin/bash
+# filename: filter_variants_integrated.sh
+# Usage: ./filter_variants_integrated.sh [threshold] [input_file] [output_file] [include_het] [diff_mode]
+
+show_help() {
+    cat  "$OUTPUT_FILE"
+
+# ------------------ 主体处理 ------------------
+START_TIME=$(date +%s)
+log "INFO" "开始处理位点..."
+
+awk -v threshold="$THRESHOLD" \
+    -v bm_start="$BM_START" \
+    -v bm_end="$BM_END" \
+    -v wm_start="$WM_START" \
+    -v wm_end="$WM_END" \
+    -v total_variants="$TOTAL_VARIANTS" \
+    -v log_file="$LOG_FILE" \
+    -v include_het="$INCLUDE_HET" \
+    -v diff_mode="$DIFF_MODE" '
+BEGIN {
+    OFS="\t"
+    processed = 0
+    passed = 0
+    start_time = systime()
+    print strftime("[%Y-%m-%d %H:%M:%S]") " [INFO] AWK processor started" &gt;&gt; log_file
+}
+
+NR==1 {next}  # 跳过表头
+
+{
+    processed++
+
+    bm_ref=0; bm_alt=0; bm_het=0; bm_total=0
+    wm_ref=0; wm_alt=0; wm_het=0; wm_total=0
+
+    # BM
+    for (i=bm_start; i 0) ? bm_alt / bm_total : 0
+    bm_het_ratio = (bm_total &gt; 0) ? bm_het / bm_total : 0
+    
+    wm_ref_ratio = (wm_total &gt; 0) ? wm_ref / wm_total : 0
+    wm_alt_ratio = (wm_total &gt; 0) ? wm_alt / wm_total : 0
+    wm_het_ratio = (wm_total &gt; 0) ? wm_het / wm_total : 0
+
+    bm_gt = "MIXED"
+    wm_gt = "MIXED"
+
+    if (bm_total &gt;= 20) {
+        if (bm_ref_ratio &gt;= threshold) bm_gt="REF"
+        else if (bm_alt_ratio &gt;= threshold) bm_gt="ALT"
+        else if (!include_het &amp;&amp; (bm_het/bm_total &gt;= threshold)) bm_gt="HET"
+    }
+    if (wm_total &gt;= 20) {
+        if (wm_ref_ratio &gt;= threshold) wm_gt="REF"
+        else if (wm_alt_ratio &gt;= threshold) wm_gt="ALT"
+        else if (!include_het &amp;&amp; (wm_het/wm_total &gt;= threshold)) wm_gt="HET"
+    }
+
+    diff = 0
+    if (bm_gt != "MIXED" &amp;&amp; wm_gt != "MIXED") {
+        if (diff_mode=="simple") {
+            if (bm_gt=="REF" &amp;&amp; wm_gt=="ALT") diff=1
+            else if (bm_gt=="ALT" &amp;&amp; wm_gt=="REF") diff=1
+        } else if (diff_mode=="strict") {
+            if (bm_gt != wm_gt) diff=1
+        }
+    }
+
+    if (diff==1) {
+        print $0, bm_ref, bm_alt, bm_het, bm_total, bm_ref_ratio, bm_alt_ratio, bm_het_ratio, bm_gt, wm_ref, wm_alt, wm_het, wm_total, wm_ref_ratio, wm_alt_ratio, wm_het_ratio, wm_gt
+        passed++
+    }
+}
+
+END {
+    end_time = systime()
+    duration = end_time - start_time
+    minutes = int(duration / 60)
+    seconds = duration % 60
+    print strftime("[%Y-%m-%d %H:%M:%S]") " [INFO] Processed: " processed ", Passed: " passed &gt;&gt; log_file
+    print strftime("[%Y-%m-%d %H:%M:%S]") " [INFO] Pass rate: " (passed/processed)*100 "%" &gt;&gt; log_file
+}
+' "$INPUT_FILE" &gt;&gt; "$OUTPUT_FILE"
+
+# ------------------ 结果汇总 ------------------
+RESULT_COUNT=$(($(wc -l &lt; "$OUTPUT_FILE") - 1))
+log "INFO" "分析完成！ 筛选通过: $RESULT_COUNT"
+echo "结果输出到: $OUTPUT_FILE"
+echo "日志文件: $LOG_FILE"<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="筛选命令的输入输出说明"><a href="#筛选命令的输入输出说明" class="headerlink" title="筛选命令的输入输出说明"></a>筛选命令的输入输出说明</h3><h4 id="输入文件格式要求："><a href="#输入文件格式要求：" class="headerlink" title="输入文件格式要求："></a>输入文件格式要求：</h4><pre class="line-numbers language-none"><code class="language-none"># 输入文件应该是制表符分隔的文本文件，包含以下列：
+# CHROM  POS     REF     ALT     Sample1 Sample2 Sample3 ... SampleN
+# 1      1000    A       G       0/1     1/1     0/0     ... 0/1
+# 1      2000    C       T       1/1     0/1     1/1     ... 0/0
+
+# 基因型编码说明：
+# 0/0: 纯合参考型
+# 1/1: 纯合突变型  
+# 0/1: 杂合型
+# ./.: 缺失数据<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="输出结果内容："><a href="#输出结果内容：" class="headerlink" title="输出结果内容："></a>输出结果内容：</h4><pre class="line-numbers language-none"><code class="language-none"># 输出文件在原文件基础上添加以下统计列：
+# bm_ref    bm_alt    bm_het    bm_total  bm_ref_ratio  bm_alt_ratio  bm_het_ratio  bm_gt
+# wm_ref    wm_alt    wm_het    wm_total  wm_ref_ratio  wm_alt_ratio  wm_het_ratio  wm_gt
+
+# 输出示例：
+# CHROM  POS   REF  ALT  ...  bm_ref  bm_alt  bm_gt  wm_ref  wm_alt  wm_gt
+# 1      1000  A    G    ...  18      2       REF    2       18      ALT
+# 这表示：BM组18个样本为REF型，WM组18个样本为ALT型，符合组间差异条件<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="关键输出解读："><a href="#关键输出解读：" class="headerlink" title="关键输出解读："></a>关键输出解读：</h4><ul>
+<li><strong>bm_gt/wm_gt</strong>: 群体基因型判定（REF/ALT/HET/MIXED）</li>
+<li>***_ratio**: 各类基因型在群体中的比例</li>
+<li><strong>筛选逻辑</strong>: BM组和WM组基因型相反且各自组内一致率&gt;90%的位点</li>
+</ul>
+<h2 id="📊-2-结果可视化与质控"><a href="#📊-2-结果可视化与质控" class="headerlink" title="📊 2. 结果可视化与质控"></a>📊 2. 结果可视化与质控</h2><h3 id="可视化代码实现"><a href="#可视化代码实现" class="headerlink" title="可视化代码实现"></a>可视化代码实现</h3><pre class="line-numbers language-R" data-language="R"><code class="language-R">library(tidyverse)
+library(vcfR)
+library(data.table)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+
+# 先读取数据（不自动解析列名）
+snp_data %
+  layout(
+    title = list(text = "SNP Genotype Heatmap", y = 0.98),
+    xaxis = list(
+      title = "Genomic Position",
+      rangeslider = list(visible = TRUE),
+      type = "category",
+      tickangle = 45
+    ),
+    yaxis = list(
+      title = list(text = "Sample", standoff = 30),
+      tickfont = list(size = 10),
+      automargin = TRUE,
+      tickmode = "array",
+      tickvals = rownames(heatmap_matrix),  # 直接使用样本名
+      ticktext = rownames(heatmap_matrix)
+    ),
+    margin = list(l = left_margin, r = 50, b = 100, t = 100)
+  )
+
+# 7. 输出结果 ------------------------------------------------
+fig  # 在RStudio中查看
+
+# 可选：保存为HTML
+# htmlwidgets::saveWidget(fig, "snp_heatmap.html", selfcontained = TRUE)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="可视化代码的输入输出说明"><a href="#可视化代码的输入输出说明" class="headerlink" title="可视化代码的输入输出说明"></a>可视化代码的输入输出说明</h3><h4 id="输入数据格式："><a href="#输入数据格式：" class="headerlink" title="输入数据格式："></a>输入数据格式：</h4><pre class="line-numbers language-none"><code class="language-none"># 输入数据应为数据框格式，包含以下列：
+# CHROM  POS     Sample1 Sample2 Sample3 ... SampleN
+# 1      1000    0/1     1/1     0/0     ... 0/1
+# 1      2000    1/1     0/1     1/1     ... 0/0
+
+# 或者从VCF文件直接读取：
+# vcf &lt;- read.vcfR("input.vcf")
+# snp_data &lt;- vcfR2tidy(vcf)$fix<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="输出可视化结果："><a href="#输出可视化结果：" class="headerlink" title="输出可视化结果："></a>输出可视化结果：</h4><pre class="line-numbers language-none"><code class="language-none"># 1. 交互式热图 - 在RStudio中显示或保存为HTML
+#    - X轴: 基因组位置
+#    - Y轴: 样本名称  
+#    - 颜色: 蓝色(0/0), 红色(1/1), 黄色(0/1), 灰色(缺失)
+
+# 2. 控制台输出的统计信息：
+#    - 总位点数: 1500
+#    - 总样本数: 96  
+#    - 基因型统计: REF=45%, ALT=40%, HET=12%, MISSING=3%
+
+# 3. 热图特性：
+#    - 支持缩放和拖动查看细节
+#    - 鼠标悬停显示具体基因型信息
+#    - 自适应布局，适合发表级图片输出<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="可视化价值："><a href="#可视化价值：" class="headerlink" title="可视化价值："></a>可视化价值：</h4><ul>
+<li><strong>快速质控</strong>: 一眼识别数据质量问题</li>
+<li><strong>模式识别</strong>: 直观看到群体分层和基因型分布模式</li>
+<li><strong>结果验证</strong>: 确认筛选出的差异位点确实显示预期模式</li>
+<li><strong>报告展示</strong>: 生成可用于发表的高质量图表</li>
+</ul>
+<h2 id="💡-技术要点与注意事项"><a href="#💡-技术要点与注意事项" class="headerlink" title="💡 技术要点与注意事项"></a>💡 技术要点与注意事项</h2><h3 id="参数选择策略"><a href="#参数选择策略" class="headerlink" title="参数选择策略"></a>参数选择策略</h3><ol>
+<li><p><strong>一致率阈值（90%）</strong>：</p>
+<ul>
+<li>平衡了统计严格性和生物学现实性</li>
+<li>允许少量个体变异或测序错误</li>
+<li>可根据样本量调整：样本量越大，阈值可适当提高</li>
+</ul>
+</li>
+<li><p><strong>样本量要求</strong>：</p>
+<ul>
+<li>每组至少20个有效样本确保统计可靠性</li>
+<li>小样本群体建议调整阈值或使用其他统计方法</li>
+</ul>
+</li>
+<li><p><strong>杂合位点处理</strong>：</p>
+<ul>
+<li>默认排除杂合型作为”一致”基因型</li>
+<li>对于异交物种可考虑包含杂合型</li>
+</ul>
+</li>
+</ol>
+<h3 id="常见问题排查"><a href="#常见问题排查" class="headerlink" title="常见问题排查"></a>常见问题排查</h3><ol>
+<li><p><strong>结果位点过少</strong>：</p>
+<ul>
+<li>检查群体间真实分化程度</li>
+<li>验证一致率阈值是否过高</li>
+<li>确认样本分组是否正确</li>
+</ul>
+</li>
+<li><p><strong>热图显示异常</strong>：</p>
+<ul>
+<li>检查基因型编码格式</li>
+<li>确认染色体坐标系统一</li>
+<li>验证样本名称一致性</li>
+</ul>
+</li>
+<li><p><strong>性能优化建议</strong>：</p>
+<ul>
+<li>大文件使用<code>data.table</code>替代<code>data.frame</code></li>
+<li>分染色体并行处理</li>
+<li>预处理时过滤低质量位点</li>
+</ul>
+</li>
+</ol>
+<h2 id="🚀-下游分析方向"><a href="#🚀-下游分析方向" class="headerlink" title="🚀 下游分析方向"></a>🚀 下游分析方向</h2><p>筛选得到的差异位点可用于：</p>
+<ol>
+<li><p><strong>基因组扫描分析</strong>：</p>
+<ul>
+<li>识别选择扫荡区域</li>
+<li>定位群体分化热点</li>
+</ul>
+</li>
+<li><p><strong>功能注释</strong>：</p>
+<ul>
+<li>基因本体富集分析</li>
+<li>通路分析</li>
+</ul>
+</li>
+<li><p><strong>育种应用</strong>：</p>
+<ul>
+<li>开发群体特异性分子标记</li>
+<li>辅助亲本选配</li>
+</ul>
+</li>
+<li><p><strong>进化研究</strong>：</p>
+<ul>
+<li>构建系统发育树</li>
+<li>群体结构分析</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><strong>总结</strong>：本流程提供了一个完整的从原始基因型数据到高质量差异位点筛选的解决方案，结合严格的统计标准和直观的可视化验证，确保结果的生物学可靠性和技术可重复性。</p>
+<script type="module"> import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';	mermaid.initialize({startOnLoad: true, flowchart: {curve: 'linear'}}); </script></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://0HHHHHH0.github.io">HHHH</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://0hhhhhh0.github.io/2025/09/03/48/">https://0hhhhhh0.github.io/2025/09/03/48/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/uploads/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/09/03/50/" title="Typecho快速修改文章图片和文件链接地址"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Typecho快速修改文章图片和文件链接地址</div></div><div class="info-2"><div class="info-item-1">说明为了使我们的博客速度更快，图片等一些文件会采用外接的形式。但当跟换域名或CDN图片地址时，需要大批修正一切文章的援用图片链接和一些文件链接地址，手动修正又烦劳，这里就说一下通过 phpMyAdmin工具快速修正数据库文章图片，文件链接地址。  1.安装如果您使用的是基于 Debian 或 Ubuntu 的 Linux 系统，可以尝试使用 apt-get 命令。例如：  sudo apt-get updatesudo apt-get install phpmyadmin   The phpmyadmin package must have a database installed and configured before it cwith dbconfig-common. If you are an advanced database administrator and know that you want to performdatabase has already been installed and configured, you should refuse this ...</div></div></div></a><a class="pagination-related" href="/2025/08/03/40/" title="5.各样本SNP位点信息可视化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">5.各样本SNP位点信息可视化</div></div><div class="info-2"><div class="info-item-1"> 前面我们对各样本的SNP位点信息进行了提取，现在我们要进行SNP位点的筛选，相对快捷的办法就是可视化，下面我们进行分析  需要用到的R包 library(tidyverse) library(vcfR) library(data.table) library(ggplot2) library(dplyr) library(tidyr) 下面以单个基因为例进行分析 # 先读取数据（不自动解析列名） snp_data %   as.matrix()  # 5. 可视化设置 ------------------------------------------------ # 颜色映射 gt_colors %   layout(     title = list(text = "SNP Genotype Heatmap", y = 0.98),     xaxis = list(       title = "Genomic Position",       rangeslider = list(visible = TRUE),  # 横向滚动条       type = "categ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">29</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8E%AF-%E5%88%86%E6%9E%90%E7%9B%AE%E6%A0%87%E4%B8%8E%E7%94%9F%E7%89%A9%E5%AD%A6%E6%84%8F%E4%B9%89"><span class="toc-number">1.</span> <span class="toc-text">🎯 分析目标与生物学意义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%A7-1-%E7%AD%9B%E9%80%89%E6%B5%81%E7%A8%8B%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">🔧 1. 筛选流程设计与实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E7%AE%97%E6%B3%95%E9%80%BB%E8%BE%91"><span class="toc-number">2.1.</span> <span class="toc-text">核心算法逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%9B%E9%80%89%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3"><span class="toc-number">2.2.</span> <span class="toc-text">筛选命令详解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%9B%E9%80%89%E5%91%BD%E4%BB%A4%E7%9A%84%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E8%AF%B4%E6%98%8E"><span class="toc-number">2.3.</span> <span class="toc-text">筛选命令的输入输出说明</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E8%A6%81%E6%B1%82%EF%BC%9A"><span class="toc-number">2.3.1.</span> <span class="toc-text">输入文件格式要求：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E7%BB%93%E6%9E%9C%E5%86%85%E5%AE%B9%EF%BC%9A"><span class="toc-number">2.3.2.</span> <span class="toc-text">输出结果内容：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E8%BE%93%E5%87%BA%E8%A7%A3%E8%AF%BB%EF%BC%9A"><span class="toc-number">2.3.3.</span> <span class="toc-text">关键输出解读：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%8A-2-%E7%BB%93%E6%9E%9C%E5%8F%AF%E8%A7%86%E5%8C%96%E4%B8%8E%E8%B4%A8%E6%8E%A7"><span class="toc-number">3.</span> <span class="toc-text">📊 2. 结果可视化与质控</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.1.</span> <span class="toc-text">可视化代码实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E4%BB%A3%E7%A0%81%E7%9A%84%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E8%AF%B4%E6%98%8E"><span class="toc-number">3.2.</span> <span class="toc-text">可视化代码的输入输出说明</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F%EF%BC%9A"><span class="toc-number">3.2.1.</span> <span class="toc-text">输入数据格式：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E5%8F%AF%E8%A7%86%E5%8C%96%E7%BB%93%E6%9E%9C%EF%BC%9A"><span class="toc-number">3.2.2.</span> <span class="toc-text">输出可视化结果：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E4%BB%B7%E5%80%BC%EF%BC%9A"><span class="toc-number">3.2.3.</span> <span class="toc-text">可视化价值：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%92%A1-%E6%8A%80%E6%9C%AF%E8%A6%81%E7%82%B9%E4%B8%8E%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">4.</span> <span class="toc-text">💡 技术要点与注意事项</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E9%80%89%E6%8B%A9%E7%AD%96%E7%95%A5"><span class="toc-number">4.1.</span> <span class="toc-text">参数选择策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5"><span class="toc-number">4.2.</span> <span class="toc-text">常见问题排查</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%9A%80-%E4%B8%8B%E6%B8%B8%E5%88%86%E6%9E%90%E6%96%B9%E5%90%91"><span class="toc-number">5.</span> <span class="toc-text">🚀 下游分析方向</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/24/indel/" title="记一次清空SMART修复群晖报故障的硬盘">记一次清空SMART修复群晖报故障的硬盘</a><time datetime="2025-12-24T04:56:00.000Z" title="Created 2025-12-24 12:56:00">2025-12-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/gemini/" title="根据SNP位点进行快速引物设计——网页版">根据SNP位点进行快速引物设计——网页版</a><time datetime="2025-12-02T14:26:00.000Z" title="Created 2025-12-02 22:26:00">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/24/latex/" title="LaTeX详细教程+技巧总结">LaTeX详细教程+技巧总结</a><time datetime="2025-11-24T14:26:00.000Z" title="Created 2025-11-24 22:26:00">2025-11-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/10/gwas-ld-block/" title="GWAS + 热点区域识别 + LD Block 分析流程详解">GWAS + 热点区域识别 + LD Block 分析流程详解</a><time datetime="2025-11-10T14:26:00.000Z" title="Created 2025-11-10 22:26:00">2025-11-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/09/fen-zi-dui-jie/" title="从基因到结构：用PyMOL可视化理解分子对接与突变效应">从基因到结构：用PyMOL可视化理解分子对接与突变效应</a><time datetime="2025-11-09T14:26:00.000Z" title="Created 2025-11-09 22:26:00">2025-11-09</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
+   #sidebar_search_box input[type=text]{width:calc(100% - 24px)}
+}</style></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/fish.js" defer data-pjax></script><script type="text/javascript" src="/js/busuanzi.pure.mini.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-10-09</span><a class="blog-slider__title" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">Hexo + Butterfly 个人博客搭建</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/11/10/gwas-ld-block/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-11-10</span><a class="blog-slider__title" href="2025/11/10/gwas-ld-block/" alt="">GWAS + 热点区域识别 + LD Block 分析流程详解</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/11/10/gwas-ld-block/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/07/31/19/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/OIP-C.2E7GSli1t13WJ-Of6Hp9UgHaEi" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-07-31</span><a class="blog-slider__title" href="2025/07/31/19/" alt="">2.重测序数据分析——初步整理</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/07/31/19/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><!-- hexo injector body_end end --></body></html>
