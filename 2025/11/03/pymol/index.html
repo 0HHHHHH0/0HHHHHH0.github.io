@@ -1,0 +1,563 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片 | HHHH</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片 转载自：https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_37126941&#x2F;article&#x2F;details&#x2F;115793062。 本文将以D715-2441抑制剂与PB2蛋白复合物为例，手把手教你用PyMOL制作专业的结合模式图  摘要本文将带大家使用免费开源的PyMOL软件绘制D715-2441蛋白与与PB2cap配体分子的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片">
+<meta property="og:url" content="https://0hhhhhh0.github.io/2025/11/03/pymol/index.html">
+<meta property="og:site_name" content="HHHH">
+<meta property="og:description" content="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片 转载自：https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_37126941&#x2F;article&#x2F;details&#x2F;115793062。 本文将以D715-2441抑制剂与PB2蛋白复合物为例，手把手教你用PyMOL制作专业的结合模式图  摘要本文将带大家使用免费开源的PyMOL软件绘制D715-2441蛋白与与PB2cap配体分子的">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0hhhhhh0.github.io/uploads/avatar.png">
+<meta property="article:published_time" content="2025-11-03T04:26:00.000Z">
+<meta property="article:modified_time" content="2025-11-03T04:32:15.000Z">
+<meta property="article:author" content="HHHH">
+<meta property="article:tag" content="hexo">
+<meta property="article:tag" content="组学">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="折腾">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0hhhhhh0.github.io/uploads/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片",
+  "url": "https://0hhhhhh0.github.io/2025/11/03/pymol/",
+  "image": "https://0hhhhhh0.github.io/uploads/avatar.png",
+  "datePublished": "2025-11-03T04:26:00.000Z",
+  "dateModified": "2025-11-03T04:32:15.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "HHHH",
+      "url": "https://0HHHHHH0.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/uploads/avatar.png"><link rel="canonical" href="https://0hhhhhh0.github.io/2025/11/03/pymol/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":-1,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@4.5.12/index.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/styles/css/font.css"><link rel="stylesheet" href="/css/mermaid.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="HHHH" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="scarecrow"><div class="scarecrow__hat"><div class="scarecrow__ribbon"></div></div><div class="scarecrow__head"><div class="scarecrow__eye"></div><div class="scarecrow__eye"></div><div class="scarecrow__mouth"></div><div class="scarecrow__pipe"></div></div><div class="scarecrow__body"><div class="scarecrow__glove scarecrow__glove--l"></div><div class="scarecrow__sleeve scarecrow__sleeve--l"></div><div class="scarecrow__bow"></div><div class="scarecrow__shirt"></div><div class="scarecrow__coat"></div><div class="scarecrow__waistcoat"></div><div class="scarecrow__sleeve scarecrow__sleeve--r"></div><div class="scarecrow__glove scarecrow__glove--r"></div><div class="scarecrow__coattails"></div><div class="scarecrow__pants"></div></div><div class="scarecrow__arms"></div><div class="scarecrow__leg">  </div></div></div><script async="async">(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-color: #fbfdff;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">55</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">31</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/uploads/avatar.png" alt="Logo"><span class="site-name">HHHH</span></a><a class="nav-page-title" href="/"><span class="site-name">【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-03T04:26:00.000Z" title="Created 2025-11-03 12:26:00">2025-11-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-11-03T04:32:15.000Z" title="Updated 2025-11-03 12:32:15">2025-11-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/PyMOL/">PyMOL</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="ai-summary"><div class="ai-explanation" style="display: block;" data-summary="这篇文章介绍了如何使用PyMOL软件绘制蛋白-配体相互作用图的详细教程，适合新手从PDB文件开始制作发表级别的高质量图片。教程以D715-2441抑制剂与PB2蛋白复合物为例，首先阐述了研究背景和关键相互作用类型，包括芳环π-π堆积、氢键和盐桥作用等。然后详细讲解了工作流程：下载蛋白结构（4cb4）、获取配体结构（通过SMILES转换或手动构建）、基础操作设置（工作目录和显示样式）、关键残基对象选择（K339、H357等）以及通过命令行和鼠标配合绘制相互作用力（π-π堆积、氢键和盐桥）。最后介绍了图像美化技巧，包括隐藏/显示控制、虚线样式设置和颜色编码等优化步骤，确保图片符合发表要求。教程强调PyMOL命令行与鼠标的配合使用，提供了大量实用命令和操作技巧，帮助用户快速掌握专业级蛋白-配体相互作用图的绘制方法。">AI正在绞尽脑汁想思路ING···</div><div class="ai-title"> <div class="ai-title-left"> <i class="fa-brands fa-slack"></i><div class="ai-title-text">AI摘要</div></div><div class="ai-tag" id="ai-tag">deepseek-ai/DeepSeek-V3</div></div></div><h1 id="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"><a href="#【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片" class="headerlink" title="【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片"></a>【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</h1><blockquote>
+<p>转载自：<code>https://blog.csdn.net/qq_37126941/article/details/115793062</code>。</p>
+<p>本文将以D715-2441抑制剂与PB2蛋白复合物为例，手把手教你用PyMOL制作专业的结合模式图</p>
+</blockquote>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文将带大家使用免费开源的PyMOL软件绘制D715-2441蛋白与与<a href="https://link.zhihu.com/?target=https://www.rcsb.org/structure/4CB4">PB2cap配体分子</a>的结合模式图。</p>
+<p>我们先来看一张成品图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5bb95a5e415241b5719ec50baf888d67.jpeg" alt="在这里插入图片描述"></p>
+<h2 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h2><p>流感病毒PB2蛋白是重要的药物靶点，D715-2441是一个新型抗流感病毒化合物。通过分子对接分析，我们发现以下关键相互作用：</p>
+<p>1、化合物D715-2441的<code>芳环</code>夹在氨基酸残基<code>H357</code>和<code>F404</code>之间并形成<code>π-π</code>堆积作用，还与<code>F404</code>形成疏水作用；</p>
+<p>2、化合物苯环上的<code>羟基</code>与E361的<code>羧基</code>和K376的<code>N+原子</code>形成氢键作用，另一个<code>羟基</code>与F404的<code>O原子</code>形成氢键作用；</p>
+<p>3、化合物吡喃酮环酯基与K339的<code>N+原子</code>和H357的<code>咪唑基</code>形成盐桥作用。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><blockquote>
+<p>PyMOL作图通常是对特定对象进行展示形式、颜色、字体等方面的修饰。PyMOL的精髓在于命令行与鼠标的配合使用，本文高度依赖命令行，请做好心理准备。大多数命令格式较为一致，请注意总结归纳。</p>
+</blockquote>
+<h3 id="1-下载蛋白结构"><a href="#1-下载蛋白结构" class="headerlink" title="1. 下载蛋白结构"></a>1. 下载蛋白结构</h3><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 在PyMOL中直接下载PDB结构</span>
+fetch 4cb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h3 id="2-获取配体结构"><a href="#2-获取配体结构" class="headerlink" title="2. 获取配体结构"></a>2. 获取配体结构</h3><p>由于D715-2441不在PDB中，我们需要自行准备：</p>
+<p><strong>方法一：在线SMILES转换</strong></p>
+<p>​	1.使用<strong>PubChem</strong>: <a href="https://pubchem.ncbi.nlm.nih.gov/">https://pubchem.ncbi.nlm.nih.gov/</a></p>
+<p>​	2.绘制完后，SIMLES：<code>C1=CC=CC3=C1C2=C(C=C(C=C2O[H])O[H])OC3=O</code></p>
+<p>​	3.访问：<strong><a href="https://cactus.nci.nih.gov/translate/">https://cactus.nci.nih.gov/translate/</a></strong></p>
+<p>​	4.在输入框粘贴：<code>C1=CC=CC3=C1C2=C(C=C(C=C2O[H])O[H])OC3=O</code></p>
+<p>​	5.选择格式：<strong>Protein Data Bank (pdb)</strong></p>
+<p>​	6.点击 <strong>Translate</strong></p>
+<p>​	7.下载文件并在PyMOL中加载</p>
+<p><strong>方法二：手动构建</strong><br>在PyMOL中使用Builder工具逐步绘制分子结构</p>
+<h2 id="基础操作流程"><a href="#基础操作流程" class="headerlink" title="基础操作流程"></a>基础操作流程</h2><h3 id="1-初始设置"><a href="#1-初始设置" class="headerlink" title="1. 初始设置"></a>1. 初始设置</h3><p>打开<code>PyMOL</code>软件，导入刚才下载的复合物PDB文件（rli-D715-2441-1.pdb）。</p>
+<p>注意：有两种方法导入文件，一种是鼠标点击菜单栏File -&gt; Open…，另一种是通过命令行。在这里，我们采用命令来操作，因为这样可以同时把工作目录设置好，方便后续保存文件。</p>
+<p>假设我们的工作目录为<code>D:\demo</code>。注意：路径中不要有中文和空格，这是导致很多计算类软件（尤其是免费软件）出现问题的原因。</p>
+<pre class="line-numbers language-none"><code class="language-none"># 设置工作目录
+cd E:\下载\Pymol\test
+
+# 基本显示设置
+hide everything
+show cartoon, 4cb4
+show sticks, resn MGT  # 参考配体
+color gray, 4cb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>在PyMOL上界面或下界面的命令输入框输入以下命令（PyMOL&gt;表示这是PyMOL的命令），每行输入完毕后按【Enter】键：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/a777cf49858f76eec599ecfd8f881301.jpeg" alt="在这里插入图片描述"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/fa8eaf9a056c73c583d30921f453ab60.png" alt="在这里插入图片描述"></p>
+<h3 id="2-设置操作对象"><a href="#2-设置操作对象" class="headerlink" title="2 设置操作对象"></a>2 设置操作对象</h3><p><strong>结合模式图</strong>通常涉及到<code>受体</code>（蛋白）与<code>配体</code>（小分子化合物）两部分（有的还可能涉及<code>水分子</code>、<code>金属离子</code>、<code>辅酶</code>等等），需为之分别设置对象，以便后续操作。<strong>设置配体对象</strong>：按照下图顺序，将配体设置为<code>lig</code>对象。<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/2568e1b24aca318f02d497b946f2635b.png" alt="在这里插入图片描述"></p>
+<p><strong>设置关键残基对象</strong>: 关键残基包括：A链的K339、H357、E361、K376和F404。由于该蛋白只有一条链，在使用命令选择残基时，可以不用指定链名。按照下图顺序，将关键残基设置为res对象。</p>
+<p><code>select res, resi 339+357+361+376+404</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/3a9fd3f025f59f1e691f72009f398653.png" alt="在这里插入图片描述"></p>
+<h3 id="3-显示样式优化"><a href="#3-显示样式优化" class="headerlink" title="3. 显示样式优化"></a>3. 显示样式优化</h3><p>在PyMOL中输入以下命令：</p>
+<pre class="line-numbers language-none"><code class="language-none"># 基本显示设置
+hide everything
+show sticks, lig | res
+hide sticks, h.
+zoom lig | res
+# 颜色设置
+color wheat, lig &amp; name C*
+# 标签设置
+set label_size, 30
+set label_font_id, 9<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/8eec91dbd5bb84f2cc2a553f8aaca60c.jpeg" alt="在这里插入图片描述"><br>然后，进行鼠标操作：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/3f3c38acd7270f0ad5a310dbfa8b8189.png" alt="在这里插入图片描述"></p>
+<h4 id="绘制相互作用力"><a href="#绘制相互作用力" class="headerlink" title="绘制相互作用力"></a>绘制相互作用力</h4><p>前面说过，命令行和鼠标的配合是很重要的。这里再简单讲讲鼠标的几个操作用法：</p>
+<p>​	A） 拖动鼠标左键：按住右键，任意方向拖动鼠标，使视图转动；</p>
+<p>​	B） 上下拖动鼠标右键：按住右键，上下拖动鼠标，使视图缩放；</p>
+<p>​	C） 拖动鼠标中间滚轮：按住滚轮，任意方向拖动鼠标，使视图移动；</p>
+<p>​	D）滚动鼠标中间滚轮：拉进或拉远镜头，使近处原子逐渐显示或隐藏。</p>
+<p>我们参照平台给出的结合模式图（本文第二张图），通过下面的键鼠操作来绘制相互作用力。</p>
+<h6 id="·-绘制π-π堆积与盐桥作用"><a href="#·-绘制π-π堆积与盐桥作用" class="headerlink" title="· 绘制π-π堆积与盐桥作用"></a>· 绘制π-π堆积与盐桥作用</h6><p>首先，确保鼠标模式（Mouse Mode）为Viewing状态，选择（Selecting）模式为<code>Atoms</code>状态（位置在PyMOL右下方）。然后，按照下面步骤操作：</p>
+<p>新建文件<code>center_of_mass.py</code>，<code>run /PATH/TO/center_of_mass.py</code></p>
+<pre class="line-numbers language-none"><code class="language-none">from pymol import cmd
+from chempy import cpv
+
+def center_of_mass(selection, state=1, object=None, color=None, quiet=1):
+    """
+    Calculate the center of mass (COM) for a selection and optionally create a pseudo-atom at that position.
+    
+    Parameters:
+    selection (str): atom selection
+    state (int): object state (default=1)
+    object (str): name of pseudo-atom to create (default=None)
+    color (str): color for the pseudo-atom (default=None)
+    quiet (int): suppress output (default=1)
+    """
+    quiet = int(quiet)
+    
+    # Get the coordinates and masses
+    model = cmd.get_model(selection, state)
+    if not model.atom:
+        print("Error: No atoms selected")
+        return
+    
+    # Calculate center of mass
+    total_mass = 0.0
+    com = [0.0, 0.0, 0.0]
+    
+    for atom in model.atom:
+        mass = atom.get_mass()
+        total_mass += mass
+        com[0] += atom.coord[0] * mass
+        com[1] += atom.coord[1] * mass
+        com[2] += atom.coord[2] * mass
+    
+    if total_mass == 0:
+        print("Error: Total mass is zero")
+        return
+    
+    com[0] /= total_mass
+    com[1] /= total_mass
+    com[2] /= total_mass
+    
+    if not quiet:
+        print("Center of Mass: %.3f, %.3f, %.3f" % (com[0], com[1], com[2]))
+    
+    # Create pseudo-atom if requested
+    if object:
+        if color:
+            cmd.pseudoatom(object, pos=com, color=color)
+        else:
+            cmd.pseudoatom(object, pos=com)
+        
+        # 自动设置显示属性
+        cmd.set("sphere_scale", 0.3, object)
+        cmd.show("spheres", object)
+        
+        if not quiet:
+            print("Created pseudo-atom '%s' at COM" % object)
+    
+    return com
+
+# Add the command to PyMOL
+cmd.extend("com", center_of_mass)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-none"><code class="language-none"># 导入必要插件
+run /PATH/TO/center_of_mass.py
+# 创建小球的命令序列
+com sele, object=p1
+com sele, object=p2  
+com sele, object=p3
+com sele, object=p4
+com sele, object=p5
+com sele, object=p6
+com sele, object=p7<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/4c73e3f7a2e524d6d72641c589585b53.jpeg" alt="在这里插入图片描述">然后，点击PyMOL菜单栏的Wizard -&gt; Measurement，然后根据示意图点击刚才创建的小球，两两一组，便画出虚线（相应地，生成对象measure01~05）。<img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cdcb8f03c0f348271b32051bd021c1cd.png" alt="在这里插入图片描述"></p>
+<h6 id="·-绘制其他作用力"><a href="#·-绘制其他作用力" class="headerlink" title="· 绘制其他作用力"></a>· 绘制其他作用力</h6><p>采用相同的办法，把<code>氢键</code>和<code>疏水作用</code>也画出来。由于这些作用力的两端刚好落在原子上，因此，不用绘制小球。<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/6da4239d1e6785671f043216731b13b4.png" alt="在这里插入图片描述"></p>
+<h3 id="图像美化与输出"><a href="#图像美化与输出" class="headerlink" title="图像美化与输出"></a>图像美化与输出</h3><p>为方便调整，也为图片规格符合要求（通常，出版社要求全版图片宽度≤2000像素，半版图片宽度≤1000像素，分辨率≥300 dpi)，我们将PyMOL界面放大或靠边最大化，并将上半部分的对话框往上拉到最小，让视图最大。然后放大、摆动视图至合适的角度，使尽可能清晰地看到各关键细节。</p>
+<p>基本的创建工作已经完成，接下来进行细致的修饰。</p>
+<p><strong>🎯 隐藏和显示控制</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 居中显示</span>
+zoom ligand <span class="token keyword">or</span> key_residues
+
+<span class="token comment"># 小球显示控制</span>
+hide everything<span class="token punctuation">,</span> p<span class="token operator">*</span>
+show spheres<span class="token punctuation">,</span> p<span class="token operator">*</span>
+
+<span class="token comment"># 标签显示控制</span>
+hide labels<span class="token punctuation">,</span> measure<span class="token operator">*</span>
+show labels<span class="token punctuation">,</span> measure06
+show labels<span class="token punctuation">,</span> measure07  
+show labels<span class="token punctuation">,</span> measure08<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>🎨 虚线样式设置</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 虚线外观调整</span>
+<span class="token builtin">set</span> dash_length<span class="token punctuation">,</span> <span class="token number">0.3</span>
+<span class="token builtin">set</span> dash_radius<span class="token punctuation">,</span> <span class="token number">0.08</span>
+<span class="token builtin">set</span> dash_gap<span class="token punctuation">,</span> <span class="token number">0.3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>🌈 虚线颜色设置</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 相互作用颜色编码</span>
+color magenta<span class="token punctuation">,</span> measure04    <span class="token comment"># 盐桥</span>
+color magenta<span class="token punctuation">,</span> measure05    <span class="token comment"># 盐桥  </span>
+color green<span class="token punctuation">,</span> measure06      <span class="token comment"># 氢键</span>
+color green<span class="token punctuation">,</span> measure07      <span class="token comment"># 氢键</span>
+color green<span class="token punctuation">,</span> measure08      <span class="token comment"># 氢键</span>
+color gray70<span class="token punctuation">,</span> measure09     <span class="token comment"># 疏水作用</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>🖼️ 背景和蛋白显示</strong></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 背景设置</span>
+bg_color white
+
+<span class="token comment"># 蛋白结构显示</span>
+show cartoon
+color smudge<span class="token punctuation">,</span> lig <span class="token keyword">and</span> name C<span class="token operator">*</span>
+<span class="token builtin">set</span> cartoon_transparency<span class="token punctuation">,</span> <span class="token number">0.3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/243fc636fd2a30ce86bd04121d969461.jpeg" alt="在这里插入图片描述"></p>
+<p>我们还可按下图步骤微调cartoon样式：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/9988aba7cb104fd00f608bd0f601c6e3.png" alt="在这里插入图片描述"><br>还可移动label的位置（设置Mouse Mode为Editing模式后，按住Ctrl键，用鼠标左键或右键拖动label；必要时，可先将cartoo隐藏起来，等调整好label后，再显示出来），让视图更清晰。经过上述一系列操作，得到下图：<br><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f1c0110ffc04461492536e39811d4eba.png" alt="在这里插入图片描述"></p>
+<p>✅ 一、目标效果</p>
+<ul>
+<li>整体蛋白以 <strong>cartoon 灰色显示</strong>（作为背景板）</li>
+<li>配体（<code>lig</code>）与特定残基（<code>res</code>）<strong>前置显示、保持高亮颜色</strong></li>
+<li>cartoon 不遮挡配体和关键残基</li>
+<li>其余部分颜色偏淡，突出关键信息</li>
+</ul>
+<hr>
+<p>✅ 二、实现命令步骤（PyMOL 命令行版）</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 1. 全局设置
+bg_color white
+set cartoon_transparency, 0.6      # 半透明背景板感觉更好
+set depth_cue, 0                   # 去掉景深影响
+
+# 2. 设置蛋白主链为灰色 cartoon
+show cartoon, all
+color grey80, all
+
+# 3. 高亮配体与特定残基
+show sticks, (lig or res)
+util.cbag (lig or res)             # 让配体/残基彩色显示（carbon by atom type）
+
+# 4. 把配体、残基显示在最前层（不被遮挡）
+# set cartoon_side_chain_helper, on
+set transparency_mode, 2           # 优化透明度混合效果
+set ray_opaque_background, off
+
+# 5. 可以单独调整颜色
+# color red, lig
+# color yellow, res
+
+color yellow, measure01
+color yellow, measure02
+color yellow, measure03
+color green, measure04
+color green, measure05
+color green, measure06
+color gray70, measure07
+
+color yellow, p1
+color yellow, p2
+color yellow, p3
+color yellow, p4
+color purple, p6
+color purple, p7
+
+# 6. 重新绘制（Ray tracing 渲染可选）
+ray 1200,900<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<hr>
+<p>✅ 三、可选优化效果</p>
+<p>如果你发现 <strong>cartoon 仍挡住配体/残基</strong>，可进一步操作：</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 让 cartoon 更透明
+set cartoon_transparency, 0.7
+
+# 或者单独隐藏关键区域的 cartoon
+hide cartoon, (byres (lig around 3))  # 隐藏配体周围3Å范围的cartoon<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<blockquote>
+<p>这样配体周围的 cartoon 会消失，配体完全露出；蛋白其他部分仍然是灰色背景板。</p>
+</blockquote>
+<hr>
+<p>✅ 四、额外技巧</p>
+<p>你还可以使用分层渲染的方式，例如：</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol"># 生成两层视图（适合高质量图）
+disable all
+enable protein
+color grey80, protein
+set cartoon_transparency, 0.7
+enable lig, res
+show sticks, lig or res<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>再用：</p>
+<pre class="line-numbers language-pymol" data-language="pymol"><code class="language-pymol">ray 2000,1500
+png output.png, dpi=300<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>7 生成图片<br>上面的图已经可以发表文章了，但为了更好看，还需要进行一步：光线追踪（Ray tracing)。</p>
+<p>继续使用命令：</p>
+<p>💾 保存工作文件</p>
+<pre class="line-numbers language-none"><code class="language-none">save focus.pse
+save overview.pse<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>📷 图像保存命令</p>
+<pre class="line-numbers language-none"><code class="language-none"># 保存标签图像
+png label.png
+# 保存焦点图像（高分辨率）
+png focus.png, 16.93cm, 16.93cm, dpi=300
+# 保存概览图像（高分辨率）
+png overview.png, 16.93cm, 16.93cm, dpi=300<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>🎨 显示调整命令</p>
+<pre class="line-numbers language-none"><code class="language-none"># 标签控制
+hide labels
+# 视图调整
+zoom
+# 透明度设置
+set cartoon_transparency, 0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>✨ 渲染命令</p>
+<pre class="line-numbers language-none"><code class="language-none"># 光线追踪渲染
+ray<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/5a2bf78817d4276796571a66229be702.jpeg" alt="在这里插入图片描述"><br>至此，我们拿到3张图片：focus.png、label.png和overview.png。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/label.png" alt="label"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/overview.png" alt="overview"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/focus.png" alt="focus"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://0HHHHHH0.github.io">HHHH</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://0hhhhhh0.github.io/2025/11/03/pymol/">https://0hhhhhh0.github.io/2025/11/03/pymol/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/uploads/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/11/03/dan-bai-pei-ti-xiang-hu-zuo-yong/" title="从可视化到设计：深入理解蛋白-配体相互作用的分子世界"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">从可视化到设计：深入理解蛋白-配体相互作用的分子世界</div></div><div class="info-2"><div class="info-item-1">从可视化到设计：深入理解蛋白-配体相互作用的分子世界 当你用PyMOL绘制出第一张漂亮的蛋白-配体相互作用图后，是否曾思考：这静态图片背后，隐藏着怎样动态的分子世界？本文将带你从简单的看图，走向深刻的理解。  第一章：基石篇 - 我们必须厘清的核心概念在深入探索之前，我们必须建立正确的世界观。几个基本概念构成了我们理解这一切的基石。 1.1 受体与配体：锁与钥匙的现代诠释 受体：通常是蛋白质大分子，它是结合的“平台”或“锁”。  在我们的项目中：流感病毒的PB2蛋白就是受体。 在PyMOL中：通常是那个庞大的、显示为cartoon或surface的对象。   配体：通常是小分子化合物，它是结合的“客体”或“钥匙”。    在我们的项目中：D715-2441化合物就是配体。 在PyMOL中：通常是那些用sticks显示的、相对较小的分子。    # 在PyMOL中的实际体现 create receptor, 4cb4 and polymer  # 定义受体 create ligand, d715_2441           # 定义配体 show cartoon, recepto...</div></div></div></a><a class="pagination-related" href="/2025/10/31/wen-jian-chu-li-yu-shu-ju-shai-xuan-liu-cheng/" title="文件处理与数据筛选-终端"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">文件处理与数据筛选-终端</div></div><div class="info-2"><div class="info-item-1">文件处理与数据筛选流程流程概述从两个基因组数据文件中筛选共有基因位点，生成TSV格式结果。 处理步骤1. 文件格式标准化dos2unix color_GWAS.anno.xls 作用： Windows转Unix换行符 2. CSV转TSV格式sed '1s/^\xEF\xBB\xBF//' 红标0.7与黄标与GWAS共有.csv | tr ',' '\t' &gt; 红标0.7与黄标与GWAS共有.tsv 作用： 去除BOM头，逗号转制表符 3. 数据筛选awk 'BEGIN {OFS="\t"}       NR==FNR {if(FNR&gt;1) start_values[$2] = 1; next}       FNR==1 {print; next}       $2 in start_values' color_GWAS.anno.xls 红标0.7与黄标与GWAS共有.tsv &gt; filtered_three2one.tsv 逻辑：  读取第一个文件的第二列作为筛选依据 保留第二个文件中匹配的数据行 输出制表符分隔的结果  文件说明 输入： color_GWA...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">55</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">31</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E3%80%90%E6%96%B0%E6%89%8B%E5%85%A5%E9%97%A8%E3%80%91PyMOL%E7%BB%98%E5%88%B6%E8%9B%8B%E7%99%BD-%E9%85%8D%E4%BD%93%E7%9B%B8%E4%BA%92%E4%BD%9C%E7%94%A8%E5%9B%BE%EF%BC%9A%E4%BB%8EPDB%E5%88%B0%E5%8F%91%E8%A1%A8%E8%B4%A8%E9%87%8F%E5%9B%BE%E7%89%87"><span class="toc-number">1.</span> <span class="toc-text">【新手入门】PyMOL绘制蛋白-配体相互作用图：从PDB到发表质量图片</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%91%98%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">摘要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF"><span class="toc-number">1.2.</span> <span class="toc-text">研究背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">1.3.</span> <span class="toc-text">准备工作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%8B%E8%BD%BD%E8%9B%8B%E7%99%BD%E7%BB%93%E6%9E%84"><span class="toc-number">1.3.1.</span> <span class="toc-text">1. 下载蛋白结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%8E%B7%E5%8F%96%E9%85%8D%E4%BD%93%E7%BB%93%E6%9E%84"><span class="toc-number">1.3.2.</span> <span class="toc-text">2. 获取配体结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">1.4.</span> <span class="toc-text">基础操作流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%88%9D%E5%A7%8B%E8%AE%BE%E7%BD%AE"><span class="toc-number">1.4.1.</span> <span class="toc-text">1. 初始设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%AE%BE%E7%BD%AE%E6%93%8D%E4%BD%9C%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.4.2.</span> <span class="toc-text">2 设置操作对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%98%BE%E7%A4%BA%E6%A0%B7%E5%BC%8F%E4%BC%98%E5%8C%96"><span class="toc-number">1.4.3.</span> <span class="toc-text">3. 显示样式优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%98%E5%88%B6%E7%9B%B8%E4%BA%92%E4%BD%9C%E7%94%A8%E5%8A%9B"><span class="toc-number">1.4.3.1.</span> <span class="toc-text">绘制相互作用力</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%C2%B7-%E7%BB%98%E5%88%B6%CF%80-%CF%80%E5%A0%86%E7%A7%AF%E4%B8%8E%E7%9B%90%E6%A1%A5%E4%BD%9C%E7%94%A8"><span class="toc-number">1.4.3.1.0.1.</span> <span class="toc-text">· 绘制π-π堆积与盐桥作用</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%C2%B7-%E7%BB%98%E5%88%B6%E5%85%B6%E4%BB%96%E4%BD%9C%E7%94%A8%E5%8A%9B"><span class="toc-number">1.4.3.1.0.2.</span> <span class="toc-text">· 绘制其他作用力</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E5%83%8F%E7%BE%8E%E5%8C%96%E4%B8%8E%E8%BE%93%E5%87%BA"><span class="toc-number">1.4.4.</span> <span class="toc-text">图像美化与输出</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/13/xiang-mu-docker-hua-bu-shu-wan-zheng-liu-cheng-shou-ce/" title="WangLab 项目 Docker 化部署完整流程手册">WangLab 项目 Docker 化部署完整流程手册</a><time datetime="2026-01-13T04:56:00.000Z" title="Created 2026-01-13 12:56:00">2026-01-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/09/fei-niu-iscsi/" title="飞牛iSCSI">飞牛iSCSI</a><time datetime="2026-01-09T03:26:00.000Z" title="Created 2026-01-09 11:26:00">2026-01-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/09/qh2fn/" title="群晖数据转飞牛（单机）">群晖数据转飞牛（单机）</a><time datetime="2026-01-09T02:26:00.000Z" title="Created 2026-01-09 10:26:00">2026-01-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/24/indel/" title="基于 OpenSpliceAI 的 INDEL 可变剪接影响筛选流程">基于 OpenSpliceAI 的 INDEL 可变剪接影响筛选流程</a><time datetime="2025-12-24T04:56:00.000Z" title="Created 2025-12-24 12:56:00">2025-12-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/gemini/" title="根据SNP位点进行快速引物设计——网页版">根据SNP位点进行快速引物设计——网页版</a><time datetime="2025-12-02T14:26:00.000Z" title="Created 2025-12-02 22:26:00">2025-12-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
+   #sidebar_search_box input[type=text]{width:calc(100% - 24px)}
+}</style></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/fish.js" defer data-pjax></script><script type="text/javascript" src="/js/busuanzi.pure.mini.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-10-09</span><a class="blog-slider__title" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">Hexo + Butterfly 个人博客搭建</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/11/10/gwas-ld-block/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-11-10</span><a class="blog-slider__title" href="2025/11/10/gwas-ld-block/" alt="">GWAS + 热点区域识别 + LD Block 分析流程详解</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/11/10/gwas-ld-block/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/07/31/19/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/OIP-C.2E7GSli1t13WJ-Of6Hp9UgHaEi" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-07-31</span><a class="blog-slider__title" href="2025/07/31/19/" alt="">2.重测序数据分析——初步整理</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/07/31/19/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><!-- hexo injector body_end end --></body></html>

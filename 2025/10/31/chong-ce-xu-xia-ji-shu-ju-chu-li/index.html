@@ -1,0 +1,1262 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>重测序下机数据处理 | HHHH</title><meta name="author" content="HHHH"><meta name="copyright" content="HHHH"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="🧬 重测序数据标准处理流程详解本篇博客详细解析从 下机 FastQ 数据 到 变异检测输入文件（gVCF） 的完整流程。流程基于 Linux 环境与 GATK 推荐实践，并结合并行优化与磁盘空间节省策略。适合刚接触重测序分析的新手，也适用于需要高效自动化处理的研究人员。  环境：conda activate py310 一、Fastp 质控与过滤（run_fastpl.sh）#!&#x2F;bin&#x2F;bas">
+<meta property="og:type" content="article">
+<meta property="og:title" content="重测序下机数据处理">
+<meta property="og:url" content="https://0hhhhhh0.github.io/2025/10/31/chong-ce-xu-xia-ji-shu-ju-chu-li/index.html">
+<meta property="og:site_name" content="HHHH">
+<meta property="og:description" content="🧬 重测序数据标准处理流程详解本篇博客详细解析从 下机 FastQ 数据 到 变异检测输入文件（gVCF） 的完整流程。流程基于 Linux 环境与 GATK 推荐实践，并结合并行优化与磁盘空间节省策略。适合刚接触重测序分析的新手，也适用于需要高效自动化处理的研究人员。  环境：conda activate py310 一、Fastp 质控与过滤（run_fastpl.sh）#!&#x2F;bin&#x2F;bas">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0hhhhhh0.github.io/uploads/avatar.png">
+<meta property="article:published_time" content="2025-10-31T01:26:00.000Z">
+<meta property="article:modified_time" content="2025-10-31T01:32:15.000Z">
+<meta property="article:author" content="HHHH">
+<meta property="article:tag" content="hexo">
+<meta property="article:tag" content="组学">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="折腾">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0hhhhhh0.github.io/uploads/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "重测序下机数据处理",
+  "url": "https://0hhhhhh0.github.io/2025/10/31/chong-ce-xu-xia-ji-shu-ju-chu-li/",
+  "image": "https://0hhhhhh0.github.io/uploads/avatar.png",
+  "datePublished": "2025-10-31T01:26:00.000Z",
+  "dateModified": "2025-10-31T01:32:15.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "HHHH",
+      "url": "https://0HHHHHH0.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/uploads/avatar.png"><link rel="canonical" href="https://0hhhhhh0.github.io/2025/10/31/chong-ce-xu-xia-ji-shu-ju-chu-li/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":-1,"unescape":true,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '重测序下机数据处理',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@4.5.12/index.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/styles/css/font.css"><link rel="stylesheet" href="/css/mermaid.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="HHHH" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="scarecrow"><div class="scarecrow__hat"><div class="scarecrow__ribbon"></div></div><div class="scarecrow__head"><div class="scarecrow__eye"></div><div class="scarecrow__eye"></div><div class="scarecrow__mouth"></div><div class="scarecrow__pipe"></div></div><div class="scarecrow__body"><div class="scarecrow__glove scarecrow__glove--l"></div><div class="scarecrow__sleeve scarecrow__sleeve--l"></div><div class="scarecrow__bow"></div><div class="scarecrow__shirt"></div><div class="scarecrow__coat"></div><div class="scarecrow__waistcoat"></div><div class="scarecrow__sleeve scarecrow__sleeve--r"></div><div class="scarecrow__glove scarecrow__glove--r"></div><div class="scarecrow__coattails"></div><div class="scarecrow__pants"></div></div><div class="scarecrow__arms"></div><div class="scarecrow__leg">  </div></div></div><script async="async">(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-color: #fbfdff;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">55</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">31</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/uploads/avatar.png" alt="Logo"><span class="site-name">HHHH</span></a><a class="nav-page-title" href="/"><span class="site-name">重测序下机数据处理</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">重测序下机数据处理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-10-31T01:26:00.000Z" title="Created 2025-10-31 09:26:00">2025-10-31</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-10-31T01:32:15.000Z" title="Updated 2025-10-31 09:32:15">2025-10-31</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div class="ai-summary"><div class="ai-explanation" style="display: block;" data-summary="这篇文章详细介绍了一个完整的重测序数据标准处理流程，重点讲解了从下机FastQ数据到变异检测输入文件(gVCF)的转化过程。文中提供了基于Linux环境和GATK推荐实践的具体操作流程，特别强调了并行优化和磁盘空间节省策略。其中重点解析了Fastp质控与过滤步骤，包括质控脚本run_fastpl.sh的实现细节，该脚本能够自动检测样本、完成质量控制、过滤低质量reads并生成交互式报告。文章还详细说明了输入输出目录的设定、核心流程解析中的样本自动检测等关键技术点，适合重测序分析新手和有高效自动化处理需求的研究人员参考。">AI正在绞尽脑汁想思路ING···</div><div class="ai-title"> <div class="ai-title-left"> <i class="fa-brands fa-slack"></i><div class="ai-title-text">AI摘要</div></div><div class="ai-tag" id="ai-tag">deepseek-ai/DeepSeek-V3</div></div></div><h1 id="🧬-重测序数据标准处理流程详解"><a href="#🧬-重测序数据标准处理流程详解" class="headerlink" title="🧬 重测序数据标准处理流程详解"></a>🧬 重测序数据标准处理流程详解</h1><p>本篇博客详细解析从 <strong>下机 FastQ 数据</strong> 到 <strong>变异检测输入文件（gVCF）</strong> 的完整流程。<br>流程基于 Linux 环境与 GATK 推荐实践，并结合并行优化与磁盘空间节省策略。<br>适合刚接触重测序分析的新手，也适用于需要高效自动化处理的研究人员。</p>
+<hr>
+<p>环境：<code>conda activate py310</code></p>
+<h2 id="一、Fastp-质控与过滤（run-fastpl-sh）"><a href="#一、Fastp-质控与过滤（run-fastpl-sh）" class="headerlink" title="一、Fastp 质控与过滤（run_fastpl.sh）"></a>一、Fastp 质控与过滤（<code>run_fastpl.sh</code>）</h2><pre class="line-numbers language-none"><code class="language-none">#!/bin/bash
+# =========================================
+# Fastp 并行质控脚本（最终版本 + 已完成计数修正）
+# Author: Carl Hansen
+# Date: $(date +"%Y-%m-%d")
+# =========================================
+
+INPUT_DIR="/home/wanglab/Ywh/adductor_muscle_scar/ReSeq_Data/DZQD2023092909-b1/Raw_data"
+OUTPUT_DIR="/home/wanglab/Ywh/adductor_muscle_scar/ReSeq_Data/DZQD2023092909-b1/Clean_data"
+REPORT_DIR="${OUTPUT_DIR}/reports"
+LOG_DIR="${OUTPUT_DIR}/logs"
+
+THREADS_PER_JOB=6   # 每个样本 fastp 线程数
+JOBS=2              # 同时并行样本数
+
+mkdir -p "$OUTPUT_DIR" "$REPORT_DIR" "$LOG_DIR"
+
+echo "====================================="
+echo " Fastp 并行质控开始: $(date)"
+echo " 输入目录: $INPUT_DIR"
+echo " 输出目录: $OUTPUT_DIR"
+echo " 每任务线程: $THREADS_PER_JOB"
+echo " 并行样本数: $JOBS"
+echo "====================================="
+
+# 获取所有 R1 文件
+samples=($(find "$INPUT_DIR" -name "*.R1.fastq.gz" | sort))
+total=${#samples[@]}
+
+if [[ $total -eq 0 ]]; then
+    echo "[错误] 未找到任何 R1.fastq.gz 文件，请检查输入目录"
+    exit 1
+fi
+
+# 计数文件 + 初始化为已完成样本数
+COUNT_FILE="${LOG_DIR}/progress_count.tmp"
+completed=$(find "$REPORT_DIR" -name "*_fastp.json" -size +0 | wc -l)
+echo $completed &gt; "$COUNT_FILE"
+
+# fastp 处理函数
+run_fastp() {
+    fq1=$1
+    sample=$(basename "$(dirname "$fq1")")
+    fq2="${fq1/.R1.fastq.gz/.R2.fastq.gz}"
+
+    out1="${OUTPUT_DIR}/${sample}_clean.R1.fastq.gz"
+    out2="${OUTPUT_DIR}/${sample}_clean.R2.fastq.gz"
+    report="${REPORT_DIR}/${sample}_fastp.json"
+    
+    # 检查 JSON 是否存在且非空
+    if [[ -s "$report" ]]; then
+        echo "[跳过] $sample 已完成 ✅"
+        return 0
+    fi
+    
+    # ⚡ 更新进度计数（并行安全）
+    count=$( ( flock 9
+        c=$(cat "$COUNT_FILE")
+        c=$((c+1))
+        echo $c &gt; "$COUNT_FILE"
+        echo $c
+    ) 9&gt;"$COUNT_FILE.lock" )
+    
+    echo "[进度] $count/$total 样本: $sample"
+    echo "[启动] $sample 开始处理..."
+    
+    fastp \
+        -i "$fq1" \
+        -I "$fq2" \
+        -o "$out1" \
+        -O "$out2" \
+        -h "${REPORT_DIR}/${sample}_fastp.html" \
+        -j "$report" \
+        -w $THREADS_PER_JOB \
+        &gt; "${LOG_DIR}/${sample}.log" 2&gt;&amp;1
+    
+    if [[ $? -eq 0 &amp;&amp; -s "$report" ]]; then
+        echo "[完成] $sample ✅"
+    else
+        echo "[失败] $sample ❌，请检查 ${LOG_DIR}/${sample}.log"
+    fi
+}
+
+export -f run_fastp
+export OUTPUT_DIR REPORT_DIR LOG_DIR THREADS_PER_JOB total COUNT_FILE
+
+# 并行执行
+printf "%s\n" "${samples[@]}" | parallel --line-buffer -j $JOBS run_fastp {}
+
+# 清理计数文件
+rm -f "$COUNT_FILE" "$COUNT_FILE.lock"
+
+echo "====================================="
+echo " Fastp 质控全部完成: $(date)"
+echo "报告目录: $REPORT_DIR"
+echo "日志目录: $LOG_DIR"
+echo "====================================="
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="1-📘-脚本功能概述"><a href="#1-📘-脚本功能概述" class="headerlink" title="1.📘 脚本功能概述"></a>1.📘 脚本功能概述</h3><p>该脚本使用 <strong>Fastp</strong> 对原始下机数据（Raw_data）进行 <strong>质量控制（QC）与过滤</strong>，并利用 GNU Parallel 实现多样本并行。</p>
+<blockquote>
+<p><strong>主要目的：</strong></p>
+<ul>
+<li>清除低质量 reads、含接头序列的 reads；</li>
+<li>生成交互式 HTML 报告；</li>
+<li>并行加速多样本处理；</li>
+<li>避免重复运行，自动跳过已完成样本。</li>
+</ul>
+</blockquote>
+<h3 id="2-📂-输入与输出目录"><a href="#2-📂-输入与输出目录" class="headerlink" title="2.📂 输入与输出目录"></a>2.📂 输入与输出目录</h3><table>
+<thead>
+<tr>
+<th>路径</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/Raw_data/</code></td>
+<td>原始下机数据，包含 <code>R1</code>、<code>R2</code> 文件</td>
+</tr>
+<tr>
+<td><code>/Clean_data/</code></td>
+<td>输出的过滤后数据</td>
+</tr>
+<tr>
+<td><code>/reports/</code></td>
+<td>Fastp 的 HTML + JSON 报告</td>
+</tr>
+<tr>
+<td><code>/logs/</code></td>
+<td>每个样本的运行日志</td>
+</tr>
+</tbody></table>
+<h3 id="3-⚙️-核心流程解析"><a href="#3-⚙️-核心流程解析" class="headerlink" title="3.⚙️ 核心流程解析"></a>3.⚙️ 核心流程解析</h3><ol>
+<li><p><strong>样本自动检测</strong></p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token assign-left variable">samples</span><span class="token operator">=</span><span class="token punctuation">(</span><span class="token variable"><span class="token variable">$(</span><span class="token function">find</span> <span class="token string">"<span class="token variable">$INPUT_DIR</span>"</span> <span class="token parameter variable">-name</span> <span class="token string">"*.R1.fastq.gz"</span><span class="token variable">)</span></span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+</ol>
+<p>自动扫描所有 R1 文件，自动识别配对的 R2。</p>
+<ol start="2">
+<li><p><strong>并行质控</strong></p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">parallel --line-buffer <span class="token parameter variable">-j</span> <span class="token variable">$JOBS</span> run_fastp <span class="token punctuation">{</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>使用 <code>parallel</code> 控制同时处理的样本数量（默认 2 个）。</p>
+</li>
+<li><p><strong>进度追踪机制</strong><br> 每完成一个样本，进度计数自动更新，例如：</p>
+<pre class="line-numbers language-none"><code class="language-none">[进度] 3/24 样本: BM_S_3
+[完成] BM_S_3 ✅<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+</li>
+<li><p><strong>结果检查</strong><br> 若 JSON 报告存在且非空，则自动跳过该样本，节省时间。</p>
+</li>
+</ol>
+<h3 id="4-✅-运行结果"><a href="#4-✅-运行结果" class="headerlink" title="4.✅ 运行结果"></a>4.✅ 运行结果</h3><ul>
+<li><p>输出文件示例：</p>
+<pre class="line-numbers language-none"><code class="language-none">Clean_data/BM_S_1_clean.R1.fastq.gz
+Clean_data/BM_S_1_clean.R2.fastq.gz<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+</li>
+<li><p>质控报告（浏览器查看）：</p>
+<pre class="line-numbers language-none"><code class="language-none">Clean_data/reports/BM_S_1_fastp.html<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+</ul>
+<hr>
+<h2 id="二、比对与-gVCF-生成（run-bwa-vcf-sh）"><a href="#二、比对与-gVCF-生成（run-bwa-vcf-sh）" class="headerlink" title="二、比对与 gVCF 生成（run_bwa_vcf.sh）"></a>二、比对与 gVCF 生成（<code>run_bwa_vcf.sh</code>）</h2><pre class="line-numbers language-none"><code class="language-none">#!/bin/bash
+# =========================================
+# 节省空间的全量样本处理脚本 - 并行生成gVCF
+# =========================================
+
+CLEAN_DIR="/home/wanglab/Ywh/adductor_muscle_scar/ReSeq_Data/DZQD2023092909-b1/Clean_data"
+REF="/home/wanglab/Ywh/adductor_muscle_scar/Genome/GCF_963853765.1_xbMagGiga1.1_genomic.fna"
+OUT_DIR="/home/wanglab/Ywh/adductor_muscle_scar/ReSeq_Data/DZQD2023092909-b1/Align"
+LOG_DIR="${OUT_DIR}/logs"
+
+THREADS=12
+BATCH_GVCF=12
+
+mkdir -p "$OUT_DIR" "$LOG_DIR"
+
+echo "[INFO] 节省空间版全量样本流程开始: $(date)"
+echo "[INFO] gVCF将并行生成（每批12个同时运行）"
+echo "====================================="
+
+# 索引检查
+[[ ! -f "${REF}.bwt" ]] &amp;&amp; echo "[INFO] 生成BWA索引..." &amp;&amp; bwa index $REF
+[[ ! -f "${REF}.fai" ]] &amp;&amp; echo "[INFO] 生成samtools faidx..." &amp;&amp; samtools faidx $REF
+DICT_FILE="${REF%.*}.dict"
+[[ ! -f "$DICT_FILE" ]] &amp;&amp; echo "[INFO] 生成GATK序列字典..." &amp;&amp; gatk CreateSequenceDictionary -R $REF -O $DICT_FILE
+
+# 获取样本列表
+samples=($(find "$CLEAN_DIR" -name "*_clean.R1.fastq.gz" | sort))
+total=${#samples[@]}
+if [[ $total -eq 0 ]]; then
+    echo "[ERROR] 未找到任何 clean fastq 文件"
+    exit 1
+fi
+echo "[INFO] 总样本数: $total"
+
+# 获取已存在的BAM和gVCF文件
+existing_bams=($(find "$OUT_DIR" -name "*.sorted.bam" | sort))
+processed_gvcfs=($(find "$OUT_DIR" -name "*.g.vcf.gz" | sort))
+
+echo "[INFO] 已存在BAM文件: ${#existing_bams[@]} 个"
+echo "[INFO] 已生成gVCF文件: ${#processed_gvcfs[@]} 个"
+
+# -------------------------------
+# 单样本比对函数（输出未去重BAM）
+# -------------------------------
+run_alignment() {
+    fq1=$1
+    fq2=${fq1/.R1/.R2}
+    sample=$(basename "$fq1" | sed 's/_clean.R1.fastq.gz//')
+    bam="$OUT_DIR/${sample}.sorted.bam"
+    log="$LOG_DIR/${sample}.bwa.log"
+
+    # 添加跳过已存在BAM的逻辑
+    if [[ -s "$bam" ]]; then
+        echo "[INFO] $sample BAM已存在，跳过比对 ✅"
+        return 0
+    fi
+    
+    echo "====================================="
+    echo "[INFO $(date '+%Y-%m-%d %H:%M:%S')] [$sample] BWA MEM 比对开始..."
+    
+    if [[ ! -s "$fq1" ]]; then
+        echo "[ERROR] $sample 的 R1 文件不存在: $fq1" | tee -a "$log"
+        exit 1
+    fi
+    
+    if [[ -s "$fq2" ]]; then
+        echo "[INFO] 检测到双端测序: $fq1 + $fq2" | tee -a "$log"
+        bwa mem -t $THREADS -M \
+            -R "@RG\tID:${sample}\tSM:${sample}\tPL:ILLUMINA" \
+            $REF $fq1 $fq2 \
+            2&gt; &gt;(tee -a "$log" &gt;&amp;2) \
+        | samtools sort -@ 4 -o "$bam" -
+    else
+        echo "[WARN] 未检测到 R2，仅单端比对: $fq1" | tee -a "$log"
+        bwa mem -t $THREADS -M \
+            -R "@RG\tID:${sample}\tSM:${sample}\tPL:ILLUMINA" \
+            $REF $fq1 \
+            2&gt; &gt;(tee -a "$log" &gt;&amp;2) \
+        | samtools sort -@ 4 -o "$bam" -
+    fi
+    
+    if [[ $? -ne 0 || ! -s "$bam" ]]; then
+        echo "[ERROR] $sample 比对失败!" | tee -a "$log"
+        exit 1
+    fi
+    
+    echo "[INFO $(date '+%Y-%m-%d %H:%M:%S')] [$sample] 比对完成 ✅ 输出: $bam"
+}
+
+
+# -------------------------------
+# gVCF生成函数（独立可执行）
+# -------------------------------
+generate_gvcf() {
+    local bam="$1"
+    local sample=$(basename "$bam" .sorted.bam)
+    local bam_markdup="${OUT_DIR}/${sample}.sorted.markdup.bam"
+    local metrics="${OUT_DIR}/${sample}.markdup.metrics.txt"
+    local gvcf="${OUT_DIR}/${sample}.g.vcf.gz"
+    local log_file="${LOG_DIR}/${sample}.gvcf.log"
+
+    if [[ -s "$gvcf" ]]; then
+        echo "[INFO] $sample gVCF已存在，跳过 ✅"
+        return 0
+    fi
+    
+    echo "[INFO] [$sample] MarkDuplicates + gVCF 开始: $(date)" | tee -a "$log_file"
+    local start=$(date +%s)
+    
+    # 1️⃣ MarkDuplicates
+    gatk MarkDuplicates \
+        -I "$bam" \
+        -O "$bam_markdup" \
+        --METRICS_FILE "$metrics" \
+        --CREATE_INDEX true \
+        --VALIDATION_STRINGENCY LENIENT \
+        --TMP_DIR "${OUT_DIR}/tmp" \
+        2&gt;&gt; "$log_file"
+    
+    if [[ $? -eq 0 ]]; then
+        rm -f "$bam" "${bam}.bai"
+    fi
+    
+    # 2️⃣ gVCF生成（单线程）
+    gatk HaplotypeCaller \
+        -R "$REF" \
+        -I "$bam_markdup" \
+        -O "$gvcf" \
+        -ERC GVCF \
+        --native-pair-hmm-threads 1 \
+        2&gt;&gt; "$log_file"
+    
+    if [[ $? -eq 0 ]]; then
+        gatk IndexFeatureFile -I "$gvcf" 2&gt;&gt; "$log_file"
+        rm -f "$bam_markdup" "${bam_markdup}.bai"
+    fi
+    
+    local end=$(date +%s)
+    local runtime=$((end-start))
+    echo "[INFO] [$sample] gVCF完成 ✅ (耗时: $runtime 秒)" | tee -a "$log_file"
+}
+
+# 导出函数和环境变量供parallel使用
+export -f generate_gvcf
+export OUT_DIR REF LOG_DIR
+
+# -------------------------------
+# 1️⃣ 先处理已存在的BAM文件（并行生成gVCF）
+# -------------------------------
+if [[ ${#existing_bams[@]} -gt 0 ]]; then
+    echo "[INFO] 开始处理已存在的 ${#existing_bams[@]} 个BAM文件..."
+    
+    # 过滤掉已有gVCF的BAM文件
+    need_process_bams=()
+    for bam in "${existing_bams[@]}"; do
+        sample=$(basename "$bam" .sorted.bam)
+        gvcf="${OUT_DIR}/${sample}.g.vcf.gz"
+        if [[ ! -s "$gvcf" ]]; then
+            need_process_bams+=("$bam")
+        fi
+    done
+    
+    echo "[INFO] 需要处理gVCF的BAM文件: ${#need_process_bams[@]} 个"
+    
+    # 分批并行处理
+    i=0
+    while [[ $i -lt ${#need_process_bams[@]} ]]; do
+        batch=("${need_process_bams[@]:$i:$BATCH_GVCF}")
+        batch_num=$((i/BATCH_GVCF+1))
+        echo "[INFO] 并行生成gVCF批次 ${batch_num}: ${#batch[@]} 个样本"
+        
+        # 使用parallel同时运行12个gVCF生成任务
+        printf "%s\n" "${batch[@]}" | parallel -j $BATCH_GVCF --eta \
+            "generate_gvcf {}"
+        
+        i=$((i + BATCH_GVCF))
+    done
+else
+    echo "[INFO] 没有已存在的BAM文件需要处理"
+fi
+
+# -------------------------------
+# 2️⃣ 获取未比对的样本列表
+# -------------------------------
+processed_samples=()
+for bam in "${existing_bams[@]}"; do
+    sample=$(basename "$bam" .sorted.bam)
+    processed_samples+=("$sample")
+done
+
+need_align_samples=()
+for fq1 in "${samples[@]}"; do
+    sample=$(basename "$fq1" | sed 's/_clean.R1.fastq.gz//')
+    if [[ ! " ${processed_samples[@]} " =~ " ${sample} " ]]; then
+        need_align_samples+=("$fq1")
+    fi
+done
+
+echo "[INFO] 需要比对新样本: ${#need_align_samples[@]} 个"
+
+# -------------------------------
+# 3️⃣ 比对新的样本并分批并行生成gVCF
+# -------------------------------
+if [[ ${#need_align_samples[@]} -gt 0 ]]; then
+    count=0
+    batch_count=0
+    current_batch_bams=()
+    
+    for fq1 in "${need_align_samples[@]}"; do
+        # 比对单个样本
+        run_alignment "$fq1"
+        
+        sample=$(basename "$fq1" | sed 's/_clean.R1.fastq.gz//')
+        current_batch_bams+=("$OUT_DIR/${sample}.sorted.bam")
+        count=$((count+1))
+        
+        # 每比对完BATCH_GVCF个样本，并行生成一批gVCF
+        if [[ $count -ge $BATCH_GVCF ]]; then
+            batch_count=$((batch_count+1))
+            echo "[INFO] 并行生成新样本gVCF批次 ${batch_count}: ${#current_batch_bams[@]} 个样本"
+            
+            # 使用parallel同时运行12个gVCF生成任务
+            printf "%s\n" "${current_batch_bams[@]}" | parallel -j $BATCH_GVCF --eta \
+                "generate_gvcf {}"
+            
+            count=0
+            current_batch_bams=()
+        fi
+    done
+    
+    # 处理剩余的新样本
+    if [[ $count -gt 0 ]]; then
+        echo "[INFO] 并行处理剩余新样本gVCF: ${#current_batch_bams[@]} 个"
+        printf "%s\n" "${current_batch_bams[@]}" | parallel -j $BATCH_GVCF --eta \
+            "generate_gvcf {}"
+    fi
+else
+    echo "[INFO] 没有需要比对的新样本"
+fi
+
+# 清理临时目录
+rm -rf "${OUT_DIR}/tmp" 2&gt;/dev/null
+
+echo "[INFO] 全部样本处理完成: $(date)"
+echo "[INFO] 最终gVCF文件数: $(find "$OUT_DIR" -name "*.g.vcf.gz" | wc -l)"
+echo "[INFO] 输出目录: $OUT_DIR"<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="📘-功能概述"><a href="#📘-功能概述" class="headerlink" title="📘 功能概述"></a>📘 功能概述</h3><p>该脚本从 <strong>Clean FastQ</strong> 文件出发，自动完成以下步骤：</p>
+<ol>
+<li>参考基因组索引检查；</li>
+<li>BWA 比对生成 BAM 文件；</li>
+<li>GATK 去重（MarkDuplicates）；</li>
+<li>生成每个样本的 gVCF；</li>
+<li>自动跳过已完成步骤；</li>
+<li>并行分批执行以节省内存与磁盘。</li>
+</ol>
+<h3 id="📂-输入与输出目录"><a href="#📂-输入与输出目录" class="headerlink" title="📂 输入与输出目录"></a>📂 输入与输出目录</h3><table>
+<thead>
+<tr>
+<th>路径</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/Clean_data/</code></td>
+<td>fastp 过滤后的 reads</td>
+</tr>
+<tr>
+<td><code>/Align/</code></td>
+<td>比对与 gVCF 输出目录</td>
+</tr>
+<tr>
+<td><code>/Align/logs/</code></td>
+<td>每个阶段日志</td>
+</tr>
+</tbody></table>
+<h3 id="⚙️-步骤解析"><a href="#⚙️-步骤解析" class="headerlink" title="⚙️ 步骤解析"></a>⚙️ 步骤解析</h3><h4 id="1️⃣-参考基因组准备"><a href="#1️⃣-参考基因组准备" class="headerlink" title="1️⃣ 参考基因组准备"></a>1️⃣ 参考基因组准备</h4><p>脚本自动检测并生成：</p>
+<ul>
+<li><code>.bwt</code> → BWA 比对索引</li>
+<li><code>.fai</code> → samtools 索引</li>
+<li><code>.dict</code> → GATK 序列字典</li>
+</ul>
+<h4 id="2️⃣-样本比对（BWA-MEM）"><a href="#2️⃣-样本比对（BWA-MEM）" class="headerlink" title="2️⃣ 样本比对（BWA MEM）"></a>2️⃣ 样本比对（BWA MEM）</h4><ul>
+<li>对每个样本进行比对；</li>
+<li>自动识别单双端；</li>
+<li>输出排序 BAM；</li>
+<li>生成日志文件记录耗时与状态。</li>
+</ul>
+<p>示例输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">BM_S_1.sorted.bam
+logs/BM_S_1.bwa.log<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h4 id="3️⃣-去重与-gVCF-生成"><a href="#3️⃣-去重与-gVCF-生成" class="headerlink" title="3️⃣ 去重与 gVCF 生成"></a>3️⃣ <del>去重与 gVCF 生成</del></h4><blockquote>
+<p>去重速度过慢，影响整体运行事件，放到下一步多线程运行</p>
+</blockquote>
+<p>每个 BAM 文件通过 GATK 处理：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">gatk MarkDuplicates
+gatk HaplotypeCaller <span class="token parameter variable">-ERC</span> GVCF<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<blockquote>
+<p><strong>说明：</strong></p>
+<ul>
+<li>MarkDuplicates 去除 PCR 重复；</li>
+<li>HaplotypeCaller 输出每个样本的 <code>g.vcf.gz</code>；</li>
+<li>自动生成索引 <code>.tbi</code>。</li>
+</ul>
+</blockquote>
+<h4 id="4️⃣-并行控制与容错机制"><a href="#4️⃣-并行控制与容错机制" class="headerlink" title="4️⃣ 并行控制与容错机制"></a>4️⃣ 并行控制与容错机制</h4><ul>
+<li>每批最多同时处理 12 个样本；</li>
+<li>自动检测哪些样本已完成；</li>
+<li>失败样本记录日志但不阻塞后续运行；</li>
+<li>自动清理中间文件，节省磁盘空间。</li>
+</ul>
+<h3 id="✅-运行结果"><a href="#✅-运行结果" class="headerlink" title="✅ 运行结果"></a>✅ 运行结果</h3><p>输出结构：</p>
+<pre class="line-numbers language-none"><code class="language-none">Align/
+├── BM_S_1.g.vcf.gz
+├── BM_S_2.g.vcf.gz
+└── logs/
+    ├── BM_S_1.gvcf.log
+    └── BM_S_2.bwa.log<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>运行结束后统计输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">[INFO] 最终gVCF文件数: 36
+[INFO] 输出目录: Align/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<hr>
+<h2 id="三、分染色体批量-gVCF-生成（batch-gvcf-sh）"><a href="#三、分染色体批量-gVCF-生成（batch-gvcf-sh）" class="headerlink" title="三、分染色体批量 gVCF 生成（batch_gvcf.sh）"></a>三、分染色体批量 gVCF 生成（<code>batch_gvcf.sh</code>）</h2><pre class="line-numbers language-none"><code class="language-none">#!/bin/bash
+# =========================================
+# 12CPU服务器安全版分阶段处理脚本（按染色体批量并发，自动计算并发）
+# 输出结构: /mnt/disk2/Align/gvcf/chr*/sample.g.vcf.gz
+# 保留 MarkDuplicates 阶段 / 日志 / 负载检查 / TMP 清理
+# =========================================
+
+set -o pipefail
+umask 002
+
+REF="/home/wanglab/Ywh/adductor_muscle_scar/Genome/GCF_963853765.1_xbMagGiga1.1_genomic.fna"
+SOURCE_DIR="/home/wanglab/Ywh/adductor_muscle_scar/ReSeq_Data/DZQD2023092909-b1/Align"
+OUT_DIR="/mnt/disk2/Align"
+GVCF_DIR="${OUT_DIR}/gvcf"
+LOG_DIR="${OUT_DIR}/logs"
+TMP_DIR="/mnt/disk2/tmp"
+
+# --------- 用户可调参数 ----------
+# 并发/线程设置（按需修改）
+STAGE1_CONCURRENT=5      # MarkDuplicates 并发数（I/O密集）
+STAGE2_CONCURRENT=5      # 最大染色体并行任务上限（逻辑上再受可用CPU约束）
+GVCF_THREADS=2           # 每个 HaplotypeCaller 任务线程数
+
+# 系统预留与阈值
+RESERVED_CPUS=2          # 预留给系统的 CPU 数
+MAX_LOAD=10.0            # 系统平均负载阈值（超过则等待）
+MIN_FREE_MEM_GB=4        # 最低可用内存 (GB)
+# ---------------------------------
+
+mkdir -p "$OUT_DIR" "$GVCF_DIR" "$LOG_DIR" "$TMP_DIR"
+
+echo "[INFO] 启动时间: $(date)"
+echo "[INFO] REF: $REF"
+echo "[INFO] SOURCE_DIR: $SOURCE_DIR"
+echo "[INFO] OUT_DIR: $OUT_DIR"
+echo "[INFO] GVCF_DIR: $GVCF_DIR"
+echo "[INFO] STAGE1_CONCURRENT: $STAGE1_CONCURRENT"
+echo "[INFO] STAGE2_CONCURRENT (user cap): $STAGE2_CONCURRENT"
+echo "[INFO] GVCF_THREADS (per task): $GVCF_THREADS"
+echo "[INFO] RESERVED_CPUS: $RESERVED_CPUS"
+echo "====================================="
+
+# -------------------------------
+# 系统/资源 检查函数
+# -------------------------------
+check_system_health() {
+    # return 0 = ok, 1 = not ok (caller should sleep &amp; retry)
+    local current_load
+    current_load=$(uptime | awk -F'load average:' '{print $2}' | cut -d, -f1 | tr -d ' ')
+    local available_mem
+    available_mem=$(free -g | awk 'NR==2{print $7}')
+    echo "[SYSTEM] 当前负载: $current_load, 可用内存: ${available_mem}G"
+    # load threshold
+    if (( $(echo "$current_load &gt; $MAX_LOAD" | bc -l) )); then
+        echo "[WARN] 系统负载过高 ($current_load &gt; $MAX_LOAD)"
+        return 1
+    fi
+    # memory threshold
+    if [[ $available_mem -lt $MIN_FREE_MEM_GB ]]; then
+        echo "[WARN] 可用内存不足 (${available_mem}G &lt; ${MIN_FREE_MEM_GB}G)"
+        return 1
+    fi
+    return 0
+}
+
+# -------------------------------
+# 参考基因组索引检查
+# -------------------------------
+if [[ ! -f "${REF}" ]]; then
+    echo "[ERROR] 参考基因组文件不存在: $REF"
+    exit 1
+fi
+[[ ! -f "${REF}.fai" ]] &amp;&amp; echo "[INFO] 生成 samtools faidx..." &amp;&amp; samtools faidx "$REF"
+DICT_FILE="${REF%.*}.dict"
+[[ ! -f "$DICT_FILE" ]] &amp;&amp; echo "[INFO] 生成 GATK 序列字典..." &amp;&amp; gatk CreateSequenceDictionary -R "$REF" -O "$DICT_FILE"
+
+# -------------------------------
+# 磁盘空间检查
+# -------------------------------
+disk_usage=$(df -h "$OUT_DIR" | awk 'NR==2 {print $5}' | sed 's/%//')
+echo "[INFO] $OUT_DIR 磁盘使用率: ${disk_usage}%"
+if [[ $disk_usage -gt 90 ]]; then
+    echo "[ERROR] 磁盘使用率 &gt; 90%，请清理后再运行"
+    exit 1
+fi
+
+# -------------------------------
+# 发现 BAM 列表（已排序 BAM）
+# -------------------------------
+bam_files=($(find "$SOURCE_DIR" -type f -name "*.sorted.bam" | sort))
+total_bam=${#bam_files[@]}
+if [[ $total_bam -eq 0 ]]; then
+    echo "[ERROR] 未找到任何已排序的BAM文件（pattern: *.sorted.bam） in $SOURCE_DIR"
+    exit 1
+fi
+echo "[INFO] 找到 $total_bam 个已排序BAM文件"
+
+# -------------------------------
+# 计算实际可并发染色体数（受CPU与用户上限双重约束）
+# -------------------------------
+TOTAL_CPUS=$(nproc --all 2&gt;/dev/null || echo 12)
+USABLE_CPUS=$(( TOTAL_CPUS - RESERVED_CPUS ))
+if [[ $USABLE_CPUS -lt 1 ]]; then
+    echo "[ERROR] 可用 CPU 太少: $USABLE_CPUS"
+    exit 1
+fi
+# 理论上最大同时运行的 HaplotypeCaller 任务数 = floor(USABLE_CPUS / GVCF_THREADS)
+AUTO_STAGE2_MAX=$(( USABLE_CPUS / GVCF_THREADS ))
+if [[ $AUTO_STAGE2_MAX -lt 1 ]]; then AUTO_STAGE2_MAX=1; fi
+# 最终并发取 min(user cap, auto cap)
+if [[ $STAGE2_CONCURRENT -gt $AUTO_STAGE2_MAX ]]; then
+    EFFECTIVE_STAGE2_CONCURRENT=$AUTO_STAGE2_MAX
+else
+    EFFECTIVE_STAGE2_CONCURRENT=$STAGE2_CONCURRENT
+fi
+
+echo "[INFO] 总 CPU: $TOTAL_CPUS, 可用 CPU (扣除 reserved): $USABLE_CPUS"
+echo "[INFO] 按每任务 $GVCF_THREADS 线程计算，自动可并发数: $AUTO_STAGE2_MAX"
+echo "[INFO] 最终 STAGE2 并发数（生效）: $EFFECTIVE_STAGE2_CONCURRENT"
+
+# -------------------------------
+# MarkDuplicates 函数
+# -------------------------------
+run_markduplicates() {
+    local bam="$1"
+    local sample
+    sample=$(basename "$bam" .sorted.bam)
+    local bam_markdup="${OUT_DIR}/${sample}.sorted.markdup.bam"
+    local metrics="${OUT_DIR}/${sample}.markdup.metrics.txt"
+    local log_file="${LOG_DIR}/${sample}.markdup.log"
+
+    if [[ -s "$bam_markdup" ]]; then
+        echo "[INFO] [$sample] MarkDuplicates 已存在，跳过"
+        return 0
+    fi
+    
+    echo "[INFO] [$sample] MarkDuplicates 开始: $(date)" | tee -a "$log_file"
+    local start=$(date +%s)
+    # run MarkDuplicates (taskset 可视需求调整)
+    gatk MarkDuplicates \
+        -I "$bam" \
+        -O "$bam_markdup" \
+        --METRICS_FILE "$metrics" \
+        --CREATE_INDEX true \
+        --VALIDATION_STRINGENCY LENIENT \
+        --TMP_DIR "$TMP_DIR" \
+        --ASSUME_SORTED true \
+        2&gt;&gt; "$log_file"
+    local rc=$?
+    if [[ $rc -ne 0 || ! -s "$bam_markdup" ]]; then
+        echo "[ERROR] [$sample] MarkDuplicates 失败 (rc=$rc)" | tee -a "$log_file"
+        return 1
+    fi
+    local end=$(date +%s)
+    echo "[INFO] [$sample] MarkDuplicates 完成 ✅ (耗时 $((end-start))s)" | tee -a "$log_file"
+    return 0
+}
+
+# -------------------------------
+# 按染色体为单位，处理单个染色体：对该染色体并行处理所有样本（受全局并发限制）
+# run_chr_task chr bam1 bam2 bam3 ...
+# -------------------------------
+run_chr_task() {
+    local chr="$1"; shift
+    local bam_list=("$@")
+    local chr_dir="${GVCF_DIR}/${chr}"
+    mkdir -p "$chr_dir"
+    echo "[INFO] [chr=$chr] 处理 ${#bam_list[@]} 个样本开始: $(date)"
+
+    for bam in "${bam_list[@]}"; do
+        sample=$(basename "$bam" .sorted.markdup.bam)
+        gvcf="${chr_dir}/${sample}.g.vcf.gz"
+        logf="${LOG_DIR}/${sample}.${chr}.gvcf.log"
+    
+        if [[ -s "$gvcf" ]]; then
+            echo "[INFO] [$sample $chr] 已存在，跳过"
+            continue
+        fi
+    
+        # 等待系统健康
+        while ! check_system_health; do
+            sleep 20
+        done
+    
+        echo "[INFO] [$sample $chr] 开始 HaplotypeCaller (threads=$GVCF_THREADS)" | tee -a "$logf"
+        start_t=$(date +%s)
+        gatk HaplotypeCaller \
+            -R "$REF" \
+            -I "$bam" \
+            -O "$gvcf" \
+            -L "$chr" \
+            -ERC GVCF \
+            --native-pair-hmm-threads $GVCF_THREADS \
+            --tmp-dir "$TMP_DIR" \
+            2&gt;&gt; "$logf"
+        rc=$?
+        if [[ $rc -ne 0 || ! -s "$gvcf" ]]; then
+            echo "[ERROR] [$sample $chr] HaplotypeCaller 失败 (rc=$rc)" | tee -a "$logf"
+            # 失败不终止批次，继续后面的样本
+        else
+            end_t=$(date +%s)
+            echo "[INFO] [$sample $chr] 完成 ✅ (耗时 $((end_t-start_t))s)" | tee -a "$logf"
+        fi
+    done
+    
+    echo "[INFO] [chr=$chr] 全部样本处理完成: $(date)"
+}
+
+# -------------------------------
+# 并发启动函数（用于阶段1和阶段2的并发控制）
+#   调用约定:
+#     run_parallel func arg1 arg2 ... --max N --name "desc"
+#   或者为兼容旧调用，下面也提供基于 positional 参数的封装
+# -------------------------------
+run_parallel() {
+    # 简单的 positional parsing: 参数中包含 --max 和 --name
+    local args=("$@")
+    local max=1
+    local name="parallel"
+    # parse from end
+    for (( i=${#args[@]}-1; i&gt;=0; i-- )); do
+        if [[ "${args[i]}" == --max ]]; then
+            max="${args[i+1]}"
+            unset 'args[i]' 'args[i+1]'
+            break
+        fi
+    done
+    for (( i=${#args[@]}-1; i&gt;=0; i-- )); do
+        if [[ "${args[i]}" == --name ]]; then
+            name="${args[i+1]}"
+            unset 'args[i]' 'args[i+1]'
+            break
+        fi
+    done
+
+    local func="${args[0]}"
+    shift
+    # remaining args are the payload for invocation; if more than one payload, treat as array items
+    local payloads=("${args[@]}")
+    
+    # If func is run_chr_task and first payload is a chr + list, we want to spawn functions by payload elements.
+    # For our usage, we'll call run_parallel with payloads each being a string token representing a job invocation:
+    # e.g. run_parallel run_markduplicates "$bam1" "$bam2" ... --max 4 --name "MarkDuplicates"
+    # Simpler approach: launch each payload as separate background call to func with that payload as single arg.
+    local total=${#payloads[@]}
+    local idx=0
+    echo "[INFO] [${name}] 并行启动: total=$total, max=$max"
+    while [[ $idx -lt $total ]]; do
+        # spawn while respecting max
+        while [[ $(jobs -r | wc -l) -ge $max ]]; do
+            sleep 5
+        done
+        item="${payloads[idx]}"
+        # For run_markduplicates style: item is a path; call func "$item" &amp;
+        # For run_chr_task batch invocation we will call it differently below.
+        $func "$item" &amp;
+        idx=$((idx+1))
+        sleep 0.5
+    done
+    wait
+    echo "[INFO] [${name}] 并行任务全部完成"
+}
+
+# -------------------------------
+# MAIN: 阶段1 MarkDuplicates（并行）
+# -------------------------------
+echo "========================"
+echo "[MAIN] 阶段1: MarkDuplicates"
+echo "========================"
+
+need_markdup=()
+for bam in "${bam_files[@]}"; do
+    sample=$(basename "$bam" .sorted.bam)
+    target="${OUT_DIR}/${sample}.sorted.markdup.bam"
+    if [[ ! -s "$target" ]]; then
+        need_markdup+=("$bam")
+    else
+        echo "[INFO] $sample MarkDuplicates 已存在，跳过"
+    fi
+done
+
+if [[ ${#need_markdup[@]} -gt 0 ]]; then
+    echo "[INFO] 需要 MarkDuplicates 的样本数: ${#need_markdup[@]}"
+    # 使用 GNU parallel 若系统安装也行，但此处我们用 shell job 控制：
+    max_conc=$STAGE1_CONCURRENT
+    for bam in "${need_markdup[@]}"; do
+        while [[ $(jobs -r | wc -l) -ge $max_conc ]]; do
+            sleep 5
+        done
+        run_markduplicates "$bam" &amp;
+        sleep 0.5
+    done
+    wait
+else
+    echo "[INFO] 所有样本已完成 MarkDuplicates"
+fi
+
+# -------------------------------
+# MAIN: 阶段2 按染色体批量并发生成 gVCF
+#   - 我们将每个染色体作为一个并行任务（处理所有样本的该 chr）
+#   - 控制并发数为 EFFECTIVE_STAGE2_CONCURRENT
+# -------------------------------
+echo "========================"
+echo "[MAIN] 阶段2: 按染色体批量并发生成 gVCF"
+echo "========================"
+
+# 重新列出已经准备好的 markdup BAM（只取存在的）
+markdup_bams=()
+for bm in "${bam_files[@]}"; do
+    sample=$(basename "$bm" .sorted.bam)
+    md="${OUT_DIR}/${sample}.sorted.markdup.bam"
+    if [[ -s "$md" ]]; then
+        markdup_bams+=("$md")
+    else
+        echo "[WARN] $sample 的 markdup BAM 不存在，跳过该样本" 
+    fi
+done
+
+if [[ ${#markdup_bams[@]} -eq 0 ]]; then
+    echo "[ERROR] 无可用 markdup BAM，退出"
+    exit 1
+fi
+
+# 获取染色体/contig 列表（使用 .fai 第一列）
+chromosomes=($(cut -f1 "${REF}.fai"))
+echo "[INFO] 染色体计数: ${#chromosomes[@]}"
+
+# 并行启动每个染色体任务，但限制并发为 EFFECTIVE_STAGE2_CONCURRENT
+chr_count=${#chromosomes[@]}
+started=0
+for chr in "${chromosomes[@]}"; do
+    # wait until running jobs &lt; limit and system healthy
+    while [[ $(jobs -r | wc -l) -ge $EFFECTIVE_STAGE2_CONCURRENT ]]; do
+        echo "[WAIT] 当前 Chr 并发: $(jobs -r | wc -l)/$EFFECTIVE_STAGE2_CONCURRENT，检查系统..."
+        sleep 8
+    done
+    while ! check_system_health; do
+        echo "[WAIT] 系统资源紧张，等待..."
+        sleep 15
+    done
+    echo "[INFO] 启动 chr=$chr 的批量任务（处理 ${#markdup_bams[@]} 个样本）"
+    run_chr_task "$chr" "${markdup_bams[@]}" &amp;
+    started=$((started+1))
+    sleep 1
+done
+
+# 等待所有染色体任务完成
+wait
+
+# -------------------------------
+# 完成 &amp; 清理
+# -------------------------------
+echo "[INFO] 所有染色体批量任务完成，开始统计"
+final_gvcf_count=$(find "$GVCF_DIR" -type f -name "*.g.vcf.gz" | wc -l || echo 0)
+echo "[INFO] 生成 gVCF 总数: $final_gvcf_count"
+echo "[INFO] 清理 TMP..."
+rm -rf "${TMP_DIR}"/* 2&gt;/dev/null || true
+
+echo "[INFO] 全流程完成: $(date)"
+echo "[INFO] 输出目录: $GVCF_DIR"
+echo "====================================="<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="📘-功能概述-1"><a href="#📘-功能概述-1" class="headerlink" title="📘 功能概述"></a>📘 功能概述</h3><p>当样本数较多或服务器资源有限时，推荐使用本脚本。<br> 它支持 <strong>按染色体分批并行</strong>，自动计算系统负载，防止过载。</p>
+<blockquote>
+<p>特点：</p>
+<ul>
+<li>动态 CPU / 内存检测；</li>
+<li>自动暂停与恢复；</li>
+<li>MarkDuplicates + HaplotypeCaller 分阶段；</li>
+<li>输出结构按染色体分类存储。</li>
+</ul>
+</blockquote>
+<h3 id="⚙️-主要参数"><a href="#⚙️-主要参数" class="headerlink" title="⚙️ 主要参数"></a>⚙️ 主要参数</h3><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>STAGE1_CONCURRENT</code></td>
+<td>同时运行的 MarkDuplicates 数量</td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>STAGE2_CONCURRENT</code></td>
+<td>每次运行的染色体任务上限</td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>GVCF_THREADS</code></td>
+<td>每个样本的 HaplotypeCaller 线程数</td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>MAX_LOAD</code></td>
+<td>系统平均负载阈值</td>
+<td>10.0</td>
+</tr>
+<tr>
+<td><code>MIN_FREE_MEM_GB</code></td>
+<td>最低剩余内存阈值</td>
+<td>4 GB</td>
+</tr>
+</tbody></table>
+<h3 id="⚙️-核心逻辑"><a href="#⚙️-核心逻辑" class="headerlink" title="⚙️ 核心逻辑"></a>⚙️ 核心逻辑</h3><ol>
+<li><p><strong>系统监测</strong></p>
+<ul>
+<li>实时监控 CPU 负载与内存；</li>
+<li>若超过阈值则暂停任务，确保稳定。</li>
+</ul>
+</li>
+<li><p><strong>按染色体划分任务</strong></p>
+<ul>
+<li><p>每个样本的 BAM 文件按染色体调用 GATK；</p>
+</li>
+<li><p>输出路径：</p>
+<pre class="line-numbers language-none"><code class="language-none">gvcf/chr1/BM_S_1.g.vcf.gz
+gvcf/chr2/BM_S_1.g.vcf.gz<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></li>
+</ul>
+</li>
+<li><p><strong>自动错误跳过</strong></p>
+<ul>
+<li>单个样本失败不会中断整个批次；</li>
+<li>所有日志保存以便复查。</li>
+</ul>
+</li>
+<li><p><strong>MarkDuplicates 阶段保留</strong></p>
+<ul>
+<li>提前处理可加快后续染色体分批；</li>
+<li>可灵活重启中断任务。</li>
+</ul>
+</li>
+</ol>
+<h3 id="✅-输出示例"><a href="#✅-输出示例" class="headerlink" title="✅ 输出示例"></a>✅ 输出示例</h3><pre class="line-numbers language-none"><code class="language-none">/mnt/disk2/Align/
+├── gvcf/
+│   ├── chr1/
+│   │   ├── BM_S_1.g.vcf.gz
+│   │   └── BM_S_2.g.vcf.gz
+│   ├── chr2/
+│   │   ├── BM_S_1.g.vcf.gz
+│   │   └── BM_S_2.g.vcf.gz
+└── logs/
+    ├── BM_S_1.markdup.log
+    ├── BM_S_1.chr1.gvcf.log
+    └── BM_S_2.chr2.gvcf.log<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<hr>
+<h2 id="💡-流程总结"><a href="#💡-流程总结" class="headerlink" title="💡 流程总结"></a>💡 流程总结</h2><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>脚本</th>
+<th>核心工具</th>
+<th>主要任务</th>
+<th>输出</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1️⃣</td>
+<td>run_fastpl.sh</td>
+<td>fastp</td>
+<td>质控过滤</td>
+<td>Clean FastQ</td>
+</tr>
+<tr>
+<td>2️⃣</td>
+<td>run_bwa_vcf.sh</td>
+<td>BWA + GATK</td>
+<td>比对 + gVCF</td>
+<td>Align/g.vcf.gz</td>
+</tr>
+<tr>
+<td>3️⃣</td>
+<td>batch_gvcf.sh</td>
+<td>GATK + Parallel</td>
+<td>染色体分批</td>
+<td>gvcf/chr*/</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="🚀-新手建议"><a href="#🚀-新手建议" class="headerlink" title="🚀 新手建议"></a>🚀 新手建议</h2><ol>
+<li><strong>先小规模测试</strong><br> 用 1–2 个样本验证路径与结果；</li>
+<li><strong>监控资源</strong><br> 使用 <code>htop</code> 或 <code>nmon</code> 查看系统负载；</li>
+<li><strong>定期清理中间文件</strong><br> 删除 <code>.bam</code>、<code>.bai</code> 可节省大量空间；</li>
+<li><strong>保持日志</strong><br> 日志是排查错误的关键，不要删除。</li>
+</ol>
+<hr>
+<h2 id="📎-后续方向"><a href="#📎-后续方向" class="headerlink" title="📎 后续方向"></a>📎 后续方向</h2><p>后续可继续进行：</p>
+<ul>
+<li>多样本联合变异检测（<code>GenotypeGVCFs</code>）；</li>
+<li>SNP / INDEL 注释；</li>
+<li>群体结构分析（PCA、ADMIXTURE）；</li>
+<li>连锁不平衡与选择分析。</li>
+</ul>
+<hr>
+<blockquote>
+<p> <strong>说明：</strong> 本流程在 Ubuntu 22.04 + GATK 4.4 + BWA MEM 环境下测试通过。<br> 如需多节点或超大样本优化，请考虑基于 SLURM 的任务调度版本。</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://0HHHHHH0.github.io">HHHH</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://0hhhhhh0.github.io/2025/10/31/chong-ce-xu-xia-ji-shu-ju-chu-li/">https://0hhhhhh0.github.io/2025/10/31/chong-ce-xu-xia-ji-shu-ju-chu-li/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/uploads/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/10/31/ld-block-lian-suo-bu-ping-heng-fen-xi/" title="LD-Block 连锁不平衡分析"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">LD-Block 连锁不平衡分析</div></div><div class="info-2"><div class="info-item-1">关键词：LD Block分析、连锁不平衡、LDBlockShow、群体遗传学、VCF处理、基因组可视化  使用LDBlockShow进行LD Block分析 在群体遗传学研究中，连锁不平衡（Linkage Disequilibrium, LD）分析是理解基因组结构和识别候选基因的重要工具。本文将介绍如何使用LDBlockShow工具对特定基因组区域进行LD block分析。本文详细介绍如何使用LDBlockShow工具对特定基因组区域进行连锁不平衡（LD）Block分析，涵盖从数据预处理、样本名修正、目标区域提取到最终可视化分析的完整流程。  1. 分析背景与工具准备1.1 分析目标对基因LOC105322102区域（NC_047567.1:32646664-32667511）进行LD Block分析，了解该区域的连锁不平衡结构。 1.2 所需工具安装# 生物信息学工具 conda create -n vcftools_env -c bioconda -c conda-forge \     bcftools \     ldblockshow \     plink \    ...</div></div></div></a><a class="pagination-related" href="/2025/10/31/annovar/" title="使用ANNOVAR进行长牡蛎SNP注释完整流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">使用ANNOVAR进行长牡蛎SNP注释完整流程</div></div><div class="info-2"><div class="info-item-1">使用ANNOVAR进行长牡蛎(Crassostrea gigas)SNP注释完整流程概述本文介绍如何使用ANNOVAR对长牡蛎(Crassostrea gigas)的SNP变异数据进行功能注释。流程包括参考基因组数据库构建、变异数据格式转换、功能注释和结果整合。 环境准备1. 软件安装# ANNOVAR下载 wget http://www.openbioinformatics.org/annovar/annovar.tar.gz tar -xzvf annovar.tar.gz  # 其他依赖工具 conda install -c bioconda ucsc-gtftogenepred  2. 数据文件准备 参考基因组GTF文件：/home/wanglab/Ywh/adductor_muscle_scar/Crassostrea_gigas.cgigas_uk_roslin_v1.61.gtf 基因组FASTA文件：GCF_902806645.1_cgigas_uk_roslin_v1_genomic.fna SNP数据：filtered_variants_thr0p7_2025...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/uploads/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">HHHH</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">55</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">11</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">31</div></a></div><a id="card-info-btn" href="https://github.com/0HHHHHH0"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/0hhhhhh0" target="_blank" title="fab fa-github"><i class="GitHub"></i></a><a class="social-icon" href="mailto:695460776@qq.com" target="_blank" title="fa fa-envelope"><i class="E-Mail"></i></a><a class="social-icon" href="https://x.com/your-user-name" target="_blank" title="fab fa-twitter"><i class="Twitter"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">随便逛逛!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%A7%AC-%E9%87%8D%E6%B5%8B%E5%BA%8F%E6%95%B0%E6%8D%AE%E6%A0%87%E5%87%86%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E8%AF%A6%E8%A7%A3"><span class="toc-number">1.</span> <span class="toc-text">🧬 重测序数据标准处理流程详解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81Fastp-%E8%B4%A8%E6%8E%A7%E4%B8%8E%E8%BF%87%E6%BB%A4%EF%BC%88run-fastpl-sh%EF%BC%89"><span class="toc-number">1.1.</span> <span class="toc-text">一、Fastp 质控与过滤（run_fastpl.sh）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%F0%9F%93%98-%E8%84%9A%E6%9C%AC%E5%8A%9F%E8%83%BD%E6%A6%82%E8%BF%B0"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.📘 脚本功能概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%F0%9F%93%82-%E8%BE%93%E5%85%A5%E4%B8%8E%E8%BE%93%E5%87%BA%E7%9B%AE%E5%BD%95"><span class="toc-number">1.1.2.</span> <span class="toc-text">2.📂 输入与输出目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E2%9A%99%EF%B8%8F-%E6%A0%B8%E5%BF%83%E6%B5%81%E7%A8%8B%E8%A7%A3%E6%9E%90"><span class="toc-number">1.1.3.</span> <span class="toc-text">3.⚙️ 核心流程解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E2%9C%85-%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C"><span class="toc-number">1.1.4.</span> <span class="toc-text">4.✅ 运行结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%AF%94%E5%AF%B9%E4%B8%8E-gVCF-%E7%94%9F%E6%88%90%EF%BC%88run-bwa-vcf-sh%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text">二、比对与 gVCF 生成（run_bwa_vcf.sh）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%98-%E5%8A%9F%E8%83%BD%E6%A6%82%E8%BF%B0"><span class="toc-number">1.2.1.</span> <span class="toc-text">📘 功能概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%82-%E8%BE%93%E5%85%A5%E4%B8%8E%E8%BE%93%E5%87%BA%E7%9B%AE%E5%BD%95"><span class="toc-number">1.2.2.</span> <span class="toc-text">📂 输入与输出目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9A%99%EF%B8%8F-%E6%AD%A5%E9%AA%A4%E8%A7%A3%E6%9E%90"><span class="toc-number">1.2.3.</span> <span class="toc-text">⚙️ 步骤解析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%EF%B8%8F%E2%83%A3-%E5%8F%82%E8%80%83%E5%9F%BA%E5%9B%A0%E7%BB%84%E5%87%86%E5%A4%87"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">1️⃣ 参考基因组准备</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%EF%B8%8F%E2%83%A3-%E6%A0%B7%E6%9C%AC%E6%AF%94%E5%AF%B9%EF%BC%88BWA-MEM%EF%BC%89"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">2️⃣ 样本比对（BWA MEM）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%EF%B8%8F%E2%83%A3-%E5%8E%BB%E9%87%8D%E4%B8%8E-gVCF-%E7%94%9F%E6%88%90"><span class="toc-number">1.2.3.3.</span> <span class="toc-text">3️⃣ 去重与 gVCF 生成</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%EF%B8%8F%E2%83%A3-%E5%B9%B6%E8%A1%8C%E6%8E%A7%E5%88%B6%E4%B8%8E%E5%AE%B9%E9%94%99%E6%9C%BA%E5%88%B6"><span class="toc-number">1.2.3.4.</span> <span class="toc-text">4️⃣ 并行控制与容错机制</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%85-%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C"><span class="toc-number">1.2.4.</span> <span class="toc-text">✅ 运行结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%88%86%E6%9F%93%E8%89%B2%E4%BD%93%E6%89%B9%E9%87%8F-gVCF-%E7%94%9F%E6%88%90%EF%BC%88batch-gvcf-sh%EF%BC%89"><span class="toc-number">1.3.</span> <span class="toc-text">三、分染色体批量 gVCF 生成（batch_gvcf.sh）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%98-%E5%8A%9F%E8%83%BD%E6%A6%82%E8%BF%B0-1"><span class="toc-number">1.3.1.</span> <span class="toc-text">📘 功能概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9A%99%EF%B8%8F-%E4%B8%BB%E8%A6%81%E5%8F%82%E6%95%B0"><span class="toc-number">1.3.2.</span> <span class="toc-text">⚙️ 主要参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9A%99%EF%B8%8F-%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91"><span class="toc-number">1.3.3.</span> <span class="toc-text">⚙️ 核心逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%85-%E8%BE%93%E5%87%BA%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.3.4.</span> <span class="toc-text">✅ 输出示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%92%A1-%E6%B5%81%E7%A8%8B%E6%80%BB%E7%BB%93"><span class="toc-number">1.4.</span> <span class="toc-text">💡 流程总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%9A%80-%E6%96%B0%E6%89%8B%E5%BB%BA%E8%AE%AE"><span class="toc-number">1.5.</span> <span class="toc-text">🚀 新手建议</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%8E-%E5%90%8E%E7%BB%AD%E6%96%B9%E5%90%91"><span class="toc-number">1.6.</span> <span class="toc-text">📎 后续方向</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/13/xiang-mu-docker-hua-bu-shu-wan-zheng-liu-cheng-shou-ce/" title="WangLab 项目 Docker 化部署完整流程手册">WangLab 项目 Docker 化部署完整流程手册</a><time datetime="2026-01-13T04:56:00.000Z" title="Created 2026-01-13 12:56:00">2026-01-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/09/fei-niu-iscsi/" title="飞牛iSCSI">飞牛iSCSI</a><time datetime="2026-01-09T03:26:00.000Z" title="Created 2026-01-09 11:26:00">2026-01-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/09/qh2fn/" title="群晖数据转飞牛（单机）">群晖数据转飞牛（单机）</a><time datetime="2026-01-09T02:26:00.000Z" title="Created 2026-01-09 10:26:00">2026-01-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/24/indel/" title="基于 OpenSpliceAI 的 INDEL 可变剪接影响筛选流程">基于 OpenSpliceAI 的 INDEL 可变剪接影响筛选流程</a><time datetime="2025-12-24T04:56:00.000Z" title="Created 2025-12-24 12:56:00">2025-12-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/gemini/" title="根据SNP位点进行快速引物设计——网页版">根据SNP位点进行快速引物设计——网页版</a><time datetime="2025-12-02T14:26:00.000Z" title="Created 2025-12-02 22:26:00">2025-12-02</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By HHHH</span><span class="framework-info"><span>Framework </span><a href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div><div class="container" id="jsi-flying-fish-container"><script src="js/fish.js"></script></div><style>   @media only screen and (max-width: 767px){
+   #sidebar_search_box input[type=text]{width:calc(100% - 24px)}
+}</style></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/fish.js" defer data-pjax></script><script type="text/javascript" src="/js/busuanzi.pure.mini.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="local-search-input"><input placeholder="Search for Posts" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/cmd.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-10-09</span><a class="blog-slider__title" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">Hexo + Butterfly 个人博客搭建</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/10/09/hexo-butterfly-ge-ren-bo-ke-da-jian/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/11/10/gwas-ld-block/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/v2-ecafe797ee44a3cafe3e129237072370_1440w.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-11-10</span><a class="blog-slider__title" href="2025/11/10/gwas-ld-block/" alt="">GWAS + 热点区域识别 + LD Block 分析流程详解</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/11/10/gwas-ld-block/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2025/07/31/19/" alt=""><img width="48" height="48" src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/OIP-C.2E7GSli1t13WJ-Of6Hp9UgHaEi" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-07-31</span><a class="blog-slider__title" href="2025/07/31/19/" alt="">2.重测序数据分析——初步整理</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2025/07/31/19/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><!-- hexo injector body_end end --></body></html>
