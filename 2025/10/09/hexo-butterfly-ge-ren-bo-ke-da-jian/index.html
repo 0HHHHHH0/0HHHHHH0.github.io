@@ -372,8 +372,7 @@ ssh-keyscan <span class="token parameter variable">-t</span> ed25519 github.com 
     <span class="token punctuation">-</span> <span class="token string">'&lt;i class="fas fa-quote-left"&gt;&lt;/i&gt; 成功的秘诀在于坚持'</span>
     <span class="token punctuation">-</span> <span class="token string">'&lt;i class="fas fa-quote-left"&gt;&lt;/i&gt; The best way to predict the future is to invent it'</span>
     <span class="token punctuation">-</span> <span class="token string">'&lt;i class="fas fa-quote-left"&gt;&lt;/i&gt; 生活是一场马拉松，你需要不断地奔跑'</span>
-    <span class="token punctuation">-</span> <span class="token string">'&lt;i class="fas fa-quote-left"&gt;&lt;/i&gt; 成功不是将来才有的，而是从决定去做的那一刻起，持续累积而成'</span>
-AI写代码yaml123456789101112131415161718192021222324252627282930<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    <span class="token punctuation">-</span> <span class="token string">'&lt;i class="fas fa-quote-left"&gt;&lt;/i&gt; 成功不是将来才有的，而是从决定去做的那一刻起，持续累积而成'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h3 id="4-首页文章卡片双栏布局"><a href="#4-首页文章卡片双栏布局" class="headerlink" title="4. 首页文章卡片双栏布局"></a>4. 首页文章卡片双栏布局</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f11483f270f35e41af02eb7fc2fce019.png" alt="img"><br>首页文章双栏<a href="https://so.csdn.net/so/search?q=%E5%B8%83%E5%B1%80%E8%AE%BE%E7%BD%AE&amp;spm=1001.2101.3001.7020">布局设置</a>，文章摘要显示设置。<br>博客根目录下<code>_config.butterfly.yml</code>文件的<code>首页设置</code>的相关<a href="https://so.csdn.net/so/search?q=%E4%BF%AE%E6%94%B9%E4%BB%A3%E7%A0%81&amp;spm=1001.2101.3001.7020">修改代码</a>如下：</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># 首页文章布局方式</span>
@@ -384,8 +383,7 @@ AI写代码yaml123456789101112131415161718192021222324252627282930<span aria-hid
 <span class="token comment"># 5: 信息直接显示在封面图上</span>
 <span class="token comment"># 6: 瀑布流布局 - 封面图在上，信息在下</span>
 <span class="token comment"># 7: 瀑布流布局 - 信息直接显示在封面图上</span>
-<span class="token key atrule">index_layout</span><span class="token punctuation">:</span> <span class="token number">6</span>
-AI写代码yaml123456789<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token key atrule">index_layout</span><span class="token punctuation">:</span> <span class="token number">6</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h3 id="5-首页文章摘要显示设置"><a href="#5-首页文章摘要显示设置" class="headerlink" title="5. 首页文章摘要显示设置"></a>5. 首页文章摘要显示设置</h3><p>博客根目录下<code>_config.butterfly.yml</code>文件。</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># 首页文章摘要显示设置</span>
@@ -395,8 +393,7 @@ AI写代码yaml123456789<span aria-hidden="true" class="line-numbers-rows"><span
 <span class="token comment"># false: 不显示文章摘要</span>
 <span class="token key atrule">index_post_content</span><span class="token punctuation">:</span>
   <span class="token key atrule">method</span><span class="token punctuation">:</span> <span class="token number">1</span>         <span class="token comment"># 选择摘要显示方式</span>
-  <span class="token key atrule">length</span><span class="token punctuation">:</span> <span class="token number">300</span>       <span class="token comment"># 当method为2或3时，指定截取长度（单位：字符）</span>
-AI写代码yaml12345678<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token key atrule">length</span><span class="token punctuation">:</span> <span class="token number">300</span>       <span class="token comment"># 当method为2或3时，指定截取长度（单位：字符）</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h3 id="6-首页文章置顶轮播插件及设置"><a href="#6-首页文章置顶轮播插件及设置" class="headerlink" title="6. 首页文章置顶轮播插件及设置"></a>6. 首页文章置顶轮播插件及设置</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/07aa1c63a5e70ff25f99187f5bc8d880.gif" alt="img"></p>
 <ol>
@@ -423,8 +420,7 @@ AI写代码bash1<span aria-hidden="true" class="line-numbers-rows"><span></span>
   <span class="token key atrule">swiper_css</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//npm.elemecdn.com/hexo<span class="token punctuation">-</span>butterfly<span class="token punctuation">-</span>swiper/lib/swiper.min.css <span class="token comment">#swiper css依赖</span>
   <span class="token key atrule">swiper_js</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//npm.elemecdn.com/hexo<span class="token punctuation">-</span>butterfly<span class="token punctuation">-</span>swiper/lib/swiper.min.js <span class="token comment">#swiper js依赖</span>
   <span class="token key atrule">custom_css</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//npm.elemecdn.com/hexo<span class="token punctuation">-</span>butterfly<span class="token punctuation">-</span>swiper/lib/swiperstyle.css <span class="token comment"># 适配主题样式补丁</span>
-  <span class="token key atrule">custom_js</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//npm.elemecdn.com/hexo<span class="token punctuation">-</span>butterfly<span class="token punctuation">-</span>swiper/lib/swiper_init.js <span class="token comment"># swiper初始化方法</span>
-AI写代码yaml12345678910111213141516<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token key atrule">custom_js</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//npm.elemecdn.com/hexo<span class="token punctuation">-</span>butterfly<span class="token punctuation">-</span>swiper/lib/swiper_init.js <span class="token comment"># swiper初始化方法</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <ol>
 <li>在文章的头部添加属性<code>swiper_index</code>，置顶轮播图顺序，需填非负整数，数字越大越靠前</li>

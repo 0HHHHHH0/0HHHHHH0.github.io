@@ -5015,8 +5015,7 @@ ssh-keyscan <span class="token parameter variable">-t</span> ed25519 github.com 
     <span class="token punctuation">-</span> <span class="token string">'&lt;i class="fas fa-quote-left"&gt;&lt;/i&gt; 成功的秘诀在于坚持'</span>
     <span class="token punctuation">-</span> <span class="token string">'&lt;i class="fas fa-quote-left"&gt;&lt;/i&gt; The best way to predict the future is to invent it'</span>
     <span class="token punctuation">-</span> <span class="token string">'&lt;i class="fas fa-quote-left"&gt;&lt;/i&gt; 生活是一场马拉松，你需要不断地奔跑'</span>
-    <span class="token punctuation">-</span> <span class="token string">'&lt;i class="fas fa-quote-left"&gt;&lt;/i&gt; 成功不是将来才有的，而是从决定去做的那一刻起，持续累积而成'</span>
-AI写代码yaml123456789101112131415161718192021222324252627282930<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    <span class="token punctuation">-</span> <span class="token string">'&lt;i class="fas fa-quote-left"&gt;&lt;/i&gt; 成功不是将来才有的，而是从决定去做的那一刻起，持续累积而成'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h3 id="4-首页文章卡片双栏布局"><a href="#4-首页文章卡片双栏布局" class="headerlink" title="4. 首页文章卡片双栏布局"></a>4. 首页文章卡片双栏布局</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/f11483f270f35e41af02eb7fc2fce019.png" alt="img"><br>首页文章双栏<a href="https://so.csdn.net/so/search?q=%E5%B8%83%E5%B1%80%E8%AE%BE%E7%BD%AE&amp;spm=1001.2101.3001.7020">布局设置</a>，文章摘要显示设置。<br>博客根目录下<code>_config.butterfly.yml</code>文件的<code>首页设置</code>的相关<a href="https://so.csdn.net/so/search?q=%E4%BF%AE%E6%94%B9%E4%BB%A3%E7%A0%81&amp;spm=1001.2101.3001.7020">修改代码</a>如下：</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># 首页文章布局方式</span>
@@ -5027,8 +5026,7 @@ AI写代码yaml123456789101112131415161718192021222324252627282930<span aria-hid
 <span class="token comment"># 5: 信息直接显示在封面图上</span>
 <span class="token comment"># 6: 瀑布流布局 - 封面图在上，信息在下</span>
 <span class="token comment"># 7: 瀑布流布局 - 信息直接显示在封面图上</span>
-<span class="token key atrule">index_layout</span><span class="token punctuation">:</span> <span class="token number">6</span>
-AI写代码yaml123456789<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token key atrule">index_layout</span><span class="token punctuation">:</span> <span class="token number">6</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h3 id="5-首页文章摘要显示设置"><a href="#5-首页文章摘要显示设置" class="headerlink" title="5. 首页文章摘要显示设置"></a>5. 首页文章摘要显示设置</h3><p>博客根目录下<code>_config.butterfly.yml</code>文件。</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># 首页文章摘要显示设置</span>
@@ -5038,8 +5036,7 @@ AI写代码yaml123456789<span aria-hidden="true" class="line-numbers-rows"><span
 <span class="token comment"># false: 不显示文章摘要</span>
 <span class="token key atrule">index_post_content</span><span class="token punctuation">:</span>
   <span class="token key atrule">method</span><span class="token punctuation">:</span> <span class="token number">1</span>         <span class="token comment"># 选择摘要显示方式</span>
-  <span class="token key atrule">length</span><span class="token punctuation">:</span> <span class="token number">300</span>       <span class="token comment"># 当method为2或3时，指定截取长度（单位：字符）</span>
-AI写代码yaml12345678<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token key atrule">length</span><span class="token punctuation">:</span> <span class="token number">300</span>       <span class="token comment"># 当method为2或3时，指定截取长度（单位：字符）</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h3 id="6-首页文章置顶轮播插件及设置"><a href="#6-首页文章置顶轮播插件及设置" class="headerlink" title="6. 首页文章置顶轮播插件及设置"></a>6. 首页文章置顶轮播插件及设置</h3><p><img src="https://cdn.jsdelivr.net/gh/0HHHHHH0/Image@master/blog/07aa1c63a5e70ff25f99187f5bc8d880.gif" alt="img"></p>
 <ol>
@@ -5066,8 +5063,7 @@ AI写代码bash1<span aria-hidden="true" class="line-numbers-rows"><span></span>
   <span class="token key atrule">swiper_css</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//npm.elemecdn.com/hexo<span class="token punctuation">-</span>butterfly<span class="token punctuation">-</span>swiper/lib/swiper.min.css <span class="token comment">#swiper css依赖</span>
   <span class="token key atrule">swiper_js</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//npm.elemecdn.com/hexo<span class="token punctuation">-</span>butterfly<span class="token punctuation">-</span>swiper/lib/swiper.min.js <span class="token comment">#swiper js依赖</span>
   <span class="token key atrule">custom_css</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//npm.elemecdn.com/hexo<span class="token punctuation">-</span>butterfly<span class="token punctuation">-</span>swiper/lib/swiperstyle.css <span class="token comment"># 适配主题样式补丁</span>
-  <span class="token key atrule">custom_js</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//npm.elemecdn.com/hexo<span class="token punctuation">-</span>butterfly<span class="token punctuation">-</span>swiper/lib/swiper_init.js <span class="token comment"># swiper初始化方法</span>
-AI写代码yaml12345678910111213141516<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token key atrule">custom_js</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//npm.elemecdn.com/hexo<span class="token punctuation">-</span>butterfly<span class="token punctuation">-</span>swiper/lib/swiper_init.js <span class="token comment"># swiper初始化方法</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <ol>
 <li>在文章的头部添加属性<code>swiper_index</code>，置顶轮播图顺序，需填非负整数，数字越大越靠前</li>
@@ -11860,37 +11856,6 @@ ray<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span>
       </categories>
   </entry>
   <entry>
-    <title>群晖数据转飞牛（单机）</title>
-    <url>/2026/01/09/qh2fn/</url>
-    <content><![CDATA[<blockquote>
-<p>转载自：<a href="https://club.fnnas.com/forum.php?mod=viewthread&amp;tid=48308">https://club.fnnas.com/forum.php?mod=viewthread&amp;tid=48308</a></p>
-</blockquote>
-<p>看到官方发布自己设备了想想自己的rr引导的黑群晖感觉可以转正了，我是有2块容量14t的硬盘，提前把自己的数据都转移到了一个硬盘，留一个可以安装了飞牛。安装后想把数据复制到飞牛的格式化后的硬盘看了好几个教程都没成功，最后按照这个可以了。</p>
-<p>前期准备</p>
-<p>1.飞牛里边新建一个任意文件夹如名字是bk，并鼠标右键，查看详细信息，复制原始路径如：/vol2/1000/bk</p>
-<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/091039i6tq06h0t64011l1.png" alt="19.png"></p>
-<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/091044h08uk7lj4j3a1gp1.png" alt="110.png"></p>
-<p>2.飞牛开启ssh，通过ssh连接飞牛</p>
-<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/090821en2z2btqn66yh5y5.png" alt="11.png"></p>
-<p>3.应用中心，安装FntermX 终端并登录</p>
-<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/090843s5107z90n65u9h0c.png" alt="12.png"></p>
-<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/090856x9gb96cezb16gro1.png" alt="14.png"></p>
-<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/090905e62phl5hra2lva25.png" alt="15.png"></p>
-<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/090915po946hioozgpi65h.png" alt="16.png"></p>
-<p>正式开始</p>
-<p>1.切换管理员sudo -i</p>
-<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/091148fljfkfhjzxhosnox.png" alt="17.png"></p>
-<p>3.lvdisplay查看磁盘信息，找到自己数据盘的信息如：/dev/vg3/volume_3</p>
-<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/091202mdkyhsmgkl5hld9m.png" alt="18.png"></p>
-<p>4.输入命令复制btrfs restore /dev/vg3/volume_3 /vol2/1000/bk/</p>
-<p>#将/dev/vg3/volume_3的内容，复制新的文件夹/vol2/1000/bk（自己的实际原始位置）</p>
-<p>注意：之前在群辉做硬链接的建议先删除硬链接文件。</p>
-]]></content>
-      <categories>
-        <category>NAS</category>
-      </categories>
-  </entry>
-  <entry>
     <title>Rosetta全面使用指南</title>
     <url>/2025/11/06/rosetta/</url>
     <content><![CDATA[<h2 id="Rosetta全面使用指南"><a href="#Rosetta全面使用指南" class="headerlink" title="Rosetta全面使用指南"></a>Rosetta全面使用指南</h2><blockquote>
@@ -12991,6 +12956,37 @@ EOF</span>
       <categories>
         <category>蛋白互作</category>
         <category>PyMOL</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>群晖数据转飞牛（单机）</title>
+    <url>/2026/01/09/qh2fn/</url>
+    <content><![CDATA[<blockquote>
+<p>转载自：<a href="https://club.fnnas.com/forum.php?mod=viewthread&amp;tid=48308">https://club.fnnas.com/forum.php?mod=viewthread&amp;tid=48308</a></p>
+</blockquote>
+<p>看到官方发布自己设备了想想自己的rr引导的黑群晖感觉可以转正了，我是有2块容量14t的硬盘，提前把自己的数据都转移到了一个硬盘，留一个可以安装了飞牛。安装后想把数据复制到飞牛的格式化后的硬盘看了好几个教程都没成功，最后按照这个可以了。</p>
+<p>前期准备</p>
+<p>1.飞牛里边新建一个任意文件夹如名字是bk，并鼠标右键，查看详细信息，复制原始路径如：/vol2/1000/bk</p>
+<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/091039i6tq06h0t64011l1.png" alt="19.png"></p>
+<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/091044h08uk7lj4j3a1gp1.png" alt="110.png"></p>
+<p>2.飞牛开启ssh，通过ssh连接飞牛</p>
+<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/090821en2z2btqn66yh5y5.png" alt="11.png"></p>
+<p>3.应用中心，安装FntermX 终端并登录</p>
+<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/090843s5107z90n65u9h0c.png" alt="12.png"></p>
+<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/090856x9gb96cezb16gro1.png" alt="14.png"></p>
+<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/090905e62phl5hra2lva25.png" alt="15.png"></p>
+<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/090915po946hioozgpi65h.png" alt="16.png"></p>
+<p>正式开始</p>
+<p>1.切换管理员sudo -i</p>
+<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/091148fljfkfhjzxhosnox.png" alt="17.png"></p>
+<p>3.lvdisplay查看磁盘信息，找到自己数据盘的信息如：/dev/vg3/volume_3</p>
+<p><img src="https://club.fnnas.com/data/attachment/forum/202512/24/091202mdkyhsmgkl5hld9m.png" alt="18.png"></p>
+<p>4.输入命令复制btrfs restore /dev/vg3/volume_3 /vol2/1000/bk/</p>
+<p>#将/dev/vg3/volume_3的内容，复制新的文件夹/vol2/1000/bk（自己的实际原始位置）</p>
+<p>注意：之前在群辉做硬链接的建议先删除硬链接文件。</p>
+]]></content>
+      <categories>
+        <category>NAS</category>
       </categories>
   </entry>
   <entry>
